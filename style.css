@@ -253,18 +253,103 @@ text {
 }
 
 /* WORK SECTION */
-.coming-soon-wrapper {
+.work-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2rem; /* Space between text and phone */
+  padding: 0 10%;
   height: 100vh;
-  padding-top: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  
 }
 
-.coming-soon-img {
-  max-width: 50%;
+.work-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0rem;
+}
+
+.project-logo img {
+  width: 350px; /* Adjust based on your actual image size */
   height: auto;
+}
+
+.project-description {
+  font-size: 2.2rem;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--text-color);
+  max-width: 450px;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 4rem;
+  margin-top: 1rem;
+}
+
+/* The CTA Button */
+.explore-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background-color: #FF514B5E;
+  color: #000;
+  text-decoration: none;
+  font-size: 2rem;
+  font-weight: 600;
+  border: 2px solid #000; /* Consider changing to 3px to match logo weight */
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button-arrow {
+  height: 2.2rem; /* Adjust this to match the height of your text */
+  width: auto;    /* Keeps the aspect ratio of your "longer" arrow */
+  margin-left: 2rem;
+  transition: transform 0.2s ease;
+}
+
+/* Optional: Make the arrow slide slightly on hover */
+.explore-button:hover .button-arrow {
+  transform: translateX(8px);
+}
+
+.work-mockup {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.work-mockup img {
+  height: 73vh; /* Scales based on screen height */
+  width: auto;
+  filter: drop-shadow(0 20px 50px rgba(0,0,0,0.15));
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
+              filter 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  
+  cursor: pointer;
+}
+
+.work-mockup img:hover {
+  /* Lifts the phone up by 15 pixels */
+  transform: translateY(-15px);
+  
+  /* Deepens and spreads the shadow to simulate height */
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15));
+}
+
+/* Adjustments for Dark Mode */
+body.dark-mode .explore-button {
+  background-color: #ff8e8e; /* Slightly deeper red for dark mode contrast */
+  border-color: #fff;
+}
+
+body.dark-mode .explore-button .arrow {
+  color: #000;
 }
 
 
