@@ -1,0 +1,359 @@
+/* PANTRY PAL CASE STUDY STYLES */
+
+/* 1. Lock the Body */
+body.case-study-body {
+    overflow: hidden; /* Prevents double scrollbars */
+    height: 100vh;
+}
+
+/* 2. Nav Bar Masking 
+   We add a background color so content "disappears" behind it.
+   We use backdrop-filter for a modern glass effect if desired, 
+   but solid background is safer for legibility. */
+.centered-nav.case-study-nav {
+    background-color: var(--bg-color); /* Matches theme (light/dark) */
+    width: 100%;
+    padding-top: 2rem; /* Maintain your existing top spacing */
+    padding-bottom: 1rem; /* Buffer space below links */
+    top: 0; /* Reset top to 0 to cover the very top edge */
+    left: 0;
+    transform: none; /* Reset the center transform */
+    display: flex;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+/* 3. The Main Split Layout */
+.case-layout {
+    display: flex;
+    height: 100vh;
+    padding-top: 80px; /* Push content down so it starts below the Nav */
+    box-sizing: border-box;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* 4. Left Sidebar (Fixed) */
+.case-sidebar {
+    width: 300px; /* Fixed width */
+    padding-bottom: 50px;
+    padding-left: 4%;
+    padding-right: 3%;
+    flex-shrink: 0; /* Never shrink */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.case-sidebar::after {
+    content: "";
+    position: absolute;
+    right: 0; 
+    
+    /* CENTER THE LINE VERTICALLY */
+    top: 50%;
+    transform: translateY(-50%);
+    
+    /* CONTROL THE HEIGHT HERE */
+    height: 85%; /* Change to 60% or 80% to make it shorter/taller */
+    
+    /* LINE STYLE */
+    width: 5px; /* Thickness */
+    background-color: var(--text-color); /* Color matches theme */
+    border-radius: 2px; /* Optional: rounds the tips of the line */
+}
+
+.sidebar-logo img {
+    width: 300px;
+    height: auto;
+}
+
+/* Table of Contents */
+.case-toc {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+    align-items: flex-start;
+}
+
+.toc-link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-family: Helvetica, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 400;
+    
+    /* Flex allows the arrow to push the text */
+    display: flex; 
+    align-items: center;
+    
+    /* Smooth transition for the text sliding */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Active State Design */
+.toc-link.active {
+    font-weight: 700; /* Bold */
+}
+
+/* The Arrow */
+.toc-link::before {
+    content: '➜';
+    display: inline-block;
+    white-space: nowrap;
+    
+    /* INACTIVE STATE (Hidden) */
+    opacity: 0;
+    max-width: 0;  /* Takes up 0 space, so text sits fully left */
+    margin-right: 0;
+    transform: translateX(-20px); /* Starts slightly off-screen to the left */
+    
+    /* ANIMATION SETTINGS */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    font-weight: 400; /* Keep arrow thin even if text is bold */
+}
+
+/* ACTIVE STATE (Visible) */
+.toc-link.active::before {
+    opacity: 1;
+    max-width: 60px; /* Expands to make room, pushing the text right */
+    margin-right: 10px; /* Adds a little gap between arrow and text */
+    transform: translateX(0); /* Slides into place */
+}
+
+/* 5. Right Content (Scrollable) */
+.case-content {
+    flex: 1; /* Takes remaining width */
+    overflow-y: auto; /* Enables vertical scrolling inside this div */
+    padding-right: 5%;
+    padding-left: 5%;
+    scroll-behavior: smooth;
+    
+    /* Hide scrollbar for cleaner look (optional) */
+    scrollbar-width: none; /* Firefox */
+}
+.case-content::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* Section Styling */
+.case-section {
+    margin-bottom: 30vh; /* Space between sections */
+    min-height: 50vh; /* Ensure sections have height */
+}
+
+.mockup-grid img {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+}
+
+/* Opportunity Section Grid */
+.opportunity-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Label on left, text on right */
+    gap: 4rem;
+    align-items: baseline;
+    font-family: Helvetica, sans-serif;
+    font-weight: 300;
+}
+
+.opp-column h2 {
+    font-size: 2.3rem;
+    font-weight: 300;
+    margin: 0;
+}
+
+.opp-column p {
+    font-size: 2.3rem;
+    line-height: 1.1;
+    margin: 0;
+    margin-bottom: 4rem;
+
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode .centered-nav.case-study-nav {
+    background-color: #111111;
+}
+
+/* CONTAINER: Holds Grid + Text Side-by-Side */
+.snapshot-container {
+    display: flex;
+    gap: 1rem; /* Space between the phones and the text labels */
+    align-items: stretch; /* Ensures the text column is as tall as the phone grid */
+    width: 100%;
+    padding-top: 3%;
+}
+
+/* LEFT: The 3x2 Grid */
+.phone-grid {
+    flex: 3; /* Takes up roughly 75% of the width */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 Equal Columns */
+    grid-template-rows: auto auto; /* 2 Rows that fit content */
+    gap: .3rem; /* Gap between phones */
+    justify-items: center;
+}
+
+.phone-grid img {
+    width: 78%;
+    height: auto;
+    display: block;
+    /* Optional: distinct shadow for phones */
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); 
+}
+
+/* RIGHT: The Text Labels */
+.snapshot-labels {
+    flex: 1; /* Takes up remaining space */
+    display: flex;
+    flex-direction: column;
+    
+    /* MAGICAL PART: Distributes text evenly (Top, Middle, Bottom) */
+    justify-content: space-between; 
+    
+    /* Add padding so text aligns visually with the "meat" of the phones, 
+       not the very top bezel edge if needed */
+    padding-top: 2rem; 
+    padding-bottom: 2rem;
+}
+
+.snapshot-labels p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Adjust based on preference */
+    font-weight: 300;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--text-color);
+}
+
+/* DEMOGRAPHIC SECTION STYLES */
+
+.demographic-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Vertically centers the text with the image */
+    justify-content: space-between;
+    gap: 4rem; /* Adjust space between text and avatar */
+    width: 100%;
+}
+
+.demo-text {
+    flex: 3; /* Takes up about 60-70% of the space */
+    max-width: 700px; /* Prevents lines from getting unreadably long */
+}
+
+.demo-text p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Matches your Opportunity section font size */
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 3rem; /* Space between paragraphs */
+    color: var(--text-color);
+}
+
+.demo-image {
+    flex: 2; /* Takes up the remaining space */
+    display: flex;
+    justify-content: center; /* Centers image in its column */
+    align-items: center;
+}
+
+.demo-image img {
+    width: 100%;
+    max-width: 250px; /* Controls the size of the avatar */
+    height: auto;
+    display: block;
+    /* Optional: Adds a slight drop shadow like your other images */
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+}
+
+/* Responsive adjustment for smaller desktop screens */
+@media (max-width: 1100px) {
+    .demographic-container {
+        flex-direction: column-reverse; /* Stacks image on top or bottom if space is tight */
+        align-items: flex-start;
+    }
+    
+    .demo-image {
+        align-self: center;
+        margin-bottom: 2rem;
+    }
+}
+
+/* UX FLOW SECTION STYLES */
+
+.uxflow-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem; /* Space between the text paragraph and the images */
+}
+
+/* Reusing your standard paragraph styling */
+.ux-text p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem;
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--text-color);
+    max-width: 800px; /* Prevents text from stretching too wide on huge screens */
+    margin: 0;
+}
+
+/* The Grid for the 3 Sketches */
+.ux-wireframes {
+    display: grid;
+    /* CHANGE 1: Use 'start' or 'left' instead of 'center' so it aligns with your text */
+    justify-content: start; 
+    
+    /* CHANGE 2: Define columns so they don't stretch weirdly */
+    grid-template-columns: repeat(3, auto);
+    
+    gap: 2rem; /* A little breathing room between phones */
+    width: 100%;
+    align-items: start;
+}
+
+
+.wireframe-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: auto;
+}
+
+.wireframe-item img {
+    height: 50vh; 
+    width: auto;
+    border-radius: 25px;
+    aspect-ratio: 10 / 18; 
+    object-fit: cover; 
+    object-position: top; 
+    display: block;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+}
+
+.wireframe-item h3 {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Matches the size of your Snapshot labels */
+    font-weight: 300;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* Responsive: Stack them on smaller screens */
+@media (max-width: 900px) {
+    .ux-wireframes {
+        grid-template-columns: 1fr; /* Stack vertically on tablet/mobile */
+        gap: 4rem;
+    }
+}

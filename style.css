@@ -280,13 +280,13 @@ text {
 
 .project-description {
   font-size: 2.2rem;
-  line-height: 1.2;
+  line-height: 1;
   font-weight: 500;
   color: var(--text-color);
   max-width: 450px;
   margin: 0;
   padding: 0;
-  margin-bottom: 4rem;
+  margin-bottom: 2.8rem;
   margin-top: 1rem;
 }
 
@@ -332,14 +332,6 @@ text {
               filter 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   
   cursor: pointer;
-}
-
-.work-mockup img:hover {
-  /* Lifts the phone up by 15 pixels */
-  transform: translateY(-15px);
-  
-  /* Deepens and spreads the shadow to simulate height */
-  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15));
 }
 
 /* Adjustments for Dark Mode */
