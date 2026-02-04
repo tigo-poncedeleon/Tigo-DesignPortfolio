@@ -137,6 +137,7 @@ body.case-study-body {
     
     /* Hide scrollbar for cleaner look (optional) */
     scrollbar-width: none; /* Firefox */
+    scroll-padding-top: 50px;
 }
 .case-content::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
@@ -144,8 +145,9 @@ body.case-study-body {
 
 /* Section Styling */
 .case-section {
-    margin-bottom: 30vh; /* Space between sections */
+    margin-bottom: 22vh; /* Space between sections */
     min-height: 50vh; /* Ensure sections have height */
+    scroll-margin-top: 30px;
 }
 
 .mockup-grid img {
@@ -168,6 +170,7 @@ body.case-study-body {
     font-size: 2.3rem;
     font-weight: 300;
     margin: 0;
+    max-width: 100px;
 }
 
 .opp-column p {
@@ -240,7 +243,7 @@ body.dark-mode .centered-nav.case-study-nav {
 .branding-block {
     width: 100%;
     max-width: 1000px; 
-    margin: 22vh auto 10vh auto; 
+    margin-top: 22vh; 
 }
 
 /* 2. The Wrapper for the Rows */
@@ -286,7 +289,7 @@ body.dark-mode .centered-nav.case-study-nav {
     grid-template-columns: 1fr 2fr;
     width: 100%;
     max-width: 1000px; 
-    margin: 15vh auto 0 auto; 
+    margin: 22vh auto 0 auto; 
     font-family: Helvetica, sans-serif;
     font-weight: 300;
 }
@@ -458,10 +461,109 @@ body.dark-mode .centered-nav.case-study-nav {
     margin: 0;
 }
 
-/* Responsive: Stack them on smaller screens */
-@media (max-width: 900px) {
-    .ux-wireframes {
-        grid-template-columns: 1fr; /* Stack vertically on tablet/mobile */
-        gap: 4rem;
-    }
+/* --- UX ITERATIONS (Text below wireframes) --- */
+
+.ux-iterations {
+    margin-top: 22vh; /* Adds deep scroll space between wireframes and this text */
+    display: flex;
+    flex-direction: column;
+    gap: 6rem; /* Space between the rows */
+    width: 100%;
+    max-width: 1100px;
 }
+
+.iteration-row {
+    display: grid;
+    /* Grid: Label takes auto width, Content takes the rest */
+    grid-template-columns: 200px 1fr;
+    gap: 4rem;
+    align-items: center; /* Vertically center the label with the text block */
+}
+
+/* The "Idea #1 X" grouping */
+.iter-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem;
+    font-weight: 300;
+    color: var(--text-color);
+}
+
+.status-icon {
+    width: 45px; /* Adjust size of X and Checkmark */
+    height: auto;
+    display: block;
+}
+
+/* The Paragraph text */
+.iter-desc p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* --- UX FLOW STEPS (High-Fidelity) --- */
+
+.flow-step-container {
+    margin-top: 22vh;
+    width: 100%;
+    max-width: 1200px;
+    
+    /* GRID LAYOUT */
+    display: grid;
+    /* Columns: Auto (fits phone width) | 1fr (remaining space for text) */
+    grid-template-columns: auto 1fr;
+    /* Rows: Auto (Image+Text) | Auto (Label) */
+    grid-template-rows: auto auto;
+    
+    column-gap: 3rem; /* Horizontal space */
+    row-gap: 1rem;    /* Vertical space between phone and label */
+    align-items: center; /* Vertically centers the text against the image */
+}
+
+/* 1. The Phone Image */
+.flow-phone-img {
+    grid-column: 1; /* First column */
+    grid-row: 1;    /* First row */
+    
+    height: 70vh;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15));
+}
+
+/* 2. The Right Column Text */
+.flow-text-wrapper {
+    grid-column: 2; /* Second column */
+    grid-row: 1;    /* First row (aligned with image) */
+}
+
+.flow-text-wrapper p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text-color);
+    margin: 0;
+    max-width: 700px;
+}
+
+/* 3. The Label under the phone */
+.flow-label {
+    grid-column: 1; /* Stay in first column (under phone) */
+    grid-row: 2;    /* Move to second row */
+    
+    font-family: Helvetica, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--text-color);
+    margin: 0;
+    text-align: center; /* Centers the text relative to the phone's width */
+}
+
