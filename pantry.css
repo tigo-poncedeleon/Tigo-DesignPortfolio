@@ -1,5 +1,31 @@
 /* PANTRY PAL CASE STUDY STYLES */
 
+/* --- MOBILE NOTICE --- */
+#mobileNotice {
+    display: none; /* Hides it on desktop */
+}
+
+/* Only show on screens smaller than 768px */
+@media (max-width: 768px) {
+    #mobileNotice {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: Helvetica, sans-serif;
+        font-size: 1.5rem;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+}
+
 /* 1. Lock the Body */
 body.case-study-body {
     overflow: hidden; /* Prevents double scrollbars */
@@ -366,8 +392,9 @@ body.dark-mode .centered-nav.case-study-nav {
     font-size: 2.3rem; /* Matches your Opportunity section font size */
     font-weight: 300;
     line-height: 1.1;
-    margin-bottom: 1rem; /* Space between paragraphs */
+    margin-bottom: 2.5rem; /* Space between paragraphs */
     color: var(--text-color);
+    margin-top: 0px;
 }
 
 .demo-image {
@@ -386,26 +413,12 @@ body.dark-mode .centered-nav.case-study-nav {
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
 }
 
-/* Responsive adjustment for smaller desktop screens */
-@media (max-width: 1100px) {
-    .demographic-container {
-        flex-direction: column-reverse; /* Stacks image on top or bottom if space is tight */
-        align-items: flex-start;
-    }
-    
-    .demo-image {
-        align-self: center;
-        margin-bottom: 2rem;
-    }
-}
-
 /* UX FLOW SECTION STYLES */
 
 .uxflow-container {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1.8rem; /* Space between the text paragraph and the images */
 }
 
 /* Reusing your standard paragraph styling */
@@ -416,7 +429,7 @@ body.dark-mode .centered-nav.case-study-nav {
     line-height: 1.1;
     color: var(--text-color);
     max-width: 800px; /* Prevents text from stretching too wide on huge screens */
-    margin: 0;
+    margin-bottom: 2rem;
 }
 
 /* The Grid for the 3 Sketches */
@@ -567,3 +580,210 @@ body.dark-mode .centered-nav.case-study-nav {
     text-align: center; /* Centers the text relative to the phone's width */
 }
 
+/* UX PHILOSOPHY SLIDE (Simple is Better) */
+.ux-philosophy {
+    /* Large height to make it feel like a standalone 'slide' */
+    min-height: 80vh; 
+    
+    /* Flexbox to center content perfectly */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    
+    /* Spacing between the two lines */
+    gap: 4rem; 
+    
+    /* Ensure it clears previous elements */
+    margin-top: 22vh;
+    margin-bottom: 22vh;
+}
+
+.ux-philosophy p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Matches your standard text size */
+    font-weight: 300;  /* Light weight */
+    color: var(--text-color);
+    line-height: 1.2;
+    margin: 0;
+    max-width: 400px; /* Constrains line width for better readability */
+}
+
+/* === UI CHOICES SECTION STYLES === */
+
+/* Main container to manage width and centering of the whole section content */
+.ui-choices-container {
+    width: 100%;
+    max-width: 870px; /* Ensures content doesn't get too wide on large screens */
+    margin: 0 auto;   /* Centers horizontally */
+    padding-top: 5vh; /* Spacing from the top of the section container */
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem; /* Vertical spacing between the color grid and the text below it */
+}
+
+/* The grid holding the 3 color blocks (Vertical Thirds) */
+.color-palette-grid {
+    display: grid;
+    /* Creates 3 equal columns */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 3rem; /* Space between the columns */
+    width: 100%;
+    align-items: start;
+}
+
+/* Individual item containing the swatch and label */
+.color-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers label under swatch */
+    gap: 1.5rem; /* Space between swatch and hex code label */
+}
+
+/* The native CSS color square */
+.color-swatch {
+    width: 100%; /* Fills the column width */
+    aspect-ratio: 1 / 1; /* Ensures it remains a perfect square */
+    /* The specific 2px black stroke requested */
+    border: 2px solid #000000; 
+    /* Optional drop shadow to match your other site elements */
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+}
+
+/* The Hex Code Label underneath */
+.color-label {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Standard site font size */
+    font-weight: 300;  /* Helvetica Light */
+    color: var(--text-color);
+    margin: 0;
+    text-align: center;
+}
+
+/* The paragraph text block below the colors */
+.ui-text-block p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Standard site font size */
+    font-weight: 300;  /* Helvetica Light */
+    line-height: 1.2;
+    color: var(--text-color);
+    margin: 0;
+    /* Because this is inside .ui-choices-container, 
+       it will naturally align with the width of the grid above. */
+}
+
+/* --- FOOD ILLUSTRATION GRID --- */
+
+.food-grid-section {
+    width: 100%;
+    margin-top: 22vh; /* Spacing from the color palette above */
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+}
+
+.food-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    /* Ensure the grid lines up nicely */
+    border-collapse: collapse; 
+}
+
+.food-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem; /* Space around the images inside the cells */
+    position: relative;
+}
+
+.food-item img {
+    width: 100%;
+    max-width: 200px; /* Controls icon size */
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
+}
+
+/* DASHED BORDER LOGIC 
+   We use background-image gradients to create the custom dashed lines 
+   matching the .project-specs style exactly.
+*/
+
+/* 1. VERTICAL DASHES (Right Side) */
+/* Apply to everyone EXCEPT the last column (3rd, 6th, etc) */
+.food-item:not(:nth-child(3n)) {
+    background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: right;
+    background-size: 3px 18px; /* 3px thick, 18px tall pattern */
+    background-repeat: repeat-y;
+}
+
+/* 2. HORIZONTAL DASHES (Bottom Side) */
+
+/* RE-DEFINING SPECIFIC CELLS TO HANDLE OVERLAPPING BORDERS */
+
+/* Items 1 & 2: Need BOTTOM and RIGHT */
+.food-item:nth-child(1),
+.food-item:nth-child(2) {
+    background-image: 
+        /* Right Line */
+        linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%),
+        /* Bottom Line */
+        linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    
+    background-position: right, bottom;
+    background-size: 3px 18px, 18px 3px; /* Vertical size, Horizontal size */
+    background-repeat: repeat-y, repeat-x;
+}
+
+/* Item 3: Needs BOTTOM only (No Right) */
+.food-item:nth-child(3) {
+    background-image: linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: bottom;
+    background-size: 18px 3px;
+    background-repeat: repeat-x;
+}
+
+/* Items 4 & 5: Need RIGHT only (No Bottom) - Handled by the :not(:nth-child(3n)) rule above? 
+   Actually, we need to be explicit to avoid the cascade overwriting things. */
+.food-item:nth-child(4),
+.food-item:nth-child(5) {
+    background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: right;
+    background-size: 3px 18px;
+    background-repeat: repeat-y;
+}
+
+/* Item 6: Needs NONE. Default is none, so we are good. */
+
+/* TEXT BELOW GRID */
+.food-grid-text p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem;
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* REFLECTION SECTION */
+
+.reflection-container {
+    width: 100%;
+    max-width: 800px; /* Limits line length for readability */
+    display: flex;
+    flex-direction: column;
+    gap: 3rem; /* Space between the paragraphs */
+}
+
+.reflection-container p {
+    font-family: Helvetica, sans-serif;
+    font-size: 2.3rem; /* Matches your standard body size */
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--text-color);
+    margin: 0;
+}
