@@ -12,53 +12,45 @@
 
 
 <body>
-  
-<div id="mobileNotice">
-  <p>
-    Mobile version under construction.<br>
-    For the full experience, please visit on a desktop!
-  </p>
-</div>
+  <div id="intro" class="intro-screen">
+  <div class="intro-text" id="introText"></div>
+  </div>
 
-<div id="intro" class="intro-screen">
- <div class="intro-text" id="introText"></div>
-</div>
+  <nav class="centered-nav">
+  <a href="index.html" class="nav-link name">Tigo Ponce de León</a>
+  <a href="work.html" class="nav-link">work</a>
+  <a href="about.html" class="nav-link">about</a>
+  </nav>
 
-<nav class="centered-nav">
- <a href="index.html" class="nav-link name">Tigo Ponce de León</a>
- <a href="work.html" class="nav-link">work</a>
- <a href="about.html" class="nav-link">about</a>
-</nav>
+  <div class="circle-container">
+    <img src="Media/circular_headshot.png" alt="Portrait of Tigo" class="center-image" />
+    <svg viewBox="0 0 200 200" class="circle-text">
+      <defs>
+        <path
+          id="circlePath"
+          d="M100,100 m-90,0 a90,90 0 1,1 180,0 a90,90 0 1,1 -180,0"
+        />
+      </defs>
+      <g class="rotate">
+        <text id="circleText">
+          <textPath href="#circlePath" startOffset="0" id="circlePathText">
+            tigo ponce de león · digital product designer · university of chicago · built with html/css/js ·
+          </textPath>
+        </text>
+      </g>
+    </svg>
+  </div>
 
- <div class="circle-container">
-   <img src="Media/circular_headshot.png" alt="Portrait of Tigo" class="center-image" />
-   <svg viewBox="0 0 200 200" class="circle-text">
-     <defs>
-       <path
-         id="circlePath"
-         d="M100,100 m-90,0 a90,90 0 1,1 180,0 a90,90 0 1,1 -180,0"
-       />
-     </defs>
-     <g class="rotate">
-       <text id="circleText">
-         <textPath href="#circlePath" startOffset="0" id="circlePathText">
-           tigo ponce de león · digital product designer · university of chicago · built with html/css/js ·
-         </textPath>
-       </text>
-     </g>
-   </svg>
- </div>
+  <div class="bottom-bar">
+  <div id="chicagoClock">Chicago — 00:00 CT</div>
+  <button class="theme-toggle" aria-label="Toggle Dark Mode" aria-pressed="false">
+    <span class="icon">
+      <img src="media/moon.png" alt="moon" />
+    </span>
+  </button>
+  </div>
 
-<div class="bottom-bar">
- <div id="chicagoClock">Chicago — 00:00 CT</div>
- <button class="theme-toggle" aria-label="Toggle Dark Mode" aria-pressed="false">
-   <span class="icon">
-     <img src="media/moon.png" alt="moon" />
-   </span>
- </button>
-</div>
-
-<script src="index.js"></script>
+  <script src="index.js"></script>
 
 </body>
 

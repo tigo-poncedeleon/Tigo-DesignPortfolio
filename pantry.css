@@ -1,31 +1,5 @@
 /* PANTRY PAL CASE STUDY STYLES */
 
-/* --- MOBILE NOTICE --- */
-#mobileNotice {
-    display: none; /* Hides it on desktop */
-}
-
-/* Only show on screens smaller than 768px */
-@media (max-width: 768px) {
-    #mobileNotice {
-        display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #ffffff;
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        font-family: Helvetica, sans-serif;
-        font-size: 1.5rem;
-        padding: 2rem;
-        box-sizing: border-box;
-    }
-}
-
 /* 1. Lock the Body */
 body.case-study-body {
     overflow: hidden; /* Prevents double scrollbars */
@@ -786,4 +760,201 @@ body.dark-mode .centered-nav.case-study-nav {
     line-height: 1.25;
     color: var(--text-color);
     margin: 0;
+}
+
+/* --- MOBILE RESPONSIVENESS (Add to bottom of pantry.css) --- */
+
+@media screen and (max-width: 1024px) {
+    /* 1. Remove Blocker & Unlock Scroll */
+    #mobileNotice { display: none !important; }
+    
+    body.case-study-body { 
+        overflow-y: auto; 
+        height: auto; 
+    }
+
+    /* 2. Reset Layout to Single Column */
+    .case-layout {
+        flex-direction: column;
+        padding-top: 60px; /* Space for nav */
+        height: auto;
+    }
+
+/* 3. Sidebar (Now a header block) */
+    .case-sidebar {
+        width: 100%;
+        height: auto;
+        padding: 0; /* Remove padding since logo is gone */
+        position: relative;
+        border: none; /* Remove border if you want a cleaner look */
+    }
+
+    /* THIS HIDES THE LOGO */
+    .sidebar-logo {
+        display: none !important;
+    }
+
+    .case-sidebar::after { display: none; }
+    .case-toc { display: none; }
+
+    /* 4. Content Area */
+    .case-content {
+        padding: 2rem 1.5rem;
+        overflow: visible;
+    }
+
+    .case-section {
+        margin-bottom: 10vh;
+        min-height: auto;
+    }
+
+    /* 5. Typography Scaling (Crucial for Mobile) */
+    .snapshot-labels p, 
+    .brand-row p, 
+    .opp-column p, 
+    .demo-text p, 
+    .ux-text p,
+    .iter-desc p,
+    .flow-text-wrapper p,
+    .ux-philosophy p,
+    .ui-text-block p,
+    .color-label,
+    .food-grid-text p,
+    .reflection-container p {
+        font-size: 1.15rem !important; /* Scale down from 2.3rem */
+        line-height: 1.5;
+    }
+
+    .spec-label, .spec-value {
+        font-size: 1.15rem !important;
+        padding: 1rem 0;
+    }
+
+    h2, .opp-column h2 {
+        font-size: 1.75rem !important;
+    }
+
+    /* 6. Snapshot Section */
+    .snapshot-container {
+        flex-direction: column-reverse;
+        gap: 2rem;
+    }
+    .snapshot-labels {
+        flex-direction: row;
+        text-align: center;
+        padding: 0;
+    }
+    .phone-grid {
+        gap: 0.2rem;
+    }
+
+    /* Branding Block */
+    .brand-row {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+        max-height: none;
+    }
+    .brand-icon { width: 100px; }
+
+    /* Project Specs Table */
+    .project-specs {
+        grid-template-columns: 1fr; /* Stack label and value */
+        margin-top: 4rem;
+    }
+    .spec-label {
+        background: none; /* Remove gradients */
+        font-weight: 700;
+        padding-bottom: 0;
+        text-align: left;
+    }
+    .spec-value {
+        background: none; /* Remove gradients */
+        border-bottom: 1px solid var(--text-color);
+        padding-top: 0.5rem;
+        text-align: left;
+    }
+
+    /* Opportunity Grid */
+    .opportunity-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    /* Demographic */
+    .demographic-container {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    /* Wireframes */
+    .ux-wireframes {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+    .wireframe-item img {
+        height: auto;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* Iterations */
+    .ux-iterations {
+        gap: 3rem;
+    }
+    .iteration-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Flow Steps */
+    .flow-step-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        row-gap: 1.5rem;
+        text-align: center;
+        justify-items: center;
+    }
+    .flow-phone-img {
+        grid-column: 1;
+        grid-row: 1;
+        height: auto;
+        width: 100%;
+        max-width: 300px;
+    }
+    .flow-text-wrapper {
+        grid-column: 1;
+        grid-row: 2;
+    }
+    .flow-label {
+        grid-column: 1;
+        grid-row: 3;
+        font-size: 1.5rem;
+    }
+
+    /* UI Choices */
+    .color-palette-grid {
+        grid-template-columns: 1fr; /* Stack colors */
+        gap: 2rem;
+    }
+    .color-item {
+        flex-direction: row;
+        justify-content: start;
+    }
+    .color-swatch {
+        width: 80px;
+    }
+
+    /* Food Grid */
+    .food-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns instead of 3 */
+    }
+    /* Disable complex borders for mobile to avoid glitches */
+    .food-item, .food-item:nth-child(n) {
+        background-image: none !important;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    body.dark-mode .food-item {
+        border-color: rgba(255,255,255,0.2);
+    }
 }
