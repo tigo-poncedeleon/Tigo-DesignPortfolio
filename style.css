@@ -422,6 +422,29 @@ body.dark-mode .blob {
   position: relative;
 }
 
+.icon-links {
+  position: relative; /* Needed to anchor the toast message */
+}
+
+.copy-toast {
+  position: absolute;
+  top: -40px; /* Positions it right above the icon */
+  left: 20%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Ensures the toast doesn't block clicks */
+}
+
+.copy-toast.show {
+  opacity: 1;
+}
+
 
 /* --- MOBILE RESPONSIVENESS (Add to bottom of style.css) --- */
 
@@ -544,6 +567,9 @@ body.dark-mode .blob {
   .about-inner {
     gap: 2rem;
   }
+
 }
+
+
 
 

@@ -21,3 +21,20 @@ if (isDark) {
   document.body.classList.add('dark-mode');
 }
 
+const emailBtn = document.getElementById('email-button');
+const toast = document.getElementById('copy-toast');
+const myEmail = 'tigoponcedeleon@gmail.com';
+
+emailBtn.addEventListener('click', () => {
+  // Copy to clipboard
+  navigator.clipboard.writeText(myEmail).then(() => {
+    // Show the "Copied!" message
+    toast.classList.add('show');
+    
+    // Hide it again after 2 seconds
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2000);
+  });
+});
+
