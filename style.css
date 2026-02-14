@@ -228,6 +228,7 @@ text {
   height: 100vh;
   max-width: 1400px;
   margin: 0 auto;
+  margin-top: 5vh;
   
 }
 
@@ -247,13 +248,14 @@ text {
 .project-description {
   font-size: 2.2rem;
   line-height: 1;
-  font-weight: 500;
+  font-weight:500;
   color: var(--text-color);
-  max-width: 450px;
+  max-width: 440px;
   margin: 0;
   padding: 0;
   margin-bottom: 2.8rem;
   margin-top: 1rem;
+  margin-left: .5rem;
 }
 
 /* The CTA Button */
