@@ -2,32 +2,39 @@
 
 /* 1. Lock the Body */
 body.case-study-body {
-    overflow: hidden; /* Prevents double scrollbars */
+    overflow: hidden;
     height: 100vh;
 }
 
-/* 2. Nav Bar Masking 
-   We add a background color so content "disappears" behind it.
-   We use backdrop-filter for a modern glass effect if desired, 
-   but solid background is safer for legibility. */
+/* 2. Nav Bar */
 .centered-nav.case-study-nav {
-    background-color: var(--bg-color); /* Matches theme (light/dark) */
-    width: 100%;
-    padding-top: 2rem; /* Maintain your existing top spacing */
-    padding-bottom: 1rem; /* Buffer space below links */
-    top: 0; /* Reset top to 0 to cover the very top edge */
-    left: 0;
-    transform: none; /* Reset the center transform */
-    display: flex;
-    justify-content: center;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 90px;
+    transform: none !important; 
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 3.8rem; 
+    background-color: var(--bg-color);
+    z-index: 1000;
+    padding-top: 2.8rem;
+    padding-bottom: 2rem;
+    box-sizing: border-box;
     transition: background-color 0.3s ease;
+}
+
+body.dark-mode .centered-nav.case-study-nav {
+    background-color: #111111;
 }
 
 /* 3. The Main Split Layout */
 .case-layout {
     display: flex;
     height: 100vh;
-    padding-top: 80px; /* Push content down so it starts below the Nav */
+    padding-top: 80px; 
     box-sizing: border-box;
     max-width: 1600px;
     margin: 0 auto;
@@ -36,133 +43,284 @@ body.case-study-body {
 
 /* 4. Left Sidebar (Fixed) */
 .case-sidebar {
-    width: 300px; /* Fixed width */
-    padding-bottom: 50px;
+    width: 330px; 
+    position: fixed;
+    height: calc(100vh - 90px); 
+    top: 90px; 
+    z-index: 50;
+    left: 0;
+    background-color: var(--bg-color);
     padding-left: 4%;
-    padding-right: 3%;
-    flex-shrink: 0; /* Never shrink */
+    padding-right: 0; 
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
-    position: relative;
+    justify-content: center; 
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
 }
 
 .case-sidebar::after {
     content: "";
     position: absolute;
-    right: 0; 
-    
-    /* CENTER THE LINE VERTICALLY */
-    top: 50%;
+    right: 0;
+    top: 50%; 
     transform: translateY(-50%);
-    
-    /* CONTROL THE HEIGHT HERE */
-    height: 85%; /* Change to 60% or 80% to make it shorter/taller */
-    
-    /* LINE STYLE */
-    width: 5px; /* Thickness */
-    background-color: var(--text-color); /* Color matches theme */
-    border-radius: 2px; /* Optional: rounds the tips of the line */
+    height: 78%; 
+    width: 5px;
+    background-color: var(--text-color);
+    border-radius: 3px;
+    transition: opacity 0.2s ease; 
 }
 
 .sidebar-logo img {
-    width: 300px;
+    width: 280px; /* Restored original size */
     height: auto;
+    margin-bottom: 1rem; /* Increased gap between logo and links */
+}
+
+/* Sidebar Toggle Arrow */
+.sidebar-toggle-btn {
+    position: absolute;
+    right: -1px; 
+    top: 55%; /* Shifted lower to stay centered on the line */
+    transform: translateY(-50%) rotate(0deg); 
+    width: 24px; 
+    height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+    padding: 0;
+    color: var(--text-color);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.sidebar-toggle-btn svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+  
+/* Collapsed Sidebar State */
+.case-sidebar.collapsed {
+    transform: translateX(-370px);
+}
+
+.case-sidebar.collapsed::after {
+    opacity: 0;
+}
+  
+.case-sidebar.collapsed .sidebar-toggle-btn {
+    right: -24px; 
+    transform: translateY(-50%) rotate(180deg);
 }
 
 /* Table of Contents */
 .case-toc {
-    list-style: none;
+    list-style: none !important;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: .8rem;
+    gap: .9rem;
     align-items: flex-start;
 }
 
 .toc-link {
     text-decoration: none;
     color: var(--text-color);
-    font-family: Helvetica, sans-serif;
-    font-size: 2.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 2.5rem; 
+    letter-spacing: -0.02em;
     font-weight: 400;
-    
-    /* Flex allows the arrow to push the text */
     display: flex; 
     align-items: center;
-    
-    /* Smooth transition for the text sliding */
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Active State Design */
 .toc-link.active {
-    font-weight: 700; /* Bold */
+    font-weight: 700;
 }
 
-/* The Arrow */
 .toc-link::before {
     content: '➜';
     display: inline-block;
     white-space: nowrap;
-    
-    /* INACTIVE STATE (Hidden) */
     opacity: 0;
-    max-width: 0;  /* Takes up 0 space, so text sits fully left */
+    max-width: 0;  
     margin-right: 0;
-    transform: translateX(-20px); /* Starts slightly off-screen to the left */
-    
-    /* ANIMATION SETTINGS */
+    transform: translateX(-20px); 
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    font-weight: 400; /* Keep arrow thin even if text is bold */
+    font-weight: 400; 
 }
 
-/* ACTIVE STATE (Visible) */
 .toc-link.active::before {
     opacity: 1;
-    max-width: 60px; /* Expands to make room, pushing the text right */
-    margin-right: 10px; /* Adds a little gap between arrow and text */
-    transform: translateX(0); /* Slides into place */
+    max-width: 60px; 
+    margin-right: 10px; 
+    transform: translateX(0); 
 }
 
 /* 5. Right Content (Scrollable) */
 .case-content {
-    flex: 1; /* Takes remaining width */
-    overflow-y: auto; /* Enables vertical scrolling inside this div */
-    padding-right: 5%;
-    padding-left: 5%;
+    height: calc(100vh - 80px); 
+    overflow-y: auto; 
+    margin-left: 360px; 
+    width: calc(100% - 330px);
+    padding: 0 5%; /* Restored fluid padding so grid fills screen */
+    box-sizing: border-box;
     scroll-behavior: smooth;
-    
-    /* Hide scrollbar for cleaner look (optional) */
-    scrollbar-width: none; /* Firefox */
-    scroll-padding-top: 50px;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .case-content::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none; 
+}
+
+/* Content Auto-Centering when Collapsed */
+.case-sidebar.collapsed + .case-content {
+    margin-left: 0; 
+    width: 100%;
+    padding: 0 10%; /* Extra padding when centered */
 }
 
 /* Section Styling */
 .case-section {
-    margin-bottom: 22vh; /* Space between sections */
-    min-height: 50vh; /* Ensure sections have height */
+    margin-bottom: 22vh; 
+    min-height: 50vh; 
     scroll-margin-top: 30px;
 }
 
-.mockup-grid img {
+/* --- GRID & SECTION WRAPPERS (Restored to Full Width) --- */
+.snapshot-container {
+    display: flex;
+    gap: 1rem; 
+    align-items: stretch; 
     width: 100%;
-    max-width: 900px;
-    height: auto;
+    padding-top: 3%;
 }
 
-/* Opportunity Section Grid */
+.phone-grid {
+    flex: 3; 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: auto auto; 
+    gap: .3rem; 
+    justify-items: center;
+}
+
+.phone-grid img {
+    width: 78%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); 
+}
+
+.snapshot-labels {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    padding-top: 2rem; 
+    padding-bottom: 2rem;
+}
+
+.snapshot-labels p {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
+    font-weight: 300;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.branding-block {
+    width: 100%;
+    max-width: 1000px; 
+    margin: 22vh auto 0 auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.branding-right {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem; 
+}
+
+.brand-row {
+    display: flex;
+    align-items: center; 
+    gap: 4rem; 
+    max-height: 180px;
+}
+
+.brand-icon {
+    width: 170px;  
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0; 
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
+}
+
+.brand-row p {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
+    font-weight: 300;
+    line-height: 1.3; 
+    margin: 0;
+    color: var(--text-color);
+    max-width: 520px; 
+}
+
+.project-specs {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    width: 100%;
+    max-width: 1000px; 
+    margin: 22vh auto 0 auto; 
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+}
+
+.spec-label, .spec-value {
+    font-size: 2.3rem;
+    color: var(--text-color);
+    text-align: center;
+    padding: 2.5rem 0;
+    background-image: linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: bottom;
+    background-size: 18px 3px; 
+    background-repeat: repeat-x;
+    border: none; 
+}
+
+.spec-label {
+    background-image: 
+        linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%),
+        linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: bottom, right;
+    background-size: 18px 3px, 3px 18px;
+    background-repeat: repeat-x, repeat-y;
+}
+
+.last-row {
+    background-image: none;
+}
+
+.spec-label.last-row {
+    background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: right;
+    background-size: 3px 18px;
+    background-repeat: repeat-y;
+}
+
 .opportunity-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr; /* Label on left, text on right */
+    grid-template-columns: 1fr 2fr; 
     gap: 4rem;
     align-items: baseline;
-    font-family: Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 300;
 }
 
@@ -178,248 +336,85 @@ body.case-study-body {
     line-height: 1.1;
     margin: 0;
     margin-bottom: 4rem;
-
 }
-
-/* Dark Mode Adjustments */
-body.dark-mode .centered-nav.case-study-nav {
-    background-color: #111111;
-}
-
-/* CONTAINER: Holds Grid + Text Side-by-Side */
-.snapshot-container {
-    display: flex;
-    gap: 1rem; /* Space between the phones and the text labels */
-    align-items: stretch; /* Ensures the text column is as tall as the phone grid */
-    width: 100%;
-    padding-top: 3%;
-}
-
-/* LEFT: The 3x2 Grid */
-.phone-grid {
-    flex: 3; /* Takes up roughly 75% of the width */
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 Equal Columns */
-    grid-template-rows: auto auto; /* 2 Rows that fit content */
-    gap: .3rem; /* Gap between phones */
-    justify-items: center;
-}
-
-.phone-grid img {
-    width: 78%;
-    height: auto;
-    display: block;
-    /* Optional: distinct shadow for phones */
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); 
-}
-
-/* RIGHT: The Text Labels */
-.snapshot-labels {
-    flex: 1; /* Takes up remaining space */
-    display: flex;
-    flex-direction: column;
-    
-    /* MAGICAL PART: Distributes text evenly (Top, Middle, Bottom) */
-    justify-content: space-between; 
-    
-    /* Add padding so text aligns visually with the "meat" of the phones, 
-       not the very top bezel edge if needed */
-    padding-top: 2rem; 
-    padding-bottom: 2rem;
-}
-
-.snapshot-labels p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Adjust based on preference */
-    font-weight: 300;
-    line-height: 1.2;
-    margin: 0;
-    color: var(--text-color);
-}
-
-/* --- BRANDING BLOCK STYLES (Inside Snapshot) --- */
-
-/* 1. The Main Container */
-.branding-block {
-    width: 100%;
-    max-width: 1000px; 
-    margin-top: 22vh; 
-}
-
-/* 2. The Wrapper for the Rows */
-.branding-right {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem; 
-    padding: 2rem 0;
-}
-
-/* 3. Individual Rows (Icon + Text) */
-.brand-row {
-    display: flex;
-    align-items: center; 
-    gap: 4rem; 
-    max-height: 180px;
-    max-width: 800px;
-}
-
-/* 4. The Icons */
-.brand-icon {
-    width: 170px;  
-    height: auto;
-    object-fit: contain;
-    flex-shrink: 0; 
-    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
-}
-
-/* 5. The Text */
-.brand-row p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; 
-    font-weight: 300;
-    line-height: 1.3; 
-    margin: 0;
-    color: var(--text-color);
-    max-width: 520px; 
-}
-
-/* PROJECT SPECS TABLE */
-.project-specs {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    width: 100%;
-    max-width: 1000px; 
-    margin: 22vh auto 0 auto; 
-    font-family: Helvetica, sans-serif;
-    font-weight: 300;
-}
-
-/* 1. Base style for all cells */
-.spec-label, .spec-value {
-    font-size: 2.3rem;
-    color: var(--text-color);
-    text-align: center;
-    padding: 2.5rem 0;
-    
-    /* HORIZONTAL DASHES (Bottom) */
-    /* 1. The Gradient: 40% dash, 60% transparent gap */
-    background-image: linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
-    /* 2. Position: At the bottom */
-    background-position: bottom;
-    /* 3. Size: 18px wide pattern (controls gap frequency) x 3px height (thickness) */
-    background-size: 18px 3px; 
-    background-repeat: repeat-x;
-    
-    /* Remove standard borders so they don't overlap */
-    border: none; 
-}
-
-/* 2. Left Column Specifics */
-.spec-label {
-    /* WE NEED TWO GRADIENTS HERE (Bottom + Right) */
-    background-image: 
-        /* Bottom Line */
-        linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%),
-        /* Vertical Line (Right) */
-        linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
-    
-    background-position: bottom, right;
-    
-    /* Size: Bottom is (18px wide x 3px thick), Right is (3px thick x 18px tall) */
-    background-size: 18px 3px, 3px 18px;
-    
-    background-repeat: repeat-x, repeat-y;
-}
-
-/* 3. Handling the Last Row (Remove Bottom Lines) */
-.last-row {
-    /* Remove the bottom horizontal line for both columns */
-    background-image: none;
-}
-
-/* But add the vertical line back for just the bottom-left label */
-.spec-label.last-row {
-    background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
-    background-position: right;
-    background-size: 3px 18px;
-    background-repeat: repeat-y;
-}
-
-/* DEMOGRAPHIC SECTION STYLES */
 
 .demographic-container {
     display: flex;
     flex-direction: row;
-    align-items: center; /* Vertically centers the text with the image */
+    align-items: center; 
     justify-content: space-between;
-    gap: 1rem; /* Adjust space between text and avatar */
+    gap: 1rem; 
     width: 100%;
 }
 
 .demo-text {
-    flex: 3; /* Takes up about 60-70% of the space */
-    max-width: 700px; /* Prevents lines from getting unreadably long */
+    flex: 3; 
+    max-width: 700px; 
 }
 
 .demo-text p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Matches your Opportunity section font size */
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
     font-weight: 300;
     line-height: 1.1;
-    margin-bottom: 2.5rem; /* Space between paragraphs */
+    margin-bottom: 2.5rem; 
     color: var(--text-color);
     margin-top: 0px;
 }
 
 .demo-image {
-    flex: 2; /* Takes up the remaining space */
+    flex: 2; 
     display: flex;
-    justify-content: center; /* Centers image in its column */
+    justify-content: center; 
     align-items: center;
 }
 
 .demo-image img {
     width: 100%;
-    max-width: 250px; /* Controls the size of the avatar */
+    max-width: 250px; 
     height: auto;
     display: block;
-    /* Optional: Adds a slight drop shadow like your other images */
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
 }
 
-/* UX FLOW SECTION STYLES */
+/* --- UPDATED UX FLOW SECTION (PERFECT CENTERING) --- */
 
 .uxflow-container {
     width: 100%;
+    /* Constrains the readable area to match your other sections */
+    max-width: 1100px; 
+    /* Centers the entire container within the scrollable content area */
+    margin: 0 auto; 
     display: flex;
     flex-direction: column;
+    /* Forces all children (text, grids, iterations) to the vertical center */
+    align-items: center; 
 }
 
-/* Reusing your standard paragraph styling */
 .ux-text p {
-    font-family: Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2.3rem;
     font-weight: 300;
     line-height: 1.1;
     color: var(--text-color);
-    max-width: 800px; /* Prevents text from stretching too wide on huge screens */
     margin-bottom: 2rem;
+    /* Centers the box, but keeps the writing left-to-right */
+    max-width: 850px; 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    padding-left: 5rem;
 }
 
-/* The Grid for the 3 Sketches */
 .ux-wireframes {
     display: grid;
-    /* CHANGE 1: Use 'start' or 'left' instead of 'center' so it aligns with your text */
-    justify-content: start; 
-    
-    /* CHANGE 2: Define columns so they don't stretch weirdly */
+    /* Balances the 3-column grid in the center of the container */
+    justify-content: center; 
     grid-template-columns: repeat(3, auto);
-    
-    gap: 2rem; /* A little breathing room between phones */
+    gap: 3rem; /* Increased gap slightly for better visual breathing room */
     width: 100%;
     align-items: start;
 }
-
 
 .wireframe-item {
     display: flex;
@@ -430,53 +425,63 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .wireframe-item img {
-    height: 50vh; 
+    /* Scaled for impact; ensures they look consistent with high-fi mockups */
+    height: 52vh; 
     width: auto;
     border-radius: 25px;
-    aspect-ratio: 10 / 18; 
-    object-fit: cover; 
-    object-position: top; 
     display: block;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.12));
 }
 
 .wireframe-item h3 {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Matches the size of your Snapshot labels */
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
     font-weight: 300;
     color: var(--text-color);
     margin: 0;
 }
 
-/* --- UX ITERATIONS (Text below wireframes) --- */
+/* --- ITERATIONS & STEPS (AUTO-CENTERED WRAPPERS) --- */
 
 .ux-iterations {
-    margin-top: 22vh; /* Adds deep scroll space between wireframes and this text */
+    margin-top: 22vh;
     display: flex;
     flex-direction: column;
-    gap: 6rem; /* Space between the rows */
+    gap: 6rem; 
     width: 100%;
     max-width: 1100px;
+    /* Ensures the list of iterations stays centered */
+    margin-left: auto;
+    margin-right: auto;
 }
+
 
 .iteration-row {
     display: grid;
-    /* Grid: Label takes auto width, Content takes the rest */
-    grid-template-columns: 200px 1fr;
+    /* Widened the label column slightly to prevent crowding */
+    grid-template-columns: 220px 1fr;
     gap: 4rem;
-    align-items: center; /* Vertically center the label with the text block */
+    align-items: center; 
 }
 
-/* The "Idea #1 X" grouping */
 .iter-label {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 1.5rem;
-    font-family: Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2.3rem;
     font-weight: 300;
     color: var(--text-color);
+}
+
+.iter-desc p {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text-color);
+    margin: 0;
 }
 
 .status-icon {
@@ -485,54 +490,30 @@ body.dark-mode .centered-nav.case-study-nav {
     display: block;
 }
 
-/* The Paragraph text */
-.iter-desc p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem;
-    font-weight: 300;
-    line-height: 1.2;
-    color: var(--text-color);
-    margin: 0;
-}
-
-/* --- UX FLOW STEPS (High-Fidelity) --- */
-
 .flow-step-container {
-    margin-top: 22vh;
+    margin: 22vh auto 0 auto;
     width: 100%;
-    max-width: 1200px;
-    
-    /* GRID LAYOUT */
+    max-width: 1100px;
     display: grid;
-    /* Columns: Auto (fits phone width) | 1fr (remaining space for text) */
     grid-template-columns: auto 1fr;
-    /* Rows: Auto (Image+Text) | Auto (Label) */
     grid-template-rows: auto auto;
-    
-    column-gap: 3rem; /* Horizontal space */
-    row-gap: 1rem;    /* Vertical space between phone and label */
-    align-items: center; /* Vertically centers the text against the image */
+    column-gap: 3rem; 
+    row-gap: 1rem;    
+    align-items: center; 
 }
 
-/* 1. The Phone Image */
+/* Standard Phone & Text styles remain consistent */
 .flow-phone-img {
-    grid-column: 1; /* First column */
-    grid-row: 1;    /* First row */
-    
-    height: 70vh;
+    grid-column: 1; 
+    grid-row: 1;    
+    height: 72vh;
     width: auto;
     display: block;
     filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15));
 }
 
-/* 2. The Right Column Text */
-.flow-text-wrapper {
-    grid-column: 2; /* Second column */
-    grid-row: 1;    /* First row (aligned with image) */
-}
-
 .flow-text-wrapper p {
-    font-family: Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2.3rem;
     font-weight: 300;
     line-height: 1.2;
@@ -541,117 +522,92 @@ body.dark-mode .centered-nav.case-study-nav {
     max-width: 700px;
 }
 
-/* 3. The Label under the phone */
 .flow-label {
-    grid-column: 1; /* Stay in first column (under phone) */
-    grid-row: 2;    /* Move to second row */
-    
-    font-family: Helvetica, sans-serif;
+    grid-column: 1; 
+    grid-row: 2;    
+    font-family: 'Inter', sans-serif;
     font-size: 2.5rem;
     font-weight: 300;
     color: var(--text-color);
     margin: 0;
-    text-align: center; /* Centers the text relative to the phone's width */
+    text-align: center; 
 }
 
-/* UX PHILOSOPHY SLIDE (Simple is Better) */
 .ux-philosophy {
-    /* Large height to make it feel like a standalone 'slide' */
     min-height: 80vh; 
-    
-    /* Flexbox to center content perfectly */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    
-    /* Spacing between the two lines */
     gap: 4rem; 
-    
-    /* Ensure it clears previous elements */
     margin-top: 22vh;
     margin-bottom: 22vh;
 }
 
 .ux-philosophy p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Matches your standard text size */
-    font-weight: 300;  /* Light weight */
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
+    font-weight: 300;  
     color: var(--text-color);
     line-height: 1.2;
     margin: 0;
-    max-width: 400px; /* Constrains line width for better readability */
+    max-width: 400px; 
 }
 
-/* === UI CHOICES SECTION STYLES === */
-
-/* Main container to manage width and centering of the whole section content */
 .ui-choices-container {
     width: 100%;
-    max-width: 870px; /* Ensures content doesn't get too wide on large screens */
-    margin: 0 auto;   /* Centers horizontally */
-    padding-top: 5vh; /* Spacing from the top of the section container */
+    max-width: 870px; 
+    margin: 0 auto;   
+    padding-top: 5vh; 
     display: flex;
     flex-direction: column;
-    gap: 3.5rem; /* Vertical spacing between the color grid and the text below it */
+    gap: 3.5rem; 
 }
 
-/* The grid holding the 3 color blocks (Vertical Thirds) */
 .color-palette-grid {
     display: grid;
-    /* Creates 3 equal columns */
     grid-template-columns: repeat(3, 1fr); 
-    gap: 3rem; /* Space between the columns */
+    gap: 3rem; 
     width: 100%;
     align-items: start;
 }
 
-/* Individual item containing the swatch and label */
 .color-item {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers label under swatch */
-    gap: 1.5rem; /* Space between swatch and hex code label */
+    align-items: center; 
+    gap: 1.5rem; 
 }
 
-/* The native CSS color square */
 .color-swatch {
-    width: 100%; /* Fills the column width */
-    aspect-ratio: 1 / 1; /* Ensures it remains a perfect square */
-    /* The specific 2px black stroke requested */
+    width: 100%; 
+    aspect-ratio: 1 / 1; 
     border: 2px solid #000000; 
-    /* Optional drop shadow to match your other site elements */
     box-shadow: 0 10px 10px rgba(0,0,0,0.1);
 }
 
-/* The Hex Code Label underneath */
 .color-label {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Standard site font size */
-    font-weight: 300;  /* Helvetica Light */
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
+    font-weight: 300;  
     color: var(--text-color);
     margin: 0;
     text-align: center;
 }
 
-/* The paragraph text block below the colors */
 .ui-text-block p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Standard site font size */
-    font-weight: 300;  /* Helvetica Light */
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
+    font-weight: 300;  
     line-height: 1.2;
     color: var(--text-color);
     margin: 0;
-    /* Because this is inside .ui-choices-container, 
-       it will naturally align with the width of the grid above. */
 }
-
-/* --- FOOD ILLUSTRATION GRID --- */
 
 .food-grid-section {
     width: 100%;
-    margin-top: 22vh; /* Spacing from the color palette above */
+    margin-top: 22vh; 
     display: flex;
     flex-direction: column;
     gap: 4rem;
@@ -661,7 +617,6 @@ body.dark-mode .centered-nav.case-study-nav {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     width: 100%;
-    /* Ensure the grid lines up nicely */
     border-collapse: collapse; 
 }
 
@@ -669,51 +624,35 @@ body.dark-mode .centered-nav.case-study-nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem; /* Space around the images inside the cells */
+    padding: 1rem; 
     position: relative;
 }
 
 .food-item img {
     width: 100%;
-    max-width: 200px; /* Controls icon size */
+    max-width: 200px; 
     height: auto;
     display: block;
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
 }
 
-/* DASHED BORDER LOGIC 
-   We use background-image gradients to create the custom dashed lines 
-   matching the .project-specs style exactly.
-*/
-
-/* 1. VERTICAL DASHES (Right Side) */
-/* Apply to everyone EXCEPT the last column (3rd, 6th, etc) */
 .food-item:not(:nth-child(3n)) {
     background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
     background-position: right;
-    background-size: 3px 18px; /* 3px thick, 18px tall pattern */
+    background-size: 3px 18px; 
     background-repeat: repeat-y;
 }
 
-/* 2. HORIZONTAL DASHES (Bottom Side) */
-
-/* RE-DEFINING SPECIFIC CELLS TO HANDLE OVERLAPPING BORDERS */
-
-/* Items 1 & 2: Need BOTTOM and RIGHT */
 .food-item:nth-child(1),
 .food-item:nth-child(2) {
     background-image: 
-        /* Right Line */
         linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%),
-        /* Bottom Line */
         linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
-    
     background-position: right, bottom;
-    background-size: 3px 18px, 18px 3px; /* Vertical size, Horizontal size */
+    background-size: 3px 18px, 18px 3px; 
     background-repeat: repeat-y, repeat-x;
 }
 
-/* Item 3: Needs BOTTOM only (No Right) */
 .food-item:nth-child(3) {
     background-image: linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
     background-position: bottom;
@@ -721,8 +660,6 @@ body.dark-mode .centered-nav.case-study-nav {
     background-repeat: repeat-x;
 }
 
-/* Items 4 & 5: Need RIGHT only (No Bottom) - Handled by the :not(:nth-child(3n)) rule above? 
-   Actually, we need to be explicit to avoid the cascade overwriting things. */
 .food-item:nth-child(4),
 .food-item:nth-child(5) {
     background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
@@ -731,11 +668,8 @@ body.dark-mode .centered-nav.case-study-nav {
     background-repeat: repeat-y;
 }
 
-/* Item 6: Needs NONE. Default is none, so we are good. */
-
-/* TEXT BELOW GRID */
 .food-grid-text p {
-    font-family: Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2.3rem;
     font-weight: 300;
     line-height: 1.25;
@@ -743,29 +677,30 @@ body.dark-mode .centered-nav.case-study-nav {
     margin: 0;
 }
 
-/* REFLECTION SECTION */
-
 .reflection-container {
     width: 100%;
-    max-width: 800px; /* Limits line length for readability */
+    max-width: 1100px; 
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 3rem; /* Space between the paragraphs */
+    align-items: center; 
+    gap: 3rem; 
 }
 
 .reflection-container p {
-    font-family: Helvetica, sans-serif;
-    font-size: 2.3rem; /* Matches your standard body size */
+    font-family: 'Inter', sans-serif;
+    font-size: 2.3rem; 
     font-weight: 300;
-    line-height: 1.25;
+    line-height: 1.3; /* Increased slightly for a "Reflection" feel */
     color: var(--text-color);
-    margin: 0;
+    max-width: 850px; 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left; 
 }
 
-/* --- MOBILE RESPONSIVENESS (Add to bottom of pantry.css) --- */
-
+/* --- MOBILE RESPONSIVENESS --- */
 @media screen and (max-width: 1024px) {
-    /* 1. Remove Blocker & Unlock Scroll */
     #mobileNotice { display: none !important; }
     
     body.case-study-body { 
@@ -773,32 +708,28 @@ body.dark-mode .centered-nav.case-study-nav {
         height: auto; 
     }
 
-    /* 2. Reset Layout to Single Column */
     .case-layout {
         flex-direction: column;
-        padding-top: 60px; /* Space for nav */
+        padding-top: 60px; 
         height: auto;
     }
 
-/* 3. Sidebar (Now a header block) */
     .case-sidebar {
         width: 100%;
         height: auto;
-        padding: 0; /* Remove padding since logo is gone */
+        padding: 0; 
         position: relative;
-        border: none; /* Remove border if you want a cleaner look */
+        border: none; 
     }
 
-    /* THIS HIDES THE LOGO */
-    .sidebar-logo {
-        display: none !important;
-    }
-
+    .sidebar-logo { display: none !important; }
     .case-sidebar::after { display: none; }
     .case-toc { display: none; }
+    .sidebar-toggle-btn { display: none; }
 
-    /* 4. Content Area */
     .case-content {
+        margin-left: 0;
+        width: 100%;
         padding: 2rem 1.5rem;
         overflow: visible;
     }
@@ -808,20 +739,10 @@ body.dark-mode .centered-nav.case-study-nav {
         min-height: auto;
     }
 
-    /* 5. Typography Scaling (Crucial for Mobile) */
-    .snapshot-labels p, 
-    .brand-row p, 
-    .opp-column p, 
-    .demo-text p, 
-    .ux-text p,
-    .iter-desc p,
-    .flow-text-wrapper p,
-    .ux-philosophy p,
-    .ui-text-block p,
-    .color-label,
-    .food-grid-text p,
-    .reflection-container p {
-        font-size: 1.15rem !important; /* Scale down from 2.3rem */
+    .snapshot-labels p, .brand-row p, .opp-column p, .demo-text p, .ux-text p,
+    .iter-desc p, .flow-text-wrapper p, .ux-philosophy p, .ui-text-block p,
+    .color-label, .food-grid-text p, .reflection-container p {
+        font-size: 1.15rem !important; 
         line-height: 1.5;
     }
 
@@ -834,80 +755,75 @@ body.dark-mode .centered-nav.case-study-nav {
         font-size: 1.75rem !important;
     }
 
-    /* 6. Snapshot Section */
     .snapshot-container {
         flex-direction: column-reverse;
         gap: 2rem;
     }
+    
     .snapshot-labels {
         flex-direction: row;
         text-align: center;
         padding: 0;
     }
-    .phone-grid {
-        gap: 0.2rem;
-    }
+    
+    .phone-grid { gap: 0.2rem; }
 
-    /* Branding Block */
     .brand-row {
         flex-direction: column;
         text-align: center;
         gap: 1.5rem;
         max-height: none;
     }
+    
     .brand-icon { width: 100px; }
 
-    /* Project Specs Table */
     .project-specs {
-        grid-template-columns: 1fr; /* Stack label and value */
+        grid-template-columns: 1fr; 
         margin-top: 4rem;
     }
+    
     .spec-label {
-        background: none; /* Remove gradients */
+        background: none; 
         font-weight: 700;
         padding-bottom: 0;
         text-align: left;
     }
+    
     .spec-value {
-        background: none; /* Remove gradients */
+        background: none; 
         border-bottom: 1px solid var(--text-color);
         padding-top: 0.5rem;
         text-align: left;
     }
 
-    /* Opportunity Grid */
     .opportunity-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
     
-    /* Demographic */
     .demographic-container {
         flex-direction: column-reverse;
         text-align: center;
     }
 
-    /* Wireframes */
     .ux-wireframes {
         grid-template-columns: 1fr;
         justify-items: center;
     }
+    
     .wireframe-item img {
         height: auto;
         width: 100%;
         max-width: 400px;
     }
 
-    /* Iterations */
-    .ux-iterations {
-        gap: 3rem;
-    }
+    .ux-iterations { gap: 3rem; }
+    
     .iteration-row {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
     
-    /* Flow Steps */
     .flow-step-container {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
@@ -915,6 +831,7 @@ body.dark-mode .centered-nav.case-study-nav {
         text-align: center;
         justify-items: center;
     }
+    
     .flow-phone-img {
         grid-column: 1;
         grid-row: 1;
@@ -922,38 +839,39 @@ body.dark-mode .centered-nav.case-study-nav {
         width: 100%;
         max-width: 300px;
     }
+    
     .flow-text-wrapper {
         grid-column: 1;
         grid-row: 2;
     }
+    
     .flow-label {
         grid-column: 1;
         grid-row: 3;
         font-size: 1.5rem;
     }
 
-    /* UI Choices */
     .color-palette-grid {
-        grid-template-columns: 1fr; /* Stack colors */
+        grid-template-columns: 1fr; 
         gap: 2rem;
     }
+    
     .color-item {
         flex-direction: row;
         justify-content: start;
     }
-    .color-swatch {
-        width: 80px;
-    }
+    
+    .color-swatch { width: 80px; }
 
-    /* Food Grid */
     .food-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns instead of 3 */
+        grid-template-columns: repeat(2, 1fr); 
     }
-    /* Disable complex borders for mobile to avoid glitches */
+    
     .food-item, .food-item:nth-child(n) {
         background-image: none !important;
         border: 1px solid rgba(0,0,0,0.1);
     }
+    
     body.dark-mode .food-item {
         border-color: rgba(255,255,255,0.2);
     }

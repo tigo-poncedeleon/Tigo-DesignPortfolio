@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tigo Ponce de León - Work</title>
   <link rel="icon" type="image/png" href="Media/blackcircle.png" />
+  
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="work.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -15,29 +18,77 @@
     <a href="about.html" class="nav-link">about</a>
   </nav>
 
-<main class="work-container">
-  <div class="work-content">
-    <div class="project-logo">
-      <img src="Media/2_logo.png" alt="Pantry Pal Logo" />
-    </div>
+  <div class="work-page-wrapper">
+  
+    <aside class="side-nav" id="sideNav">
+      <a href="#product" class="nav-pill active" data-section="product">Product</a>
+      <a href="#branding" class="nav-pill" data-section="branding">Branding</a>
+      <a href="#research" class="nav-pill" data-section="research">Research</a>
+      <a href="#interactive" class="nav-pill" data-section="interactive">Interactive</a>
+    </aside>
+  
+    <main class="projects-scroll-container">
+      
+      <section id="product" class="work-container">
+        <div class="work-content">
+          <div class="project-logo">
+            <img src="Media/2_logo.png" alt="Pantry Pal Logo" />
+          </div>
+          <p class="project-description">
+            An AI-powered recipe<br>
+            app that transforms<br>
+            ingredients you already<br>
+            have into thoughtfully<br>
+            personalized meals.
+          </p>
+          <a href="pantry-pal.html" class="explore-button">
+           Case Study
+          <img src="Media/2_arrow.png" alt="arrow" class="button-arrow" />
+          </a>
+        </div>
     
-    <p class="project-description">
-      An AI-powered recipe app that transforms ingredients you already have into thoughtfully personalized meals.
-    </p>
+        <div class="work-mockup">
+          <a href="pantry-pal.html">
+            <img src="Media/2_recipe_mockup.png" alt="Pantry Pal App Mockup" />
+          </a>
+        </div>
 
-    <a href="pantry-pal.html" class="explore-button">
-     Case Study
-    <img src="Media/2_arrow.png" alt="arrow" class="button-arrow" />
-    </a>
+        <div class="date-tag">January 2026</div>
+      </section>
+
+      <section id="branding" class="work-container drone-layout">
+        <div class="drone-left">
+          <img src="Drone-Media/DroneLogo.png" alt="Next Level Drone Cleaning Logo" class="drone-logo" />
+          <p class="drone-location">
+            based in<br>
+            Kortrijk, Belgium
+          </p>
+        </div>
+        
+        <div class="drone-right">
+          <p class="drone-description">
+            Led the creative direction for<br>
+            <em>Next Level Drone Cleaning.</em>
+          </p>
+          <p class="drone-link">
+            See the website:<br>
+            <a href="https://nextleveldronecleaning.be" target="_blank">nextleveldronecleaning.be</a>
+          </p>
+          <a href="drone.html" class="drone-case-study-btn">
+            <svg class="left-arrow-icon" width="60" height="20" viewBox="0 0 60 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 10L60 10" stroke="black" stroke-width="3" stroke-linecap="round"/>
+              <path d="M12 2L2 10L12 18" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Case Study
+          </a>
+        </div>
+
+        <div class="date-tag right-align">August 2025</div>
+      </section>
+
+      </main>
   </div>
-
-  <div class="work-mockup">
-    <a href="pantry-pal.html">
-      <img src="Media/2_recipe_mockup.png" alt="Pantry Pal App Mockup" />
-    </a>
-  </div>
-</main>
-
+  
 <script src="work.js"></script>
 </body>
 </html>

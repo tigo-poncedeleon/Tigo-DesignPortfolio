@@ -1,0 +1,781 @@
+/* =========================================
+   DRONE CLEANING CASE STUDY STYLES
+   ========================================= */
+
+/* 1. Lock the Body */
+body.case-study-body {
+    overflow: hidden;
+    height: 100vh
+}
+
+/* 2. Nav Bar */
+.centered-nav.case-study-nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 90px;
+    transform: none !important; 
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 3.8rem; 
+    background-color: var(--bg-color);
+    z-index: 1000;
+    padding-top: 2.8rem;
+    padding-bottom: 2rem;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .centered-nav.case-study-nav {
+    background-color: #111111;
+}
+
+/* 3. The Main Split Layout */
+.case-layout {
+    display: flex;
+    height: 100vh;
+    padding-top: 80px; 
+    box-sizing: border-box;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* 4. Left Sidebar (Fixed) */
+.case-sidebar {
+    width: 330px; 
+    position: fixed;
+    height: 100vh;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    background-color: var(--bg-color);
+    padding-left: 4%;
+    padding-right: 0; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+
+/* Sidebar Solid Divider Line */
+.case-sidebar::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 55%; 
+    transform: translateY(-50%);
+    height: 80%; 
+    width: 4px;
+    background-color: var(--text-color);
+    border-radius: 2px;
+    transition: opacity 0.2s ease; 
+}
+
+.sidebar-logo img {
+    width: 250px; 
+    height: auto;
+    margin-bottom: 4rem; 
+}
+
+/* Sidebar Toggle Arrow */
+.sidebar-toggle-btn {
+    position: absolute;
+    right: -1px; 
+    top: 55%; 
+    transform: translateY(-50%) rotate(0deg); 
+    width: 24px; 
+    height: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+    padding: 0;
+    color: var(--text-color);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.sidebar-toggle-btn svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+  
+.case-sidebar.collapsed {
+    transform: translateX(-370px);
+}
+
+.case-sidebar.collapsed::after {
+    opacity: 0;
+}
+  
+.case-sidebar.collapsed .sidebar-toggle-btn {
+    right: -24px; 
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Table of Contents */
+.case-toc {
+    list-style: none !important;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.toc-link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 2.8rem; 
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    display: flex; 
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.toc-link.active {
+    font-weight: 700;
+}
+
+/* TOC Arrow */
+.toc-link::before {
+    content: '→';
+    display: inline-block;
+    white-space: nowrap;
+    opacity: 0;
+    max-width: 0;  
+    margin-right: 0;
+    transform: translateX(-20px); 
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    font-weight: 700; 
+}
+
+.toc-link.active::before {
+    opacity: 1;
+    max-width: 60px; 
+    margin-right: 15px; 
+    transform: translateX(0); 
+}
+
+/* 5. Right Content (Scrollable) */
+.case-content {
+    height: calc(100vh - 80px); 
+    overflow-y: auto; 
+    overflow-x: hidden;
+    margin-left: 360px; 
+    width: calc(100% - 330px);
+    padding: 0 5%; 
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.case-content::-webkit-scrollbar {
+    display: none; 
+}
+
+.case-sidebar.collapsed + .case-content {
+    margin-left: 0; 
+    width: 100%;
+    padding: 0 10%; 
+}
+
+.case-section {
+    margin-bottom: 22vh; 
+    min-height: 50vh; 
+    scroll-margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --- DRONE STORY TABLE GRID --- */
+
+.drone-specs-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 5vh;
+}
+
+.drone-specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    width: 100%;
+    max-width: 1000px; 
+    margin: 0 auto; 
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+}
+
+.spec-label, .spec-value {
+    font-size: 2.3rem;
+    color: var(--text-color);
+    text-align: center;
+    padding: 2.5rem 0;
+    
+    background-image: linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: bottom;
+    background-size: 18px 3px; 
+    background-repeat: repeat-x;
+    border: none; 
+}
+
+.spec-label {
+    background-image: 
+        linear-gradient(to right, var(--text-color) 40%, rgba(255,255,255,0) 0%),
+        linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: bottom, right;
+    background-size: 18px 3px, 3px 18px;
+    background-repeat: repeat-x, repeat-y;
+}
+
+.last-row {
+    background-image: none;
+}
+
+.spec-label.last-row {
+    background-image: linear-gradient(to bottom, var(--text-color) 40%, rgba(255,255,255,0) 0%);
+    background-position: right;
+    background-size: 3px 18px;
+    background-repeat: repeat-y;
+}
+
+/* --- STORY NARRATIVE BLOCK --- */
+
+.story-narrative-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    width: 100%;
+    max-width: 1000px; 
+    margin: 22vh auto 0 auto; 
+    align-items: center; 
+}
+
+.story-image-col {
+    position: relative; /* Added to anchor the absolute caption */
+}
+
+.story-image-col img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px; 
+    display: block;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15));
+}
+
+.story-image-col img.no-css-frame {
+    border-radius: 0;
+    filter: none;
+    width: 120%; 
+    max-width: none; 
+    margin-left: -10%; 
+}
+
+.story-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--text-color);
+    margin-top: 1.2rem;
+    line-height: 1.3;
+    
+    /* Pulled out of flow to prevent altering column height */
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    width: 100%;
+}
+
+.story-text-col p {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--text-color);
+}
+
+.story-text-col.push-down {
+    margin-top: 2rem; /* Tweak this number to move it up or down */
+}
+
+/* Placeholder Section Styles */
+.placeholder-section {
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    align-items: center;
+}
+
+.placeholder-section h2 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.placeholder-section p {
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+/* --- IDEATION SECTION --- */
+
+.ideation-intro-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+    width: 100%;
+    max-width: 1000px; 
+    margin: 0 auto;
+}
+
+.ideation-intro-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.ideation-inspiration-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr; 
+    gap: 4rem;
+    align-items: start; /* Resetting this so the images align cleanly at the top */
+}
+
+.inspiration-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the contents horizontally */
+    position: relative; 
+}
+
+.inspiration-col img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* This forces the image to perfectly center itself */
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15));
+}
+
+.inspiration-col img.rounded-img {
+    border-radius: 10px;
+    max-width: 1300px;
+}
+
+.inspiration-col img.sharp-img {
+    border-radius: 0;
+    max-width: 270px; 
+}
+
+/* Local override for the captions in this specific grid */
+.inspiration-col .story-caption {
+    position: static; /* Pulls the text back into the normal flow */
+    text-align: center; /* Centers the actual text */
+    width: 100%;
+}
+
+/* --- HORIZONTAL CAROUSEL --- */
+
+.horizontal-scroll-wrapper {
+    position: relative;
+    height: 800vh; 
+    margin-top: 15vh;
+    margin-left: -5.6%; /* Pulls it tight to the black line */
+    margin-right: -7%; /* Slightly over-extends right to kill the white gap */
+}
+
+.ideation-carousel {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 80px); /* Sticks perfectly in the center of the view */
+    display: flex;
+    align-items: center;
+    overflow: hidden; 
+    width: 100%;
+}
+
+.carousel-slide {
+    flex: 0 0 100%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Question Slides */
+.q-slide-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4rem; 
+    max-width: 800px;
+    width: 100%;
+}
+
+.q-num {
+    font-size: clamp(6rem, 10vh, 10rem); /* Scales smoothly based on screen height */
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 0.9; 
+    margin: 0;
+    padding-top: 0.5rem; 
+}
+
+.q-title {
+    font-size: clamp(3.5rem, 6vh, 6.5rem); /* Prevents vertical overflow by scaling with height */
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.1;
+    margin: 0;
+    padding-top: 0; 
+}
+
+/* Answer Slides */
+.a-slide-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-end; 
+    justify-content: center;
+    max-width: 1250px;
+    width: 100%;
+    height: 100%; 
+}
+
+.layout-a .bubble-container { order: 1; }
+.layout-a .person-container { order: 2; }
+
+.layout-b .person-container { order: 1; }
+.layout-b .bubble-container { order: 2; }
+
+.person-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; 
+    align-items: center; 
+    margin-bottom: 0; 
+    height: 100%;
+}
+
+.person-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.person-img {
+    height: 80vh; 
+    max-height: 850px; 
+    width: auto;
+    object-fit: contain;
+    object-position: bottom; 
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.1));
+}
+
+.bubble-container {
+    position: relative;
+    width: 100%;
+    max-width: 550px; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    margin-bottom: 8vh;
+}
+
+.bubble-bg {
+    width: 100%;
+    height: auto; 
+    display: block;
+    z-index: 0; 
+}
+
+.bubble-text {
+    position: absolute; 
+    z-index: 1; 
+    font-family: 'Inter', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 300;
+    line-height: 1.15;
+    color: #000000; 
+    margin: 0;
+    padding: 0; 
+    width: 75%; 
+    text-align: left;
+}
+
+.layout-a .bubble-text { left: 8%; }
+.layout-b .bubble-text { right: 8%; }
+
+/* --- WORK SECTION (VERTICAL SCROLL RETURN) --- */
+
+#work {
+    margin-top: 15vh; /* Natural transition spacing after the horizontal slider */
+}
+
+.work-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 20vh auto; /* Generous spacing between iterations */
+}
+
+.work-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.25;
+    color: var(--text-color);
+    margin: 0 0 6rem 0; /* Space between text and images */
+}
+
+.work-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6rem;
+    width: 100%;
+}
+
+.img-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex: 1; 
+}
+
+/* Consistent frame for ideation logo variations within the Work section */
+#work .img-wrapper {
+    width: 360px;
+    height: 360px;
+}
+
+#work .img-wrapper .work-img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.work-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Constrains the 3 words box to fit the container cleanly */
+.work-img.main-img {
+    width: 100%;
+    max-width: 900px; 
+}
+
+.idea-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media screen and (max-width: 1024px) {
+    #mobileNotice { display: none !important; }
+    
+    body.case-study-body { 
+        overflow-y: auto; 
+        height: auto; 
+    }
+
+    .case-layout {
+        flex-direction: column;
+        padding-top: 60px; 
+        height: auto;
+    }
+
+    .case-sidebar {
+        width: 100%;
+        height: auto;
+        padding: 0; 
+        position: relative;
+        border: none; 
+    }
+
+    .sidebar-logo { display: none !important; }
+    .case-sidebar::after { display: none; }
+    .case-toc { display: none; }
+    .sidebar-toggle-btn { display: none; }
+
+    .case-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 2rem 1.5rem;
+        overflow: visible;
+    }
+
+    .case-section {
+        margin-bottom: 10vh;
+        min-height: auto;
+        padding: 2rem 0;
+    }
+
+    .drone-specs-grid {
+        grid-template-columns: 1fr; 
+        margin-top: 2rem;
+    }
+    
+    .spec-label {
+        background-image: none !important;
+        font-weight: 700;
+        padding-bottom: 0.5rem;
+        text-align: center;
+        font-size: 1.8rem;
+    }
+    
+    .spec-value {
+        background-image: none !important;
+        border-bottom: 1px solid var(--text-color); 
+        padding-top: 0.5rem;
+        padding-bottom: 2rem;
+        text-align: center;
+        font-size: 1.5rem;
+    }
+
+    .spec-value.last-row { border-bottom: none; }
+
+    .story-narrative-container {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        margin-top: 10vh;
+    }
+
+    /* Reset absolute positioning on mobile since elements are stacked */
+    .story-caption {
+        position: static;
+    }
+
+    .story-text-col p {
+        font-size: 1.5rem; 
+        line-height: 1.4;
+    }
+
+    .ideation-intro-container { gap: 3rem; }
+    .ideation-intro-text {
+        font-size: 1.5rem; 
+        line-height: 1.4;
+    }
+
+    .ideation-inspiration-grid {
+        grid-template-columns: 1fr; 
+        gap: 3rem;
+        justify-items: center; 
+    }
+
+    .inspiration-col {
+        align-items: center;
+        text-align: center;
+    }
+
+    .horizontal-scroll-wrapper {
+        height: auto; 
+        margin-top: 10vh;
+        margin-left: -1.5rem; 
+        margin-right: -1.5rem;
+    }
+
+    .ideation-carousel {
+        position: relative;
+        height: auto;
+        overflow: visible;
+        display: block; 
+    }
+
+    .q-slide-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+        margin-bottom: 4rem;
+        margin-top: 4rem;
+    }
+
+    .q-num { font-size: 6rem; }
+    .q-title {
+        font-size: 3.5rem;
+        padding-top: 0;
+    }
+
+    .a-slide-content {
+        flex-direction: column; 
+        text-align: center;
+        gap: 2rem;
+        margin-bottom: 5rem;
+    }
+
+    .layout-a .person-container, .layout-b .person-container { order: 1; align-items: center; }
+    .layout-a .bubble-container, .layout-b .bubble-container { order: 2; }
+
+    .person-img { height: 35vh; }
+
+    .bubble-container {
+        width: 100%;
+        max-width: 450px;
+        min-height: auto;
+    }
+
+    .bubble-text {
+        font-size: 1.5rem;
+        left: auto !important; 
+        right: auto !important;
+        width: 80%;
+    }
+    
+    /* Mobile Overrides for Work Section */
+    #work {
+        margin-top: 5vh;
+    }
+
+    .work-item {
+        margin-bottom: 12vh;
+    }
+
+    .work-text {
+        font-size: 1.5rem; 
+        line-height: 1.4;
+        margin-bottom: 3rem;
+        text-align: left;
+    }
+
+    .work-image-container.double {
+        flex-direction: column;
+        gap: 4rem;
+    }
+
+    /* Mobile frame sizing for ideation logo variations */
+    #work .img-wrapper {
+        width: 260px;
+        height: 260px;
+        margin: 0 auto;
+    }
+
+    .idea-caption {
+        font-size: 1.5rem;
+    }
+}
