@@ -7,20 +7,18 @@
   <link rel="icon" type="image/png" href="Media/blackcircle.png" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pantry.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="case-study-body">
-  <!-- TOP NAV -->
   <nav class="centered-nav case-study-nav">
     <a href="index.html" class="nav-link name">Tigo Ponce de León</a>
     <a href="work.html" class="nav-link">work</a>
     <a href="about.html" class="nav-link">about</a>
   </nav>
 
-  <!-- MAIN SPLIT LAYOUT -->
   <main class="case-layout">
 
-    <!-- LEFT SIDEBAR -->
     <aside class="case-sidebar">
       <div class="sidebar-logo">
         <img src="Media/2_logo.png" alt="PantryPal Logo" />
@@ -34,12 +32,15 @@
         <li><a href="#uichoices" class="toc-link">UI Choices</a></li>
         <li><a href="#reflection" class="toc-link">Reflection</a></li>
       </ul>
+      <button id="sidebar-toggle" class="sidebar-toggle-btn">
+        <svg viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 18 4 L 6 16 L 18 28 Z" fill="currentColor" stroke="currentColor" stroke-width="6.76" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </aside>
 
-    <!-- RIGHT SCROLLABLE CONTENT -->
     <section class="case-content">
 
-      <!-- SNAPSHOT -->
       <div id="snapshot" class="case-section">
         <div class="snapshot-container">
           <div class="phone-grid">
@@ -90,12 +91,11 @@
           <div class="spec-label">Platform</div>
           <div class="spec-value">Mobile</div>
 
-          <div class="spec-label last-row">Tech Stack</div>
+          <div class="spec-label last-row">Tools</div>
           <div class="spec-value last-row">Figma + Photoshop + Gemini</div>
         </div>
       </div>
 
-      <!-- OPPORTUNITY -->
       <div id="opportunity" class="case-section">
         <div class="opportunity-grid">
           <div class="opp-column"><h2>Eradicate Food Waste</h2></div>
@@ -117,7 +117,6 @@
         </div>
       </div>
 
-      <!-- DEMOGRAPHIC -->
       <div id="demographic" class="case-section">
         <div class="demographic-container">
           <div class="demo-text">
@@ -137,7 +136,6 @@
         </div>
       </div>
 
-      <!-- UX FLOW -->
       <div id="uxflow" class="case-section">
         <div class="uxflow-container">
 
@@ -213,7 +211,6 @@
 
           </div>
 
-          <!-- FLOW STEPS -->
           <div class="flow-step-container">
             <img src="Pantry-Media/LoginScreen.png" class="flow-phone-img" alt="Login" />
             <div class="flow-text-wrapper">
@@ -381,7 +378,6 @@
     </section>
   </main>
 
-  <!-- SCRIPT -->
   <script src="pantry.js" defer></script>
 </body>
 </html>

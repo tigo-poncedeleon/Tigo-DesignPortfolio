@@ -92,24 +92,44 @@ document.addEventListener('mousemove', (e) => {
 
 // Chicago Clock
 function updateBottomClock() {
- const options = {
-   timeZone: 'America/Chicago',
-   hour: '2-digit',
-   minute: '2-digit',
-   hour12: true,
- };
-
-
- const formatter = new Intl.DateTimeFormat('en-US', options);
- const chicagoTime = formatter.format(new Date());
- const clock = document.getElementById('chicagoClock');
- if (clock) {
-   clock.textContent = `Chicago - ${chicagoTime}`;
+  const options = {
+    timeZone: 'America/Chicago',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit', // Added seconds here
+    hour12: true,
+  };
+ 
+  const formatter = new Intl.DateTimeFormat('en-US', options);
+  const chicagoTime = formatter.format(new Date());
+  const clock = document.getElementById('chicagoClock');
+  if (clock) {
+    clock.textContent = `Chicago - ${chicagoTime}`;
+  }
  }
-}
-
-updateBottomClock(); 
-setInterval(updateBottomClock, 60000); 
+ 
+ updateBottomClock(); // Chicago Clock
+ function updateBottomClock() {
+  const options = {
+    timeZone: 'America/Chicago',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit', // Added seconds here
+    hour12: true,
+  };
+ 
+  const formatter = new Intl.DateTimeFormat('en-US', options);
+  const chicagoTime = formatter.format(new Date());
+  const clock = document.getElementById('chicagoClock');
+  if (clock) {
+    clock.textContent = `Chicago - ${chicagoTime}`;
+  }
+ }
+ 
+ updateBottomClock(); 
+ // Changed from 60000ms to 1000ms so it updates every second
+ setInterval(updateBottomClock, 1000);
+ setInterval(updateBottomClock, 1000);
 
 
 
