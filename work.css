@@ -286,6 +286,77 @@ body.dark-mode .drone-case-study-btn {
 }
 
 
+/* --- 5b. Project 4: Interactive (Rogue Racers) --- */
+.interactive-layout {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.interactive-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.8rem;
+  width: 100%;
+  max-width: 860px;
+}
+
+.game-screenshot-link {
+  display: block;
+  width: 100%;
+  margin-right: 60px;
+}
+
+.game-screenshot {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 44vh;
+  object-fit: contain;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.game-screenshot:hover {
+  opacity: 0.88;
+}
+
+.game-bottom-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.game-logo-link {
+  display: block;
+  flex-shrink: 0;
+}
+
+.game-logo {
+  width: 290px;
+  height: auto;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.game-logo:hover {
+  opacity: 0.85;
+}
+
+.game-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-color);
+  margin: 0;
+}
+
+
 /* --- 5. Under Development Sections --- */
 .under-dev-container {
   justify-content: center;
