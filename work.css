@@ -303,7 +303,94 @@ body.dark-mode .drone-case-study-btn {
 }
 
 
-/* --- 6. Mobile Responsiveness (Work Specific) --- */
+/* --- 6. Project 3: Research (UX Research) --- */
+.research-layout {
+  align-items: stretch;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 4rem;
+}
+
+.research-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.research-image-composite {
+  display: inline-block;
+  position: relative;
+  width: fit-content;
+}
+
+.research-campus-img {
+  display: block;
+  width: 100%;
+  max-width: 430px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.research-emblem-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 38%;
+  height: auto;
+}
+
+.research-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-color);
+  max-width: 430px;
+  margin: 0;
+}
+
+.research-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.8rem;
+  padding-bottom: 1.8rem;
+}
+
+.research-pdf-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.research-pdf-embed {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  margin-right: 3rem;
+}
+
+.research-pdf-overlay {
+  position: absolute;
+  inset: 0;
+  cursor: zoom-in;
+  z-index: 10;
+}
+
+.research-layout .date-tag {
+  bottom: 1.5rem;
+  right: 3rem;
+}
+
+
+/* --- 7. Mobile Responsiveness (Work Specific) --- */
 @media screen and (max-width: 1024px) {
   .date-tag {
     display: none; 
@@ -344,5 +431,25 @@ body.dark-mode .drone-case-study-btn {
   .button-arrow {
     height: 1.25rem;
     margin-left: 1rem;
+  }
+
+  /* Research Adjustments */
+  .research-layout {
+    align-items: center;
+    padding-bottom: 2rem;
+  }
+
+  .research-left {
+    align-items: center;
+    text-align: center;
+  }
+
+  .research-description {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .research-pdf-wrapper {
+    display: none;
   }
 }
