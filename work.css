@@ -461,23 +461,47 @@ body.dark-mode .drone-case-study-btn {
 }
 
 
+/* Hidden on desktop, shown only on mobile */
+.pdf-mobile-link,
+.play-game-btn-mobile {
+  display: none;
+}
+
 /* --- 7. Mobile Responsiveness (Work Specific) --- */
 @media screen and (max-width: 1024px) {
+  .side-nav {
+    display: none;
+  }
+
+  .work-page-wrapper {
+    padding-top: 80px;
+  }
+
+  .projects-scroll-container {
+    width: 100%;
+  }
+
   .date-tag {
     display: none; 
   }
 
   .work-container {
     flex-direction: column; 
-    padding: 2rem 0;
+    padding: 2.5rem 1.5rem 3rem;
     height: auto;
+  }
+
+  /* Dashed divider between sections */
+  .work-container:not(:last-child) {
+    border-bottom: 2px dashed var(--text-color);
+    opacity: 0.9;
   }
 
   /* Product Adjustments */
   .work-mockup img {
     height: auto;
     width: 100%;
-    max-width: 400px;
+    max-width: 240px;
     margin-top: 2rem;
   }
 
@@ -492,16 +516,26 @@ body.dark-mode .drone-case-study-btn {
 
   .project-description {
     font-size: 1.25rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
   }
 
   .explore-button {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
+    padding: 0.7rem 1.6rem;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    border-radius: 10px;
+    border: 1.5px solid #000;
+    box-shadow: none;
+    font-weight: 700;
   }
-  
+
+  .explore-button::after {
+    content: "→";
+  }
+
   .button-arrow {
-    height: 1.25rem;
-    margin-left: 1rem;
+    display: none;
   }
 
   /* Research Adjustments */
@@ -522,5 +556,113 @@ body.dark-mode .drone-case-study-btn {
 
   .research-pdf-wrapper {
     display: none;
+  }
+
+  /* PDF mobile link button */
+  .pdf-mobile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding: 0.7rem 1.6rem;
+    background-color: #D4A827;
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    border: 1.5px solid #000;
+    text-decoration: none;
+  }
+
+  /* Branding / Drone Section */
+  .drone-layout {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .drone-left {
+    align-items: center;
+  }
+
+  .drone-logo {
+    max-width: 260px;
+    margin-bottom: 0.75rem;
+  }
+
+  .drone-location {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .drone-right {
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .drone-description,
+  .drone-link {
+    font-size: 1.25rem;
+  }
+
+  .drone-case-study-btn {
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    gap: 0.5rem;
+    padding: 0.7rem 1.6rem;
+    border-radius: 10px;
+    border: 1.5px solid #000;
+    box-shadow: none;
+    font-weight: 700;
+  }
+
+  .drone-case-study-btn::before {
+    content: none;
+  }
+
+  .drone-case-study-btn::after {
+    content: "→";
+  }
+
+  .left-arrow-icon {
+    display: none;
+  }
+
+  /* Interactive / Gaming Section */
+  .game-screenshot-link {
+    display: none;
+  }
+
+  .game-bottom-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .game-logo {
+    width: 200px;
+  }
+
+  .game-description {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .play-game-btn-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding: 0.7rem 1.6rem;
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
   }
 }
