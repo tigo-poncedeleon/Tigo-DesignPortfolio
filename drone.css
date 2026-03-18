@@ -771,8 +771,8 @@ body.dark-mode .centered-nav.case-study-nav {
     .horizontal-scroll-wrapper {
         height: auto; 
         margin-top: 10vh;
-        margin-left: -1.5rem; 
-        margin-right: -1.5rem;
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .ideation-carousel {
@@ -798,28 +798,44 @@ body.dark-mode .centered-nav.case-study-nav {
     }
 
     .a-slide-content {
-        flex-direction: column; 
-        text-align: center;
-        gap: 2rem;
-        margin-bottom: 5rem;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+        height: auto;
     }
 
-    .layout-a .person-container, .layout-b .person-container { order: 1; align-items: center; }
-    .layout-a .bubble-container, .layout-b .bubble-container { order: 2; }
+    /* Hide Sebastien photos and name entirely on mobile */
+    .person-container {
+        display: none;
+    }
 
-    .person-img { height: 35vh; }
+    /* Replace PNG speech bubble with a CSS-styled box on mobile */
+    .bubble-bg {
+        display: none;
+    }
 
     .bubble-container {
+        position: static;
         width: 100%;
-        max-width: 450px;
-        min-height: auto;
+        max-width: 100%;
+        margin-bottom: 0;
+        background: #d0eaf7;
+        border: 2px solid #000;
+        border-radius: 20px;
+        padding: 1.4rem 1.6rem;
+        display: block;
     }
 
     .bubble-text {
-        font-size: 1.5rem;
-        left: auto !important; 
+        position: static;
+        width: 100%;
+        font-size: 1.35rem;
+        line-height: 1.4;
+        text-align: left;
+        left: auto !important;
         right: auto !important;
-        width: 80%;
+        color: #000;
     }
     
     /* Mobile Overrides for Work Section */

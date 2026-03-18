@@ -353,11 +353,9 @@ body.dark-mode .blob {
   }
   
   body {
-    overflow-y: auto;
-    height: auto;
-    min-height: 100vh;
-    padding: 6rem 1.5rem 2rem 1.5rem; 
-    align-items: flex-start; 
+    height: 100vh;
+    padding: 0 1.5rem;
+    align-items: center;
     box-sizing: border-box;
   }
 
@@ -379,14 +377,14 @@ body.dark-mode .blob {
   .circle-container {
     width: 85vw;
     height: 85vw;
-    max-width: 350px;
-    max-height: 350px;
+    max-width: 335px;
+    max-height: 335px;
     margin: auto;
   }
 
   .center-image {
-    width: 80%;
-    height: 80%;
+    width: 83%;
+    height: 83%;
   }
   
   /* Bottom Bar */
@@ -396,6 +394,11 @@ body.dark-mode .blob {
     gap: 0;
     justify-content: space-between;
     font-size: 1.3rem ; 
+  }
+
+  .theme-toggle img {
+    width: 2rem;
+    height: 2rem;
   }
 
   /* About Section */
