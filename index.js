@@ -24,14 +24,14 @@ function typeMessage(message, callback) {
   typeChar();
 }
 
-if (!localStorage.getItem('hasVisited')) {
+const isInternalNav = document.referrer && new URL(document.referrer).hostname === window.location.hostname;
+
+if (!isInternalNav) {
   typeMessage(messages[0], () => {
     intro.classList.add('dark');
     typeMessage(messages[1], () => {
       intro.classList.add('fade-out');
       document.body.classList.add('loaded');
-
-      localStorage.setItem('hasVisited', 'true');
     });
   });
 } else {
@@ -72,21 +72,6 @@ toggle.addEventListener('click', () => {
 });
 
 
-// cursor trail
-document.addEventListener('mousemove', (e) => {
- const trail = document.createElement('div');
- trail.className = 'cursor-trail';
- trail.style.left = `${e.clientX}px`;
- trail.style.top = `${e.clientY}px`;
-
-
- const isDark = document.body.classList.contains('dark-mode');
- trail.style.backgroundColor = isDark ? '#ffffff' : '#000000';
-
-
- document.body.appendChild(trail);
- setTimeout(() => trail.remove(), 500);
-});
 
 
 
@@ -129,7 +114,35 @@ function updateBottomClock() {
  updateBottomClock(); 
  // Changed from 60000ms to 1000ms so it updates every second
  setInterval(updateBottomClock, 1000);
- setInterval(updateBottomClock, 1000);
+
+
+// random palette hover effect on nav links
+const palette = [
+  '#FF6B6B',
+  '#FF8C42',
+  '#FFD166',
+  '#06D6A0',
+  '#4ECDC4',
+  '#4361EE',
+  '#A855F7',
+  '#F72585',
+];
+
+function pickColor() {
+  return palette[Math.floor(Math.random() * palette.length)];
+}
+
+document.querySelectorAll('.nav-link').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    const c = pickColor();
+    el.style.color = c;
+    el.style.setProperty('--link-accent', c);
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.color = '';
+    el.style.removeProperty('--link-accent');
+  });
+});
 
 
 

@@ -74,7 +74,7 @@ body {
   position: relative;
   text-decoration: none;
   color: var(--text-color);
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, color 0.2s ease;
   font-weight: 400;
 }
 
@@ -132,8 +132,8 @@ text {
   transform: translateX(-50%);
   height: .0625rem;
   width: 0%;
-  background-color: var(--text-color);
-  transition: width 0.3s ease;
+  background-color: var(--link-accent, var(--text-color));
+  transition: width 0.3s ease, background-color 0.2s ease;
 }
 
 .nav-link:hover::after {
@@ -149,30 +149,6 @@ text {
    display: none;
 }
 
-/* Cursor Trail */
-.cursor-trail {
-  position: fixed;
-  width: .375rem;
-  height: .375rem;
-  background: rgb(0, 0, 0);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  opacity: 0.8;
-  animation: fadeOut 1s ease-out forwards;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-}
 
 /* Bottom Bar */
 .bottom-bar {

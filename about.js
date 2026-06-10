@@ -1,18 +1,3 @@
-// cursor trail
-document.addEventListener('mousemove', (e) => {
- const trail = document.createElement('div');
- trail.className = 'cursor-trail';
- trail.style.left = `${e.clientX}px`;
- trail.style.top = `${e.clientY}px`;
-
-
- const isDark = document.body.classList.contains('dark-mode');
- trail.style.backgroundColor = isDark ? '#ffffff' : '#000000';
-
-
- document.body.appendChild(trail);
- setTimeout(() => trail.remove(), 500);
-});
 
 // dark or light mode 
 const isDark = localStorage.getItem('theme') === 'dark';
@@ -26,15 +11,33 @@ const toast = document.getElementById('copy-toast');
 const myEmail = 'tigoponcedeleon@gmail.com';
 
 emailBtn.addEventListener('click', () => {
-  // Copy to clipboard
   navigator.clipboard.writeText(myEmail).then(() => {
-    // Show the "Copied!" message
     toast.classList.add('show');
-    
-    // Hide it again after 2 seconds
     setTimeout(() => {
       toast.classList.remove('show');
     }, 2000);
+  });
+});
+
+// random palette hover effect on nav links
+const palette = [
+  '#FF6B6B', '#FF8C42', '#FFD166', '#06D6A0',
+  '#4ECDC4', '#4361EE', '#A855F7', '#F72585',
+];
+
+function pickColor() {
+  return palette[Math.floor(Math.random() * palette.length)];
+}
+
+document.querySelectorAll('.nav-link').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    const c = pickColor();
+    el.style.color = c;
+    el.style.setProperty('--link-accent', c);
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.color = '';
+    el.style.removeProperty('--link-accent');
   });
 });
 
