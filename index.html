@@ -25,6 +25,7 @@
 
   <div class="circle-container">
     <img src="Media/web_photo.png" alt="Portrait of Tigo" class="center-image" />
+    <div class="image-tint" id="imageTint"></div>
     <svg viewBox="0 0 200 200" class="circle-text">
       <defs>
         <path
@@ -45,9 +46,7 @@
   <div class="bottom-bar">
     <div id="chicagoClock">Chicago — 00:00 CT</div>
     <button class="theme-toggle" aria-label="Toggle Dark Mode" aria-pressed="false">
-      <span class="icon">
-        <img src="media/moon.png" alt="moon" />
-      </span>
+      <span class="icon" id="themeIcon" style="--icon-mask: url('Media/moon.png')"></span>
     </button>
   </div>
 

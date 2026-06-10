@@ -10,6 +10,17 @@
 </head>
 
 <body>
+  <!-- gooey SVG filter used by blob canvas -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <defs>
+      <filter id="goo" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blur"/>
+        <feColorMatrix in="blur" mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo"/>
+      </filter>
+    </defs>
+  </svg>
+
   <nav class="centered-nav">
     <a href="index.html" class="nav-link name">Tigo Ponce de León</a>
     <a href="work.html" class="nav-link">work</a>
@@ -18,7 +29,7 @@
 
   <main class="about-section">
     <div class="about-inner"></div>
-      <div class="blob"></div> 
+      <canvas id="blobCanvas"></canvas>
 
       <div class="about-content">
         <p>
@@ -30,7 +41,7 @@
         <p>
           Visual ideation occurs in Figma.<br />
           Development is done with HTML/CSS/JS.<br />
-          AI tools are used in moderation.
+          AI tools are used thoughtfully.
         </p>
         <div class="icon-links">
           <a href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank">
