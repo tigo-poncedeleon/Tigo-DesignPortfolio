@@ -74,7 +74,7 @@ body {
   position: relative;
   text-decoration: none;
   color: var(--text-color);
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, color 0.2s ease;
   font-weight: 400;
 }
 
@@ -82,7 +82,8 @@ body {
   width: 31.25rem;
   height: 31.25rem;
   position: relative;
-  margin-bottom: 0rem; 
+  margin-bottom: 0rem;
+  isolation: isolate; /* keep the photo tint blend local to this circle */
 }
 
 .center-image {
@@ -95,6 +96,22 @@ body {
   object-fit: cover;
   border-radius: 50%;
   z-index: 1;
+}
+
+/* palette colour wash over the portrait on hover */
+.image-tint {
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 25rem;
+  height: 25rem;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: color;
+  opacity: 0;
+  transition: opacity 0.3s ease, background-color 0.2s ease;
 }
 
 .circle-text {
@@ -123,56 +140,17 @@ text {
   }
 }
 
-/* Nav Link Line Animation */
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -0.25rem;
-  left: 50%;
-  transform: translateX(-50%);
-  height: .0625rem;
-  width: 0%;
-  background-color: var(--text-color);
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover::after {
-  width: 100%;
-}
-
 .nav-link.name {
   font-weight: 700;
   text-transform: none;
 }
 
-.nav-link.name::after {
-   display: none;
+/* circular text segments + bottom-bar hover targets */
+.circle-seg {
+  transition: fill 0.2s ease;
+  cursor: default;
 }
 
-/* Cursor Trail */
-.cursor-trail {
-  position: fixed;
-  width: .375rem;
-  height: .375rem;
-  background: rgb(0, 0, 0);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  opacity: 0.8;
-  animation: fadeOut 1s ease-out forwards;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-}
 
 /* Bottom Bar */
 .bottom-bar {
@@ -192,6 +170,8 @@ text {
 #chicagoClock {
   opacity: 0.85;
   letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+  cursor: default;
 }
 
 .theme-toggle {
@@ -201,10 +181,15 @@ text {
   transition: transform 0.3s ease;
 }
 
-.theme-toggle img {
+/* masked icon so it can be tinted to any color */
+.theme-toggle .icon {
+  display: inline-block;
   width: 2.5rem;
   height: 2.5rem;
-  object-fit: contain;
+  background-color: var(--text-color);
+  -webkit-mask: var(--icon-mask) center / contain no-repeat;
+  mask: var(--icon-mask) center / contain no-repeat;
+  transition: background-color 0.2s ease;
 }
 
 .theme-toggle:hover {
@@ -248,9 +233,14 @@ text {
 }
 
 .about-content a {
-  color: inherit;            
-  text-decoration: none;   
-  font-weight: inherit;      
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.hover-word {
+  transition: color 0.15s ease;
+  cursor: default;
 }
 
 .icon-links {
@@ -275,43 +265,14 @@ body.dark-mode .github-icon {
   filter: brightness(0) invert(1);
 }
 
-/* Blob Animation */
-.blob {
-  width: 18rem;              
-  height: 18rem;
-  background: #000;
-  border-radius: 45% 55% 60% 40% / 50% 60% 40% 50%;
-  animation: morph 8s ease-in-out infinite;
+/* Blob Canvas */
+#blobCanvas {
+  width: 21rem;
+  height: 21rem;
+  filter: url(#goo);
   z-index: 0;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-body.dark-mode .blob {
-  background: #fff;
-}
-
-@keyframes morph {
-  0%   {
-    border-radius: 45% 55% 60% 40% / 50% 60% 40% 50%;
-    transform: translateY(-8px) rotate(0deg)   scale(1);
-  }
-  25%  {
-    border-radius: 70% 30% 40% 60% / 40% 60% 70% 30%;
-    transform: translateY( 4px) rotate(90deg)  scale(1.08);
-  }
-  50%  {
-    border-radius: 30% 70% 55% 45% / 60% 40% 30% 70%;
-    transform: translateY( 8px) rotate(180deg) scale(0.96);
-  }
-  75%  {
-    border-radius: 60% 40% 30% 70% / 65% 35% 55% 45%;
-    transform: translateY(-4px) rotate(270deg) scale(1.07);
-  }
-  100% {
-    border-radius: 45% 55% 60% 40% / 50% 60% 40% 50%;
-    transform: translateY(-8px) rotate(360deg) scale(1);
-  }
+  display: block;
 }
 
 .about-inner {
@@ -396,7 +357,7 @@ body.dark-mode .blob {
     font-size: 1.3rem ; 
   }
 
-  .theme-toggle img {
+  .theme-toggle .icon {
     width: 2rem;
     height: 2rem;
   }
@@ -422,9 +383,9 @@ body.dark-mode .blob {
     margin-bottom: 2rem;
   }
   
-  .blob {
-    width: 14rem;
-    height: 14rem;
+  #blobCanvas {
+    width: 16rem;
+    height: 16rem;
   }
   
   .about-inner {
