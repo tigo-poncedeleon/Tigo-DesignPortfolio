@@ -7,7 +7,7 @@
   
   <link rel="icon" type="image/png" href="Media/blackcircle.png" />
   
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -25,7 +25,6 @@
 
   <div class="circle-container">
     <img src="Media/web_photo.png" alt="Portrait of Tigo" class="center-image" />
-    <div class="image-tint" id="imageTint"></div>
     <svg viewBox="0 0 200 200" class="circle-text">
       <defs>
         <path
@@ -46,7 +45,9 @@
   <div class="bottom-bar">
     <div id="chicagoClock">Chicago — 00:00 CT</div>
     <button class="theme-toggle" aria-label="Toggle Dark Mode" aria-pressed="false">
-      <span class="icon" id="themeIcon" style="--icon-mask: url('Media/moon.png')"></span>
+      <span class="icon">
+        <img src="Media/moon.png" alt="moon" />
+      </span>
     </button>
   </div>
 

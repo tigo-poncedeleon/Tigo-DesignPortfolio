@@ -2,6 +2,21 @@
    GENERAL & INDEX STYLES
    ========================================= */
 
+/* Ripple theme transition (View Transitions API) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 0;
+}
+
+::view-transition-new(root) {
+  z-index: 1;
+}
+
 /* Intro Screen Animation */
 .intro-screen {
   position: fixed;
@@ -74,8 +89,25 @@ body {
   position: relative;
   text-decoration: none;
   color: var(--text-color);
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition: opacity 0.2s ease;
   font-weight: 400;
+}
+
+/* underline that grows out from the centre on hover */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 0.0625rem;
+  width: 0%;
+  background-color: var(--text-color);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
 }
 
 .circle-container {
@@ -83,7 +115,6 @@ body {
   height: 31.25rem;
   position: relative;
   margin-bottom: 0rem;
-  isolation: isolate; /* keep the photo tint blend local to this circle */
 }
 
 .center-image {
@@ -96,22 +127,6 @@ body {
   object-fit: cover;
   border-radius: 50%;
   z-index: 1;
-}
-
-/* palette colour wash over the portrait on hover */
-.image-tint {
-  position: absolute;
-  top: 49%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 25rem;
-  height: 25rem;
-  border-radius: 50%;
-  z-index: 2;
-  pointer-events: none;
-  mix-blend-mode: color;
-  opacity: 0;
-  transition: opacity 0.3s ease, background-color 0.2s ease;
 }
 
 .circle-text {
@@ -145,10 +160,34 @@ text {
   text-transform: none;
 }
 
-/* circular text segments + bottom-bar hover targets */
-.circle-seg {
-  transition: fill 0.2s ease;
-  cursor: default;
+/* the name has no hover animation */
+.nav-link.name::after {
+  display: none;
+}
+
+/* Cursor Trail */
+.cursor-trail {
+  position: fixed;
+  width: 0.375rem;
+  height: 0.375rem;
+  background-color: var(--text-color);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  opacity: 0.8;
+  animation: cursorFade 0.6s ease-out forwards;
+}
+
+@keyframes cursorFade {
+  from {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
 }
 
 
@@ -170,8 +209,6 @@ text {
 #chicagoClock {
   opacity: 0.85;
   letter-spacing: 0.5px;
-  transition: color 0.2s ease;
-  cursor: default;
 }
 
 .theme-toggle {
@@ -181,15 +218,10 @@ text {
   transition: transform 0.3s ease;
 }
 
-/* masked icon so it can be tinted to any color */
-.theme-toggle .icon {
-  display: inline-block;
+.theme-toggle img {
   width: 2.5rem;
   height: 2.5rem;
-  background-color: var(--text-color);
-  -webkit-mask: var(--icon-mask) center / contain no-repeat;
-  mask: var(--icon-mask) center / contain no-repeat;
-  transition: background-color 0.2s ease;
+  object-fit: contain;
 }
 
 .theme-toggle:hover {
@@ -357,7 +389,7 @@ body.dark-mode .github-icon {
     font-size: 1.3rem ; 
   }
 
-  .theme-toggle .icon {
+  .theme-toggle img {
     width: 2rem;
     height: 2rem;
   }

@@ -29,19 +29,6 @@ function pickColor() {
   return palette[Math.floor(Math.random() * palette.length)];
 }
 
-// nav links
-document.querySelectorAll('.nav-link').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    const c = pickColor();
-    el.style.color = c;
-    el.style.setProperty('--link-accent', c);
-  });
-  el.addEventListener('mouseleave', () => {
-    el.style.color = '';
-    el.style.removeProperty('--link-accent');
-  });
-});
-
 // word-level hover on about text
 function wrapWords(element) {
   Array.from(element.childNodes).forEach(node => {
