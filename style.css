@@ -143,16 +143,30 @@ text {
 
 .rotate {
   transform-origin: 50% 50%;
-  animation: spin 60s linear infinite;
+  /* rotation now lives on the .circle-text ring SVG (see spin-ring below) */
 }
 
-@keyframes spin {
+@keyframes spin-ring {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
+}
+
+/* slow auto-rotation of the portrait ring; respects users who opt out of motion */
+@media (prefers-reduced-motion: no-preference) {
+  .circle-text {
+    transform-origin: center center;
+    animation: spin-ring 60s linear infinite;
+  }
+}
+
+/* pause when hovering anywhere over the portrait or the ring itself */
+.circle-container:hover .circle-text,
+.circle-text:hover {
+  animation-play-state: paused;
 }
 
 .nav-link.name {
@@ -299,8 +313,8 @@ body.dark-mode .github-icon {
 
 /* Blob Canvas */
 #blobCanvas {
-  width: 21rem;
-  height: 21rem;
+  width: 30rem;
+  height: 30rem;
   filter: url(#goo);
   z-index: 0;
   position: relative;
@@ -399,6 +413,9 @@ body.dark-mode .github-icon {
     flex-direction: column;
     gap: 3rem;
     padding: 0;
+    /* anchor to the top and clear the fixed nav so the blob doesn't bleed into it */
+    align-self: flex-start;
+    margin-top: 3rem;
   }
 
   .about-image img {
@@ -416,8 +433,8 @@ body.dark-mode .github-icon {
   }
   
   #blobCanvas {
-    width: 16rem;
-    height: 16rem;
+    width: 22rem;
+    height: 22rem;
   }
   
   .about-inner {

@@ -112,6 +112,9 @@ document.addEventListener('mousemove', (e) => {
 
 // Chicago Clock
 function updateBottomClock() {
+  // hold off while the intro scramble is resolving the clock text
+  if (window.__textScrambleActive) return;
+
   const options = {
     timeZone: 'America/Chicago',
     hour: '2-digit',
