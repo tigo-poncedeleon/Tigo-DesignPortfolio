@@ -5,6 +5,7 @@
 // into liquid metaballs by an SVG goo filter, slowly healing away (quicksand).
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('(max-width: 1024px)').matches) return; // disabled on mobile for performance
 
   // ---- Inject goo filter (distinct id so about.html's #goo is untouched) ----
   const svgNS = 'http://www.w3.org/2000/svg';
