@@ -194,5 +194,6 @@ function blobFrame() {
   requestAnimationFrame(blobFrame);
 }
 
-blobFrame();
+// skip the blob's animation loop on mobile for performance
+if (!window.matchMedia('(max-width: 1024px)').matches) blobFrame();
 

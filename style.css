@@ -70,6 +70,15 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Homepage is a single, non-scrolling screen. Locking scroll keeps the mobile
+   browser's URL bar from collapsing, which otherwise shoves the fixed bottom
+   bar up/down. Scoped to .home so about/work still scroll normally. */
+body.home {
+  height: 100svh;             /* smallest viewport height → content always fits, page can't scroll */
+  overflow: hidden;
+  overscroll-behavior: none;  /* no rubber-band bounce that could collapse the mobile toolbar */
+}
+
 /* Nav Bar */
 .centered-nav {
   position: fixed;
@@ -379,11 +388,24 @@ body.dark-mode .github-icon {
     max-width: 335px;
     max-height: 335px;
     margin: auto;
+    overflow: hidden; /* bound the 3D sway layer so it can't add scroll/overflow on mobile */
   }
 
   .center-image {
-    width: 55%;
-    height: 55%;
+    width: 80%;
+    height: 80%;
+  }
+
+  /* swap the cursor-tracking WebGL head for the static swaying face.
+     element+id / img+class selectors out-specify the base rules below,
+     which sit later in the file, so the mobile swap wins the cascade. */
+  canvas#head-canvas {
+    display: none;
+  }
+
+  img.mobile-face {
+    display: block;
+    animation: face-sway 6s ease-in-out infinite;
   }
   
   /* Bottom Bar */
@@ -427,6 +449,7 @@ body.dark-mode .github-icon {
   #blobCanvas {
     width: 22rem;
     height: 22rem;
+    display: none; /* blob effect disabled on mobile for performance */
   }
   
   .about-inner {
@@ -439,5 +462,21 @@ body.dark-mode .github-icon {
 #head-canvas {
   display: block;
   z-index: 9999; /* above the paint trail (9998) so the trail flows behind the face, below the intro (10000) */
+}
+
+/* Static face shown only on mobile (desktop uses the WebGL #head-canvas) */
+.mobile-face {
+  display: none;
+}
+
+/* gentle upright sway for the mobile face; translate keeps it centered */
+@keyframes face-sway {
+  0%   { transform: perspective(600px) translate(-50%, -50%) rotateY(-25deg); }
+  50%  { transform: perspective(600px) translate(-50%, -50%) rotateY(25deg); }
+  100% { transform: perspective(600px) translate(-50%, -50%) rotateY(-25deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-face { animation: none; }
 }
 

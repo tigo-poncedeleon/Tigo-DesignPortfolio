@@ -5,6 +5,9 @@
   const canvas = document.getElementById('head-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
+  // Skip WebGL entirely on mobile — the static swaying face takes over there.
+  if (window.matchMedia('(max-width: 1024px)').matches) return;
+
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---- Tunable knobs -------------------------------------------------------
