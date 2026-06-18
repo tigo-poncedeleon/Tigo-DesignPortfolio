@@ -139,8 +139,8 @@ body.dark-mode .nav-link::after {
   top: 49%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 25rem;
-  height: 25rem;
+  width: 29rem;
+  height: 29rem;
   object-fit: contain;
   z-index: 1;
 }
@@ -396,15 +396,14 @@ body.dark-mode .github-icon {
   }
 
   .center-image {
-    width: 80%;
-    height: 80%;
+    width: 90%;
+    height: 90%;
   }
 
-  /* swap the cursor-tracking WebGL head for the static swaying face.
-     element+id / img+class selectors out-specify the base rules below,
-     which sit later in the file, so the mobile swap wins the cascade. */
+  /* the wavy-line portrait renders on mobile too; JS hides the photo fallback
+     once the canvas has drawn (the <img> stays as a no-JS fallback). */
   canvas#head-canvas {
-    display: none;
+    display: block;
   }
 
   img.mobile-face {
