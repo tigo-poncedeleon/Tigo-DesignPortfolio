@@ -270,6 +270,7 @@
       e.preventDefault();
       const value = aiInput.value;
       aiInput.value = '';
+      aiInput.classList.remove('is-scrolled'); // emptied field → no left fade on the placeholder
       handleManualSubmit(value);
     });
   }
@@ -311,19 +312,25 @@
       }
       mirror.textContent = aiInput.value.substring(0, aiInput.selectionStart ?? 0);
 
-      const iRect = aiInput.getBoundingClientRect();
-      const bRect = aiInputBar.getBoundingClientRect();
+      // Use layout offsets (transform-independent), not getBoundingClientRect —
+      // the card is scaled via transform on small laptops, which would otherwise
+      // shrink the rect-based distances and misplace the caret. offsetLeft/Top are
+      // measured against the shared offsetParent (.ai-inputbar) in unscaled local px.
       const pl    = parseFloat(getComputedStyle(aiInput).paddingLeft);
       const tw    = mirror.getBoundingClientRect().width;
       const sl    = aiInput.scrollLeft || 0;
 
-      fakeCaret.style.left      = `${(iRect.left - bRect.left) + pl + tw - sl}px`;
-      fakeCaret.style.top       = `${(iRect.top  - bRect.top)  + iRect.height / 2}px`;
+      fakeCaret.style.left      = `${aiInput.offsetLeft + pl + tw - sl}px`;
+      fakeCaret.style.top       = `${aiInput.offsetTop + aiInput.offsetHeight / 2}px`;
       fakeCaret.style.transform = 'translateY(-50%)';
+
+      // Fade the left edge only while text is scrolled off — keeps the
+      // placeholder and short text crisp.
+      aiInput.classList.toggle('is-scrolled', sl > 0);
     }
 
     const raf = () => requestAnimationFrame(update);
-    ['input', 'keydown', 'keyup', 'click', 'mouseup', 'select'].forEach(ev =>
+    ['input', 'keydown', 'keyup', 'click', 'mouseup', 'select', 'scroll'].forEach(ev =>
       aiInput.addEventListener(ev, raf)
     );
     aiInput.addEventListener('focus', () => { fakeCaret.classList.add('active'); raf(); });

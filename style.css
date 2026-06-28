@@ -853,7 +853,7 @@ body.ai-page .ai-view { display: flex; }
   background: #ffffff;
   border: 2px solid #000000;
   color: #000000;
-  border-radius: 999px;
+  border-radius: 1.4rem;
   height: 3rem;                /* 48px */
   padding: 0 0.95rem;          /* ~15px */
   display: inline-flex;
@@ -896,6 +896,21 @@ body.ai-page .ai-view { display: flex; }
 .prompt-pill--static:focus-visible {
   background: #ffffff;
   color: #000000;
+}
+
+/* A long typed question must wrap and grow the bubble vertically instead of
+   running off the card's right edge. The descendant selector (0,2,0) outranks
+   both the base .prompt-pill rule and the mobile .prompt-pill override so this
+   applies on every screen size. font-size + horizontal padding stay inherited
+   from .prompt-pill, so the bubble keeps its per-breakpoint scale. */
+.ai-response .prompt-pill--static {
+  display: inline-block;     /* override inline-flex so the text run wraps */
+  height: auto;              /* grow vertically instead of overflowing */
+  max-width: 100%;           /* never exceed the card interior */
+  white-space: normal;       /* allow wrapping */
+  line-height: 1.2;          /* readable multi-line spacing */
+  padding-block: 0.55rem;    /* vertical padding only */
+  text-align: left;
 }
 
 /* Squiggly divider under the question — same wave as the nav hover underline, thicker. */
@@ -975,16 +990,33 @@ body.ai-page .ai-view { display: flex; }
 
 .ai-send:hover .ai-send-icon { transform: translateY(-2px); }
 
+/* White field wrapper — supplies the background the text fades into so the
+   masked input doesn't reveal the black inputbar behind it. */
+.ai-input-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;         /* white text area */
+  border-radius: 16px;
+  overflow: hidden;            /* clip masked text, keep rounded corners */
+}
+
 .ai-input {
   flex: 1 1 auto;
   min-width: 0;
   border: none;
-  background: #ffffff;         /* white text area */
-  border-radius: 16px;
+  background: transparent;     /* field background lives on .ai-input-field */
   color: #000000;
   font-family: 'Geist', sans-serif;
   font-size: 2rem;
   padding: 0.2rem 0.6rem 0.2rem 0.9rem;
+}
+
+/* Elegant left fade once text scrolls past the start (instead of an abrupt clip) */
+.ai-input.is-scrolled {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 1.7rem);
+          mask-image: linear-gradient(to right, transparent 0, #000 1.7rem);
 }
 
 .ai-input:focus { outline: none; }
@@ -1031,6 +1063,36 @@ body.dark-mode .ai-card {
   .ai-send { width: 2.2rem; border-radius: 30px; font-size: 1.3rem; }
   .ai-input { font-size: 1.25rem; }
   .fake-caret { height: 1.1rem; }
+}
+
+/* Short desktop laptops — shrink the hero portrait and AI card so they clear
+   the fixed nav (top: 5%) and bottom bar (bottom: 6%). Scoped to desktop width
+   + short height, with max-* caps so taller laptops stay at their design size. */
+@media screen and (min-width: 1025px) and (max-height: 900px) {
+  /* Home: scale the portrait + text ring down proportionally */
+  .circle-container {
+    width: 64vh;  height: 64vh;
+    max-width: 31.25rem; max-height: 31.25rem;
+  }
+  .center-image {
+    width: 59vh;  height: 59vh;
+    max-width: 29rem;  max-height: 29rem;
+  }
+
+  /* AI card: keep its full intrinsic size and scale the whole card — border,
+     pills, input bar, text and all — down uniformly via --ai-scale (computed in
+     js/ai-page.js). A uniform transform preserves the exact desktop proportions,
+     so nothing bleeds. --ai-card-top pins a fixed gap below the nav. */
+  .ai-view {
+    align-items: flex-start;
+    padding-top: var(--ai-card-top, 0px);
+  }
+  .ai-card {
+    width: 37.5rem;
+    height: 41.8rem;
+    transform: scale(var(--ai-scale, 1));
+    transform-origin: top center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -59,3 +59,42 @@ function updateClock() {
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+// On short desktop laptops the full-size AI card would overlap the nav / bottom
+// bar. Rather than shrink the card's content (which throws off proportions), we
+// keep it at full intrinsic size and scale the whole card uniformly so it fits
+// between the nav and the bottom bar — interior keeps exact desktop ratios.
+(function fitAiCardSetup() {
+  const shortLaptop = window.matchMedia('(min-width: 1025px) and (max-height: 900px)');
+  const view = document.querySelector('.ai-view');
+  const card = document.querySelector('.ai-card');
+  if (!view || !card) return;
+
+  const TOP_GAP = 32;     // breathing room below the nav
+  const BOTTOM_GAP = 24;  // breathing room above the bottom bar
+
+  function fitAiCard() {
+    if (!shortLaptop.matches) {
+      view.style.removeProperty('--ai-scale');
+      view.style.removeProperty('--ai-card-top');
+      card.style.removeProperty('--ai-scale');
+      return;
+    }
+    const nav = document.querySelector('.centered-nav');
+    const bar = document.querySelector('.bottom-bar');
+    const navBottom = nav ? nav.getBoundingClientRect().bottom : window.innerHeight * 0.05;
+    const barTop = bar ? bar.getBoundingClientRect().top : window.innerHeight * 0.94;
+
+    const top = navBottom + TOP_GAP;
+    const available = (barTop - BOTTOM_GAP) - top;
+    const fullHeight = card.offsetHeight || 669; // unscaled layout height (transform-agnostic)
+    const scale = Math.max(0.4, Math.min(1, available / fullHeight));
+
+    view.style.setProperty('--ai-card-top', top + 'px');
+    card.style.setProperty('--ai-scale', scale.toFixed(4));
+  }
+
+  window.addEventListener('resize', fitAiCard);
+  if (shortLaptop.addEventListener) shortLaptop.addEventListener('change', fitAiCard);
+  fitAiCard();
+})();
