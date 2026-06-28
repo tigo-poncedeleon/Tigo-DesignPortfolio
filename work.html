@@ -8,14 +8,34 @@
   
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="work.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="js/page-transitions.js"></script>
 </head>
 
 <body>
+  <div class="mobile-header" aria-label="Mobile navigation">
+    <a href="index.html" class="mobile-name">Tigo Ponce de León</a>
+    <div class="mobile-nav-links">
+      <a href="work.html" class="nav-link">work</a>
+      <a href="about.html" class="nav-link">about</a>
+      <a href="ai.html" class="ai-toggle" aria-label="AI chat">
+        <span class="ai-toggle-glyph" aria-hidden="true"><svg class="ai-toggle-star" viewBox="0 0 20.9917 19.4912" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10.3377 0C12.3626 0 14.0045 1.64115 14.0047 3.66602V4.54688L15.5965 3.7334C17.2643 2.88028 19.4458 3.46175 20.4686 5.03125C21.4911 6.60067 20.9682 8.56388 19.3006 9.41699L18.3982 9.87793L19.3006 10.3398C20.9684 11.193 21.4913 13.1571 20.4686 14.7266C19.4457 16.2958 17.2642 16.8765 15.5965 16.0234L14.0047 15.209V15.8252C14.0046 17.8501 12.3627 19.4912 10.3377 19.4912C8.31285 19.4911 6.67179 17.8501 6.67168 15.8252V15.3691L5.39434 16.0234C3.72672 16.8763 1.54611 16.2957 0.523246 14.7266C-0.499429 13.1572 0.0227947 11.1931 1.69024 10.3398L2.59258 9.87793L1.69121 9.41699C0.0234324 8.56389 -0.499464 6.60074 0.523246 5.03125C1.54595 3.46185 3.72658 2.88053 5.39434 3.7334L6.67071 4.38574V3.66602C6.67092 1.64125 8.31194 0.000150103 10.3367 0H10.3377Z"/></svg></span><span class="ai-toggle-label">ai</span>
+      </a>
+    </div>
+    <button class="mobile-burger" aria-label="Open navigation" aria-expanded="false">
+      <span class="burger-bar"></span>
+      <span class="burger-bar"></span>
+      <span class="burger-bar"></span>
+    </button>
+  </div>
+
   <nav class="centered-nav">
     <a href="index.html" class="nav-link name">Tigo Ponce de León</a>
     <a href="work.html" class="nav-link">work</a>
     <a href="about.html" class="nav-link">about</a>
+    <a href="ai.html" class="ai-toggle" aria-label="AI chat">
+      <span class="ai-toggle-glyph" aria-hidden="true"><svg class="ai-toggle-star" viewBox="0 0 20.9917 19.4912" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10.3377 0C12.3626 0 14.0045 1.64115 14.0047 3.66602V4.54688L15.5965 3.7334C17.2643 2.88028 19.4458 3.46175 20.4686 5.03125C21.4911 6.60067 20.9682 8.56388 19.3006 9.41699L18.3982 9.87793L19.3006 10.3398C20.9684 11.193 21.4913 13.1571 20.4686 14.7266C19.4457 16.2958 17.2642 16.8765 15.5965 16.0234L14.0047 15.209V15.8252C14.0046 17.8501 12.3627 19.4912 10.3377 19.4912C8.31285 19.4911 6.67179 17.8501 6.67168 15.8252V15.3691L5.39434 16.0234C3.72672 16.8763 1.54611 16.2957 0.523246 14.7266C-0.499429 13.1572 0.0227947 11.1931 1.69024 10.3398L2.59258 9.87793L1.69121 9.41699C0.0234324 8.56389 -0.499464 6.60074 0.523246 5.03125C1.54595 3.46185 3.72658 2.88053 5.39434 3.7334L6.67071 4.38574V3.66602C6.67092 1.64125 8.31194 0.000150103 10.3367 0H10.3377Z"/></svg></span><span class="ai-toggle-label">ai</span>
+    </a>
   </nav>
 
   <div class="work-page-wrapper">

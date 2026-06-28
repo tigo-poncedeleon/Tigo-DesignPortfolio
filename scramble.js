@@ -71,6 +71,8 @@
             return NodeFilter.FILTER_REJECT;
           }
           if (parent.closest(".intro-screen")) return NodeFilter.FILTER_REJECT;
+          // The AI button spins instead of scrambling, so keep its "ai" static.
+          if (parent.closest(".ai-toggle")) return NodeFilter.FILTER_REJECT;
           if (parent.closest('[aria-hidden="true"]')) {
             return NodeFilter.FILTER_REJECT;
           }
@@ -113,6 +115,11 @@
       wrapper.style.whiteSpace = "nowrap";
       parent.insertBefore(wrapper, node);
       wrapper.appendChild(node);
+      // Lock the box to the real text's width so churning glyphs (which can be
+      // wider/narrower) never reflow centered, translateX(-50%) containers. Any
+      // overflow stays visible but never shifts siblings. The wrapper is removed
+      // on resolve, so this width needs no separate cleanup.
+      wrapper.style.width = wrapper.getBoundingClientRect().width + "px";
     }
 
     // Paint a scrambled frame immediately to avoid a flash of the real text.
@@ -173,12 +180,17 @@
     // Flag read by index.js so the per-second clock tick won't clobber the
     // animation mid-flight.
     window.__textScrambleActive = true;
+    // CSS spins the AI button and moon for the duration of the scramble window.
+    document.body.classList.add("scramble-spin");
 
     let remaining = nodes.length;
     let maxDelay = 0;
     const finishOne = () => {
       remaining--;
-      if (remaining <= 0) window.__textScrambleActive = false;
+      if (remaining <= 0) {
+        window.__textScrambleActive = false;
+        document.body.classList.remove("scramble-spin");
+      }
     };
 
     nodes.forEach((node) => {
@@ -192,6 +204,7 @@
     // Safety net: never leave the clock frozen if a frame is dropped.
     setTimeout(() => {
       window.__textScrambleActive = false;
+      document.body.classList.remove("scramble-spin");
     }, SCRAMBLE_MS + maxDelay + 300);
   }
 

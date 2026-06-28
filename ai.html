@@ -3,27 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tigo Ponce de León</title>
-  
+  <title>Tigo — AI</title>
   <link rel="icon" type="image/png" href="Media/blackcircle.png" />
-  
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="style.css" />
   <script src="js/page-transitions.js"></script>
 </head>
 
-<body class="home">
-  <div id="intro" class="intro-screen">
-    <div class="intro-text" id="introText"></div>
-  </div>
-
+<body class="ai-page">
   <div class="mobile-header" aria-label="Mobile navigation">
     <a href="index.html" class="mobile-name">Tigo Ponce de León</a>
     <div class="mobile-nav-links">
       <a href="work.html" class="nav-link">work</a>
       <a href="about.html" class="nav-link">about</a>
-      <a href="ai.html" class="ai-toggle" aria-label="AI chat">
+      <a href="ai.html" class="ai-toggle" aria-label="AI chat" aria-current="page">
         <span class="ai-toggle-glyph" aria-hidden="true"><svg class="ai-toggle-star" viewBox="0 0 20.9917 19.4912" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10.3377 0C12.3626 0 14.0045 1.64115 14.0047 3.66602V4.54688L15.5965 3.7334C17.2643 2.88028 19.4458 3.46175 20.4686 5.03125C21.4911 6.60067 20.9682 8.56388 19.3006 9.41699L18.3982 9.87793L19.3006 10.3398C20.9684 11.193 21.4913 13.1571 20.4686 14.7266C19.4457 16.2958 17.2642 16.8765 15.5965 16.0234L14.0047 15.209V15.8252C14.0046 17.8501 12.3627 19.4912 10.3377 19.4912C8.31285 19.4911 6.67179 17.8501 6.67168 15.8252V15.3691L5.39434 16.0234C3.72672 16.8763 1.54611 16.2957 0.523246 14.7266C-0.499429 13.1572 0.0227947 11.1931 1.69024 10.3398L2.59258 9.87793L1.69121 9.41699C0.0234324 8.56389 -0.499464 6.60074 0.523246 5.03125C1.54595 3.46185 3.72658 2.88053 5.39434 3.7334L6.67071 4.38574V3.66602C6.67092 1.64125 8.31194 0.000150103 10.3367 0H10.3377Z"/></svg></span><span class="ai-toggle-label">ai</span>
       </a>
     </div>
@@ -38,47 +31,29 @@
     <a href="index.html" class="nav-link name">Tigo Ponce de León</a>
     <a href="work.html" class="nav-link">work</a>
     <a href="about.html" class="nav-link">about</a>
-    <a href="ai.html" class="ai-toggle" aria-label="AI chat">
+    <a href="ai.html" class="ai-toggle" aria-label="AI chat" aria-current="page">
       <span class="ai-toggle-glyph" aria-hidden="true"><svg class="ai-toggle-star" viewBox="0 0 20.9917 19.4912" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10.3377 0C12.3626 0 14.0045 1.64115 14.0047 3.66602V4.54688L15.5965 3.7334C17.2643 2.88028 19.4458 3.46175 20.4686 5.03125C21.4911 6.60067 20.9682 8.56388 19.3006 9.41699L18.3982 9.87793L19.3006 10.3398C20.9684 11.193 21.4913 13.1571 20.4686 14.7266C19.4457 16.2958 17.2642 16.8765 15.5965 16.0234L14.0047 15.209V15.8252C14.0046 17.8501 12.3627 19.4912 10.3377 19.4912C8.31285 19.4911 6.67179 17.8501 6.67168 15.8252V15.3691L5.39434 16.0234C3.72672 16.8763 1.54611 16.2957 0.523246 14.7266C-0.499429 13.1572 0.0227947 11.1931 1.69024 10.3398L2.59258 9.87793L1.69121 9.41699C0.0234324 8.56389 -0.499464 6.60074 0.523246 5.03125C1.54595 3.46185 3.72658 2.88053 5.39434 3.7334L6.67071 4.38574V3.66602C6.67092 1.64125 8.31194 0.000150103 10.3367 0H10.3377Z"/></svg></span><span class="ai-toggle-label">ai</span>
     </a>
   </nav>
 
-  <div class="circle-container">
-    <canvas id="head-canvas" class="center-image"></canvas>
-    <img src="Media/face_cutout.png" alt="Portrait of Tigo" class="center-image mobile-face" />
-
-    <svg viewBox="0 0 200 200" class="circle-text">
-      <defs>
-        <path
-          id="circlePath"
-          d="M100,100 m-90,0 a90,90 0 1,1 180,0 a90,90 0 1,1 -180,0"
-        />
-      </defs>
-      <g class="rotate">
-        <text id="circleText">
-          <textPath href="#circlePath" startOffset="0" id="circlePathText" textLength="565" lengthAdjust="spacingAndGlyphs">
-            university of chicago · html/css/js · digital product designer · figma · ux research · ai ·
-          </textPath>
-        </text>
-      </g>
-    </svg>
+  <div class="ai-view" aria-label="Chat with Tigo's AI">
+    <div class="ai-card">
+      <div class="ai-scroll" id="aiScroll"></div>
+      <div class="ai-prompts" id="aiPrompts">
+        <button type="button" class="prompt-pill">Your hobbies?</button>
+        <button type="button" class="prompt-pill">What tools do you use?</button>
+        <button type="button" class="prompt-pill">Tell me your background!</button>
+        <button type="button" class="prompt-pill">What is your design philosophy?</button>
+      </div>
+      <form class="ai-inputbar" id="aiInputBar">
+        <button type="submit" class="ai-send" aria-label="Send"><svg class="ai-send-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 13 L12 4.5 L20 13 M12 4.5 L12 19.5" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <input type="text" id="aiInput" class="ai-input" placeholder="Ask me anything!" autocomplete="off" />
+      </form>
+    </div>
   </div>
 
-  <div class="bottom-bar">
-    <div id="chicagoClock">Chicago — 00:00 CT</div>
-    <button class="theme-toggle" aria-label="Toggle Dark Mode" aria-pressed="false">
-      <span class="icon">
-        <img src="Media/moon.png" alt="moon" />
-      </span>
-    </button>
-  </div>
-
-  <script src="index.js"></script>
-  <script src="scramble.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="js/line-portrait.js"></script>
+  <script src="js/ai-page.js"></script>
+  <script src="js/ai-chat.js"></script>
   <script src="js/paint-trail.js"></script>
-
-
 </body>
 </html>

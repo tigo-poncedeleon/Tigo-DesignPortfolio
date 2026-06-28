@@ -20,23 +20,18 @@ body.case-study-body {
     justify-content: center !important;
     align-items: center !important;
     gap: 3.8rem; 
-    background-color: var(--bg-color);
+    background: transparent;
     z-index: 1000;
     padding-top: 2.8rem;
     padding-bottom: 2rem;
     box-sizing: border-box;
-    transition: background-color 0.3s ease;
-}
-
-body.dark-mode .centered-nav.case-study-nav {
-    background-color: #111111;
 }
 
 /* 3. The Main Split Layout */
 .case-layout {
     display: flex;
     height: 100vh;
-    padding-top: 80px; 
+    padding-top: 0;
     box-sizing: border-box;
     max-width: 1600px;
     margin: 0 auto;
@@ -45,11 +40,11 @@ body.dark-mode .centered-nav.case-study-nav {
 
 /* 4. Left Sidebar (Fixed) */
 .case-sidebar {
-    width: 330px; 
+    width: 330px;
     position: fixed;
-    height: calc(100vh - 90px);
+    height: 100vh;
     z-index: 50;
-    top: 90px;
+    top: 0;
     left: 10px;
     background-color: var(--bg-color);
     padding-left: 4%;
@@ -130,7 +125,7 @@ body.dark-mode .centered-nav.case-study-nav {
 .toc-link {
     text-decoration: none;
     color: var(--text-color);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2.5rem; 
     letter-spacing: -0.02em;
     font-weight: 400;
@@ -165,8 +160,8 @@ body.dark-mode .centered-nav.case-study-nav {
 
 /* 5. Right Content (Scrollable) */
 .case-content {
-    height: calc(100vh - 80px); 
-    overflow-y: auto; 
+    height: 100vh;
+    overflow-y: auto;
     overflow-x: hidden;
     margin-left: 360px; 
     width: calc(100% - 330px);
@@ -210,7 +205,7 @@ body.dark-mode .centered-nav.case-study-nav {
     width: 100%;
     max-width: 1000px; 
     margin: 0 auto; 
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-weight: 300;
 }
 
@@ -280,7 +275,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .story-caption {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 1.4rem;
     font-style: italic;
     font-weight: 300;
@@ -296,7 +291,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .story-text-col p {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2rem;
     font-weight: 300;
     line-height: 1.25;
@@ -320,7 +315,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .ideation-intro-text {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2rem;
     font-weight: 300;
     line-height: 1.25;
@@ -408,7 +403,7 @@ body.dark-mode .centered-nav.case-study-nav {
 
 .q-num {
     font-size: clamp(6rem, 10vh, 10rem); /* Scales smoothly based on screen height */
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-style: italic;
     font-weight: 300;
     line-height: 0.9; 
@@ -418,7 +413,7 @@ body.dark-mode .centered-nav.case-study-nav {
 
 .q-title {
     font-size: clamp(3.5rem, 6vh, 6.5rem); /* Prevents vertical overflow by scaling with height */
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-weight: 300;
     line-height: 1.1;
     margin: 0;
@@ -452,7 +447,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .person-name {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 1.6rem;
     font-style: italic;
     font-weight: 300;
@@ -489,7 +484,7 @@ body.dark-mode .centered-nav.case-study-nav {
 .bubble-text {
     position: absolute; 
     z-index: 1; 
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2.1rem;
     font-weight: 300;
     line-height: 1.15;
@@ -524,7 +519,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .work-text {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2rem;
     font-weight: 300;
     line-height: 1.25;
@@ -604,7 +599,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .idea-caption {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2rem;
     font-weight: 300;
     color: var(--text-color);
@@ -662,7 +657,7 @@ body.dark-mode .centered-nav.case-study-nav {
 }
 
 .reflection-text-container p {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 2rem;
     font-weight: 300;
     line-height: 1.25;
@@ -681,7 +676,7 @@ body.dark-mode .centered-nav.case-study-nav {
 
     .case-layout {
         flex-direction: column;
-        padding-top: 60px; 
+        padding-top: 0;
         height: auto;
     }
 
@@ -821,7 +816,7 @@ body.dark-mode .centered-nav.case-study-nav {
         max-width: 100%;
         margin-bottom: 0;
         background: #d0eaf7;
-        border: 2px solid #000;
+        border: 2px solid #000000;
         border-radius: 20px;
         padding: 1.4rem 1.6rem;
         display: block;
@@ -835,7 +830,7 @@ body.dark-mode .centered-nav.case-study-nav {
         text-align: left;
         left: auto !important;
         right: auto !important;
-        color: #000;
+        color: #000000;
     }
     
     /* Mobile Overrides for Work Section */

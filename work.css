@@ -6,7 +6,7 @@
 .work-page-wrapper {
   display: flex;
   height: 100vh;
-  padding-top: 80px; 
+  padding-top: 0;
   box-sizing: border-box;
   max-width: 1600px;
   margin: 0 auto;
@@ -48,7 +48,7 @@
   border-radius: 50px;
   padding: 0.8rem 0;
   font-size: 2.2rem; 
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist', sans-serif;
   cursor: pointer;
   transform-origin: center; 
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s; 
@@ -65,7 +65,7 @@
 /* --- 2. Scrolling Container --- */
 .projects-scroll-container {
   flex: 1;
-  height: calc(100vh - 80px); 
+  height: 100vh;
   overflow-y: auto; 
   scroll-behavior: smooth; 
   scroll-snap-type: y mandatory; 
@@ -99,7 +99,7 @@
   position: absolute; 
   bottom: 2rem;
   right: 2.5rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist', sans-serif;
   font-style: oblique; 
   font-size: 24px;
   color: var(--text-color);
@@ -143,11 +143,11 @@
   gap: 2.5rem; 
   padding: 0.8rem 2.5rem;
   background-color: #FF514B5E;
-  color: #000;
+  color: #000000;
   text-decoration: none;
   font-size: 2rem;
   font-weight: 700;
-  border: 2px solid #000; 
+  border: 2px solid #000000; 
   border-radius: 12px;
   white-space: nowrap;
   box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.12);
@@ -187,7 +187,7 @@ body.dark-mode .explore-button {
 }
 
 body.dark-mode .explore-button .arrow {
-  color: #000;
+  color: #000000;
 }
 
 
@@ -255,11 +255,11 @@ body.dark-mode .explore-button .arrow {
   gap: 2.5rem;
   padding: 0.8rem 2.5rem;
   background-color: #5ab4ff; 
-  color: #000;
+  color: #000000;
   text-decoration: none;
   font-size: 2rem;
   font-weight: 700;
-  border: 2px solid #000;
+  border: 2px solid #000000;
   border-radius: 12px;
   white-space: nowrap;
   box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.12);
@@ -348,7 +348,7 @@ body.dark-mode .drone-case-study-btn {
 }
 
 .game-description {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist', sans-serif;
   font-size: 2rem;
   font-weight: 400;
   line-height: 1.2;
@@ -415,7 +415,7 @@ body.dark-mode .drone-case-study-btn {
 }
 
 .research-description {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist', sans-serif;
   font-size: 2rem;
   font-weight: 400;
   line-height: 1.2;
@@ -474,7 +474,7 @@ body.dark-mode .drone-case-study-btn {
   }
 
   .work-page-wrapper {
-    padding-top: 80px;
+    padding-top: 64px;
   }
 
   .projects-scroll-container {
@@ -525,7 +525,7 @@ body.dark-mode .drone-case-study-btn {
     gap: 0.5rem;
     margin-top: 0.5rem;
     border-radius: 10px;
-    border: 1.5px solid #000;
+    border: 1.5px solid #000000;
     box-shadow: none;
     font-weight: 700;
   }
@@ -566,12 +566,12 @@ body.dark-mode .drone-case-study-btn {
     margin-top: 1.25rem;
     padding: 0.7rem 1.6rem;
     background-color: #D4A827;
-    color: #000;
-    font-family: 'Inter', sans-serif;
+    color: #000000;
+    font-family: 'Geist', sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
     border-radius: 10px;
-    border: 1.5px solid #000;
+    border: 1.5px solid #000000;
     text-decoration: none;
   }
 
@@ -614,7 +614,7 @@ body.dark-mode .drone-case-study-btn {
     gap: 0.5rem;
     padding: 0.7rem 1.6rem;
     border-radius: 10px;
-    border: 1.5px solid #000;
+    border: 1.5px solid #000000;
     box-shadow: none;
     font-weight: 700;
   }
@@ -659,7 +659,7 @@ body.dark-mode .drone-case-study-btn {
     padding: 0.7rem 1.6rem;
     background-color: var(--text-color);
     color: var(--bg-color);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', sans-serif;
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 10px;
