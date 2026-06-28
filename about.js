@@ -1,5 +1,26 @@
 
-// dark or light mode 
+// Restore menu-open state from the previous page navigation
+if (sessionStorage.getItem('menuOpen') === '1') {
+  document.body.classList.add('menu-open');
+  const b = document.querySelector('.mobile-burger');
+  if (b) {
+    b.setAttribute('aria-expanded', 'true');
+    b.setAttribute('aria-label', 'Close navigation');
+  }
+}
+
+// Mobile burger menu toggle
+const mobileBurger = document.querySelector('.mobile-burger');
+if (mobileBurger) {
+  mobileBurger.addEventListener('click', () => {
+    const isOpen = document.body.classList.toggle('menu-open');
+    sessionStorage.setItem('menuOpen', isOpen ? '1' : '0');
+    mobileBurger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    mobileBurger.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+  });
+}
+
+// dark or light mode
 const isDark = localStorage.getItem('theme') === 'dark';
 
 if (isDark) {

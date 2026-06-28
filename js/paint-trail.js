@@ -56,7 +56,7 @@
   sCtx.fillRect(0, 0, SPRITE, SPRITE);
 
   // ---- Trail state ----------------------------------------------------------
-  const BRUSH_R = 13;     // stroke radius
+  const BRUSH_R = 10;     // stroke radius
   const SAMPLE = 3;       // mark spacing along the path (small = continuous)
 
   let rawX = 0, rawY = 0, hasCursor = false;
@@ -67,7 +67,14 @@
   let lastMove = -Infinity;
   const IDLE_MS = 250;             // pause the loop once the cursor is still this long
 
+  const MAX_POINTS = 2000;
+  const trailPoints = [];           // interleaved x,y of every stamp, for retract animation
+
   function onMove(e) {
+    if (window.__trailPaused) {
+      hasCursor = false; // lets a running frame loop exit cleanly
+      return;
+    }
     rawX = e.clientX;
     rawY = e.clientY;
     hasCursor = true;
@@ -120,9 +127,12 @@
   function stamp(x, y, r) {
     const d = r * 1.9 * 2; // sprite spans the full feathered diameter
     ctx.drawImage(sprite, x - d / 2, y - d / 2, d, d);
+    trailPoints.push(x, y);
+    if (trailPoints.length > (MAX_POINTS + 100) * 2) trailPoints.splice(0, 200);
   }
 
   function frame() {
+    if (!running) return; // stale rAF queued before retractTrail cancelled us
     // ease the paint position toward the cursor and stamp the new segment
     spX += (rawX - spX) * 0.35;
     spY += (rawY - spY) * 0.35;
@@ -151,4 +161,41 @@
     if ((idle && settled) || !hasCursor) { running = false; return; }
     requestAnimationFrame(frame);
   }
+
+  // Animate the trail shrinking tip-to-tail, then call onDone when canvas is blank.
+  // Called by page-transitions.js before navigating so the view-transition snapshot
+  // captures an empty canvas.
+  function retractTrail(onDone) {
+    running = false;
+    hasCursor = false;
+    window.removeEventListener('mousemove', onMove);
+
+    const total = trailPoints.length / 2;
+    if (total === 0) {
+      ctx.clearRect(0, 0, W, H);
+      onDone();
+      return;
+    }
+
+    const speed = Math.max(1, Math.ceil(total / 18)); // ~300ms at 60fps
+    let start = 0;
+    const d = BRUSH_R * 1.9 * 2;
+
+    // Remove oldest points first so the nav-bar end (newest) vanishes last
+    (function retractFrame() {
+      start = Math.min(total, start + speed);
+      ctx.clearRect(0, 0, W, H);
+      for (let i = start * 2; i < total * 2; i += 2) {
+        ctx.drawImage(sprite, trailPoints[i] - d / 2, trailPoints[i + 1] - d / 2, d, d);
+      }
+      if (start < total) {
+        requestAnimationFrame(retractFrame);
+      } else {
+        trailPoints.length = 0;
+        requestAnimationFrame(onDone); // one paint cycle so compositor flushes the goo filter before snapshot
+      }
+    })();
+  }
+
+  window.__trailRetract = retractTrail;
 })();
