@@ -161,12 +161,16 @@ main { position: relative; }
 }
 
 /* ---- Phase 2 landing ---- */
-.landing { flex-direction: column; gap: 0; }
+/* translateY shifts the whole group (portrait + name + title) up/down as one.
+   More negative = higher. */
+.landing { flex-direction: column; gap: 0; transform: translateY(-0.5vh); }
 
 .portrait-wrap {
   position: relative;
-  width: clamp(260px, 40vw, 440px);
-  height: clamp(331px, 51vw, 560px);
+  /* Portrait size — bump these to grow/shrink the face (keep the ~0.785 ratio:
+     height = width x 1.27). clamp(min, preferred-vw, max). */
+  width: clamp(280px, 43vw, 475px);
+  height: clamp(356px, 55vw, 605px);
   will-change: opacity;
 }
 .center-image {
@@ -191,13 +195,13 @@ body.reduced .mobile-face { display: block; }
   font-size: clamp(1.6rem, 3.4vw, 2.25rem);
   font-weight: 700;
   color: var(--name);
-  margin-top: clamp(-2.5rem, -4vw, -1.2rem);  /* pull up under the chin; scales down on mobile */
+  margin-top: clamp(-1.7rem, -4vw, -1.2rem);  /* pull up under the chin; scales down on mobile */
 }
 .subtitle {
   font-size: clamp(1.3rem, 3vw, 2.25rem);
   font-weight: 400;
   color: var(--grey);
-  margin-top: -0.3rem;           /* tight gap under the name */
+  margin-top: 0rem;           /* tight gap under the name */
 }
 
 /* two-element letter: outer .letter = GSAP exit, inner .glyph = hover-sway */

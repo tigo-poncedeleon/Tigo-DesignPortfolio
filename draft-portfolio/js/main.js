@@ -43,6 +43,7 @@
     if (window.GeoClock) window.GeoClock.init();
     if (window.CustomCursor) window.CustomCursor.init();
     if (window.TextSway) window.TextSway.init({ reduce });
+    if (window.FaceRainbow) window.FaceRainbow.init();
     if (window.ScrollTransition) window.ScrollTransition.init({ reduce });
     if (window.NavHover) window.NavHover.init();
 
