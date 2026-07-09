@@ -23,7 +23,12 @@ html, body {
   color: var(--text);
   font-family: 'Geist', sans-serif;
   -webkit-font-smoothing: antialiased;
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* legacy Edge/IE */
 }
+/* hide the scrollbar (scrolling still works) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 /* Custom cursor everywhere; native hidden (restored on touch below) */
 * { cursor: none; }
@@ -156,7 +161,7 @@ main { position: relative; }
 }
 
 /* ---- Phase 2 landing ---- */
-.landing { flex-direction: column; gap: 0.5rem; }
+.landing { flex-direction: column; gap: 0; }
 
 .portrait-wrap {
   position: relative;
@@ -186,6 +191,7 @@ body.reduced .mobile-face { display: block; }
   font-size: clamp(1.6rem, 3.4vw, 2.25rem);
   font-weight: 700;
   color: var(--name);
+  margin-top: clamp(-2.5rem, -4vw, -1.2rem);  /* pull up under the chin; scales down on mobile */
 }
 .subtitle {
   font-size: clamp(1.3rem, 3vw, 2.25rem);
