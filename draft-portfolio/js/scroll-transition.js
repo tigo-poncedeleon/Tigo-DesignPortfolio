@@ -39,7 +39,7 @@ window.ScrollTransition = (function () {
     const spread = (i) => {
       const half = n / 2;
       const d = Math.abs(i - (half - 0.5)) / half; // 0 at center -> ~1 at ends
-      return 0.55 + 0.45 * d;
+      return 0.9 + 0.5 * d;                         // always flung past the edge
     };
 
     const tl = gsap.timeline({
@@ -61,12 +61,12 @@ window.ScrollTransition = (function () {
       },
     });
 
-    // Segment A — letters fling out toward nearest edge, wavy stagger
+    // Segment A — letters fling out toward nearest edge, wavy stagger.
+    // No opacity fade: they stay solid and simply leave the (clipped) screen.
     tl.to(letters, {
       x: (i) => dir(i) * window.innerWidth * spread(i),
       y: (i) => Math.sin(i * 0.9) * 120,
       rotation: (i) => dir(i) * (18 + (i % 5) * 6),
-      autoAlpha: 0,
       ease: 'power2.in',
       duration: 0.3,
       stagger: { each: 0.012, from: 'center' },

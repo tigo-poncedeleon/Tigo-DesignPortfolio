@@ -105,38 +105,10 @@ window.GeoClock = (function () {
     applyFlagSize();
   }
 
-  async function init() {
+  function init() {
     window.addEventListener('resize', applyFlagSize);
-
-    // Populate immediately with fallback so the curtain never waits on the network,
-    // then upgrade if the lookup succeeds.
+    // Always show Chicago, Illinois (Central Time) in the opening animation.
     apply(FALLBACK);
-
-    try {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 2500);
-      const res = await fetch('https://ipapi.co/json/', { signal: ctrl.signal });
-      clearTimeout(t);
-      if (!res.ok) return;
-      const d = await res.json();
-      if (!d || d.error || !d.city) return;
-
-      const loc = {
-        city: d.city,
-        region: d.region || d.region_code || '',
-        timezone: d.timezone || FALLBACK.timezone,
-        isUSA: d.country_code === 'US' || d.country === 'US',
-      };
-      // Re-render place + clock; toggle flag to match the real country.
-      renderPlace(loc);
-      startClock(loc.timezone);
-      const grid = document.getElementById('flag-grid');
-      if (loc.isUSA) renderFlag();
-      else if (grid) { grid.classList.remove('show'); grid.innerHTML = ''; }
-      applyFlagSize();
-    } catch (e) {
-      /* keep fallback */
-    }
   }
 
   return { init };

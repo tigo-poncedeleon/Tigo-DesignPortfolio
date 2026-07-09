@@ -156,12 +156,12 @@ main { position: relative; }
 }
 
 /* ---- Phase 2 landing ---- */
-.landing { flex-direction: column; gap: 1.5rem; }
+.landing { flex-direction: column; gap: 0.5rem; }
 
 .portrait-wrap {
   position: relative;
-  width: clamp(220px, 34vw, 380px);
-  height: clamp(280px, 43vw, 484px);
+  width: clamp(260px, 40vw, 440px);
+  height: clamp(331px, 51vw, 560px);
   will-change: opacity;
 }
 .center-image {
@@ -191,7 +191,7 @@ body.reduced .mobile-face { display: block; }
   font-size: clamp(1.3rem, 3vw, 2.25rem);
   font-weight: 400;
   color: var(--grey);
-  margin-top: -0.4rem;
+  margin-top: -0.3rem;           /* tight gap under the name */
 }
 
 /* two-element letter: outer .letter = GSAP exit, inner .glyph = hover-sway */
