@@ -42,18 +42,20 @@ window.Curtain = (function () {
         yoyo: true, repeat: -1, svgOrigin: origin,
       });
 
-    cycles.push(swing('#leg-front', 20, -20, '60 166'));
-    cycles.push(swing('#leg-back', -20, 20, '60 166'));
-    cycles.push(swing('#arm-front', -14, 14, '60 82'));   // opposite the front leg
-    cycles.push(swing('#arm-back', 14, -14, '60 82'));
+    cycles.push(swing('#leg-front', 20, -20, '92 166'));
+    cycles.push(swing('#leg-back', -20, 20, '92 166'));
+    cycles.push(swing('#arm-back', 14, -14, '92 82'));   // back arm swings with the walk
     cycles.push(gsap.to('#fig-bob', {
       y: -6, duration: STEP / 2, ease: 'sine.inOut', yoyo: true, repeat: -1,
     }));
+    // #arm-front stays extended (the hand pressed against the curtain).
 
-    // ---- Master traversal: figure right -> left, curtain edge tracks it ----
+    // ---- Master traversal: figure right -> left; the curtain's edge is glued
+    // to the figure's HAND, so it looks pushed by the hand, not the head. ----
+    const hand = document.getElementById('arm-front');
     const setClip = () => {
-      const r = figure.getBoundingClientRect();
-      const edge = r.left + figW * 0.2;            // black meets the figure's front
+      const r = (hand || figure).getBoundingClientRect();
+      const edge = r.left + 6;                     // black meets the hand (slight press)
       const inset = Math.max(0, vw - edge);
       curtain.style.clipPath = 'inset(0 ' + inset + 'px 0 0)';
     };

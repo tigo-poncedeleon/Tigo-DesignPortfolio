@@ -85,13 +85,29 @@ window.GeoClock = (function () {
     grid.classList.add('show');
   }
 
+  // Scale the flag so its right edge lines up exactly with the end of the place
+  // text. Both share the same left edge, so matching width matches the right
+  // edge; font-size scales with width to keep the flag's proportions.
+  function applyFlagSize() {
+    const grid = document.getElementById('flag-grid');
+    const place = document.getElementById('geo-place');
+    if (!grid || !place || !grid.classList.contains('show')) return;
+    const w = place.getBoundingClientRect().width;
+    if (!w) return;
+    grid.style.width = w + 'px';
+    grid.style.fontSize = Math.max(13, w * 0.053) + 'px';
+  }
+
   function apply(loc) {
     renderPlace(loc);
     startClock(loc.timezone);
     if (loc.isUSA) renderFlag();
+    applyFlagSize();
   }
 
   async function init() {
+    window.addEventListener('resize', applyFlagSize);
+
     // Populate immediately with fallback so the curtain never waits on the network,
     // then upgrade if the lookup succeeds.
     apply(FALLBACK);
@@ -117,6 +133,7 @@ window.GeoClock = (function () {
       const grid = document.getElementById('flag-grid');
       if (loc.isUSA) renderFlag();
       else if (grid) { grid.classList.remove('show'); grid.innerHTML = ''; }
+      applyFlagSize();
     } catch (e) {
       /* keep fallback */
     }
