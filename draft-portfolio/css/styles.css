@@ -1,0 +1,253 @@
+/* ============================================================
+   Portfolio opening sequence — draft-portfolio
+   Palette / layers / four phases
+   ============================================================ */
+
+:root {
+  --bg: #ffffff;
+  --text: #000000;
+  --name: #101112;
+  --grey: #5e5e5e;
+  --orange: #ff9046;
+  --pill: #eeeded;
+  --curtain: #0a0a0a;
+  --flag-blue: #525dff;
+  --flag-red: #ff5252;
+  --flag-white: #f4f4f4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom cursor everywhere; native hidden (restored on touch below) */
+* { cursor: none; }
+
+body.scroll-locked { overflow: hidden; height: 100vh; }
+
+/* ============================================================
+   Custom cursor
+   ============================================================ */
+.cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 16px; height: 21px;
+  z-index: 2000;
+  pointer-events: none;
+  will-change: transform;
+  transform: translate(-100px, -100px);
+}
+.cursor svg { display: block; }
+
+/* ============================================================
+   PHASE 1 — Curtain
+   ============================================================ */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--curtain);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.curtain-info {
+  position: absolute;
+  left: clamp(1.5rem, 3.5vw, 3rem);
+  top: 58%;
+  transform: translateY(-50%);
+  color: var(--flag-white);
+}
+.geo-place {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.geo-clock {
+  margin-top: 0.4rem;
+  font-size: clamp(1.4rem, 3.4vw, 2.4rem);
+  font-weight: 400;
+  color: #8a8a8a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Flag word-art — only mounted (populated) for USA / fallback */
+.flag-grid {
+  position: absolute;
+  left: clamp(1.5rem, 3.5vw, 3rem);
+  top: clamp(2rem, 14vh, 8rem);
+  display: none;                 /* JS sets to grid when populated */
+  font-size: clamp(0.85rem, 1.6vw, 1.5rem);
+  line-height: 1.15;
+  user-select: none;
+}
+.flag-grid.show { display: block; }
+.flag-row { display: flex; white-space: nowrap; }
+.flag-row .cell {
+  display: inline-block;
+  width: 3.4em;                  /* even columns so the flag reads as a grid */
+}
+.flag-blue  { color: var(--flag-blue); }
+.flag-red   { color: var(--flag-red); }
+.flag-white { color: var(--flag-white); }
+
+.stick-figure {
+  position: absolute;
+  right: clamp(2rem, 12vw, 9rem);
+  bottom: 8vh;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+.stick-figure svg { display: block; }
+
+/* ============================================================
+   PHASES 2-4 — stage
+   ============================================================ */
+main { position: relative; }
+
+.stage {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* landing + nav share the same centered box */
+.landing, .nav-page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Phase 2 landing ---- */
+.landing { flex-direction: column; gap: 1.5rem; }
+
+.portrait-wrap {
+  position: relative;
+  width: clamp(220px, 34vw, 380px);
+  height: clamp(280px, 43vw, 484px);
+  will-change: opacity;
+}
+.center-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#head-canvas { display: block; z-index: 1; }
+/* static fallback (reduced motion); grayscaled to keep the B&W look */
+.mobile-face { display: none; z-index: 0; filter: grayscale(1) contrast(1.05); }
+body.reduced #head-canvas { display: none; }
+body.reduced .mobile-face { display: block; }
+
+.name, .subtitle {
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+.name {
+  font-size: clamp(1.6rem, 3.4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--name);
+}
+.subtitle {
+  font-size: clamp(1.3rem, 3vw, 2.25rem);
+  font-weight: 400;
+  color: var(--grey);
+  margin-top: -0.4rem;
+}
+
+/* two-element letter: outer .letter = GSAP exit, inner .glyph = hover-sway */
+.letter { display: inline-block; will-change: transform; }
+.letter.space { width: 0.32em; }
+.glyph { display: inline-block; will-change: transform; }
+
+/* ---- Phase 4 nav ---- */
+.nav-page {
+  gap: clamp(1.5rem, 4vw, 3rem);
+  opacity: 0;
+  visibility: hidden;         /* GSAP autoAlpha reveals after letters exit */
+  pointer-events: none;
+}
+.navword {
+  position: relative;
+  font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+  font-weight: 400;
+  color: var(--text);
+  padding: 0.2em 0.15em;
+  margin: 0 0;
+  transition: color 0.22s ease, margin 0.28s ease;
+  will-change: transform;
+}
+
+/* grey pill behind the hovered word */
+.navword::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -46px;
+  width: 139px;
+  height: 256px;
+  border-radius: 27px;
+  background: var(--pill);
+  transform: translateX(-50%) scale(0.9);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.2s ease, transform 0.24s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+/* emoji below the word inside the pill */
+.navword::after {
+  content: attr(data-emoji);
+  position: absolute;
+  left: 50%;
+  top: 74px;
+  transform: translateX(-50%) scale(0.7);
+  font-size: 76px;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease 0.02s, transform 0.24s cubic-bezier(0.2, 0.7, 0.3, 1) 0.02s;
+}
+
+.nav-page.nav-live .navword:hover,
+.nav-page.nav-live .navword:focus-visible { color: var(--orange); margin: 0 34px; outline: none; }
+.nav-page.nav-live .navword:hover::before,
+.nav-page.nav-live .navword:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+.nav-page.nav-live .navword:hover::after,
+.nav-page.nav-live .navword:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* ============================================================
+   Responsive / touch
+   ============================================================ */
+@media (max-width: 640px) {
+  .navword::before { width: 108px; height: 210px; top: -38px; }
+  .navword::after { font-size: 58px; top: 58px; }
+  .flag-grid .cell { width: 3em; }
+}
+
+@media (hover: none) {
+  * { cursor: auto; }
+  .cursor { display: none; }
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .stick-figure { display: none; }
+}
