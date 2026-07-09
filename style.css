@@ -452,14 +452,6 @@ body.scramble-spin .theme-toggle img { animation: scramble-spin 1.6s ease-out; }
   text-align: left;
 }
 
-.about-image img {
-  width: 35rem;
-  height: auto;
-  border-radius: 0.5rem;
-  object-fit: cover;
-  z-index: 100;
-}
-
 .about-content {
   max-width: 35rem;
   font-family: 'Geist', sans-serif;
@@ -515,15 +507,6 @@ body.dark-mode .github-icon {
   z-index: 0;
   position: relative;
   display: block;
-}
-
-.about-inner {
-  display: flex;
-  gap: 6rem;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  position: relative;
 }
 
 .copy-toast {
@@ -671,28 +654,19 @@ body.dark-mode .github-icon {
     margin-top: 64px;
   }
 
-  .about-image img {
-    width: 100%;
-    height: auto;
-  }
-
   .about-content {
     font-size: 1.2rem;
     max-width: 100%;
   }
-  
+
   .about-content p {
     margin-bottom: 2rem;
   }
-  
+
   #blobCanvas {
     width: 22rem;
     height: 22rem;
     display: none; /* blob effect disabled on mobile for performance */
-  }
-  
-  .about-inner {
-    gap: 2rem;
   }
 }
 

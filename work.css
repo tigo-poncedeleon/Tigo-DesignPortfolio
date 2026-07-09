@@ -357,23 +357,6 @@ body.dark-mode .drone-case-study-btn {
 }
 
 
-/* --- 5. Under Development Sections --- */
-.under-dev-container {
-  justify-content: center;
-  align-items: center;
-}
-
-.under-dev-text {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 3.2rem;
-  color: #000000;
-  text-align: center;
-  line-height: 1.8;
-  letter-spacing: 0.02em;
-  margin: 0;
-}
-
-
 /* --- 6. Project 3: Research (UX Research) --- */
 .research-layout {
   align-items: stretch;
