@@ -12,6 +12,8 @@
 
 <body>
   <!-- ===== PHASE 1: Curtain intro (fixed overlay) ===== -->
+  <!-- Black panel, revealed by clip-path as the figure walks left. Holds only
+       the flag + city/time (they ride the receding black). -->
   <div id="curtain" class="curtain" aria-hidden="true">
     <!-- USA-only flag word-art, populated by geo-clock.js -->
     <div id="flag-grid" class="flag-grid"></div>
@@ -21,22 +23,22 @@
       <div id="geo-place" class="geo-place">&nbsp;</div>
       <div id="geo-clock" class="geo-clock">&nbsp;</div>
     </div>
+  </div>
 
-    <!-- stick figure at the curtain's right edge, pushes the curtain left -->
-    <div id="stick-figure" class="stick-figure">
-      <svg viewBox="0 0 90 230" width="90" height="230" fill="none"
-           stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-           aria-hidden="true">
-        <circle cx="45" cy="34" r="30" />
-        <line x1="45" y1="64" x2="45" y2="150" />
-        <!-- pushing arm (left) + trailing arm -->
-        <line class="arm-push" x1="45" y1="92" x2="6" y2="112" />
-        <line x1="45" y1="92" x2="74" y2="118" />
-        <!-- legs -->
-        <line x1="45" y1="150" x2="14" y2="222" />
-        <line x1="45" y1="150" x2="78" y2="214" />
-      </svg>
-    </div>
+  <!-- Walking stick figure — its OWN layer above the curtain, drawn in dark ink
+       because it stands on the revealed (white) side at the black's edge. -->
+  <div id="stick-figure" class="stick-figure" aria-hidden="true">
+    <svg id="fig-svg" viewBox="0 0 120 268" width="120" height="268" fill="none"
+         stroke="#0a0a0a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <g id="fig-bob">
+        <circle cx="60" cy="34" r="26" />
+        <line x1="60" y1="60" x2="60" y2="166" />            <!-- spine -->
+        <line id="arm-back"  x1="60" y1="82" x2="60" y2="144" />
+        <line id="arm-front" x1="60" y1="82" x2="60" y2="144" />
+        <line id="leg-back"  x1="60" y1="166" x2="60" y2="258" />
+        <line id="leg-front" x1="60" y1="166" x2="60" y2="258" />
+      </g>
+    </svg>
   </div>
 
   <!-- ===== Custom cursor (top-most) ===== -->

@@ -1,47 +1,73 @@
-// Phase 1 animation: the stick figure leans into the curtain and pushes it
-// off-screen to the left, revealing the landing beneath. Auto-plays on load.
+// Phase 1 animation: the stick figure walks from the right edge across to the
+// left, pushing the black curtain off the left edge and revealing the content
+// behind it. Slow (~7s) and auto-plays on load.
+//
+// The figure is on its own layer ABOVE the curtain (drawn dark), and the
+// curtain's right edge is glued to the figure via clip-path each frame, so it
+// always looks like the figure is shoving the black wall leftward.
 window.Curtain = (function () {
+  const WALK_DURATION = 7;   // seconds, full traversal
+  const STEP = 0.5;          // seconds per half-stride
+
   function play(opts) {
     opts = opts || {};
     const onDone = typeof opts.onDone === 'function' ? opts.onDone : function () {};
     const curtain = document.getElementById('curtain');
+    const figure = document.getElementById('stick-figure');
+
     if (!curtain) { onDone(); return; }
 
     const finish = () => {
       curtain.style.pointerEvents = 'none';
       curtain.style.visibility = 'hidden';
+      if (figure) figure.style.display = 'none';
       onDone();
     };
 
-    // Reduced motion: no slide, just uncover immediately (page stays usable).
-    if (opts.reduce || !window.gsap) {
+    // Reduced motion / no GSAP: uncover instantly (page stays usable).
+    if (opts.reduce || !window.gsap || !figure) {
       finish();
       return;
     }
 
     const gsap = window.gsap;
-    const figure = document.getElementById('stick-figure');
-    const arm = curtain.querySelector('.arm-push');
+    const vw = window.innerWidth;
+    const figW = figure.offsetWidth || 180;
 
-    const tl = gsap.timeline({ onComplete: finish });
+    // ---- Infinite walk cycle (legs + arms in opposite phase, body bob) ----
+    const cycles = [];
+    const swing = (sel, from, to, origin) =>
+      gsap.fromTo(sel, { rotation: from }, {
+        rotation: to, duration: STEP, ease: 'sine.inOut',
+        yoyo: true, repeat: -1, svgOrigin: origin,
+      });
 
-    // brief hold so the geo text/clock register
-    tl.to({}, { duration: 0.5 });
+    cycles.push(swing('#leg-front', 20, -20, '60 166'));
+    cycles.push(swing('#leg-back', -20, 20, '60 166'));
+    cycles.push(swing('#arm-front', -14, 14, '60 82'));   // opposite the front leg
+    cycles.push(swing('#arm-back', 14, -14, '60 82'));
+    cycles.push(gsap.to('#fig-bob', {
+      y: -6, duration: STEP / 2, ease: 'sine.inOut', yoyo: true, repeat: -1,
+    }));
 
-    // wind-up: lean toward the curtain
-    if (figure) {
-      tl.to(figure, { rotation: -7, x: -6, duration: 0.35, ease: 'power2.out' }, '>');
-    }
-    // shove: figure straightens/pushes while the whole curtain slides left
-    if (figure) {
-      tl.to(figure, { rotation: 2, duration: 0.9, ease: 'power2.in' }, '>');
-    }
-    if (arm) {
-      tl.to(arm, { attr: { x2: 2, y2: 108 }, duration: 0.9, ease: 'power2.in' }, '<');
-    }
-    tl.to(curtain, { xPercent: -100, duration: 1.05, ease: 'power3.inOut' }, '<0.05');
+    // ---- Master traversal: figure right -> left, curtain edge tracks it ----
+    const setClip = () => {
+      const r = figure.getBoundingClientRect();
+      const edge = r.left + figW * 0.2;            // black meets the figure's front
+      const inset = Math.max(0, vw - edge);
+      curtain.style.clipPath = 'inset(0 ' + inset + 'px 0 0)';
+    };
 
-    return tl;
+    gsap.fromTo(figure,
+      { x: vw },                                    // start off the right edge
+      {
+        x: -figW,                                   // exit off the left edge
+        duration: WALK_DURATION,
+        ease: 'none',                               // steady walking pace
+        onUpdate: setClip,
+        onComplete: () => { cycles.forEach((c) => c.kill()); finish(); },
+      });
+    setClip();
   }
 
   return { play };

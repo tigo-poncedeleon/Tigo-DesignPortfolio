@@ -53,7 +53,7 @@ body.scroll-locked { overflow: hidden; height: 100vh; }
   z-index: 1000;
   background: var(--curtain);
   overflow: hidden;
-  will-change: transform;
+  will-change: clip-path;
 }
 
 .curtain-info {
@@ -77,34 +77,58 @@ body.scroll-locked { overflow: hidden; height: 100vh; }
   font-variant-numeric: tabular-nums;
 }
 
-/* Flag word-art — only mounted (populated) for USA / fallback */
+/* Flag word-art — a fixed-width rectangle; every row spans the same left+right
+   edges via space-between, so short rows still reach the edge (matches Figma). */
 .flag-grid {
   position: absolute;
   left: clamp(1.5rem, 3.5vw, 3rem);
-  top: clamp(2rem, 14vh, 8rem);
-  display: none;                 /* JS sets to grid when populated */
-  font-size: clamp(0.85rem, 1.6vw, 1.5rem);
-  line-height: 1.15;
+  top: clamp(2rem, 13vh, 7.5rem);
+  width: clamp(300px, 34vw, 460px);
+  display: none;                 /* JS sets to block when populated */
+  font-size: clamp(0.8rem, 1.5vw, 1.35rem);
+  line-height: 1.3;              /* row-to-row spacing */
+  font-weight: 400;
+  white-space: nowrap;
   user-select: none;
 }
 .flag-grid.show { display: block; }
-.flag-row { display: flex; white-space: nowrap; }
-.flag-row .cell {
-  display: inline-block;
-  width: 3.4em;                  /* even columns so the flag reads as a grid */
+
+.flag-row { display: flex; width: 100%; }
+.flag-row.full-row { justify-content: space-between; }
+.flag-row .canton {
+  flex: 0 0 36.7%;               /* blue canton = left 3 columns */
+  display: flex;
+  justify-content: space-between;
+}
+.flag-row .stripe {
+  flex: 1 1 auto;
+  margin-left: 2.4%;             /* gap between canton and stripes */
+  display: flex;
+  justify-content: space-between;
 }
 .flag-blue  { color: var(--flag-blue); }
 .flag-red   { color: var(--flag-red); }
 .flag-white { color: var(--flag-white); }
 
+/* Walking figure — own fixed layer above the curtain; GSAP drives translateX */
 .stick-figure {
-  position: absolute;
-  right: clamp(2rem, 12vw, 9rem);
-  bottom: 8vh;
-  transform-origin: 50% 100%;
+  position: fixed;
+  left: 0;
+  bottom: 9vh;
+  z-index: 1100;
+  height: clamp(300px, 46vh, 420px);
+  pointer-events: none;
   will-change: transform;
+  transform: translateX(100vw);  /* start off the right edge */
 }
-.stick-figure svg { display: block; }
+.stick-figure svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  overflow: visible;
+  transform: rotate(-5deg);      /* slight forward (leftward) push lean */
+  transform-origin: 50% 92%;
+}
 
 /* ============================================================
    PHASES 2-4 — stage

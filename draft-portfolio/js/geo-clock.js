@@ -8,18 +8,8 @@ window.GeoClock = (function () {
     isUSA: true,
   };
 
-  // Stylized US flag: rows of color-coded words (B=Blue, R=Red, W=White), per Figma 1251:689.
-  const FLAG_ROWS = [
-    ['B', 'B', 'B', 'R', 'R', 'R', 'R', 'R'],
-    ['B', 'B', 'B', 'W', 'W', 'W', 'W'],
-    ['B', 'B', 'B', 'R', 'R', 'R', 'R', 'R'],
-    ['B', 'B', 'B', 'W', 'W', 'W', 'W'],
-    ['B', 'B', 'B', 'R', 'R', 'R', 'R', 'R'],
-    ['W', 'W', 'W', 'W', 'W', 'W'],
-    ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],
-    ['W', 'W', 'W', 'W', 'W', 'W'],
-    ['R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],
-  ];
+  // Stylized US flag word-art (per Figma 1251:689). Built as a fixed-width
+  // rectangle in renderFlag(); B=Blue, R=Red, W=White.
   const WORD = { B: 'Blue', R: 'Red', W: 'White' };
   const CLS = { B: 'flag-blue', R: 'flag-red', W: 'flag-white' };
 
@@ -53,17 +43,45 @@ window.GeoClock = (function () {
     const grid = document.getElementById('flag-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    FLAG_ROWS.forEach((row) => {
-      const rowEl = document.createElement('div');
-      rowEl.className = 'flag-row';
-      row.forEach((c) => {
-        const cell = document.createElement('span');
-        cell.className = 'cell ' + CLS[c];
-        cell.textContent = WORD[c];
-        rowEl.appendChild(cell);
-      });
-      grid.appendChild(rowEl);
-    });
+
+    const word = (cls, txt) => {
+      const s = document.createElement('span');
+      s.className = cls;
+      s.textContent = txt;
+      return s;
+    };
+    const group = (className, cls, txt, n) => {
+      const g = document.createElement('div');
+      g.className = className;
+      for (let i = 0; i < n; i++) g.appendChild(word(cls, txt));
+      return g;
+    };
+    // Canton row: 3 Blue (left block) + n stripe words (right block), each
+    // block space-between so all rows align to the same left+right edges.
+    const cantonRow = (cls, txt, n) => {
+      const row = document.createElement('div');
+      row.className = 'flag-row canton-row';
+      row.appendChild(group('canton', CLS.B, WORD.B, 3));
+      row.appendChild(group('stripe', cls, txt, n));
+      grid.appendChild(row);
+    };
+    const fullRow = (cls, txt, n) => {
+      const row = document.createElement('div');
+      row.className = 'flag-row full-row';
+      for (let i = 0; i < n; i++) row.appendChild(word(cls, txt));
+      grid.appendChild(row);
+    };
+
+    cantonRow(CLS.R, WORD.R, 5);   // row 1
+    cantonRow(CLS.W, WORD.W, 4);   // row 2
+    cantonRow(CLS.R, WORD.R, 5);   // row 3
+    cantonRow(CLS.W, WORD.W, 4);   // row 4
+    cantonRow(CLS.R, WORD.R, 5);   // row 5
+    fullRow(CLS.W, WORD.W, 6);     // row 6
+    fullRow(CLS.R, WORD.R, 8);     // row 7
+    fullRow(CLS.W, WORD.W, 6);     // row 8
+    fullRow(CLS.R, WORD.R, 8);     // row 9
+
     grid.classList.add('show');
   }
 
