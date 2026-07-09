@@ -1,19 +1,18 @@
-// Phase 3: scroll-linked transition, one pinned scrub timeline on #stage.
-//   Segment A (0 -> ~0.49): landing letters fling out to the edges, wavy + staggered.
-//   Segment B (0 -> 0.45):  portrait fades out.
-//   Gate (0.55):            reveal #nav-page (strictly after the letters have gone).
-//   Segment C (0.58 -> 1):  nav words assemble, entering from alternating sides.
-// Fully reversible under scrubbing. Reduced motion -> plain crossfade.
+// Phase 3: scroll-linked LETTER MORPH. Instead of the landing letters flying off
+// the screen, each of the 15 name letters travels to the position of a nav letter
+// ("about work play ai" — also 15 letters) and crossfades into it at arrival, so
+// the original letters appear to seamlessly become the nav words. The subtitle
+// letters converge inward and fade; the portrait fades out.
+// One pinned, scrubbed timeline — fully reversible.
 window.ScrollTransition = (function () {
   function init(opts) {
     opts = opts || {};
     if (!window.gsap || !window.ScrollTrigger) return;
     const gsap = window.gsap;
     gsap.registerPlugin(window.ScrollTrigger);
-
     const nav = document.getElementById('nav-page');
 
-    // ---- Reduced motion: crossfade landing -> nav over the pin distance ----
+    // ---- Reduced motion: plain crossfade landing -> nav ----
     if (opts.reduce) {
       gsap.set(nav, { autoAlpha: 0 });
       const tl = gsap.timeline({
@@ -30,64 +29,80 @@ window.ScrollTransition = (function () {
       return;
     }
 
-    const letters = gsap.utils.toArray('#landing .letter');
-    const n = letters.length;
+    const build = () => {
+      const nameLetters = gsap.utils
+        .toArray('#landing .name .letter')
+        .filter((el) => !el.classList.contains('space'));
+      const subLetters = gsap.utils
+        .toArray('#landing .subtitle .letter')
+        .filter((el) => !el.classList.contains('space'));
+      const navLetters = gsap.utils.toArray('#nav-page .navletter');
 
-    // Deterministic fan-out (no live measurement mid-transform): left half exits
-    // left, right half exits right; magnitude grows toward the ends; wavy y.
-    const dir = (i) => (i < n / 2 ? -1 : 1);
-    const spread = (i) => {
-      const half = n / 2;
-      const d = Math.abs(i - (half - 0.5)) / half; // 0 at center -> ~1 at ends
-      return 0.9 + 0.5 * d;                         // always flung past the edge
+      // Nav container visible, but each nav letter individually hidden until the
+      // crossfade at the end (so nothing shows behind the landing meanwhile).
+      gsap.set(nav, { autoAlpha: 1 });
+      nav.style.pointerEvents = 'none';
+      gsap.set(navLetters, { autoAlpha: 0 });
+
+      const center = (el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      };
+      const vwCenter = window.innerWidth / 2;
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#stage', start: 'top top', end: '+=1600',
+          scrub: 1, pin: true, anticipatePin: 1,
+          onUpdate: (self) => {
+            const p = self.progress;
+            window.__swayEnabled = p < 0.001;
+            const live = p > 0.98;
+            nav.classList.toggle('nav-live', live);
+            nav.style.pointerEvents = live ? 'auto' : 'none';
+          },
+        },
+      });
+
+      // Hero morph: name letter i -> nav letter i, then crossfade at arrival.
+      const n = Math.min(nameLetters.length, navLetters.length);
+      for (let i = 0; i < n; i++) {
+        const a = center(nameLetters[i]);
+        const b = center(navLetters[i]);
+        tl.to(nameLetters[i], {
+          x: b.x - a.x, y: b.y - a.y,
+          ease: 'power2.inOut', duration: 0.82,
+        }, 0);
+        // crossfade — traveler out, nav letter in, at the same spot
+        tl.to(nameLetters[i], { autoAlpha: 0, duration: 0.16, ease: 'none' }, 0.8);
+        tl.to(navLetters[i], { autoAlpha: 1, duration: 0.16, ease: 'none' }, 0.82);
+      }
+      // any leftover nav letters (if counts ever differ) just fade in at the end
+      for (let i = n; i < navLetters.length; i++) {
+        tl.to(navLetters[i], { autoAlpha: 1, duration: 0.16 }, 0.82);
+      }
+
+      // Subtitle letters converge toward center and fade out early.
+      subLetters.forEach((el, i) => {
+        const a = center(el);
+        tl.to(el, {
+          x: (vwCenter - a.x) * 0.65,
+          y: -30 - (i % 6) * 5,
+          autoAlpha: 0,
+          ease: 'power2.in', duration: 0.45,
+        }, 0);
+      });
+
+      // Portrait fades out as the letters travel.
+      tl.to('.portrait-wrap', { autoAlpha: 0, ease: 'none', duration: 0.55 }, 0);
     };
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: '#stage',
-        start: 'top top',
-        end: '+=1600',
-        scrub: 1,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const p = self.progress;
-          window.__swayEnabled = p < 0.001;
-          const live = p > 0.985;
-          nav.classList.toggle('nav-live', live);
-          nav.style.pointerEvents = live ? 'auto' : 'none';
-        },
-      },
-    });
-
-    // Segment A — letters fling out toward nearest edge, wavy stagger.
-    // No opacity fade: they stay solid and simply leave the (clipped) screen.
-    tl.to(letters, {
-      x: (i) => dir(i) * window.innerWidth * spread(i),
-      y: (i) => Math.sin(i * 0.9) * 120,
-      rotation: (i) => dir(i) * (18 + (i % 5) * 6),
-      ease: 'power2.in',
-      duration: 0.3,
-      stagger: { each: 0.012, from: 'center' },
-    }, 0);
-
-    // Segment B — portrait fades out (wrap covers the mobile-face fallback too)
-    tl.to('.portrait-wrap', { autoAlpha: 0, ease: 'none', duration: 0.45 }, 0);
-
-    // Segment C — nav words assemble from alternating sides.
-    // Explicit set + to (not from) so it stays deterministic under scrubbing.
-    const offX = (i) => (i % 2 === 0 ? -1 : 1) * window.innerWidth * 0.6;
-    tl.set('#nav-page .navword', { x: offX, autoAlpha: 0 }, 0);
-    // Gate — nav container becomes visible only after the letters are fully gone
-    tl.set(nav, { autoAlpha: 1 }, 0.55);
-    tl.to('#nav-page .navword', {
-      x: 0,
-      autoAlpha: 1,
-      ease: 'power3.out',
-      duration: 0.32,
-      stagger: { each: 0.04, from: 'edges' },
-    }, 0.58);
+    // Measure after webfonts load so letter positions are exact.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(build);
+    } else {
+      build();
+    }
   }
 
   return { init };

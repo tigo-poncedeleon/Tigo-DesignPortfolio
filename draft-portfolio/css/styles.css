@@ -226,6 +226,7 @@ body.reduced .mobile-face { display: block; }
   transition: color 0.22s ease, margin 0.28s ease;
   will-change: transform;
 }
+.navletter { display: inline-block; will-change: transform, opacity; }
 
 /* grey pill behind the hovered word */
 .navword::before {

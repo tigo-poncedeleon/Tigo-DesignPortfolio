@@ -26,6 +26,21 @@
     }
   }
 
+  // Split each nav word into per-letter spans (morph targets), keeping the
+  // .navword wrapper (and its data-emoji) intact for the hover pill.
+  function splitNav() {
+    document.querySelectorAll('#nav-page .navword').forEach((word) => {
+      const text = word.textContent;
+      word.textContent = '';
+      for (const ch of text) {
+        const s = document.createElement('span');
+        s.className = 'navletter';
+        s.textContent = ch;
+        word.appendChild(s);
+      }
+    });
+  }
+
   function boot() {
     // Under reduced motion the ported portrait renders an empty canvas (it
     // returns before loading its image), so fall back to the static B&W image.
@@ -36,6 +51,7 @@
     }
 
     document.querySelectorAll('.split').forEach(splitLetters);
+    splitNav();
 
     // Lock scroll while the curtain is up.
     document.body.classList.add('scroll-locked');
