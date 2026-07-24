@@ -1,0 +1,148 @@
+/* ============================================================
+   Vicino AI — coming soon. One centred card in the site's pen
+   language: a laptop whose screen is still being sketched.
+   Flow-layout page — responsive by construction.
+   ============================================================ */
+
+.soon-stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.soon-stage.revealed { opacity: 1; }
+
+.soon-card {
+  text-align: center;
+  padding: 24px;
+  transition: opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.soon-stage:not(.revealed) .soon-card {
+  opacity: 0;
+  translate: 0 16px;
+}
+
+/* ---- the line-art laptop: guides fade in, ink draws, the orange pen
+   dot rests where the next stroke stops ---- */
+.soon-illo .guide {
+  fill: none;
+  stroke: #d9d9d9;
+  stroke-width: 1.2;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.5s ease 1.2s;
+}
+.soon-stage.revealed .soon-illo .guide { opacity: 1; }
+.soon-illo .stroke {
+  fill: none;
+  stroke: #5e5e5e;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1) var(--sd, 0.4s);
+}
+.soon-illo .s1 { --sd: 0.4s; }
+.soon-illo .s2 { --sd: 0.7s; }
+.soon-illo .s3 { --sd: 1s; }
+.soon-stage.revealed .soon-illo .stroke { stroke-dashoffset: 0; }
+.soon-dot {
+  fill: var(--orange);
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.7s;
+}
+.soon-stage.revealed .soon-dot { transform: scale(1); }
+/* the pen keeps working while you watch */
+.soon-stage.revealed .soon-dot { animation: soon-blink 2.2s ease-in-out 2.4s infinite; }
+@keyframes soon-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+.soon-title {
+  margin-top: 18px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.soon-title h1 {
+  font-size: 28px;
+  font-weight: 400;
+  color: #5e5e5e;
+}
+.soon-title p {
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.soon-copy {
+  margin: 18px auto 0;
+  max-width: 460px;
+  font-size: 17px;
+  line-height: 26px;
+  color: #5e5e5e;
+}
+/* the marker sweep, in the site's warm wash */
+.soon-copy strong {
+  font-weight: 400;
+  color: #404040;
+  background: linear-gradient(rgba(253, 143, 59, 0.25), rgba(253, 143, 59, 0.25))
+              no-repeat left 78% / 0% 0.58em;
+  transition: background-size 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.4s;
+}
+.soon-stage.revealed .soon-copy strong { background-size: 100% 0.58em; }
+
+.soon-specs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.soon-chip {
+  padding: 5px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #5e5e5e;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.soon-back {
+  display: inline-block;
+  margin-top: 26px;
+  font-size: 16px;
+  color: #5e5e5e;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.soon-back:hover { color: var(--orange); }
+
+@media (max-width: 700px) {
+  .soon-title { flex-direction: column; align-items: center; gap: 2px; }
+  .soon-title h1 { font-size: 24px; }
+  .soon-title p { font-size: 17px; }
+  .soon-copy { max-width: 320px; font-size: 16px; line-height: 25px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soon-card { transition: opacity 0.25s ease; translate: none; }
+  .soon-illo .guide { transition: none; opacity: 1; }
+  .soon-illo .stroke { transition: none; stroke-dashoffset: 0; }
+  .soon-dot { transition: none; transform: scale(1); animation: none; }
+  .soon-copy strong { transition: none; background-size: 100% 0.58em; }
+}

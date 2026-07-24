@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León — Play</title>
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/play.css?v=17" />
+</head>
+
+<body>
+  <main>
+    <section id="play-stage" class="play-stage">
+      <!-- house chip that expands on hover into the site's words (see
+           .site-nav in styles.css); the current page carries is-current -->
+      <nav class="site-nav" aria-label="Site">
+        <a class="site-nav-home" href="index.html#home" aria-label="Back home">
+          <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+        </a>
+        <div class="site-nav-reveal">
+          <div class="site-nav-words">
+            <a class="site-nav-word is-home" href="index.html#home">home</a>
+            <a class="site-nav-word" href="about.html">about</a>
+            <a class="site-nav-word" href="work.html">work</a>
+            <a class="site-nav-word is-current" aria-current="page" href="play.html">play</a>
+            <a class="site-nav-word" href="ai.html">ai</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-frost" aria-hidden="true"></div>
+
+      <!-- Three games, one per viewport slide, sliding in HORIZONTALLY — the
+           same snap carousel as work.html (wheel paging via
+           js/play-pager.js). Whichever board is centred owns the keyboard. -->
+      <div class="play-scroll" id="play-scroll">
+        <section class="play-slide" id="pong" aria-label="Pong">
+          <header class="play-title">
+            <h1>Pong</h1>
+            <p>a video game published by Atari in 1972</p>
+          </header>
+
+          <!-- The court. Paddles and ball are absolutely positioned divs moved by
+               js/pong.js; the centre overlay swaps between the session tallies
+               (idle / playing) and the serve countdown, matching the two Figma
+               frames (1328:402 and 1359:24). -->
+          <div class="board" id="board">
+            <!-- inner rail (Figma 1363:140) — the ball bounces off its inside -->
+            <div class="board-wall" id="board-wall" aria-hidden="true"></div>
+            <div class="paddle" id="paddle-left"></div>
+            <div class="paddle" id="paddle-right"></div>
+            <div class="ball" id="ball" hidden></div>
+
+            <div class="board-overlay scoreboard" id="scoreboard">
+              <div class="score-col score-computer">
+                <p class="score-label">Computer</p>
+                <p class="score-num" id="score-computer">0</p>
+              </div>
+              <div class="score-col score-player">
+                <p class="score-label">Player</p>
+                <p class="score-num" id="score-player">0</p>
+              </div>
+            </div>
+
+            <div class="board-overlay countdown" id="countdown" hidden>3</div>
+
+            <button class="board-btn" id="replay" type="button" aria-label="Replay" hidden>
+              <span class="glyph glyph-replay"></span>
+            </button>
+
+            <button class="board-btn" id="play-btn" type="button" aria-label="Start game">
+              <span class="glyph glyph-play"></span>
+            </button>
+          </div>
+
+          <!-- the site-wide crown — js/records.js keeps it current -->
+          <div class="record-row" aria-live="polite">
+            <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
+            <p class="record-chip" id="record-pong"><span class="record-label">longest rally</span><span class="record-val">&hellip;</span></p>
+          </div>
+        </section>
+
+        <section class="play-slide" id="snake" aria-label="Snake">
+          <header class="play-title">
+            <h1>Snake</h1>
+            <p>a video game published by Nokia in 1997</p>
+          </header>
+
+          <!-- Same court, different game: js/snake.js steps 21px cells inside
+               the rail; segments/food are divs it appends to the board. -->
+          <div class="board" id="snake-board">
+            <div class="board-wall" id="snake-wall" aria-hidden="true"></div>
+
+            <div class="board-overlay scoreboard" id="snake-scoreboard">
+              <div class="score-col score-computer">
+                <p class="score-label">Score</p>
+                <p class="score-num" id="snake-score">0</p>
+              </div>
+              <div class="score-col score-player">
+                <p class="score-label">Best</p>
+                <p class="score-num" id="snake-best">0</p>
+              </div>
+            </div>
+
+            <div class="board-overlay countdown" id="snake-countdown" hidden>3</div>
+
+            <button class="board-btn" id="snake-replay" type="button" aria-label="Replay" hidden>
+              <span class="glyph glyph-replay"></span>
+            </button>
+
+            <button class="board-btn" id="snake-play" type="button" aria-label="Start game">
+              <span class="glyph glyph-play"></span>
+            </button>
+          </div>
+
+          <div class="record-row" aria-live="polite">
+            <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
+            <p class="record-chip" id="record-snake"><span class="record-label">longest snake</span><span class="record-val">&hellip;</span></p>
+          </div>
+        </section>
+
+        <section class="play-slide" id="flappy" aria-label="Flappy Bird">
+          <header class="play-title">
+            <h1>Flappy Bird</h1>
+            <p>a video game published by dotGears in 2013</p>
+          </header>
+
+          <!-- Mid-size court: js/flappy.js scrolls paddle-grey pipes past the
+               orange bird; space / up / a click flaps. -->
+          <div class="board" id="flappy-board">
+            <div class="board-wall" id="flappy-wall" aria-hidden="true"></div>
+            <!-- pipes live in here: clipped to the rail's content box, so
+                 they only exist inside the inner border -->
+            <div class="flappy-clip" id="flappy-clip" aria-hidden="true"></div>
+
+            <div class="board-overlay scoreboard" id="flappy-scoreboard" hidden>
+              <div class="score-col score-computer">
+                <p class="score-label">Score</p>
+                <p class="score-num" id="flappy-score">0</p>
+              </div>
+              <div class="score-col score-player">
+                <p class="score-label">Best</p>
+                <p class="score-num" id="flappy-best">0</p>
+              </div>
+            </div>
+
+            <div class="board-overlay countdown" id="flappy-countdown" hidden>3</div>
+
+            <button class="board-btn" id="flappy-replay" type="button" aria-label="Replay" hidden>
+              <span class="glyph glyph-replay"></span>
+            </button>
+
+            <button class="board-btn" id="flappy-play" type="button" aria-label="Start game">
+              <span class="glyph glyph-play"></span>
+            </button>
+          </div>
+
+          <div class="record-row" aria-live="polite">
+            <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
+            <p class="record-chip" id="record-flappy"><span class="record-label">longest run</span><span class="record-val">&hellip;</span></p>
+          </div>
+        </section>
+      </div>
+
+      <nav class="play-pager" aria-label="Games">
+        <a class="play-dot" aria-current="page" href="#pong" aria-label="Pong"></a>
+        <a class="play-dot" href="#snake" aria-label="Snake"></a>
+        <a class="play-dot" href="#flappy" aria-label="Flappy Bird"></a>
+      </nav>
+
+      <!-- phones get a courtesy note instead of the games (the boards want a
+           keyboard + a wider court); shown only ≤700px via css/play.css -->
+      <div class="play-mobile" aria-label="Play — desktop only">
+        <p class="play-mobile-eyebrow">Play</p>
+        <h1 class="play-mobile-title">best on a bigger screen</h1>
+        <p class="play-mobile-copy">Pong, Snake, and Flappy want a keyboard and
+          a wider court. Swing by on a laptop to play &mdash; for now, here&rsquo;s
+          the rest of the site.</p>
+        <a class="play-mobile-link" href="index.html#home">&larr; back home</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/nav-touch.js"></script>
+  <script src="js/records.js"></script>
+  <script src="js/pong.js"></script>
+  <script src="js/snake.js"></script>
+  <script src="js/flappy.js"></script>
+  <script src="js/play-pager.js"></script>
+</body>
+</html>

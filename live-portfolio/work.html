@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León — Work</title>
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/work.css?v=17" />
+</head>
+
+<body>
+  <main>
+    <section class="work-stage">
+      <!-- house chip that expands on hover into the site's words (see
+           .site-nav in styles.css); the current page carries is-current -->
+      <nav class="site-nav" aria-label="Site">
+        <a class="site-nav-home" href="index.html#home" aria-label="Back home">
+          <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+        </a>
+        <div class="site-nav-reveal">
+          <div class="site-nav-words">
+            <a class="site-nav-word is-home" href="index.html#home">home</a>
+            <a class="site-nav-word" href="about.html">about</a>
+            <a class="site-nav-word is-current" aria-current="page" href="work.html">work</a>
+            <a class="site-nav-word" href="play.html">play</a>
+            <a class="site-nav-word" href="ai.html">ai</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-frost" aria-hidden="true"></div>
+
+      <!-- One full-viewport slide per project; the container snaps a whole
+           slide into place per scroll gesture. Nav + pager sit OUTSIDE the
+           scroller so they hold still while the work scrolls beneath. -->
+      <div class="work-scroll" id="work-scroll">
+        <section class="work-slide" id="vicino" aria-label="Vicino AI">
+          <header class="work-title">
+            <h1>Vicino AI</h1>
+            <p>UX Engineer Intern</p>
+          </header>
+          <p class="work-date">Summer 2026</p>
+          <!-- Figma 1401:86: Canvas — Pulse Redesign on the studio display;
+               the display AND the floating link open the coming-soon page -->
+          <a class="work-img-vicino" href="vicino.html"
+             aria-label="Vicino AI case study — coming soon">
+            <img src="Media/Vicino-Laptop.png"
+                 alt="Vicino AI canvas — Pulse redesign shown on a studio display" />
+          </a>
+          <span class="work-open" aria-hidden="true">
+            <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </section>
+
+        <section class="work-slide" id="pantrypal" aria-label="Pantry Pal">
+          <header class="work-title">
+            <h1>Pantry Pal</h1>
+            <p>Product Designer</p>
+          </header>
+          <p class="work-date">Winter 2026</p>
+          <!-- Figma 1401:60: the Pantry Pal login screen on an iPhone;
+               the phone AND the floating link both open the case study -->
+          <a class="work-img-pantry" href="pantrypal.html"
+             aria-label="Open the PantryPal case study">
+            <img src="Media/pantry-login.png"
+                 alt="Pantry Pal login screen on an iPhone" />
+          </a>
+          <span class="work-open" aria-hidden="true">
+            <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </section>
+
+        <section class="work-slide" id="drone" aria-label="Next Level Drone Cleaning">
+          <header class="work-title">
+            <h1>Next Level Drone Cleaning</h1>
+            <p>Founding Visual Designer</p>
+          </header>
+          <p class="work-date">Summer 2025</p>
+          <!-- Figma 1401:83: the logo (1:1 — see work.css);
+               the badge AND the floating link both open the case study -->
+          <a class="work-img-drone" href="nextlevel.html"
+             aria-label="Open the Next Level Drone Cleaning case study">
+            <img src="Media/NextLevelIcon.png"
+                 alt="Next Level Drone Cleaning logo" />
+          </a>
+          <span class="work-open" aria-hidden="true">
+            <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </section>
+      </div>
+
+      <nav class="work-pager" aria-label="Work projects">
+        <a class="work-dot" aria-current="page" href="#vicino" aria-label="Vicino AI"></a>
+        <a class="work-dot" href="#pantrypal" aria-label="Pantry Pal"></a>
+        <a class="work-dot" href="#drone" aria-label="Next Level Drone Cleaning"></a>
+      </nav>
+    </section>
+  </main>
+
+  <script src="js/nav-touch.js"></script>
+  <script src="js/work.js"></script>
+</body>
+</html>

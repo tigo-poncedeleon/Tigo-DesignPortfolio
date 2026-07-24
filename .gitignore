@@ -2,3 +2,5 @@
 .env.local
 .vercel
 node_modules
+.env*
+.claude/settings.local.json

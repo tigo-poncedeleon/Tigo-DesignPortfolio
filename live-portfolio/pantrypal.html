@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León — PantryPal</title>
+  <meta name="description" content="PantryPal — an AI recipe app case study by Tigo Ponce de León. Research, wireframes, a six-screen hi-fi prototype, and working code with a live Gemini API. +40% task completion across testing rounds." />
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/pantry.css?v=8" />
+</head>
+
+<body>
+  <main>
+    <section class="case-stage">
+      <!-- house chip that expands on hover into the site's words; this
+           page lives under WORK, so work carries is-current -->
+      <nav class="site-nav" aria-label="Site">
+        <a class="site-nav-home" href="index.html#home" aria-label="Back home">
+          <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+        </a>
+        <div class="site-nav-reveal">
+          <div class="site-nav-words">
+            <a class="site-nav-word is-home" href="index.html#home">home</a>
+            <a class="site-nav-word" href="about.html">about</a>
+            <a class="site-nav-word is-current" aria-current="page" href="work.html">work</a>
+            <a class="site-nav-word" href="play.html">play</a>
+            <a class="site-nav-word" href="ai.html">ai</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-frost" aria-hidden="true"></div>
+
+      <!-- the about page's sidebar system, verbatim: hairline that draws
+           itself, orange reading thread, ONE warm chip gliding between
+           the chapter words -->
+      <div class="case-divider" aria-hidden="true"></div>
+      <div class="case-thread" aria-hidden="true"></div>
+      <nav class="case-menu" aria-label="Case study sections">
+        <div class="menu-glass" aria-hidden="true"></div>
+        <a class="menu-item is-current" href="#overview">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle pathLength="1" cx="13" cy="13" r="9.5" /><circle pathLength="1" cx="13" cy="13" r="4" /></g></svg>
+          <span>overview</span>
+        </a>
+        <a class="menu-item" href="#problem">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle pathLength="1" cx="11" cy="11" r="6.5" /><path pathLength="1" d="M15.8 15.8 L22 22" /></g></svg>
+          <span>problem</span>
+        </a>
+        <a class="menu-item" href="#solution">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M4 20 C 9 20, 9 7, 14 7 C 18 7, 17 14, 22 13" /><path pathLength="1" d="M19 10.5 L22 13 L19 16" /></g></svg>
+          <span>solution</span>
+        </a>
+        <a class="menu-item" href="#process">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect pathLength="1" x="4" y="4.5" width="12" height="10" rx="2" /><rect pathLength="1" x="10" y="11.5" width="12" height="10" rx="2" /></g></svg>
+          <span>process</span>
+        </a>
+        <a class="menu-item" href="#craft">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle pathLength="1" cx="13" cy="13" r="9.5" /><circle pathLength="1" cx="9" cy="10.5" r="1.4" /><circle pathLength="1" cx="13.5" cy="8" r="1.4" /><circle pathLength="1" cx="17" cy="11" r="1.4" /></g></svg>
+          <span>craft</span>
+        </a>
+        <a class="menu-item" href="#results">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M4 22 H22" /><path pathLength="1" d="M5 18 L11 12 L15 15 L21 7" /><path pathLength="1" d="M17.5 7 H21 V10.5" /></g></svg>
+          <span>results</span>
+        </a>
+      </nav>
+
+      <!-- Six chapters, one per viewport, scrolling DOWN — the same
+           chapter mechanics as about.html (js/pantry.js) -->
+      <div class="case-scroll" id="case-scroll">
+
+        <!-- 01 · overview — the recruiter's ten seconds: what it is,
+             what I did, what moved. Login mock beside the pitch. -->
+        <section class="case-slide" id="overview" aria-label="Overview">
+          <header class="case-title">
+            <span class="case-num">01</span>
+            <h1>PantryPal</h1>
+            <p>an AI cooking partner</p>
+          </header>
+
+          <div class="case-pitch">
+            <img class="pitch-logo" src="Media/pantrypal-logo.png" alt="PantryPal logo" />
+            <p>PantryPal turns the ingredients you <strong>already have</strong>
+            into meals you actually want to cook. Snap your fridge or your
+            receipt — <strong>computer vision</strong> stocks your digital
+            shelf, and an AI recipe engine does the rest.</p>
+            <p>Designed and built <strong>end-to-end</strong>: research,
+            wireframes, a six-screen hi-fi prototype, and working code with
+            a live <strong>Gemini API</strong> integration.</p>
+            <dl class="spec-grid" aria-label="Project facts">
+              <div class="spec-cell"><dt>role</dt><dd>Product Designer</dd></div>
+              <div class="spec-cell"><dt>timeline</dt><dd>Winter 2025&ndash;26</dd></div>
+              <div class="spec-cell"><dt>platform</dt><dd>Mobile</dd></div>
+              <div class="spec-cell"><dt>tools</dt><dd>Figma &middot; Photoshop &middot; Gemini</dd></div>
+            </dl>
+            <p class="headline-metric">+40% task completion across testing rounds</p>
+          </div>
+
+          <figure class="case-hero">
+            <img src="Media/pantry-login.png" alt="PantryPal log-in screen on an iPhone" />
+          </figure>
+
+          <div class="scroll-hint" aria-hidden="true">
+            <span>scroll</span>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 4 L6 8.5 L10 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </div>
+        </section>
+
+        <!-- 02 · problem — the food-waste arc draws itself to 35% -->
+        <section class="case-slide" id="problem" aria-label="Problem">
+          <header class="case-title">
+            <span class="case-num">02</span>
+            <h1>Problem</h1>
+            <p>good food, wasted</p>
+          </header>
+
+          <div class="prob-grid">
+            <article class="prob-card" style="--n:0">
+              <div class="prob-illo">
+                <svg viewBox="0 0 160 160" aria-hidden="true">
+                  <circle class="guide tick-ring" cx="80" cy="74" r="62" />
+                  <circle class="guide" cx="80" cy="74" r="52" />
+                  <circle class="arc" cx="80" cy="74" r="52" pathLength="1" transform="rotate(-90 80 74)" />
+                  <text class="illo-num" x="80" y="78"><tspan data-count="35" data-suffix="%" data-dur="1500">35%</tspan></text>
+                  <text class="illo-sub" x="80" y="97">wasted</text>
+                </svg>
+              </div>
+              <h2 class="prob-head">Thrown away, uneaten</h2>
+              <p class="prob-copy">The USDA estimates 35% of the U.S. food
+              supply is wasted every year — often just because no one knows
+              what to make with what's left.</p>
+            </article>
+            <article class="prob-card" style="--n:1">
+              <div class="prob-illo">
+                <svg viewBox="0 0 160 160" aria-hidden="true">
+                  <rect class="guide" x="56" y="18" width="72" height="92" rx="8" />
+                  <path class="guide" d="M106 30 L118 42 M118 30 L106 42" />
+                  <rect class="guide" x="44" y="30" width="72" height="92" rx="8" />
+                  <rect class="stroke s1" x="32" y="42" width="72" height="92" rx="8" pathLength="1" />
+                  <path class="stroke s2" pathLength="1" d="M44 62 H92" />
+                  <path class="stroke s2" pathLength="1" d="M44 74 H84" />
+                  <path class="stroke s2" pathLength="1" d="M44 86 H88" />
+                  <path class="check" d="M50 112 L62 123 L84 98" pathLength="1" />
+                </svg>
+              </div>
+              <h2 class="prob-head">Recipes without a kitchen</h2>
+              <p class="prob-copy">The internet has millions of recipes —
+              and almost none of them start from what's actually sitting
+              on your shelf.</p>
+            </article>
+          </div>
+
+          <div class="built-for">
+            <span class="built-label">built for</span>
+            <span class="case-chip">first-apartment cooks</span>
+            <span class="case-chip">college students</span>
+            <span class="case-chip">busy families</span>
+          </div>
+
+          <!-- the chapter's last word — the question the next slide answers -->
+          <div class="hmw">
+            <p class="hmw-label">which raises the question</p>
+            <p class="hmw-q">How might we make dinner start from
+            <strong>what's already on the shelf</strong>?</p>
+          </div>
+        </section>
+
+        <!-- 03 · solution — the product first, the process after; the
+             walkthrough answers the problem slide's question directly.
+             Six steps on the left, the live screen in the middle, the
+             why on the right. Click a step (or the phone, or ← →). -->
+        <section class="case-slide" id="solution" aria-label="Solution">
+          <header class="case-title">
+            <span class="case-num">03</span>
+            <h1>Solution</h1>
+            <p>six screens, zero friction</p>
+          </header>
+
+          <div class="flow-steps" role="tablist" aria-label="Walk the app">
+            <div class="flow-glass" aria-hidden="true"></div>
+            <button class="step-item is-current" role="tab" aria-selected="true"><span class="step-n">01</span><span>log in</span></button>
+            <button class="step-item" role="tab" aria-selected="false"><span class="step-n">02</span><span>ingredients hub</span></button>
+            <button class="step-item" role="tab" aria-selected="false"><span class="step-n">03</span><span>ai scanner</span></button>
+            <button class="step-item" role="tab" aria-selected="false"><span class="step-n">04</span><span>checkout</span></button>
+            <button class="step-item" role="tab" aria-selected="false"><span class="step-n">05</span><span>recipes</span></button>
+            <button class="step-item" role="tab" aria-selected="false"><span class="step-n">06</span><span>cook</span></button>
+          </div>
+
+          <figure class="flow-phone" title="Click to walk the flow">
+            <img class="is-on" src="Media/pantry-flow-1.webp" alt="PantryPal log-in screen" />
+            <img src="Media/pantry-flow-2.webp" alt="Ingredients hub screen" />
+            <img src="Media/pantry-flow-3.png" alt="AI receipt-scanner screen" />
+            <img src="Media/pantry-flow-4.png" alt="Ingredient checkout screen" />
+            <img src="Media/pantry-flow-5.webp" alt="Generated recipe list screen" />
+            <img src="Media/pantry-flow-6.webp" alt="Final step-by-step recipe screen" />
+          </figure>
+
+          <div class="flow-copy">
+            <div class="flow-cap is-on"><h3>log in</h3><p>A warm front door — &ldquo;Let's get cooking!&rdquo; sets the tone before a single tap.</p></div>
+            <div class="flow-cap"><h3>ingredients hub</h3><p>One screen, three jobs: view, add, and select ingredients — no detours, no repeats.</p></div>
+            <div class="flow-cap"><h3>ai scanner</h3><p>Point the camera at a fridge or a receipt; computer vision stocks the shelf for you.</p></div>
+            <div class="flow-cap"><h3>checkout</h3><p>A quick pass over the picks, then one big button: find recipes.</p></div>
+            <div class="flow-cap"><h3>recipes</h3><p>Generated meals with nutrition at a glance — choose whatever looks good tonight.</p></div>
+            <div class="flow-cap"><h3>cook</h3><p>The payoff: the chosen recipe broken into simple, confident steps.</p></div>
+            <p class="flow-hint">click the steps, the phone, or use &larr; &rarr;</p>
+          </div>
+        </section>
+
+        <!-- 04 · process — the shelf you just walked wasn't the first
+             idea: three structures, two set aside, one shipped.
+             Recruiters read decisions, not deliverables. -->
+        <section class="case-slide" id="process" aria-label="Process">
+          <header class="case-title">
+            <span class="case-num">04</span>
+            <h1>Process</h1>
+            <p>how the shelf won</p>
+          </header>
+
+          <div class="wire-grid">
+            <article class="wire-card" style="--n:0">
+              <div class="wire-shot"><img src="Media/pantry-wire-1.png" alt="Wireframe one — storage buckets" /></div>
+              <div class="wire-verdict"><span class="wire-name">01 &middot; buckets</span><span class="verdict">set aside</span></div>
+              <p class="wire-copy">Fridge / freezer / pantry categories
+              sounded tidy — and cost extra clicks at every turn.</p>
+            </article>
+            <article class="wire-card" style="--n:1">
+              <div class="wire-shot"><img src="Media/pantry-wire-2.png" alt="Wireframe two — the add-then-select portal" /></div>
+              <div class="wire-verdict"><span class="wire-name">02 &middot; the portal</span><span class="verdict">set aside</span></div>
+              <p class="wire-copy">A separate add-then-select portal showed
+              the same screen twice with slightly different jobs.</p>
+            </article>
+            <article class="wire-card is-shipped" style="--n:2">
+              <div class="wire-shot"><img src="Media/pantry-wire-3.png" alt="Wireframe three — one consolidated shelf" /></div>
+              <div class="wire-verdict"><span class="wire-name">03 &middot; one shelf</span><span class="verdict is-yes">shipped</span></div>
+              <p class="wire-copy">Add, view, and choose on a single screen,
+              organized by food type instead of storage. Friction gone —
+              it became the six screens you just walked.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- 05 · craft — the visual language, in the site's card recipe -->
+        <section class="case-slide" id="craft" aria-label="Craft">
+          <header class="case-title">
+            <span class="case-num">05</span>
+            <h1>Craft</h1>
+            <p>a fun, breezy visual language</p>
+          </header>
+
+          <div class="craft2-grid">
+            <article class="craft2-card" style="--n:0">
+              <div class="swatch-row">
+                <div class="swatch"><span class="swatch-dot" style="--c:#FFD67E"></span><span class="case-chip">#FFD67E</span></div>
+                <div class="swatch"><span class="swatch-dot" style="--c:#FF8D7E"></span><span class="case-chip">#FF8D7E</span></div>
+                <div class="swatch"><span class="swatch-dot" style="--c:#B8EDF8"></span><span class="case-chip">#B8EDF8</span></div>
+              </div>
+              <h2 class="prob-head">Invitingly vibrant</h2>
+              <p class="prob-copy">A warm, breezy palette makes opening the
+              app feel like a treat — something users want in their routine,
+              not another chore.</p>
+            </article>
+            <article class="craft2-card" style="--n:1">
+              <div class="food-row">
+                <span class="food" aria-label="steak"><img src="Media/pantry-food-steak.png" alt="Steak illustration" /></span>
+                <span class="food" aria-label="cheeseburger"><img src="Media/pantry-food-burger.png" alt="Cheeseburger illustration" /></span>
+                <span class="food" aria-label="salad"><img src="Media/pantry-food-salad.png" alt="Salad illustration" /></span>
+                <span class="food" aria-label="tuna"><img src="Media/pantry-food-tuna.png" alt="Tuna illustration" /></span>
+                <span class="food" aria-label="ground beef"><img src="Media/pantry-food-beef.png" alt="Ground beef illustration" /></span>
+                <span class="food" aria-label="cheesesteak"><img src="Media/pantry-food-philly.png" alt="Philly cheesesteak illustration" /></span>
+              </div>
+              <h2 class="prob-head">Light &amp; animated</h2>
+              <p class="prob-copy">The illustrations carry the fun without
+              costing clarity — users enjoy the imagery and still read every
+              screen at a glance.</p>
+            </article>
+          </div>
+
+          <p class="craft2-principle">&ldquo;<strong>Simple is better</strong> — every step
+          should make the next action obvious.&rdquo;</p>
+        </section>
+
+        <!-- 06 · results — the numbers, the lessons, the door out -->
+        <section class="case-slide" id="results" aria-label="Results">
+          <header class="case-title">
+            <span class="case-num">06</span>
+            <h1>Results</h1>
+            <p>what moved, what I learned</p>
+          </header>
+
+          <div class="metric-grid">
+            <article class="metric-card" style="--n:0">
+              <p class="metric-num"><span data-count="40" data-prefix="+" data-suffix="%">+40%</span></p>
+              <p class="metric-label">task completion lift across moderated
+              testing rounds</p>
+            </article>
+            <article class="metric-card" style="--n:1">
+              <p class="metric-num">3 &rarr; 1</p>
+              <p class="metric-label">wireframe structures explored before
+              one shipped</p>
+            </article>
+            <article class="metric-card" style="--n:2">
+              <p class="metric-num"><span data-count="6">6</span></p>
+              <p class="metric-label">hi-fi screens — designed in Figma,
+              wired to a live Gemini API</p>
+            </article>
+          </div>
+
+          <div class="learned">
+            <p class="learned-label">what I learned</p>
+            <p><strong>Own the whole arc</strong> — blank canvas &rarr; visual
+            language &rarr; UX &rarr; working code with a live AI API.</p>
+            <p><strong>Test early, with real people</strong> — peer feedback
+            surfaced blind spots no solo pass would catch.</p>
+            <p><strong>Ship systems, not artifacts</strong> — PantryPal is
+            built to keep evolving well past v1.</p>
+            <p><strong>What I'd do next</strong> — test with cooks I've
+            never met; friendly feedback only gets you so far.</p>
+          </div>
+
+          <div class="case-outro">
+            <a class="case-link" href="work.html">more work &rarr;</a>
+            <a class="case-link" href="about.html#contact">say hello &rarr;</a>
+          </div>
+        </section>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="js/nav-touch.js"></script>
+  <script src="js/pantry.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León</title>
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+</head>
+
+<body>
+  <main>
+    <!-- The stage opens on the COVER frame (Figma 1408:28): name + role
+         dead-centre and the arrow below. Clicking the arrow or any scroll
+         gesture removes is-cover (js/home-open.js) and the page settles
+         into the nav frame (1401:112). One-way. -->
+    <section id="stage" class="stage is-cover">
+      <!-- top: name + role -->
+      <header class="frame-top">
+        <h1 class="frame-name">Tigo Ponce de León</h1>
+        <p class="frame-role">product design engineer</p>
+      </header>
+
+      <!-- centre: the pill of words + the grey chip that rides UNDER the hovered
+           word (moved and resized by glass-nav.js). The chip is declared first so
+           it paints behind the words, matching Figma's node order. -->
+      <div class="pill" id="pill">
+        <div class="glass" id="glass" aria-hidden="true"></div>
+        <div class="words" id="words">
+          <button class="word" type="button" data-word="about">about</button>
+          <button class="word" type="button" data-word="work">work</button>
+          <button class="word" type="button" data-word="play">play</button>
+          <button class="word" type="button" data-word="ai">ai</button>
+        </div>
+      </div>
+
+      <!-- bottom: current state + live local time -->
+      <footer class="frame-bottom">
+        <p class="frame-state" id="frame-state">Oregon</p>
+        <p class="frame-time" id="frame-time">--:--:-- --</p>
+      </footer>
+
+      <!-- cover-frame arrow (Figma 1408:40: arrow.up.circle, 39×39 @ 620,742) -->
+      <button class="open-arrow" id="open-arrow" type="button" aria-label="Enter site">
+        <svg width="39" height="39" viewBox="0 0 39 39" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+            <circle cx="19.5" cy="19.5" r="17.2" />
+            <path d="M19.5 27 V13" />
+            <path d="M13 19 L19.5 12.5 L26 19" stroke-linejoin="round" />
+          </g>
+        </svg>
+      </button>
+    </section>
+
+    <!-- MOBILE ONLY: the shared site-nav bottom bar (styles.css), identical
+         to every subpage. Hidden on desktop, where the centred pill above is
+         the nav; js/nav-touch.js paints the tab icons. Home is current. -->
+    <nav class="site-nav is-mobile-only" aria-label="Site">
+      <a class="site-nav-home" href="index.html#home" aria-label="Home">
+        <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+      </a>
+      <div class="site-nav-reveal">
+        <div class="site-nav-words">
+          <a class="site-nav-word is-home is-current" aria-current="page" href="index.html#home">home</a>
+          <a class="site-nav-word" href="about.html">about</a>
+          <a class="site-nav-word" href="work.html">work</a>
+          <a class="site-nav-word" href="play.html">play</a>
+          <a class="site-nav-word" href="ai.html">ai</a>
+        </div>
+      </div>
+    </nav>
+  </main>
+
+  <script src="js/frame-clock.js"></script>
+  <script src="js/glass-nav.js?v=10"></script>
+  <script src="js/home-open.js"></script>
+  <script src="js/nav-touch.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

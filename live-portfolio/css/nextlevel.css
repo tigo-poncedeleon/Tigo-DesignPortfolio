@@ -1,0 +1,1507 @@
+/* ============================================================
+   Next Level Drone Cleaning case study — the site's chapter
+   system (pantry.css lineage) retold as a seven-slide brand
+   story: sidebar menu + cool gliding chip beside the self-drawing
+   hairline and its blue reading thread, chapters stacked
+   VERTICALLY to the right. Content centres on the CONTENT AXIS
+   --ax = midline of [247px … right edge].
+   ============================================================ */
+
+.case-stage {
+  /* inside the case study the accents speak NEXT LEVEL, not the site
+     orange: sky blue is the wash (the brand's #B8EDF8), a deeper azure
+     is the ink, navy anchors the thread */
+  --nl-sky: #b8edf8;
+  --nl-azure: #2b7cc4;
+  --nl-navy: #24405e;
+  --nl-wash: rgba(184, 237, 248, 0.4);
+  --nl-line: rgba(122, 191, 209, 0.55);
+  --nl-mark: rgba(151, 222, 240, 0.6);
+
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.case-stage.revealed { opacity: 1; }
+
+/* ---- the sidebar: hairline at 247 that draws itself top-down,
+   menu aligned to the house chip, one cool chip gliding ---- */
+.case-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 247px;
+  width: 1px;
+  background: #d9d9d9;
+  z-index: 4;
+  pointer-events: none;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+}
+.case-stage.revealed .case-divider { transform: none; }
+
+/* the reading thread — js/nextlevel.js maps the scroller onto --p */
+.case-thread {
+  position: absolute;
+  top: 0;
+  left: 246px;
+  width: 3px;
+  height: calc(56px + (100% - 56px) * var(--p, 0));
+  border-radius: 1.5px;
+  background: linear-gradient(180deg,
+    var(--nl-sky), var(--nl-azure) 55%, var(--nl-navy));
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.9s;
+}
+.case-stage.revealed .case-thread { opacity: 1; }
+
+.case-menu {
+  position: absolute;
+  top: 133px;
+  left: 31px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 5;
+}
+/* the one chip — sized/placed by nextlevel.js, painted BEHIND the words */
+.menu-glass {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--gw, 0px);
+  height: var(--gh, 44px);
+  translate: 0 var(--gt, 0px);
+  border-radius: 20px;
+  background: var(--nl-wash);
+  border: 1px solid var(--nl-line);
+  opacity: 0;
+  pointer-events: none;
+}
+.menu-glass.is-ready {
+  transition: translate 0.3s cubic-bezier(0.34, 1.2, 0.5, 1),
+              width 0.3s cubic-bezier(0.34, 1.2, 0.5, 1),
+              height 0.3s cubic-bezier(0.34, 1.2, 0.5, 1),
+              opacity 0.45s ease 0.4s;
+}
+.case-stage.revealed .menu-glass.is-ready { opacity: 1; }
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px 8px 17.5px;
+  border-radius: 20px;
+  font-size: 24px;                 /* seven chapters — a notch under about's 28 */
+  color: #5e5e5e;
+  text-decoration: none;
+  --d: 0.3s;
+  transition: color 0.18s ease,
+              opacity 0.55s ease var(--d),
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--d);
+}
+.case-stage:not(.revealed) .menu-item {
+  opacity: 0;
+  translate: -14px 0;
+}
+.case-menu a:nth-of-type(2) { --d: 0.37s; }
+.case-menu a:nth-of-type(3) { --d: 0.44s; }
+.case-menu a:nth-of-type(4) { --d: 0.51s; }
+.case-menu a:nth-of-type(5) { --d: 0.58s; }
+.case-menu a:nth-of-type(6) { --d: 0.65s; }
+.case-menu a:nth-of-type(7) { --d: 0.72s; }
+.menu-item svg { flex: none; }
+.menu-item:focus-visible { outline: none; }
+.menu-item:hover,
+.menu-item:focus-visible,
+.menu-item.is-current,
+.menu-item[aria-current='page'] { color: var(--nl-azure); }
+.case-menu:hover .menu-item.is-current:not(:hover) { color: var(--ink); }
+
+/* menu icons redraw on hover — the site's pen, same recipe */
+.menu-item:hover svg :is(path, rect, circle),
+.menu-item:focus-visible svg :is(path, rect, circle) {
+  stroke-dasharray: 1;
+  animation: case-redraw 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.menu-item:hover svg g > :nth-child(2),
+.menu-item:focus-visible svg g > :nth-child(2) { animation-delay: 0.1s; }
+.menu-item:hover svg g > :nth-child(3),
+.menu-item:focus-visible svg g > :nth-child(3) { animation-delay: 0.2s; }
+.menu-item:hover svg g > :nth-child(4),
+.menu-item:focus-visible svg g > :nth-child(4) { animation-delay: 0.3s; }
+@keyframes case-redraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ---- the chapter stack ---- */
+.case-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.case-scroll::-webkit-scrollbar { display: none; }
+.case-slide {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  --ax: calc(50% + 123.5px);
+}
+
+/* ---- per-slide title pair (the site standard) ---- */
+.case-title {
+  position: absolute;
+  top: 40px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+.case-title h1 {
+  font-size: 28px;
+  font-weight: 400;
+  color: #5e5e5e;
+}
+.case-title p {
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.case-num {
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.25);
+  font-variant-numeric: tabular-nums;
+  margin-right: 2px;
+}
+
+/* ---- entrance: everything rises softly when its slide snaps in;
+   grids deal their cards one at a time on --n ---- */
+.case-title, .case-pitch, .case-hero, .story-copy, .story-map,
+.flow-steps, .qa-card, .built-for, .hmw, .board-eyebrow, .board-hint,
+.mark-sketch, .mark-copy, .learned, .case-outro {
+  transition: opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.case-slide:not(.revealed) :is(.case-title, .case-pitch, .case-hero,
+.story-copy, .story-map, .flow-steps, .qa-card, .built-for, .hmw,
+.board-eyebrow, .board-hint,
+.mark-sketch, .mark-copy, .learned, .case-outro) {
+  opacity: 0;
+  translate: 0 16px;
+}
+.case-slide:not(.revealed) :is(.photo-card, .wire-card, .metric-card,
+.colorway, .board-piece) {
+  opacity: 0;
+  translate: 0 18px;
+}
+
+/* ============================================================
+   01 · overview — pitch (two paragraphs with the marker sweeps,
+   the spec ledger, headline metric) beside the finished badge.
+   ============================================================ */
+.case-pitch {
+  position: absolute;
+  top: 150px;
+  left: calc(var(--ax) - 420px);
+  width: 440px;
+  font-size: 20px;
+  line-height: 30px;
+  color: #5e5e5e;
+}
+.case-pitch p + p { margin-top: 22px; }
+/* the key phrases get a sky-blue HIGHLIGHTER sweep — a real marker,
+   drawn left to right behind the ink once the slide settles */
+.case-pitch strong,
+.story-copy strong,
+.mark-copy strong,
+.learned strong,
+.hmw strong {
+  font-weight: 400;                 /* emphasis by INK, not weight */
+  color: #404040;
+  background: linear-gradient(var(--nl-mark), var(--nl-mark))
+              no-repeat left 78% / 0% 0.58em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 0.55s cubic-bezier(0.4, 0, 0.2, 1) var(--ud, 0.6s);
+}
+.case-slide.revealed :is(.case-pitch, .story-copy, .mark-copy,
+.learned, .hmw) strong {
+  background-size: 100% 0.58em;
+}
+.case-pitch p:nth-of-type(1) strong:nth-of-type(1) { --ud: 0.6s; }
+.case-pitch p:nth-of-type(1) strong:nth-of-type(2) { --ud: 0.9s; }
+.case-pitch p:nth-of-type(2) strong:nth-of-type(1) { --ud: 1.2s; }
+.case-pitch p:nth-of-type(2) strong:nth-of-type(2) { --ud: 1.5s; }
+.story-copy p:nth-of-type(1) strong:nth-of-type(1) { --ud: 0.6s; }
+.story-copy p:nth-of-type(1) strong:nth-of-type(2) { --ud: 0.9s; }
+.story-copy p:nth-of-type(2) strong:nth-of-type(1) { --ud: 1.2s; }
+
+/* the case-study ledger — labeled facts on a hairline */
+.spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e5e5;
+}
+.spec-cell dt {
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.spec-cell dd {
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 21px;
+  color: #5e5e5e;
+}
+/* the suggestion-chip recipe */
+.case-chip {
+  padding: 5px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #5e5e5e;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+/* the one line a recruiter should leave with — sky wash, azure ink */
+.headline-metric {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 7px 16px;
+  font-size: 16px;
+  color: var(--nl-azure);
+  background: var(--nl-wash);
+  border: 1px solid var(--nl-line);
+  border-radius: 20px;
+  white-space: nowrap;
+}
+/* the live-site link — the case's blue ink, the site's external-arrow
+   language; a small azure dot softly pulses to read as "live" */
+.site-link {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 16px;
+  color: #5e5e5e;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.site-link-url {
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.18s ease;
+}
+.site-link:hover { color: var(--nl-azure); }
+.site-link:hover .site-link-url { border-bottom-color: var(--nl-line); }
+.site-link-arrow { transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1); }
+.site-link:hover .site-link-arrow { transform: translate(2px, -2px); }
+.site-live-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--nl-azure);
+  box-shadow: 0 0 0 0 rgba(43, 124, 196, 0.45);
+  animation: site-live-pulse 2.2s ease-out infinite;
+}
+@keyframes site-live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(43, 124, 196, 0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(43, 124, 196, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(43, 124, 196, 0); }
+}
+.case-hero {
+  position: absolute;
+  top: 170px;
+  left: calc(var(--ax) + 90px);
+  width: 400px;
+  height: 406px;
+}
+/* once the chapter has settled, the badge floats — slow, weightless */
+.case-slide.revealed .case-hero {
+  animation: hero-float 6s ease-in-out 1.2s infinite;
+}
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.case-hero img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;   /* the export's white box melts into the page */
+}
+
+/* the site's quiet scroll cue, verbatim */
+.scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease 1.4s;
+}
+.case-slide.revealed .scroll-hint { opacity: 1; }
+.case-stage.is-scrolled .scroll-hint {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.scroll-hint svg { animation: hint-bob 2.2s ease-in-out infinite; }
+@keyframes hint-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 4px; }
+}
+
+/* ============================================================
+   02 · story — the Madrid meeting: copy beside two snapshots
+   pinned like polaroids, captions inside the frame
+   ============================================================ */
+.story-copy {
+  position: absolute;
+  top: 190px;
+  left: calc(var(--ax) - 460px);
+  width: 400px;
+  font-size: 20px;
+  line-height: 30px;
+  color: #5e5e5e;
+}
+.story-copy p + p { margin-top: 22px; }
+.photo-card {
+  position: absolute;
+  padding: 10px 10px 12px;
+  background: #fff;
+  border: 2px solid #eeeded;
+  border-radius: 14px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  rotate: var(--tilt, 0deg);
+  transition: rotate 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.12s),
+              box-shadow 0.18s ease,
+              opacity 0.55s ease calc(var(--n) * 0.12s);
+}
+/* the snapshots straighten up when you look at them closely */
+.photo-card:hover {
+  rotate: 0deg;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
+              0 1px 2px rgba(0, 0, 0, 0.06);
+}
+/* clicking a snapshot pulls it to the top of the pile with a paper-shuffle
+   kick: it lifts off, tips the other way, then drops back onto its rest
+   tilt (the `transform` here composes with the card's resting `rotate`) */
+.photo-card.is-shuffling { animation: card-shuffle 0.52s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes card-shuffle {
+  0%   { transform: none;
+         box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); }
+  28%  { transform: translateY(-18px) scale(1.04) rotate(3deg);
+         box-shadow: 0 18px 26px rgba(0, 0, 0, 0.16); }
+  58%  { transform: translateY(-5px) scale(1.012) rotate(-1.5deg);
+         box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1); }
+  100% { transform: none;
+         box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); }
+}
+.photo-card img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;              /* centre the photo in the caption-width card */
+  border-radius: 6px;
+}
+.photo-card figcaption {
+  padding-top: 9px;
+  font-size: 12.5px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.3);
+}
+.story-photos .photo-card:nth-of-type(1) {
+  top: 150px;
+  left: var(--ax);
+  --tilt: -2.5deg;
+  z-index: 2;              /* its caption stays readable over the second print */
+}
+.story-photos .photo-card:nth-of-type(1) img { width: 280px; }
+.story-photos .photo-card:nth-of-type(2) {
+  top: 445px;
+  left: calc(var(--ax) + 140px);
+  --tilt: 2deg;
+}
+.story-photos .photo-card:nth-of-type(2) img { width: 330px; }
+
+/* the little Madrid map — fills the whitespace under the copy, left-aligned
+   with it. Grey at rest, blooms to full colour on hover; the frame lifts on
+   the site's card-hover and the orange pin (on the Templo de Debod) hops. */
+.story-map {
+  position: absolute;
+  top: 500px;
+  left: calc(var(--ax) - 460px);
+  width: 360px;
+  margin: 0;
+}
+.map-frame {
+  position: relative;
+  border-radius: 16px;
+  border: 2px solid #eeeded;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transition: box-shadow 0.18s ease,
+              translate 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.map-frame img {
+  display: block;
+  width: 100%;
+  filter: grayscale(1) contrast(1.04);
+  transition: filter 0.6s ease;
+}
+.story-map:hover .map-frame { translate: 0 -3px;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06); }
+.story-map:hover .map-frame img { filter: grayscale(0) contrast(1); }
+/* the pin's tip lands on the map centre (the temple); it hops on hover */
+.map-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -100%);
+  line-height: 0;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.28));
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+.story-map:hover .map-pin { transform: translate(-50%, -112%); }
+.story-map figcaption {
+  padding-top: 9px;
+  font-size: 12.5px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.3);
+}
+.map-attr {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.22);
+}
+
+/* ============================================================
+   03 · discovery — the interactive interview: questions · answer
+   card with the pencil Sebastien · the distilled DNA · the HMW
+   ============================================================ */
+.flow-steps {
+  position: absolute;
+  top: 150px;
+  left: calc(var(--ax) - 472px);
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.flow-glass {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--gw, 0px);
+  height: var(--gh, 40px);
+  translate: 0 var(--gt, 0px);
+  border-radius: 16px;
+  background: var(--nl-wash);
+  border: 1px solid var(--nl-line);
+  opacity: 0;
+  pointer-events: none;
+}
+.flow-glass.is-ready {
+  opacity: 1;
+  transition: translate 0.3s cubic-bezier(0.34, 1.2, 0.5, 1),
+              width 0.3s cubic-bezier(0.34, 1.2, 0.5, 1),
+              height 0.3s cubic-bezier(0.34, 1.2, 0.5, 1);
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 14px;
+  border-radius: 16px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 19px;
+  color: #5e5e5e;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+.step-item:focus-visible { outline: none; }
+.step-item:hover,
+.step-item:focus-visible,
+.step-item.is-current { color: var(--nl-azure); }
+.flow-steps:hover .step-item.is-current:not(:hover) { color: var(--ink); }
+.step-n {
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.18s ease;
+}
+.step-item.is-current .step-n { color: var(--nl-azure); }
+.qa-credit {
+  margin-top: 16px;
+  padding-left: 14px;
+  width: 260px;
+  font-size: 13.25px;
+  line-height: 19px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.qa-credit em { font-style: italic; }
+
+/* the answer card — the founder speaks, in the site's card recipe */
+.qa-card {
+  position: absolute;
+  top: 158px;
+  left: calc(var(--ax) - 120px);
+  width: 590px;
+  height: 358px;
+  padding: 30px 30px 26px;
+  background: rgba(233, 233, 233, 0.23);
+  border: 2px solid #eeeded;
+  border-radius: 31px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.18s ease, box-shadow 0.18s ease,
+              opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.qa-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
+              0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.qa-quotes {
+  position: absolute;
+  top: 30px;
+  bottom: 48px;
+  left: 30px;
+  width: 330px;
+}
+.flow-cap {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+  opacity: 0;
+  translate: 0 10px;
+  transition: opacity 0.35s ease, translate 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.flow-cap.is-on {
+  opacity: 1;
+  translate: 0 0;
+}
+.flow-cap p {
+  font-size: 16.5px;
+  line-height: 26px;
+  color: #5e5e5e;
+}
+.qa-person {
+  position: absolute;
+  top: 32px;
+  right: 30px;
+  width: 168px;
+  text-align: center;
+}
+.qa-person img {
+  display: block;
+  width: 100%;
+}
+.qa-person figcaption {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.flow-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 30px;
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* the distilled DNA — one chip per brand pillar */
+.built-for {
+  position: absolute;
+  top: 578px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.built-label {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.3);
+  margin-right: 4px;
+}
+.built-for .case-chip:nth-of-type(1) {
+  background: var(--nl-wash);
+  border-color: var(--nl-line);
+}
+.built-for .case-chip:nth-of-type(2) {
+  background: rgba(43, 124, 196, 0.12);
+  border-color: rgba(43, 124, 196, 0.4);
+}
+.built-for .case-chip:nth-of-type(3) {
+  background: rgba(36, 64, 94, 0.08);
+  border-color: rgba(36, 64, 94, 0.35);
+}
+
+/* the chapter's closing beat — the question the next slide answers */
+.hmw {
+  position: absolute;
+  top: 632px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+.hmw-label {
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.hmw-q {
+  margin-top: 6px;
+  font-size: 24px;
+  color: #404040;
+}
+
+/* ============================================================
+   04 · mark — the pared-down drone, the why, three colorways
+   with the winner on the wash
+   ============================================================ */
+.mark-sketch {
+  position: absolute;
+  top: 168px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  width: 430px;
+}
+.mark-sketch img {
+  display: block;
+  width: 100%;
+}
+.mark-copy {
+  position: absolute;
+  top: 328px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  width: 640px;
+  font-size: 17px;
+  line-height: 26px;
+  text-align: center;
+  color: #5e5e5e;
+}
+.colorway-row {
+  position: absolute;
+  top: 428px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 36px;
+}
+.colorway {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  transition: opacity 0.55s ease calc(var(--n) * 0.12s),
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.12s),
+              transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.colorway:hover { transform: translateY(-3px); }
+/* the chosen colorway carries the sky wash — the verdict readable
+   from across the room */
+.colorway.is-picked {
+  background: rgba(184, 237, 248, 0.16);
+  border-color: var(--nl-line);
+}
+.colorway img {
+  display: block;
+  height: 168px;
+  width: auto;
+  mix-blend-mode: multiply;
+}
+.mark-sketch img { mix-blend-mode: multiply; }
+
+/* ============================================================
+   05 · process — four directions; the winner sits on the wash
+   ============================================================ */
+.wire-grid {
+  position: absolute;
+  top: 150px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+}
+.wire-card {
+  width: 238px;
+  height: 460px;
+  padding: 18px 20px;
+  background: rgba(233, 233, 233, 0.23);
+  border: 2px solid #eeeded;
+  border-radius: 31px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.18s ease, box-shadow 0.18s ease,
+              opacity 0.55s ease calc(var(--n) * 0.09s),
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.09s);
+}
+.wire-card:hover,
+.metric-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
+              0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.wire-card.is-shipped {
+  background: rgba(184, 237, 248, 0.14);
+  border-color: var(--nl-line);
+}
+.wire-card.is-shipped:hover { border-color: rgba(122, 191, 209, 0.85); }
+.wire-shot {
+  height: 230px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wire-shot img {
+  max-width: 100%;
+  max-height: 100%;
+  mix-blend-mode: multiply;
+}
+/* idea name leads, the verdict lands at the far edge — scan the row of
+   four and the story reads: no, no, no, YES */
+.wire-verdict {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+.verdict {
+  padding: 3px 10px;
+  font-size: 13.25px;
+  color: #5e5e5e;
+  background: rgba(0, 0, 0, 0.03);
+  border: 0.663px solid #d9d9d9;
+  border-radius: 6.625px;
+  white-space: nowrap;
+}
+/* the reviewer's pen: a quiet ✕ on the discards, a ✓ on the keeper */
+.wire-verdict .verdict::before,
+.colorway .verdict:not(.is-yes)::before {
+  content: '\2715\2002';
+  color: rgba(0, 0, 0, 0.3);
+}
+.verdict.is-yes::before {
+  content: '\2713\2002';
+  color: inherit;
+}
+.verdict.is-yes {
+  color: var(--nl-azure);
+  background: var(--nl-wash);
+  border-color: var(--nl-line);
+}
+.wire-name {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+.wire-copy {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 21px;
+  color: #5e5e5e;
+}
+
+/* ============================================================
+   06 · rollout — a STUDIO BOARD: the five surfaces pinned to a
+   designer's wall, overlapping & tilted, each held by a strip of
+   sky washi tape (the hand-drawn language elsewhere in the case).
+   Hover straightens a piece and whispers its name; click and
+   js/nextlevel.js clones the surface into the .look overlay and
+   FLIPs it up off the board.
+   RULE: phones float BARE — never a box-shadow under a handset.
+   ============================================================ */
+.board-eyebrow {
+  position: absolute;
+  top: 122px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--nl-azure);
+}
+.board-piece {
+  position: absolute;
+  margin: 0;
+  rotate: var(--rot, 0deg);
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
+  transition: rotate 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.55s ease calc(var(--n) * 0.09s),
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.09s);
+}
+.board-piece:hover,
+.board-piece:focus-visible {
+  rotate: 0deg;
+  z-index: 12;
+  outline: none;
+}
+/* the wall: web upper-left, the three handsets fanned right,
+   apparel tucked under the browser */
+.piece-web { top: 196px; left: calc(var(--ax) - 456px); width: 398px; --rot: -2.4deg; }
+.piece-ph1 { top: 158px; left: calc(var(--ax) - 44px);  width: 150px; --rot: 3deg; }
+.piece-ph2 { top: 336px; left: calc(var(--ax) + 92px);  width: 150px; --rot: -3.2deg; }
+.piece-ph3 { top: 168px; left: calc(var(--ax) + 250px); width: 150px; --rot: 4deg; }
+.piece-app { top: 430px; left: calc(var(--ax) - 462px); width: 168px; --rot: 2.2deg; }
+
+/* the washi tape holding each piece up — the brand sky, translucent,
+   with softly torn ends */
+.tape {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 74px;
+  height: 23px;
+  transform: translateX(-50%) rotate(var(--trot, -4deg));
+  background: rgba(184, 237, 248, 0.45);
+  border: 1px solid rgba(122, 191, 209, 0.35);
+  clip-path: polygon(2% 0, 100% 3%, 97% 26%, 100% 48%, 98% 72%, 100% 100%,
+                     3% 97%, 0 74%, 2% 52%, 0 28%, 3% 10%);
+  z-index: 3;
+}
+
+/* the surfaces: web keeps its browser chrome, phones are bare,
+   the merch photo rides a light card. Framed pieces also lift a
+   touch as they straighten (never the bare phones). */
+.board-piece .browser { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
+.board-piece .browser,
+.board-piece .apparel-card {
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s ease;
+}
+.piece-web:hover .browser,
+.piece-web:focus-visible .browser,
+.piece-app:hover .apparel-card,
+.piece-app:focus-visible .apparel-card { transform: translateY(-3px); }
+.board-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.apparel-card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid #eeeded;
+  background: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+.apparel-card img { display: block; width: 100%; }
+
+/* the web surface keeps a little browser chrome (bar + dots + url) */
+.browser {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e3e3e3;
+  background: #fff;
+}
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 12px;
+  background: #f2f2f2;
+  border-bottom: 1px solid #e6e6e6;
+}
+.browser-dots { display: flex; gap: 5px; flex: none; }
+.browser-dots i { width: 8px; height: 8px; border-radius: 50%; background: #d2d2d2; }
+.browser-url {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 11px;
+  color: #8a8a8a;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.browser img { display: block; width: 100%; }
+
+/* whispered captions — each piece names itself as it straightens */
+.board-cap {
+  position: absolute;
+  left: 50%;
+  bottom: -26px;
+  translate: -50% -4px;
+  font-size: 12.5px;
+  color: var(--nl-azure);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease,
+              translate 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.board-piece:hover .board-cap,
+.board-piece:focus-visible .board-cap { opacity: 1; translate: -50% 0; }
+
+.board-hint {
+  position: absolute;
+  bottom: 26px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   the LOOK overlay — a board piece lifted off the wall and held
+   up to the light: a frosted sky veil over the whole page, the
+   cloned surface FLIPs up from its board rect (js sets the start
+   transform; the transition below flies it home), tape still on.
+   ============================================================ */
+.look {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.look[hidden] { display: none; }
+.look-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(720px 540px at 50% 42%, var(--nl-wash), rgba(184, 237, 248, 0) 70%),
+    rgba(253, 254, 255, 0.72);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+  backdrop-filter: blur(12px) saturate(1.05);
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  cursor: zoom-out;
+}
+.look.is-open .look-veil { opacity: 1; }
+
+.look-piece {
+  position: relative;
+  margin: 0;
+  z-index: 2;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+  will-change: transform;
+}
+/* the piece keeps its tape — bigger, straighter, still pinned */
+.look-piece .tape { width: 104px; height: 30px; top: -15px; --trot: -3deg; }
+/* size per surface, capped near the art's native pixels; navy-cast
+   shadows on the framed pieces (phones stay bare, as everywhere) */
+.look-piece.is-web .browser {
+  width: min(880px, 78vw);
+  box-shadow: 0 30px 80px rgba(36, 64, 94, 0.22);
+}
+.look-piece.is-phone .board-shot {
+  width: auto;
+  height: min(74vh, 700px);
+  border-radius: 18px;
+}
+.look-piece.is-apparel .apparel-card {
+  width: min(400px, 48vh);
+  box-shadow: 0 30px 80px rgba(36, 64, 94, 0.22);
+}
+
+/* the caption: category eyebrow · name · index, settling in late */
+.look-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 15px;
+  color: #5e5e5e;
+  white-space: nowrap;
+  opacity: 0;
+  translate: 0 6px;
+  transition: opacity 0.3s ease 0.12s,
+              translate 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+.look.is-open .look-caption { opacity: 1; translate: 0 0; }
+.look-cat {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--nl-azure);
+}
+.look-index {
+  color: rgba(0, 0, 0, 0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the controls — the site's quiet round buttons, azure on hover */
+.look-arrow,
+.look-close {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #9a9a9a;
+  cursor: pointer;
+  opacity: 0;
+  transition: color 0.18s ease, background-color 0.18s ease,
+              opacity 0.3s ease;
+}
+.look.is-open :is(.look-arrow, .look-close) { opacity: 1; }
+.look-arrow:hover, .look-close:hover,
+.look-arrow:focus-visible, .look-close:focus-visible {
+  outline: none;
+  color: var(--nl-azure);
+  background: rgba(43, 124, 196, 0.08);
+}
+.look-arrow.is-prev { left: 26px; top: 50%; translate: 0 -50%; }
+.look-arrow.is-next { right: 26px; top: 50%; translate: 0 -50%; }
+.look-close { top: 22px; right: 22px; }
+
+/* ============================================================
+   07 · reflection — three numbers, three lessons, two doors out
+   ============================================================ */
+.metric-grid {
+  position: absolute;
+  top: 165px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+}
+.metric-card {
+  width: 250px;
+  height: 170px;
+  padding: 24px 24px;
+  background: rgba(233, 233, 233, 0.23);
+  border: 2px solid #eeeded;
+  border-radius: 31px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.18s ease, box-shadow 0.18s ease,
+              opacity 0.55s ease calc(var(--n) * 0.09s),
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.09s);
+}
+.metric-num {
+  font-size: 28px;
+  color: var(--nl-azure);
+}
+.metric-label {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #5e5e5e;
+}
+.learned {
+  position: absolute;
+  top: 385px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  width: 660px;
+  font-size: 17px;
+  line-height: 26px;
+  color: #5e5e5e;
+}
+.learned p + p { margin-top: 10px; }
+.learned-label {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.3);
+  margin-bottom: 12px;
+}
+.learned strong {
+  font-weight: 400;
+  color: #404040;
+}
+.case-outro {
+  position: absolute;
+  top: 640px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 46px;
+  white-space: nowrap;
+}
+.case-link {
+  font-size: 16px;
+  color: #5e5e5e;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.case-link:hover { color: var(--nl-azure); }
+
+@media (prefers-reduced-motion: reduce) {
+  .case-scroll { scroll-behavior: auto; }
+  .case-title, .case-pitch, .case-hero, .story-copy,
+  .flow-steps, .qa-card, .built-for, .hmw,
+  .mark-sketch, .mark-copy, .learned, .case-outro,
+  .photo-card, .wire-card, .metric-card,
+  .colorway, .board-eyebrow, .board-hint, .board-piece {
+    transition: opacity 0.25s ease;
+    translate: none;
+  }
+  /* the board keeps its tilts; pieces straighten without gliding, and
+     the look overlay swaps with a plain fade (js skips the FLIP) */
+  .board-piece { rotate: var(--rot, 0deg); }
+  .board-piece:hover, .board-piece:focus-visible { rotate: 0deg; }
+  .board-piece .browser, .board-piece .apparel-card { transition: box-shadow 0.18s ease; }
+  .piece-web:hover .browser, .piece-web:focus-visible .browser,
+  .piece-app:hover .apparel-card, .piece-app:focus-visible .apparel-card { transform: none; }
+  .board-cap { transition: opacity 0.25s ease; translate: -50% 0; }
+  .look-veil, .look-piece { transition: opacity 0.25s ease; }
+  .look-caption { transition: opacity 0.25s ease; translate: none; }
+  .case-divider { transition: none; transform: none; }
+  .case-thread { transition: opacity 0.25s ease; }
+  .menu-item { transition: color 0.18s ease; }
+  .case-stage:not(.revealed) .menu-item { opacity: 1; translate: none; }
+  .menu-glass.is-ready { transition: opacity 0.25s ease; }
+  .flow-glass.is-ready { transition: none; }
+  .menu-item:hover svg :is(path, rect, circle),
+  .menu-item:focus-visible svg :is(path, rect, circle) { animation: none; }
+  .scroll-hint { transition: opacity 0.25s ease; }
+  .scroll-hint svg { animation: none; }
+  .case-pitch strong, .story-copy strong, .mark-copy strong,
+  .learned strong, .hmw strong {
+    transition: none;
+    background-size: 100% 0.58em;
+  }
+  .case-slide.revealed .case-hero { animation: none; }
+  .photo-card { rotate: var(--tilt, 0deg); }
+  .photo-card:hover { rotate: var(--tilt, 0deg); }
+  .photo-card.is-shuffling { animation: none; }
+  .story-map:hover .map-frame { translate: none; }
+  .story-map:hover .map-pin { transform: translate(-50%, -100%); }
+  .site-live-dot { animation: none; }
+  .site-link:hover .site-link-arrow { transform: none; }
+  .qa-card:hover, .colorway:hover, .wire-card:hover, .metric-card:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   MOBILE (≤700px) — the chapter deck unrolls into one flowing
+   scroll: sidebar chrome retired, every slide becomes a stacked,
+   centred column at natural height. The desktop geometry above
+   is untouched. js/nextlevel.js swaps wheel-paging for a viewport
+   observer under the same breakpoint.
+   ============================================================ */
+@media (max-width: 700px) {
+  .case-stage {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .case-divider, .case-thread, .case-menu { display: none; }
+  .case-scroll {
+    position: static;
+    inset: auto;
+    display: block;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .case-slide {
+    height: auto;
+    padding: 30px 20px 42px;
+    --ax: 50%;
+  }
+  .case-slide:first-of-type { padding-top: 54px; }  /* no top nav on mobile now (bar is at the foot) */
+  /* nextlevel.js appends this: a slim reading-progress line at the very top,
+     the brand-blue sweep filling as you read down the seven chapters */
+  .read-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 45;
+    transform: scaleX(var(--rp, 0));
+    transform-origin: left;
+    background: linear-gradient(90deg,
+      var(--nl-sky), var(--nl-azure) 55%, var(--nl-navy));
+    pointer-events: none;
+  }
+  /* the last chapter clears the site-nav bottom bar (styles.css) */
+  .case-slide:last-of-type { padding-bottom: 116px; }
+
+  .case-title {
+    position: static;
+    transform: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    white-space: normal;
+    row-gap: 0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .case-title h1 { font-size: 22px; }
+  .case-title p { font-size: 16px; }
+  .case-num { font-size: 12px; }
+  .scroll-hint { display: none; }
+
+  /* 01 · overview */
+  .case-pitch {
+    position: static;
+    width: auto;
+    max-width: 460px;
+    margin: 0 auto;
+    font-size: 17px;
+    line-height: 26px;
+  }
+  .headline-metric { white-space: normal; text-align: center; }
+  .site-link { margin-left: auto; margin-right: auto; }
+  .case-hero {
+    position: static;
+    width: 240px;
+    height: 244px;
+    margin: 26px auto 0;
+  }
+
+  /* 02 · story — the polaroids fall into the flow, keeping their tilt */
+  .story-copy {
+    position: static;
+    width: auto;
+    max-width: 460px;
+    margin: 0 auto;
+    font-size: 17px;
+    line-height: 26px;
+  }
+  .story-photos { position: static; }
+  .story-photos .photo-card {
+    position: static;
+    width: fit-content;
+  }
+  .story-photos .photo-card:nth-of-type(1) { margin: 26px auto 0; }
+  .story-photos .photo-card:nth-of-type(1) img { width: min(280px, 78vw); }
+  .story-photos .photo-card:nth-of-type(2) { margin: 18px auto 0; }
+  .story-photos .photo-card:nth-of-type(2) img { width: min(300px, 82vw); }
+  /* the map falls into the flow between the copy and the photos */
+  .story-map {
+    position: static;
+    width: min(360px, 86vw);
+    margin: 22px auto 0;
+  }
+
+  /* 03 · discovery — the interview stacks: chips, card, DNA, HMW */
+  .flow-steps {
+    position: relative;              /* keeps the gliding chip's geometry */
+    top: auto;
+    left: auto;
+    width: auto;
+    max-width: 400px;
+    margin: 0 auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+  .step-item { font-size: 14px; padding: 5px 10px; gap: 6px; }
+  .step-n { font-size: 11px; }
+  .flow-glass {
+    border-radius: 14px;
+    translate: var(--gx, 0px) var(--gt, 0px);   /* the chip glides in 2D once the column wraps */
+  }
+  .qa-credit {
+    width: 100%;
+    padding-left: 0;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .qa-card {
+    position: relative;              /* the hint anchors to the card, not the slide */
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    min-height: 300px;
+    margin: 18px auto 0;
+    padding: 22px 20px 42px;
+  }
+  .qa-quotes {
+    position: relative;              /* the answers crossfade inside */
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    height: 190px;
+  }
+  .flow-cap p { font-size: 15px; line-height: 22px; }
+  .qa-person { display: none; }      /* the pencil portrait sits this one out */
+  .flow-hint {
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+  }
+  .built-for {
+    position: static;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    white-space: normal;
+    margin-top: 24px;
+  }
+  .hmw {
+    position: static;
+    transform: none;
+    white-space: normal;
+    margin-top: 28px;
+  }
+  .hmw-q { font-size: 19px; line-height: 27px; }
+
+  /* 04 · mark */
+  .mark-sketch {
+    position: static;
+    transform: none;
+    width: min(340px, 88vw);
+    margin: 0 auto;
+  }
+  .mark-copy {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: 460px;
+    margin: 18px auto 0;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .colorway-row {
+    position: static;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
+    gap: 8px;
+  }
+  .colorway { padding: 10px 12px; gap: 8px; }
+  .colorway img { height: 130px; }
+
+  /* 05 · process */
+  .wire-grid {
+    position: static;
+    transform: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .wire-card {
+    width: min(320px, 100%);
+    height: auto;
+  }
+  .wire-shot { height: auto; }
+  .wire-shot img { max-height: 230px; }
+
+  /* 06 · rollout — the board unpins into a clean centred column; the
+     washi tape and the fixed composition stay on the desktop wall */
+  .board-eyebrow, .board-hint, .board-piece {
+    position: static;
+    transform: none;
+    rotate: 0deg;
+    width: fit-content;
+    margin: 18px auto 0;
+  }
+  .board-hint { display: none; }
+  .tape { display: none; }
+  .piece-web .browser { width: min(360px, 88vw); }
+  .board-shot { width: min(220px, 62vw); }
+  .piece-app .apparel-card { width: min(200px, 56vw); }
+  /* captions sit under their piece, always on */
+  .board-cap {
+    position: static;
+    translate: none;
+    opacity: 1;
+    margin-top: 8px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.3);
+  }
+  /* the look overlay slims for the phone */
+  .look-arrow.is-prev { left: 6px; }
+  .look-arrow.is-next { right: 6px; }
+  .look-close { top: 12px; right: 12px; }
+  .look-piece.is-web .browser { width: 92vw; box-shadow: 0 18px 48px rgba(36, 64, 94, 0.22); }
+  .look-piece.is-phone .board-shot { width: auto; height: min(66vh, 560px); }
+  .look-piece.is-apparel .apparel-card { width: min(80vw, 44vh); }
+  .look-caption { bottom: 18px; }
+
+  /* 07 · reflection */
+  .metric-grid {
+    position: static;
+    transform: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .metric-card { width: min(300px, 100%); height: auto; }
+  .learned {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: 460px;
+    margin: 26px auto 0;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .case-outro {
+    position: static;
+    transform: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    white-space: normal;
+    gap: 24px 46px;
+    margin-top: 28px;
+  }
+}

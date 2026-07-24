@@ -1,0 +1,288 @@
+/* ============================================================
+   Work — project screens (Vicino AI · Pantry Pal · Drone)
+   Geometry is a 1:1 copy of Figma frames 1328:445 / 1401:39 /
+   1401:62 (1280×832): fixed px, desktop only, same conventions
+   as styles.css. These frames keep the PLAIN title style (no
+   capsule) and the full-size house-chip nav.
+   ============================================================ */
+
+.work-stage {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.work-stage.revealed { opacity: 1; }
+
+/* ---- the snap scroller: one project per gesture, sliding in HORIZONTALLY.
+   Slides sit in a row at viewport size; mandatory snapping + snap-stop pulls
+   the NEXT slide fully into place instead of free-scrolling past it. Vertical
+   wheel/trackpad gestures are translated to pages by js/work.js. Nav + pager
+   live outside this element so they hold still. Scrollbar hidden per site
+   convention. ---- */
+.work-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;            /* dot clicks glide instead of jump */
+  scrollbar-width: none;
+}
+.work-scroll::-webkit-scrollbar { display: none; }
+.work-slide {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;           /* a big fling still stops one slide on */
+}
+
+
+/* ---- title (Figma Group 41: company + role centred on the frame axis,
+   27.313px; the pair sits at top 42) ---- */
+.work-title {
+  position: absolute;
+  top: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+.work-title h1 {
+  font-size: 28px;                    /* user's 28px header unification */
+  font-weight: 400;
+  color: #5e5e5e;
+}
+.work-title p {
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* ---- date chip (Figma Group 40: 98×23.85 r6.625 under the title; nudged
+   down from the mock's 80 for a little more air under the title) ---- */
+.work-date {
+  position: absolute;
+  top: 87px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 5px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 0.663px solid #d9d9d9;
+  border-radius: 6.625px;
+  font-size: 13.25px;
+  color: #5e5e5e;
+  white-space: nowrap;
+}
+
+/* ---- showcase images: each page centres its own frame-exact box ---- */
+.work-img-vicino {
+  position: absolute;
+  top: 67px;
+  left: 50%;
+  margin-left: -375.5px;
+  width: 751px;
+  height: 751px;
+}
+.work-img-pantry {
+  position: absolute;
+  top: 122px;
+  left: 50%;
+  margin-left: -159px;
+  width: 318px;
+  height: 636px;
+}
+/* the drone logo: Figma's fill-crop percentages assumed a different source
+   padding than the exported PNG, which over-zoomed — the PNG's own framing
+   already matches the mock, so it renders 1:1 in the frame's box */
+.work-img-drone {
+  position: absolute;
+  top: 194px;
+  left: 50%;
+  margin-left: -233.5px;
+  width: 467px;
+  height: 468.4px;
+}
+.work-img-vicino img,
+.work-img-pantry img,
+.work-img-drone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* the vicino display, pantry phone, and drone badge are doors now —
+   they lift a touch under the cursor */
+a.work-img-vicino,
+a.work-img-pantry,
+a.work-img-drone {
+  display: block;
+  transition: translate 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+a.work-img-vicino:hover,
+a.work-img-pantry:hover,
+a.work-img-drone:hover { translate: 0 -4px; }
+
+/* the only click affordance — a minimal "opens" arrow in each project's
+   top-right CORNER (at the header level, clear of the centred image, so it
+   never sits on the mockup; the images are the doors, no verbose tag).
+   Quiet at rest, it firms and nudges out as the image lifts on hover. */
+.work-open {
+  position: absolute;
+  top: 42px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #e3e3e3;
+  color: #808080;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0.6;
+  pointer-events: none;                 /* the image is the click target */
+  transition: opacity 0.22s ease, color 0.18s ease,
+              transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+/* the badge sits after its link, so firm it on the image's hover */
+.work-img-vicino:hover ~ .work-open,
+.work-img-pantry:hover ~ .work-open,
+.work-img-drone:hover ~ .work-open {
+  opacity: 1;
+  color: #404040;
+  transform: translate(1px, -1px);
+}
+
+/* ---- pager (Figma Group 44, three dots per user decision — the mock's
+   4th dot has no project yet): dot links, current page dark ---- */
+.work-pager {
+  position: absolute;
+  top: 778px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6.15px;
+  padding: 6.15px 16.9px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 0.562px solid #d9d9d9;
+  border-radius: 5.623px;
+}
+/* dots: #5e5e5e ring resting, #5e5e5e fill on the current project */
+.work-dot {
+  width: 7.69px;
+  height: 7.69px;
+  border-radius: 50%;
+  border: 1px solid #5e5e5e;
+  background: transparent;
+  transition: background-color 0.18s ease;
+}
+.work-dot:hover { background: rgba(94, 94, 94, 0.45); }
+.work-dot[aria-current='page'] { background: #5e5e5e; }
+
+@media (prefers-reduced-motion: reduce) {
+  .work-scroll { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   MOBILE (≤700px) — the horizontal carousel UNROLLS into a
+   vertical scroll: the three projects stack and scroll DOWN like
+   the rest of the site on mobile. Each is a full-width block
+   (title · role · date · the tappable showcase), separated by a
+   hairline, and rises in as it enters the viewport (js/work.js).
+   Desktop untouched above.
+   ============================================================ */
+@media (max-width: 700px) {
+  .work-stage {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .work-scroll {
+    position: static;
+    inset: auto;
+    display: block;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .work-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    padding: 52px 20px 56px;
+  }
+  .work-slide:first-of-type { padding-top: 68px; }
+  .work-slide:last-of-type { padding-bottom: 120px; } /* clear the bottom bar */
+  .work-slide + .work-slide { border-top: 1px solid #ececec; }
+
+  .work-title {
+    position: static;
+    transform: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    white-space: normal;
+    text-align: center;
+  }
+  .work-title h1 { font-size: 24px; line-height: 30px; }
+  .work-title p { font-size: 15px; color: rgba(0, 0, 0, 0.42); }
+  .work-date {
+    position: static;
+    transform: none;
+    margin-top: 14px;
+  }
+  .work-img-vicino,
+  .work-img-pantry,
+  .work-img-drone {
+    position: relative;              /* anchors the .work-open corner cue */
+    top: auto;                       /* drop the desktop left:50%/top offsets,
+                                        else relative shifts the image */
+    left: auto;
+    margin: 30px 0 0;
+    height: auto;
+  }
+  /* no hover on touch — the cue stays gently visible at each block's
+     top-right, up in the header, clear of the image below */
+  .work-open { opacity: 0.9; top: 22px; right: 18px; }
+  .work-img-vicino { width: min(360px, 90vw); }
+  .work-img-pantry { width: 210px; }
+  .work-img-drone  { width: min(300px, 78vw); }
+  .work-img-vicino img,
+  .work-img-pantry img,
+  .work-img-drone img { width: 100%; height: auto; }
+  /* the doors lift-tap: keep a gentle press feedback on touch */
+  a.work-img-vicino:active,
+  a.work-img-pantry:active,
+  a.work-img-drone:active { translate: 0 -2px; }
+
+  /* the horizontal dot pager retires — vertical scroll needs no carousel */
+  .work-pager { display: none; }
+
+  /* each project rises in as it scrolls into view (work.js adds .revealed);
+     its parts stagger up softly */
+  .work-slide > * {
+    transition: opacity 0.6s ease var(--d, 0s),
+                translate 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+  }
+  .work-slide:not(.revealed) > * { opacity: 0; translate: 0 22px; }
+  .work-slide > .work-date { --d: 0.06s; }
+  .work-slide > :is(.work-img-vicino, .work-img-pantry, .work-img-drone) { --d: 0.12s; }
+}
+
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .work-slide > * { transition: opacity 0.25s ease; translate: none; }
+  .work-slide:not(.revealed) > * { translate: none; }
+}

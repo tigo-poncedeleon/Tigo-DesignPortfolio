@@ -1,0 +1,440 @@
+/* ============================================================
+   AI — Tigo AI chat
+   Geometry is a 1:1 copy of Figma frames 1373:326 (empty) and
+   1328:118 (answered) at 1280×832: fixed px, desktop only, same
+   conventions as styles.css/play.css. The panel centres on the
+   640px axis (mock x=336 read as axis drift, like the pill).
+   ============================================================ */
+
+.ai-stage {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ai-stage.revealed { opacity: 1; }
+
+/* ---- entrance: title, panel, chips rise in turn — the site's
+   case-study choreography ---- */
+.ai-title {
+  transition: opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ai-prompts {
+  transition: opacity 0.55s ease 0.2s,
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+}
+.ai-stage:not(.revealed) :is(.ai-title, .ai-panel, .ai-prompts) {
+  opacity: 0;
+  translate: 0 16px;
+}
+
+/* ---- title (Figma 1395:197 rev 2: plain 24px text again — the capsule
+   was removed from the frame; pair centres on the frame axis at top 48) ---- */
+.ai-title {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+.ai-title h1 {
+  font-size: 28px;                    /* user's 28px header unification */
+  font-weight: 400;
+  color: #5e5e5e;
+}
+.ai-title p {
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* ---- the chat panel (Figma 1395:168: 605×664 @ 336,123) ---- */
+.ai-panel {
+  position: absolute;
+  top: 123px;
+  left: 50%;
+  margin-left: -302.5px;
+  width: 605px;
+  height: 664px;
+  border-radius: 20px;
+  background: rgba(241, 239, 239, 0.17);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.55s ease 0.08s,
+              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+              border-color 0.18s ease, box-shadow 0.18s ease;
+}
+/* the panel wakes a touch under the cursor — the site card hover */
+.ai-panel:hover {
+  border-color: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.1),
+              0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* ---- the empty-state spark: rays draw in, the orange heart pops,
+   the dotted orbit slowly marches; it bows out on the first question ---- */
+.ai-empty {
+  position: absolute;
+  top: 78px;                       /* well clear of the prompt chips below */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.4s ease, translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ai-empty.is-gone {
+  opacity: 0;
+  translate: 0 -10px;
+}
+.ai-empty p {
+  margin-top: 14px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+.ai-spark .guide {
+  fill: none;
+  stroke: #d9d9d9;
+  stroke-width: 1.2;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.5s ease 1.2s;
+  animation: spark-march 24s linear infinite;
+}
+.ai-stage.revealed .ai-spark .guide { opacity: 1; }
+@keyframes spark-march {
+  to { stroke-dashoffset: -140; }
+}
+.ai-spark .ray {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1) var(--rd, 0.5s);
+}
+.ai-spark .ray.s1 { --rd: 0.5s; }
+.ai-spark .ray.s2 { --rd: 0.65s; }
+.ai-spark .ray.s3 { --rd: 0.8s; }
+.ai-stage.revealed .ai-spark .ray { stroke-dashoffset: 0; }
+.ai-spark .spark-dot {
+  fill: var(--orange);
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.1s;
+}
+.ai-stage.revealed .ai-spark .spark-dot { transform: scale(1); }
+
+/* exchanges scroll between the panel top and the input bar; scrollbar hidden
+   per site convention */
+.ai-scroll {
+  position: absolute;
+  top: 0;
+  left: 25px;
+  right: 25px;
+  bottom: 95px;                       /* flush against the dock's hairline
+                                         (94px dock + 1px border-top) */
+  padding-top: 21px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+/* ---- footer strip the input rides on (Figma 1395:192: no grey band any
+   more, just a hairline across the panel 95px up) ---- */
+.ai-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 94px;
+  border-top: 1px solid #d9d9d9;
+}
+.ai-scroll::-webkit-scrollbar { display: none; }
+
+/* ---- chat bubbles: user messages hug the right edge, AI replies the left,
+   IDENTICAL styling both sides (the suggestion-chip recipe: 24px text + 17px
+   vertical padding = the chips' 63px single-line height, so the chip→chat
+   fly animation is seamless). margin-bottom lives INSIDE the scroll content,
+   so mid-scroll the thread still passes flush under the dock hairline; only
+   the resting end has the gap. overflow-wrap catches unbroken strings
+   ("helloooo…") that word-wrap alone would let overflow. ---- */
+.ai-msg {
+  width: fit-content;
+  max-width: 75%;
+  padding: 17px 18px;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  font-size: 24px;
+  color: #5e5e5e;                     /* matches the chips the bubbles echo */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-height: 63px;                   /* one text line + padding + border */
+  margin-bottom: 14px;
+}
+.ai-msg-user { margin-left: auto; }
+.ai-msg-ai   { margin-right: auto; }
+
+/* every fresh bubble rises in softly (restored history skips it) */
+.ai-msg { animation: msg-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.ai-msg.is-restored { animation: none; }
+@keyframes msg-rise {
+  from { opacity: 0; translate: 0 10px; }
+}
+
+/* three little dots bob on their own beats while the reply is on its way */
+.think-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a5a5a5;
+  margin-right: 6px;
+  animation: think-bob 1.1s ease-in-out calc(var(--td) * 0.16s) infinite;
+}
+.think-dot:last-child { margin-right: 0; }
+@keyframes think-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -5px; }
+}
+
+/* answers wash in word by word — the bubble is laid out in full first,
+   so the fade is the only motion (no reflow, no shake) */
+.ai-word {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ai-word.is-in { opacity: 1; }
+
+/* ---- follow-up chips: after an answer, three smaller questions ride
+   along in the conversation flow (the case-chip register, warm hover) ---- */
+.ai-followups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 0 14px;
+  animation: msg-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fu-chip {
+  padding: 7px 14px;
+  border-radius: 17px;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  font: inherit;
+  font-size: 16px;
+  color: #5e5e5e;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease,
+              border-color 0.18s ease, transform 0.18s ease;
+}
+.fu-chip:hover,
+.fu-chip:focus-visible {
+  background: rgba(253, 143, 59, 0.13);
+  border-color: rgba(253, 143, 59, 0.35);
+  color: var(--orange);
+  transform: translateY(-1.5px);
+}
+
+/* ---- suggested prompts (Figma 1395:183–1408:3 rev 2: ALL chips h63 r20,
+   24px text, 18px side insets; right edge lines up with the input bar's,
+   stacked 6px apart just above it) ---- */
+.ai-prompts {
+  position: absolute;
+  right: 29px;
+  bottom: 111px;                       /* chips end 17px above the dock */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.prompt-chip {
+  height: 63px;
+  padding: 0 18px;
+  border-radius: 20px;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  font: inherit;
+  font-size: 24px;
+  color: #5e5e5e;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.38s ease,
+              background-color 0.18s ease, color 0.18s ease,
+              border-color 0.18s ease, box-shadow 0.18s ease;
+}
+/* hover — the site's two signature moves, whispered: the surface firms up and
+   lifts on the quiet two-part shadow, and the label warms to the nav's orange */
+.prompt-chip:hover,
+.prompt-chip:focus-visible {
+  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
+  border-color: rgba(253, 143, 59, 0.35);
+  color: var(--orange);
+  transform: translateY(-1.5px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06),
+              0 0.5px 1px rgba(0, 0, 0, 0.05);
+}
+.prompt-chip:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+/* declared AFTER the hover rule so an exiting chip's transform/opacity win */
+.prompt-chip.chip-exit {
+  transform: translateY(24px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* the flying clone (js positions it; keep visuals identical to a chip) */
+.prompt-chip.chip-clone {
+  display: flex;
+  align-items: center;
+}
+
+/* ---- input bar (Figma 1373:333: 553×57 @ 361,705 → 25px inset, 587 from
+   panel top; send block 70×57 #cbcbcb on the left; placeholder starts x=446
+   → 85px from the bar's left edge) ---- */
+.ai-inputbar {
+  position: absolute;
+  left: 23px;
+  top: 584px;
+  width: 553px;
+  height: 57px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.17);
+  border-radius: 20px;
+}
+.ai-send {
+  position: absolute;
+  left: -1px;                          /* sit on the bar's border */
+  top: -1px;
+  width: 70px;
+  height: 57px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #cbcbcb;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+  color: #5e5e5e;                      /* the arrow strokes currentColor */
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.ai-send:hover {
+  background: #bfbfbf;
+  color: var(--orange);                /* the arrow warms, site manner */
+}
+.ai-input {
+  position: absolute;
+  left: 85px;
+  right: 16px;
+  top: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 24px;
+  color: #101112;
+}
+.ai-input::placeholder { color: #7c7c7c; }
+.ai-input:focus { outline: none; }
+
+/* the subtitle can swap to the offline notice and back — a soft crossfade */
+#ai-sub { transition: opacity 0.3s ease; }
+#ai-sub.is-swapping { opacity: 0; }
+
+/* ============================================================
+   MOBILE (≤700px) — the panel fills the phone, the type steps
+   down to chat scale, the spark shrinks. Desktop untouched.
+   ============================================================ */
+@media (max-width: 700px) {
+  .ai-title {
+    top: 74px;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .ai-title h1 { font-size: 22px; }
+  .ai-title p { font-size: 14px; }
+  .ai-panel {
+    top: 136px;
+    left: 14px;
+    right: 14px;
+    bottom: 96px;                      /* clears the site-nav bottom bar */
+    margin-left: 0;
+    width: auto;
+    height: auto;
+  }
+  .ai-scroll {
+    left: 14px;
+    right: 14px;
+    bottom: 79px;
+    padding-top: 16px;
+  }
+  .ai-dock { height: 78px; }
+  .ai-msg {
+    font-size: 17px;
+    line-height: 24px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    min-height: 48px;
+    max-width: 85%;
+    margin-bottom: 10px;
+  }
+  .ai-empty { top: 58px; width: 86%; }
+  .ai-spark { width: 96px; height: 96px; }
+  .ai-empty p {
+    white-space: normal;
+    font-size: 14px;
+    max-width: 230px;
+    margin: 10px auto 0;
+  }
+  .ai-prompts { right: 16px; bottom: 94px; gap: 5px; }
+  .prompt-chip {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 15px;
+    font-size: 16px;
+  }
+  .ai-inputbar {
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    height: 52px;
+    border-radius: 17px;
+  }
+  .ai-send {
+    width: 58px;
+    height: 52px;
+    border-radius: 17px;
+  }
+  .ai-send svg { width: 26px; height: 26px; }
+  .ai-input {
+    left: 72px;
+    right: 12px;
+    font-size: 16px;            /* ≥16 so iOS doesn't zoom on focus */
+  }
+  .fu-chip { font-size: 14px; padding: 6px 11px; }
+  .flow-cap p { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-title, .ai-panel, .ai-prompts, .ai-empty {
+    transition: opacity 0.25s ease;
+    translate: none;
+  }
+  .ai-spark .guide { animation: none; transition: none; opacity: 1; }
+  .ai-spark .ray { transition: none; stroke-dashoffset: 0; }
+  .ai-spark .spark-dot { transition: none; transform: scale(1); }
+  .ai-msg, .ai-followups { animation: none; }
+  .think-dot { animation: none; }
+  .ai-word { transition: none; opacity: 1; }
+  .fu-chip:hover, .fu-chip:focus-visible { transform: none; }
+}

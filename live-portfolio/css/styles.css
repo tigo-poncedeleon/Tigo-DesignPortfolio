@@ -1,0 +1,501 @@
+/* ============================================================
+   Tigo Ponce de León — landing frame
+   Name · pill of words · state + local time
+
+   Geometry is a 1:1 copy of Figma frame 1366:310 (1280×832): fixed px,
+   desktop only. Name/role anchor to the top, the pill centres in the
+   viewport, the footer anchors to the bottom — exact at 832px tall.
+   Hover state: flat grey chip + orange word (Figma 1380:150).
+   ============================================================ */
+
+:root {
+  --bg:     #fdfdfd;
+  --ink:    #404040;                  /* name, words, state */
+  --muted:  #717171;                  /* role, time */
+  --orange: #fd8f3b;  /* FE7301 @ 75% as FIGMA flattens it (253,143,59) —
+                         pinned solid for pixel-parity with the mocks */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  /* SF Pro on Apple platforms — matches the Figma frame exactly, no webfont */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+               system-ui, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;    /* gentle fade-in on load */
+}
+.stage.revealed { opacity: 1; }
+
+/* ---- top: name + role ----
+   Figma 1401:112: name text top y=80, role y=118 → 38px apart; 28px type.
+   In the COVER state (1408:28) the pair rides 299px down to dead-centre
+   (name at y=379) — see the opening block at the end of the home styles. */
+.frame-top {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+.frame-name {
+  font-size: 28px;
+  line-height: 38px;
+  font-weight: 400;
+  color: #5e5e5e;                     /* 1401:123 — the subpage-header grey */
+}
+.frame-role {
+  font-size: 28px;
+  line-height: 38px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* ---- centre: the pill (Figma 1401:113: 432×69) ---- */
+.pill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 432px;
+  height: 69px;
+  border-radius: 30px;
+  background: rgba(233, 233, 233, 0.2);
+  border: 2px solid #eeeded;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Figma sits this row a hair left of the pill's centre while every other
+   element centres on x=640 — read as mock drift, so it's centred here. */
+.words {
+  position: relative;
+  z-index: 1;                         /* ON TOP of the grey chip — never tinted */
+  display: flex;
+  align-items: center;
+  gap: 55px;
+}
+.word {
+  font: inherit;
+  font-size: 28px;                    /* exact Figma size (1401:114) */
+  line-height: 33px;
+  color: #5e5e5e;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* transform springs on the same curve as the chip so chip + word move as one */
+  transition: color 0.18s ease,
+              transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+.word:focus-visible { outline: none; }
+/* set by glass-nav while the chip covers it — a touch of lift so the chip and
+   word rise together */
+.word.hot { color: var(--orange); transform: scale(1.02); }
+
+/* ---- the grey chip that rides UNDER the hovered word ----
+   The chip sits BEHIND the words, so the grey never touches the glyphs — that
+   is what keeps the orange vivid. Figma's glyph cores measure (253,143,59);
+   compositing the same grey ON TOP instead yields a bleached (243,189,145).
+   z-index 0 is load-bearing — do NOT raise it above .words.
+
+   Flat fill per Figma 1380:150's highlight chip. Width is set per-word by JS
+   (word width + PANE_PAD). */
+.glass {
+  --dx: 0px;                          /* JS: offsets to the word's INK centre */
+  --dy: 0px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;                         /* BEHIND .words (z:1) — see above */
+  width: 90px;                        /* JS overrides per word */
+  height: 41px;                       /* old 55 × the 28/37.6 word rescale */
+  border-radius: 37px;                /* > height/2 → clamps to a full pill, as in Figma */
+  /* the warm wash — every hover pill sitewide carries this (2026-07-23) */
+  background: rgba(253, 143, 59, 0.13);
+  border: 1px solid rgba(253, 143, 59, 0.35);
+
+  opacity: 0;
+  pointer-events: none;               /* never blocks the word hover above it */
+  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.92);
+  transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1),   /* spring snap */
+              width 0.22s cubic-bezier(0.34, 1.4, 0.5, 1),
+              opacity 0.18s ease;
+}
+.glass.show {
+  opacity: 1;
+  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1);
+}
+
+/* ---- bottom: current state + live local time (Figma 1401:119: Oregon top
+   701, time top 734 → block bottoms out 65px above the frame edge) ---- */
+.frame-bottom {
+  position: absolute;
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+.frame-state {
+  font-size: 28px;
+  line-height: 33px;
+  color: #5e5e5e;
+}
+.frame-time {
+  font-size: 28px;
+  line-height: 33px;
+  color: rgba(0, 0, 0, 0.39);         /* 1401:121 */
+  font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
+}
+
+/* ============================================================
+   Opening cover (Figma 1408:28 → 1401:112, one-way)
+   .stage starts as .is-cover: name+role dead-centre, pill/footer waiting
+   below, arrow at the bottom. js/home-open.js strips the class on the
+   first scroll gesture / arrow click and everything glides into the nav
+   frame; the name leads, pill + footer follow a beat later.
+   ============================================================ */
+.frame-top {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pill,
+.frame-bottom {
+  transition: opacity 0.55s ease 0.12s,
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+.stage.is-cover .frame-top {
+  transform: translate(-50%, 299px);    /* name text 80 → the cover's 379 */
+}
+.stage.is-cover .pill {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(48px);
+  pointer-events: none;
+}
+.stage.is-cover .frame-bottom {
+  opacity: 0;
+  transform: translateX(-50%) translateY(48px);
+}
+
+.open-arrow {
+  position: absolute;
+  bottom: 51px;                         /* glyph 742..781 in the 832 frame */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0;
+  background: none;
+  border: 0;
+  line-height: 0;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 0.18s ease, opacity 0.3s ease;
+}
+.open-arrow:hover,
+.open-arrow:focus-visible { color: var(--orange); }
+.open-arrow:focus-visible { outline: none; }
+.stage:not(.is-cover) .open-arrow {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* suppresses the glide for ?open=1 deep links (set before first paint) */
+.stage.no-anim .frame-top,
+.stage.no-anim .pill,
+.stage.no-anim .frame-bottom,
+.stage.no-anim .open-arrow { transition: none; }
+
+/* reduced motion: positions jump instantly, only opacity still fades */
+@media (prefers-reduced-motion: reduce) {
+  .frame-top { transition: none; }
+  .pill,
+  .frame-bottom { transition: opacity 0.25s ease; }
+}
+
+/* ============================================================
+   Top-left site nav (play/ai pages) — Figma 1380:150
+   A house chip (the old home button geometry) that expands rightward on
+   hover/focus into a pill revealing the site's words; the CURRENT page
+   is orange on a flat grey chip. index.html never renders .site-nav —
+   its centred hero pill is the nav there. Scaled ×0.9 from 1380:150
+   (2026-07-22, "just slightly smaller entire nav bar even when
+   expanded" — NOT the 1395 mocks' 52×50, which was tried 2026-07-21
+   and reverted as too small).
+   ============================================================ */
+.site-nav {
+  position: absolute;
+  top: 27px;
+  left: 31px;
+  z-index: 10;                /* the expanded bar rides OVER the page title */
+  display: flex;
+  align-items: center;
+  height: 59px;
+  border-radius: 21.5px;
+  /* solid #fbfbfb = the mock's rgba(16,17,18,0.01) composited on the page
+     bg — opaque so content sliding under it (work.html's snap scroller)
+     stays hidden behind the chip */
+  background: #fbfbfb;
+  border: 0.648px solid #d9d9d9;
+  transition: background-color 0.25s ease;
+}
+/* solid #f9f9f9 = the mock's rgba(233,233,233,0.2) composited on the page
+   bg — opaque so the title never bleeds through the expanded bar */
+.site-nav:hover,
+.site-nav:focus-within { background: #f9f9f9; }
+/* the home page carries a site-nav too, but ONLY for the mobile bottom bar —
+   on desktop its centred hero pill is the nav, so this stays hidden */
+.site-nav.is-mobile-only { display: none; }
+
+/* while the menu is open, the PAGE frosts instead of anything hiding:
+   a glossy blur + matte wash over everything below the nav (each subpage
+   places a .nav-frost div right after its .site-nav) */
+.nav-frost {
+  position: absolute;
+  inset: 0;
+  z-index: 9;                 /* over the page, under .site-nav (z 10) */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(253, 253, 253, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.site-nav:hover ~ .nav-frost,
+.site-nav:focus-within ~ .nav-frost { opacity: 1; }
+
+.site-nav-home {
+  width: 61px;
+  height: 100%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* the little house HOPS when the cursor arrives — one bounce up, a
+   squash on landing, then still (re-arms when the hover ends) */
+.site-nav-home:hover img,
+.site-nav-home:focus-visible img {
+  animation: home-hop 0.5s cubic-bezier(0.34, 1.2, 0.5, 1);
+}
+@keyframes home-hop {
+  0%   { translate: 0 0;    scale: 1; }
+  38%  { translate: 0 -6px; scale: 0.97 1.04; }   /* stretch on the way up */
+  72%  { translate: 0 1px;  scale: 1.06 0.94; }   /* land with a squash */
+  100% { translate: 0 0;    scale: 1; }
+}
+
+/* content-driven expand: 0fr → 1fr animates to the words' natural width,
+   whatever the type scale — no magic max-width to keep in sync */
+.site-nav-reveal {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.3s cubic-bezier(0.34, 1.2, 0.5, 1);
+}
+.site-nav:hover .site-nav-reveal,
+.site-nav:focus-within .site-nav-reveal { grid-template-columns: 1fr; }
+.site-nav-reveal > .site-nav-words {
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* edge spacing lives on the words as margins, NOT padding: the global
+   border-box sizing means padding would floor the 0fr track at 36px and
+   leave a ghost sliver on the collapsed chip. The first margin also leaves
+   room for the hover chip's ±16px halo (halo < margin/gap → never clipped
+   by the wrapper's overflow:hidden). */
+.site-nav-words {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  height: 59px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.site-nav-words > :first-child { margin-left: 18px; }
+/* the "home" word is display:none on desktop but still the DOM :first-child,
+   so the edge margin that gives the first chip's halo room must fall to the
+   word AFTER it (about) — else about's ::before is clipped by overflow:hidden */
+.site-nav-word.is-home + .site-nav-word { margin-left: 18px; }
+.site-nav-words > :last-child { margin-right: 27px; }
+.site-nav:hover .site-nav-words,
+.site-nav:focus-within .site-nav-words {
+  opacity: 1;
+  transition-delay: 0.08s;
+}
+
+/* every word carries a hidden flat chip (same family as .glass); it lights
+   under the cursor, and rests on the current page when nothing is hovered */
+.site-nav-word {
+  position: relative;
+  isolation: isolate;                 /* keeps the ::before above the bar bg */
+  font: inherit;
+  font-size: 23.5px;                  /* 1380:150's 26px × the 0.9 shrink */
+  line-height: 28px;
+  color: #5e5e5e;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+.site-nav-word::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -14px;
+  right: -14px;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
+  border: 1px solid rgba(253, 143, 59, 0.35);
+  border-radius: 33px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.site-nav-word:hover,
+.site-nav-word.is-current { color: var(--orange); }
+.site-nav-word:hover::before,
+.site-nav-word.is-current::before { opacity: 1; }
+/* while the cursor is on some other word, the resting current-page chip
+   steps aside so only one chip shows at a time */
+.site-nav-words:hover .site-nav-word.is-current:not(:hover) { color: var(--ink); }
+.site-nav-words:hover .site-nav-word.is-current:not(:hover)::before { opacity: 0; }
+.site-nav-word.is-inert { cursor: default; }
+/* nav-touch.js injects a line icon into every word; it's only worn by the
+   mobile bottom bar, so the desktop expand pill hides it (stays text-only) */
+.site-nav-word svg { display: none; flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .glass {
+    transition: opacity 0.18s ease;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
+  }
+  .glass.show { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))); }
+  .site-nav-home:hover img,
+  .site-nav-home:focus-visible img { animation: none; }
+}
+
+/* the "home" word exists only for touch screens — on desktop the house
+   chip itself is the way home */
+.site-nav-word.is-home { display: none; }
+
+/* ============================================================
+   MOBILE (≤700px) — the desktop frame is pixel-pinned to the
+   1280×832 mocks and untouched above this line; below it, every
+   page re-lays itself for a phone. Shared here: the home hero
+   and the site nav (tap the house to open — js/nav-touch.js).
+   ============================================================ */
+@media (max-width: 700px) {
+  /* ---- home: name + role centred in the middle of the screen; the shared
+     site-nav bottom bar below is the nav, exactly like every other page.
+     The hero pill, the clock footer, and the opening cover all retire. ---- */
+  .frame-top {
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .frame-name { font-size: 23px; line-height: 32px; }
+  .frame-role { font-size: 17px; line-height: 26px; }
+  .pill,
+  .frame-bottom,
+  .open-arrow { display: none; }
+  .stage.is-cover .frame-top { transform: translate(-50%, -50%); }
+
+  /* the home bar joins every subpage's bottom bar (it's hidden on desktop) */
+  .site-nav.is-mobile-only { display: flex; }
+
+  /* ---- site nav: a floating BOTTOM BAR (instagram's manner) — the words
+     become icon-over-label tabs in a frosted pill fixed to the foot of the
+     screen; the current page's tab wears the warm orange pill. The house
+     chip and its tap-to-open expand retire (the "home" tab replaces them);
+     js/nav-touch.js injects each tab's hand-drawn line icon. ---- */
+  .site-nav {
+    position: fixed;
+    top: auto;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    height: auto;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    padding: 6px;
+    border-radius: 27px;
+    background: rgba(253, 253, 253, 0.82);
+    border: 1px solid #ececec;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    backdrop-filter: blur(14px) saturate(1.1);
+    z-index: 40;
+    animation: nav-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .site-nav:hover,
+  .site-nav:focus-within { background: rgba(253, 253, 253, 0.82); }
+  .site-nav-home { display: none; }        /* the "home" tab is the way home now */
+  .nav-frost { display: none; }            /* the expand-menu frost is gone here */
+
+  /* unwrap the expand grid so the tabs are simply always shown */
+  .site-nav-reveal { display: contents; }
+  .site-nav-words {
+    display: flex;
+    gap: 4px;
+    height: auto;
+    opacity: 1;
+    overflow: visible;
+  }
+  .site-nav-words > :first-child,
+  .site-nav-words > :last-child,
+  .site-nav-word.is-home + .site-nav-word { margin: 0; }
+
+  /* each word → an icon-over-label tab; the warm ::before pill fills the
+     whole tab and shows on the current page (and under a tap) */
+  .site-nav-word {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 7px 14px;
+    border-radius: 21px;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: #8a8a8a;
+  }
+  .site-nav-word svg { display: block; width: 23px; height: 23px; }
+  .site-nav-word::before {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: auto;
+    transform: none;
+    border-radius: 21px;
+  }
+  .site-nav-word.is-home { display: flex; }              /* show the home tab */
+  .site-nav-word[href="play.html"] { display: none; }    /* Play retired on mobile */
+
+  /* home hero pill drops Play to match the bottom bar */
+  .word[data-word="play"] { display: none; }
+}
+
+@keyframes nav-rise {
+  from { transform: translateX(-50%) translateY(150%); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+
+/* the bar just appears (no rise) for motion-sensitive visitors */
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .site-nav { animation: none; }
+}

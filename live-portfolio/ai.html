@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León — AI</title>
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/ai.css?v=24" />
+</head>
+
+<body>
+  <main>
+    <section id="ai-stage" class="ai-stage">
+      <!-- house chip that expands on hover into the site's words (see
+           .site-nav in styles.css); the current page carries is-current -->
+      <nav class="site-nav" aria-label="Site">
+        <a class="site-nav-home" href="index.html#home" aria-label="Back home">
+          <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+        </a>
+        <div class="site-nav-reveal">
+          <div class="site-nav-words">
+            <a class="site-nav-word is-home" href="index.html#home">home</a>
+            <a class="site-nav-word" href="about.html">about</a>
+            <a class="site-nav-word" href="work.html">work</a>
+            <a class="site-nav-word" href="play.html">play</a>
+            <a class="site-nav-word is-current" aria-current="page" href="ai.html">ai</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-frost" aria-hidden="true"></div>
+
+      <header class="ai-title">
+        <h1>Artificial Intelligence</h1>
+        <p id="ai-sub">powered by Claude Haiku 4.5</p>
+      </header>
+
+      <!-- The chat panel (Figma 1373:326 empty / 1328:118 answered). Exchanges
+           append into .ai-scroll; the suggested chips live at its bottom and
+           slide away on the first question (see js/ai-chat.js). -->
+      <div class="ai-panel" id="ai-panel">
+        <div class="ai-scroll" id="ai-scroll"></div>
+
+        <!-- empty-state spark — a hand-drawn asterisk in a dotted orbit
+             that draws itself in; it bows out on the first question -->
+        <div class="ai-empty" id="ai-empty" aria-hidden="true">
+          <svg class="ai-spark" width="120" height="120" viewBox="0 0 120 120">
+            <circle class="guide" cx="60" cy="60" r="52" />
+            <g fill="none" stroke="#5e5e5e" stroke-width="2.2" stroke-linecap="round">
+              <path class="ray s1" pathLength="1" d="M60 22 L60 46" />
+              <path class="ray s1" pathLength="1" d="M60 98 L60 74" />
+              <path class="ray s2" pathLength="1" d="M92.9 41 L72.1 53" />
+              <path class="ray s2" pathLength="1" d="M27.1 79 L47.9 67" />
+              <path class="ray s3" pathLength="1" d="M27.1 41 L47.9 53" />
+              <path class="ray s3" pathLength="1" d="M92.9 79 L72.1 67" />
+            </g>
+            <circle class="spark-dot" cx="60" cy="60" r="5.5" />
+          </svg>
+          <p>ask me anything about Tigo &mdash; or start with a chip</p>
+        </div>
+
+        <!-- solid footer band the input sits on (Figma 1376:38): hairline top,
+             square top corners, bottom corners following the panel's radius -->
+        <div class="ai-dock" aria-hidden="true"></div>
+
+        <div class="ai-prompts" id="ai-prompts">
+          <button class="prompt-chip" type="button">Hobbies?</button>
+          <button class="prompt-chip" type="button">Your toolset?</button>
+          <button class="prompt-chip" type="button">Tell me your background!</button>
+          <button class="prompt-chip" type="button">What is your design philosophy?</button>
+        </div>
+
+        <form class="ai-inputbar" id="ai-inputbar">
+          <button class="ai-send" type="submit" aria-label="Send">
+            <!-- up arrow, from the Figma rects: a stem + two ±45° rounded bars -->
+            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+              <g fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round">
+                <path d="M17 29 V8" />
+                <path d="M7.5 16.5 L17 7 L26.5 16.5" />
+              </g>
+            </svg>
+          </button>
+          <input class="ai-input" id="ai-input" type="text"
+                 placeholder="ask me anything!" autocomplete="off" />
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/nav-touch.js"></script>
+  <script src="js/ai-chat.js"></script>
+</body>
+</html>

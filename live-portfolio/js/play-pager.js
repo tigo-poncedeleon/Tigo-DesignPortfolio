@@ -1,0 +1,51 @@
+// Play page pager + wheel paging — the same mechanics as js/work.js:
+// vertical wheel gestures advance the HORIZONTAL snap scroller one game at
+// a time, and the active dot tracks whichever game is snapped into view.
+(() => {
+  const scroller = document.getElementById('play-scroll');
+  const slides = Array.from(document.querySelectorAll('.play-slide'));
+  const dots = Array.from(document.querySelectorAll('.play-dot'));
+  if (!scroller || !slides.length || dots.length !== slides.length) return;
+
+  const prefersReduced =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // One page per vertical gesture — deltas accumulate within a gesture
+  // (>150ms gap = new one) and each gesture fires at most once. The games
+  // never see wheel events, so this can't fight pong/snake input.
+  let lastWheel = 0;
+  let acc = 0;
+  let fired = false;
+  scroller.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;  // native horizontal
+    e.preventDefault();
+    const now = performance.now();
+    if (now - lastWheel > 150) { acc = 0; fired = false; }
+    lastWheel = now;
+    acc += e.deltaY;
+    if (fired || Math.abs(acc) < 30) return;
+    fired = true;
+    const i = Math.round(scroller.scrollLeft / scroller.clientWidth);
+    const next = Math.min(Math.max(i + (acc > 0 ? 1 : -1), 0), slides.length - 1);
+    if (next === i) return;
+    slides[next].scrollIntoView({
+      behavior: prefersReduced ? 'auto' : 'smooth',
+      inline: 'start',
+    });
+  }, { passive: false });
+
+  const setCurrent = (id) => {
+    dots.forEach((dot) => {
+      if (dot.getAttribute('href') === '#' + id) dot.setAttribute('aria-current', 'page');
+      else dot.removeAttribute('aria-current');
+    });
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) setCurrent(e.target.id); });
+    },
+    { root: document.getElementById('play-scroll'), threshold: 0.6 }
+  );
+  slides.forEach((s) => observer.observe(s));
+})();

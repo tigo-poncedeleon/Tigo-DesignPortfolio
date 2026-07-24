@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León — Vicino AI</title>
+  <meta name="description" content="Vicino AI — a UX engineering case study by Tigo Ponce de León, coming after the summer 2026 internship wraps." />
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/vicino.css?v=1" />
+</head>
+
+<body>
+  <main>
+    <section class="soon-stage">
+      <nav class="site-nav" aria-label="Site">
+        <a class="site-nav-home" href="index.html#home" aria-label="Back home">
+          <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+        </a>
+        <div class="site-nav-reveal">
+          <div class="site-nav-words">
+            <a class="site-nav-word is-home" href="index.html#home">home</a>
+            <a class="site-nav-word" href="about.html">about</a>
+            <a class="site-nav-word is-current" aria-current="page" href="work.html">work</a>
+            <a class="site-nav-word" href="play.html">play</a>
+            <a class="site-nav-word" href="ai.html">ai</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-frost" aria-hidden="true"></div>
+
+      <!-- the whole page is one quiet promise: a hand-drawn laptop whose
+           screen is still being sketched, and a date to come back -->
+      <div class="soon-card">
+        <svg class="soon-illo" width="180" height="140" viewBox="0 0 180 140" aria-hidden="true">
+          <!-- dotted guides first, the pen follows -->
+          <rect class="guide" x="34" y="14" width="112" height="76" rx="6" />
+          <path class="guide" d="M20 112 H160" />
+          <rect class="stroke s1" pathLength="1" x="40" y="20" width="100" height="70" rx="6" />
+          <path class="stroke s2" pathLength="1" d="M26 106 L40 90 H140 L154 106 Z" />
+          <path class="stroke s2" pathLength="1" d="M76 98 H104" />
+          <!-- the unfinished screen: two drawn lines, one mid-stroke -->
+          <path class="stroke s3" pathLength="1" d="M52 38 H126" />
+          <path class="stroke s3" pathLength="1" d="M52 52 H108" />
+          <path class="stroke s3 half" pathLength="1" d="M52 66 H86" />
+          <circle class="soon-dot" cx="92" cy="66" r="3.5" />
+        </svg>
+
+        <header class="soon-title">
+          <h1>Vicino AI</h1>
+          <p>case study coming soon</p>
+        </header>
+
+        <p class="soon-copy">Agentic workflows for AI marketing generation
+        and analytics, plus a Figma-to-React component library — the full
+        story lands once the <strong>summer 2026</strong> internship wraps.</p>
+
+        <div class="soon-specs" aria-label="Project facts">
+          <span class="soon-chip">UX Engineer Intern</span>
+          <span class="soon-chip">Summer 2026</span>
+          <span class="soon-chip">Bellevue, WA</span>
+        </div>
+
+        <a class="soon-back" href="work.html">back to work &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/nav-touch.js"></script>
+  <script>
+    // the stage's gentle fade-in, same as every page
+    requestAnimationFrame(function () {
+      document.querySelector('.soon-stage').classList.add('revealed');
+    });
+  </script>
+</body>
+</html>
