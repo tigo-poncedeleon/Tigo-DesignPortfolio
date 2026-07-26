@@ -66,7 +66,7 @@
   gap: 10px;
   white-space: nowrap;
 }
-.play-title h1 {
+.play-title h2 {
   font-size: 28px;                    /* user's 28px header unification */
   font-weight: 400;
   color: #5e5e5e;
@@ -250,12 +250,20 @@
   border-radius: 5.623px;
 }
 .play-dot {
+  position: relative;
   width: 7.69px;
   height: 7.69px;
   border-radius: 50%;
   border: 1px solid #5e5e5e;
   background: transparent;
   transition: background-color var(--t-micro) ease;
+}
+/* an invisible halo grows each dot's hit target to ~26px */
+.play-dot::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
 }
 .play-dot:hover, .play-dot:focus-visible { background: rgba(94, 94, 94, 0.45); }
 .play-dot[aria-current='page'] { background: #5e5e5e; }
@@ -541,7 +549,7 @@
     white-space: normal;
     text-align: center;
   }
-  .play-title h1 { font-size: 22px; }
+  .play-title h2 { font-size: 22px; }
   .play-title p { width: 100%; font-size: 14px; }
 
   .board, #board, #snake-board, #flappy-board {

@@ -64,6 +64,11 @@
       if (dot.getAttribute('href') === '#' + id) dot.setAttribute('aria-current', 'page');
       else dot.removeAttribute('aria-current');
     });
+    // mirror the project into the URL (replace, never push) so refresh
+    // and back/forward land on the slide the visitor actually saw
+    if (location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {
+      history.replaceState(null, '', '#' + id);
+    }
   };
 
   // a slide majority-visible in the scroller = the current project

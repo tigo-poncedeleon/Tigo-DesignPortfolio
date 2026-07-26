@@ -120,6 +120,12 @@
         dot.classList.toggle('is-current', on);
       });
       if (!hovered) settle();           // the chip drifts to the new chapter
+    
+      // mirror the chapter into the URL (replace, never push) so refresh
+      // and back/forward land where the reader actually was
+      if (location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {
+        history.replaceState(null, '', '#' + id);
+      }
     };
     const observer = new IntersectionObserver(
       (entries) => {

@@ -56,7 +56,7 @@
   gap: 10px;
   white-space: nowrap;
 }
-.work-title h1 {
+.work-title h2 {
   font-size: 28px;                    /* user's 28px header unification */
   font-weight: 400;
   color: #5e5e5e;
@@ -180,12 +180,20 @@ a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
 }
 /* dots: #5e5e5e ring resting, #5e5e5e fill on the current project */
 .work-dot {
+  position: relative;
   width: 7.69px;
   height: 7.69px;
   border-radius: 50%;
   border: 1px solid #5e5e5e;
   background: transparent;
   transition: background-color var(--t-micro) ease;
+}
+/* an invisible halo grows each dot's hit target to ~26px */
+.work-dot::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
 }
 .work-dot:hover, .work-dot:focus-visible { background: rgba(94, 94, 94, 0.45); }
 .work-dot[aria-current='page'] { background: #5e5e5e; }
@@ -237,7 +245,7 @@ a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
     white-space: normal;
     text-align: center;
   }
-  .work-title h1 { font-size: 24px; line-height: 30px; }
+  .work-title h2 { font-size: 24px; line-height: 30px; }
   .work-title p { font-size: 15px; color: rgba(0, 0, 0, 0.42); }
   .work-date {
     position: static;

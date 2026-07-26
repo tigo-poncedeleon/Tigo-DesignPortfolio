@@ -39,11 +39,13 @@
            it paints behind the words, matching Figma's node order. -->
       <div class="pill" id="pill">
         <div class="glass" id="glass" aria-hidden="true"></div>
+        <!-- real links (crawlable, cmd-clickable); glass-nav.js only drives
+             the chip and the touch first-tap-preview behavior -->
         <div class="words" id="words">
-          <button class="word" type="button" data-word="about">about</button>
-          <button class="word" type="button" data-word="work">work</button>
-          <button class="word" type="button" data-word="play">play</button>
-          <button class="word" type="button" data-word="ai">ai</button>
+          <a class="word" href="about.html" data-word="about">about</a>
+          <a class="word" href="work.html" data-word="work">work</a>
+          <a class="word" href="play.html" data-word="play">play</a>
+          <a class="word" href="ai.html" data-word="ai">ai</a>
         </div>
       </div>
 

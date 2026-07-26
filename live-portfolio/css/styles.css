@@ -49,6 +49,20 @@
 input:focus-visible,
 textarea:focus-visible { outline: none; }
 
+/* screen-reader-only text — names the page for assistive tech where no
+   visible element does (each page keeps exactly one h1) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html, body {
   background: var(--bg);
   color: var(--ink);
@@ -128,6 +142,7 @@ html, body {
   background: none;
   border: 0;
   padding: 0;
+  text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   /* transform springs on the same curve as the chip so chip + word move as one */

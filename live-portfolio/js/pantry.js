@@ -171,6 +171,12 @@
         dot.classList.toggle('is-current', on);
       });
       if (menuGlide) menuGlide.settle();
+    
+      // mirror the chapter into the URL (replace, never push) so refresh
+      // and back/forward land where the reader actually was
+      if (location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {
+        history.replaceState(null, '', '#' + id);
+      }
     };
     const observer = new IntersectionObserver(
       (entries) => {
@@ -220,7 +226,8 @@
       cur = (i + steps.length) % steps.length;
       steps.forEach((s, k) => {
         s.classList.toggle('is-current', k === cur);
-        s.setAttribute('aria-selected', k === cur ? 'true' : 'false');
+        if (k === cur) s.setAttribute('aria-current', 'step');
+        else s.removeAttribute('aria-current');
       });
       shots.forEach((s, k) => s.classList.toggle('is-on', k === cur));
       caps.forEach((c, k) => c.classList.toggle('is-on', k === cur));

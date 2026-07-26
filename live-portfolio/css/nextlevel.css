@@ -181,7 +181,7 @@
   gap: 10px;
   white-space: nowrap;
 }
-.case-title h1 {
+.case-title :is(h1, h2) {
   font-size: 28px;
   font-weight: 400;
   color: #5e5e5e;
@@ -1295,7 +1295,7 @@
     margin-bottom: 20px;
     text-align: center;
   }
-  .case-title h1 { font-size: 22px; }
+  .case-title :is(h1, h2) { font-size: 22px; }
   .case-title p { font-size: 16px; }
   .case-num { font-size: 12px; }
   .scroll-hint { display: none; }

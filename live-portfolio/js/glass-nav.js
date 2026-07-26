@@ -10,10 +10,6 @@ window.GlassNav = (function () {
   var enabled = true;     // reserved: lets a future router freeze the chip
   var hideFn = null;
 
-  // Words with a page behind them. On desktop a click navigates; on touch the
-  // first tap shows the chip and the second tap follows the link.
-  var ROUTES = { about: 'about.html', work: 'work.html', play: 'play.html', ai: 'ai.html' };
-
   function init() {
     const pill = document.getElementById('pill');
     const glass = document.getElementById('glass');
@@ -78,14 +74,13 @@ window.GlassNav = (function () {
 
     const isTouch = window.matchMedia('(hover: none)').matches;
 
+    // The words are real <a> links — navigation is the browser's job.
+    // On touch, the first tap previews the chip; the second follows the link.
     words.forEach(function (el, i) {
-      var route = ROUTES[el.dataset.word];
       if (isTouch) {
         el.addEventListener('click', function (e) {
-          e.preventDefault();
-          if (cur === i) {
-            route ? (window.location.href = route) : hide();
-          } else {
+          if (cur !== i) {
+            e.preventDefault();
             moveTo(i);
           }
         });
@@ -93,9 +88,6 @@ window.GlassNav = (function () {
         el.addEventListener('mouseenter', function () { moveTo(i); });
         el.addEventListener('focus', function () { moveTo(i); });
         el.addEventListener('blur', hide);
-        if (route) {
-          el.addEventListener('click', function () { window.location.href = route; });
-        }
       }
     });
 
