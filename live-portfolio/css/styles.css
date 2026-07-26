@@ -14,6 +14,8 @@
   --muted:  #717171;                  /* role, time */
   --orange: #fd8f3b;  /* FE7301 @ 75% as FIGMA flattens it (253,143,59) —
                          pinned solid for pixel-parity with the mocks */
+  --error:  #bf4327;  /* the orange's serious sibling — form errors only,
+                         so failure never reads like the success accent */
 
   /* ---- motion tokens — the site's whole vocabulary of movement.
      Durations: micro feedback → snap → glide → lift → pop → entrance.

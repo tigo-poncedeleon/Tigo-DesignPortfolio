@@ -308,7 +308,10 @@
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.17);
   border-radius: 20px;
+  transition: border-color var(--t-micro) ease;
 }
+/* writing wakes the bar — the compose letter's focus manner */
+.ai-inputbar:focus-within { border-color: rgba(0, 0, 0, 0.3); }
 .ai-send {
   position: absolute;
   left: -1px;                          /* sit on the bar's border */
@@ -325,10 +328,15 @@
   color: #5e5e5e;                      /* the arrow strokes currentColor */
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
 }
-.ai-send:hover,
-.ai-send:focus-visible {
+.ai-send:hover:not([disabled]),
+.ai-send:focus-visible:not([disabled]) {
   background: #bfbfbf;
   color: var(--orange);                /* the arrow warms, site manner */
+}
+/* while a reply is on its way the arrow rests */
+.ai-send[disabled] {
+  cursor: default;
+  color: #9a9a9a;
 }
 .ai-input {
   position: absolute;
@@ -341,6 +349,7 @@
   font: inherit;
   font-size: 24px;
   color: #101112;
+  caret-color: var(--orange);
 }
 .ai-input::placeholder { color: #7c7c7c; }
 .ai-input:focus { outline: none; }

@@ -732,8 +732,8 @@
   color: rgba(0, 0, 0, 0.3);
   transition: color var(--t-micro) ease;
 }
-.compose-hint.is-error,
 .compose-hint.is-sent { color: var(--orange); }
+.compose-hint.is-error { color: var(--error); }
 .compose-send {
   display: flex;
   align-items: center;

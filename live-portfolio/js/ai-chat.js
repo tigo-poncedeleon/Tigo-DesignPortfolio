@@ -27,6 +27,8 @@
   const input    = document.getElementById('ai-input');
   const emptyEl  = document.getElementById('ai-empty');
   const subEl    = document.getElementById('ai-sub');
+  const liveEl   = document.getElementById('ai-live');
+  const sendBtn  = inputBar ? inputBar.querySelector('.ai-send') : null;
   if (!scroll) return;
 
   // gentle fade-in, same as the other pages
@@ -311,6 +313,7 @@
     text = text.trim();
     if (!text || responding) return;
     responding = true;
+    if (sendBtn) sendBtn.disabled = true;   // the arrow rests while replying
 
     const answerEl = prebuiltAnswerEl || buildExchange(text).answerEl;
     history.push({ role: 'user', content: text });
@@ -334,7 +337,11 @@
     saveHistory();
     showFollowups();
     scrollToBottom();
+    // announce the finished answer once, off-screen — the word-by-word
+    // reveal above stays visual-only
+    if (liveEl) liveEl.textContent = full;
     responding = false;
+    if (sendBtn) sendBtn.disabled = false;
     // preventScroll: focus() otherwise scrolls even overflow:hidden ancestors,
     // shoving the whole stage up on short viewports
     if (input) input.focus({ preventScroll: true });

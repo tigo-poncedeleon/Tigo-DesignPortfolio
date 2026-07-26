@@ -55,6 +55,10 @@
       <div class="ai-panel" id="ai-panel">
         <div class="ai-scroll" id="ai-scroll"></div>
 
+        <!-- answers are announced here once complete — the word-by-word
+             visual reveal stays quiet for screen readers -->
+        <p class="sr-only" id="ai-live" aria-live="polite"></p>
+
         <!-- empty-state spark — a hand-drawn asterisk in a dotted orbit
              that draws itself in; it bows out on the first question -->
         <div class="ai-empty" id="ai-empty" aria-hidden="true">
@@ -94,7 +98,7 @@
               </g>
             </svg>
           </button>
-          <input class="ai-input" id="ai-input" type="text"
+          <input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo"
                  placeholder="ask me anything!" autocomplete="off" />
         </form>
       </div>
