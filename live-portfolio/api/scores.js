@@ -16,6 +16,7 @@ import { put, head } from '@vercel/blob';
 const GAMES = ['pong', 'snake', 'flappy'];
 const PATH = 'play/records.json';
 const MAX_SCORE = 9999;
+const INITIALS = 2;   // the arcade signature — matches js/records.js SLOTS
 
 function empty() {
   return { pong: null, snake: null, flappy: null };
@@ -74,7 +75,7 @@ export default async function handler(req, res) {
   const initials = String(body.initials || '')
     .toUpperCase()
     .replace(/[^A-Z]/g, '')
-    .slice(0, 3);
+    .slice(0, INITIALS);
 
   if (!GAMES.includes(game)) {
     return res.status(400).json({ error: 'Unknown game' });

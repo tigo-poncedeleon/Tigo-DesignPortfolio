@@ -82,31 +82,6 @@
   white-space: nowrap;
 }
 
-/* vicino's date rides beside a plain-sight promise — the case study
-   isn't clickable-to yet, and the slide says so before the click */
-.work-meta {
-  position: absolute;
-  top: 87px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-.work-meta .work-date {
-  position: static;
-  transform: none;
-}
-.work-soon {
-  padding: 4px 8px;
-  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm wash */
-  border: 0.663px solid rgba(253, 143, 59, 0.35);
-  border-radius: 6.625px;
-  font-size: 13.25px;
-  color: var(--orange);
-}
-
 /* ---- showcase images: each page centres its own frame-exact box ---- */
 .work-img-vicino {
   position: absolute;
@@ -277,14 +252,6 @@ a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
     transform: none;
     margin-top: 14px;
   }
-  .work-meta {
-    position: static;
-    transform: none;
-    margin-top: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .work-meta .work-date { margin-top: 0; }
   .work-img-vicino,
   .work-img-pantry,
   .work-img-drone {
@@ -319,7 +286,7 @@ a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
                 translate 0.7s var(--ease-rise) var(--d, 0s);
   }
   .work-slide:not(.revealed) > * { opacity: 0; translate: 0 22px; }
-  .work-slide > :is(.work-date, .work-meta) { --d: 0.06s; }
+  .work-slide > .work-date { --d: 0.06s; }
   .work-slide > :is(.work-img-vicino, .work-img-pantry, .work-img-drone) { --d: 0.12s; }
 }
 

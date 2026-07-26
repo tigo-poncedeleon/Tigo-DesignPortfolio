@@ -379,6 +379,16 @@
     margin-left: 0;
     width: auto;
     height: auto;
+
+    /* One source of truth for the chip stack's footprint. On a phone the
+       panel is only as tall as the screen allows, so the empty-state spark
+       has to reserve room off THESE numbers instead of a fixed top — at
+       fixed offsets it slid under the pills on short screens. The 4 is the
+       chip count in ai.html; keep them in step. */
+    --chip-h: 44px;
+    --chip-gap: 5px;
+    --chips-bottom: 94px;
+    --chips-h: calc(4 * var(--chip-h) + 3 * var(--chip-gap));
   }
   .ai-scroll {
     left: 14px;
@@ -396,17 +406,43 @@
     max-width: 85%;
     margin-bottom: 10px;
   }
-  .ai-empty { top: 58px; width: 86%; }
-  .ai-spark { width: 96px; height: 96px; }
+  /* the spark + invitation own the room ABOVE the chip stack and centre
+     themselves in it, so the two can never overlap however short the phone */
+  .ai-empty {
+    top: 10px;
+    bottom: calc(var(--chips-bottom) + var(--chips-h) + 12px);
+    left: 14px;
+    right: 14px;
+    width: auto;
+    transform: none;                   /* insets centre it now, not translateX
+                                          — .is-gone still animates `translate` */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    overflow: hidden;
+  }
+  /* the spark is a viewBox'd SVG, so letting flex shrink it keeps the whole
+     empty state fitting on tall and short screens alike — no size breakpoints */
+  .ai-spark {
+    flex: 0 1 auto;
+    width: auto;
+    height: 96px;
+    max-height: 100%;
+    min-height: 0;
+    aspect-ratio: 1;
+  }
   .ai-empty p {
     white-space: normal;
     font-size: 14px;
     max-width: 230px;
-    margin: 10px auto 0;
+    margin: 0;
+    flex: none;
   }
-  .ai-prompts { right: 16px; bottom: 94px; gap: 5px; }
+  .ai-prompts { right: 16px; bottom: var(--chips-bottom); gap: var(--chip-gap); }
   .prompt-chip {
-    height: 44px;
+    height: var(--chip-h);
     padding: 0 14px;
     border-radius: 15px;
     font-size: 16px;
@@ -433,6 +469,19 @@
   }
   .fu-chip { font-size: 14px; padding: 6px 11px; }
   .flow-cap p { font-size: 15px; }
+}
+
+/* Short phones: the panel is only as tall as the screen leaves it, and the
+   chip stack + input dock take a fixed bite out of it. Rather than let the
+   empty state crowd the pills, it gives ground in two steps — first the
+   decorative spark, then the invitation line (by then the chips ARE the
+   invitation). Thresholds are where each piece stops fitting cleanly above
+   the stack; see the --chips-* numbers on .ai-panel. */
+@media (max-width: 700px) and (max-height: 640px) {
+  .ai-spark { display: none; }
+}
+@media (max-width: 700px) and (max-height: 580px) {
+  .ai-empty { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

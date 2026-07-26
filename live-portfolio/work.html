@@ -6,20 +6,20 @@
   <title>Tigo Ponce de León — Work</title>
 
   <link rel="icon" type="image/png" href="Media/darkcircle.png" />
-  <meta name="description" content="Selected work: PantryPal, Vicino AI, and Next Level Drone Cleaning." />
+  <meta name="description" content="Selected work: Vicino AI, PantryPal, and Next Level Drone Cleaning." />
   <meta name="theme-color" content="#fdfdfd" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Tigo Ponce de León" />
   <meta property="og:title" content="Tigo Ponce de León — Work" />
-  <meta property="og:description" content="Selected work: PantryPal, Vicino AI, and Next Level Drone Cleaning." />
+  <meta property="og:description" content="Selected work: Vicino AI, PantryPal, and Next Level Drone Cleaning." />
   <meta property="og:url" content="https://tigoponcedeleon.com/work.html" />
   <meta property="og:image" content="https://tigoponcedeleon.com/Media/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=31" />
-  <link rel="stylesheet" href="css/work.css?v=19" />
+  <link rel="stylesheet" href="css/styles.css?v=32" />
+  <link rel="stylesheet" href="css/work.css?v=20" />
 </head>
 
 <body>
@@ -49,6 +49,24 @@
            slide into place per scroll gesture. Nav + pager sit OUTSIDE the
            scroller so they hold still while the work scrolls beneath. -->
       <div class="work-scroll" id="work-scroll">
+        <section class="work-slide" id="vicino" aria-label="Vicino AI">
+          <header class="work-title">
+            <h2>Vicino AI</h2>
+            <p>UX Engineer Intern</p>
+          </header>
+          <p class="work-date">Summer 2026</p>
+          <!-- Figma 1401:86: Canvas — Pulse Redesign on the studio display;
+               the display AND the floating link open the case study -->
+          <a class="work-img-vicino" href="vicino.html"
+             aria-label="Open the Vicino AI case study">
+            <img src="Media/Vicino-Laptop.webp"
+                 alt="Vicino AI canvas — Pulse redesign shown on a studio display" width="2253" height="2253" />
+          </a>
+          <span class="work-open" aria-hidden="true">
+            <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </section>
+
         <section class="work-slide" id="pantrypal" aria-label="Pantry Pal">
           <header class="work-title">
             <h2>Pantry Pal</h2>
@@ -61,27 +79,6 @@
              aria-label="Open the PantryPal case study">
             <img loading="lazy" decoding="async" src="Media/pantry-login.webp"
                  alt="Pantry Pal login screen on an iPhone" width="954" height="1908" />
-          </a>
-          <span class="work-open" aria-hidden="true">
-            <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-          </span>
-        </section>
-
-        <section class="work-slide" id="vicino" aria-label="Vicino AI">
-          <header class="work-title">
-            <h2>Vicino AI</h2>
-            <p>UX Engineer Intern</p>
-          </header>
-          <div class="work-meta">
-            <p class="work-date">Summer 2026</p>
-            <p class="work-soon">case study coming soon</p>
-          </div>
-          <!-- Figma 1401:86: Canvas — Pulse Redesign on the studio display;
-               the display AND the floating link open the coming-soon page -->
-          <a class="work-img-vicino" href="vicino.html"
-             aria-label="Vicino AI case study — coming soon">
-            <img src="Media/Vicino-Laptop.webp"
-                 alt="Vicino AI canvas — Pulse redesign shown on a studio display" width="2253" height="2253" />
           </a>
           <span class="work-open" aria-hidden="true">
             <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -108,11 +105,10 @@
       </div>
 
       <nav class="work-pager" aria-label="Work projects">
-        <a class="work-dot" aria-current="page" href="#pantrypal" aria-label="Pantry Pal"></a>
-        <a class="work-dot" href="#vicino" aria-label="Vicino AI"></a>
+        <a class="work-dot" aria-current="page" href="#vicino" aria-label="Vicino AI"></a>
+        <a class="work-dot" href="#pantrypal" aria-label="Pantry Pal"></a>
         <a class="work-dot" href="#drone" aria-label="Next Level Drone Cleaning"></a>
       </nav>
-      <p class="stage-outro">like what you see? <a href="about.html#contact">say hello &rarr;</a></p>
     </section>
   </main>
 

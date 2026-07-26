@@ -1,7 +1,7 @@
 // Flappy Bird — the third Play-page game, in the pong/snake mould. The
 // orange bird (the pong ball, given wings) holds a fixed x while
-// paddle-grey pipes scroll left through the portrait court; Space, ArrowUp
-// or a click flaps. Hitting a pipe or the rail ends the run: the board
+// paddle-grey pipes scroll left through the portrait court; Space, ArrowUp,
+// W or a click flaps. Hitting a pipe or the rail ends the run: the board
 // shows the Score · replay · Best card like snake's. Best lives in
 // sessionStorage. Only the game whose board is centred owns the keyboard;
 // scrolling away pauses, and the next flap resumes (space IS flap here, so
@@ -215,13 +215,18 @@ window.Flappy = (function () {
     return r.left < mid && r.right > mid;
   }
 
+  // W flaps alongside space and the up arrow; the rest of WASD is swallowed
+  // so a left hand on the keys can't scroll the carousel out from under the
+  // bird. Modifier combos are the browser's (⌘W closes the tab) — untouched.
+  var SWALLOW = {
+    ArrowUp: 1, ArrowDown: 1, ArrowLeft: 1, ArrowRight: 1, Space: 1,
+    KeyW: 1, KeyA: 1, KeyS: 1, KeyD: 1,
+  };
+
   function onKeyDown(e) {
-    if (!inView()) return;
-    if (e.code === 'ArrowUp' || e.code === 'ArrowDown' ||
-        e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'Space') {
-      e.preventDefault();
-    }
-    if (e.code === 'Space' || e.code === 'ArrowUp') {
+    if (!inView() || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (SWALLOW[e.code]) e.preventDefault();
+    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
       if (state === 'idle' || state === 'ended') {
         if (!e.repeat && !endLocked()) startCountdown();
       } else {

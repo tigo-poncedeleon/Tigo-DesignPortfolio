@@ -448,41 +448,6 @@ html, body {
 .site-nav-word.is-home { display: none; }
 
 /* ============================================================
-   Stage outro — the quiet door in the corner: every full-screen
-   page ends with a next step, so nobody hits a dead end. Sits in
-   the stage's bottom-right, clear of boards, pagers, and panels.
-   ============================================================ */
-.stage-outro {
-  position: absolute;
-  right: 31px;
-  bottom: 24px;
-  z-index: 8;
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
-  white-space: nowrap;
-}
-.stage-outro a {
-  color: #5e5e5e;
-  text-decoration: none;
-  transition: color var(--t-micro) ease;
-}
-.stage-outro a:hover,
-.stage-outro a:focus-visible { color: var(--orange); }
-
-@media (max-width: 700px) {
-  /* phones: the work page lets it fall into the flow after the projects;
-     the play and ai pages retire it (their layouts own the whole screen) */
-  .stage-outro { display: none; }
-  .work-stage .stage-outro {
-    display: block;
-    position: static;
-    text-align: center;
-    margin: -88px auto 0;      /* tucks into the last slide's 120px clearance */
-    padding-bottom: 118px;     /* stays clear of the bottom nav bar */
-  }
-}
-
-/* ============================================================
    MOBILE (≤700px) — the desktop frame is pixel-pinned to the
    1280×832 mocks and untouched above this line; below it, every
    page re-lays itself for a phone. Shared here: the home hero

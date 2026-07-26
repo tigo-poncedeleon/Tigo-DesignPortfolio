@@ -1,5 +1,5 @@
 // Pong — the Play page game. Left paddle is the computer, right paddle is the
-// player (arrow keys). Space or a click on the board starts a game; space
+// player (arrow keys, or W/S). Space or a click on the board starts a game; space
 // pauses/resumes mid-rally. Every serve runs a 3-2-1 countdown; the first
 // serve always goes left toward the computer (per spec), later serves go
 // toward whoever just conceded. A point ends the game: the board shows the
@@ -197,14 +197,21 @@ window.Pong = (function () {
     return r.left < mid && r.right > mid;
   }
 
+  // WASD sits alongside the arrows — same paddle, left hand or right.
+  // Anything with a modifier held is the browser's (⌘W closes the tab), so
+  // it passes straight through untouched.
+  function isUp(code) { return code === 'ArrowUp' || code === 'KeyW'; }
+  function isDown(code) { return code === 'ArrowDown' || code === 'KeyS'; }
+  function isSteer(code) {
+    return isUp(code) || isDown(code) || code === 'ArrowLeft' ||
+      code === 'ArrowRight' || code === 'KeyA' || code === 'KeyD';
+  }
+
   function onKeyDown(e) {
-    if (!inView()) return;
-    if (e.code === 'ArrowUp' || e.code === 'ArrowDown' ||
-        e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'Space') {
-      e.preventDefault();
-    }
-    if (e.code === 'ArrowUp') held.up = true;
-    if (e.code === 'ArrowDown') held.down = true;
+    if (!inView() || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (isSteer(e.code) || e.code === 'Space') e.preventDefault();
+    if (isUp(e.code)) held.up = true;
+    if (isDown(e.code)) held.down = true;
     if (e.code === 'Space' && !e.repeat) {
       if (state === 'idle' || state === 'ended') startCountdown();
       else if (state === 'playing') state = 'paused';
@@ -214,8 +221,8 @@ window.Pong = (function () {
   }
 
   function onKeyUp(e) {
-    if (e.code === 'ArrowUp') held.up = false;
-    if (e.code === 'ArrowDown') held.down = false;
+    if (isUp(e.code)) held.up = false;
+    if (isDown(e.code)) held.down = false;
   }
 
   function init() {

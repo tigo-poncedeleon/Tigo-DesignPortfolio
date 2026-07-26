@@ -1,8 +1,8 @@
 // Site-wide play records — the arcade high-score table, one line per game.
 //
 // On load, GET the records and fill each game's chip ("longest rally · 14 ·
-// TIG"). When a run ends, the game calls PlayRecords.report(game, score);
-// beat the site record and the ended card grows an initials entry — three
+// TG"). When a run ends, the game calls PlayRecords.report(game, score);
+// beat the site record and the ended card grows an initials entry — two
 // arcade letter slots, Enter to claim, Esc to wave it off. While the entry
 // is open a capture-phase guard swallows keys and board clicks so Space
 // can't restart the game mid-signature.
@@ -11,6 +11,8 @@ window.PlayRecords = (function () {
     'https://tigo-design-portfolio.vercel.app/api/scores';
   var LABELS = { pong: 'longest rally', snake: 'longest snake', flappy: 'longest run' };
   var BOARDS = { pong: 'board', snake: 'snake-board', flappy: 'flappy-board' };
+  var SLOTS = 2;                 // two letters to sign — keep .entry-slot count,
+                                 // the input's maxlength, and api/scores.js in step
 
   var records = { pong: null, snake: null, flappy: null };
   var loaded = false;
@@ -74,9 +76,8 @@ window.PlayRecords = (function () {
       '<div class="entry-slots" aria-label="Your initials">' +
       '<span class="entry-slot is-cur"></span>' +
       '<span class="entry-slot"></span>' +
-      '<span class="entry-slot"></span>' +
       '</div>' +
-      '<input class="entry-input" type="text" maxlength="3" ' +
+      '<input class="entry-input" type="text" maxlength="' + SLOTS + '" ' +
       'autocapitalize="characters" autocomplete="off" aria-label="Your initials" />' +
       '<p class="entry-hint">' +
       (coarse ? 'return to claim' : 'enter to claim &middot; esc to skip') + '</p>';
@@ -93,7 +94,7 @@ window.PlayRecords = (function () {
       inp.addEventListener('input', function () {
         if (!entry || entry.busy) return;
         entry.letters = inp.value.toUpperCase().replace(/[^A-Z]/g, '')
-          .slice(0, 3).split('');
+          .slice(0, SLOTS).split('');
         renderSlots();
       });
     }
@@ -181,7 +182,7 @@ window.PlayRecords = (function () {
     }
     if (/^[a-zA-Z]$/.test(e.key)) {
       e.preventDefault();
-      if (!entry.busy && entry.letters.length < 3) {
+      if (!entry.busy && entry.letters.length < SLOTS) {
         entry.letters.push(e.key.toUpperCase());
         renderSlots();
       }

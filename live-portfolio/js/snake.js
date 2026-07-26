@@ -1,6 +1,6 @@
 // Snake — the second Play-page game, patterned on js/pong.js. The rail's
-// content box divides into 21px cells (the pong unit): 52×18. Arrow keys
-// steer (reversals ignored), space pauses; the snake speeds up a little
+// content box divides into 21px cells (the pong unit): 52×18. Arrow keys or
+// WASD steer (reversals ignored), space pauses; the snake speeds up a little
 // with each food. Hitting the rail or itself ends the run: the board shows
 // Score/Best plus the replay glyph, exactly like pong's ended state. Best
 // lives in sessionStorage alongside pong's tallies. Only the game whose
@@ -218,16 +218,20 @@ window.Snake = (function () {
     nextDir = { x: x, y: y };
   }
 
+  // WASD steers alongside the arrows. Anything with a modifier held is the
+  // browser's (⌘W closes the tab) and passes straight through untouched.
+  var STEER = {
+    ArrowUp: [0, -1], KeyW: [0, -1],
+    ArrowDown: [0, 1], KeyS: [0, 1],
+    ArrowLeft: [-1, 0], KeyA: [-1, 0],
+    ArrowRight: [1, 0], KeyD: [1, 0],
+  };
+
   function onKeyDown(e) {
-    if (!inView()) return;
-    if (e.code === 'ArrowUp' || e.code === 'ArrowDown' ||
-        e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'Space') {
-      e.preventDefault();
-    }
-    if (e.code === 'ArrowUp') steer(0, -1);
-    if (e.code === 'ArrowDown') steer(0, 1);
-    if (e.code === 'ArrowLeft') steer(-1, 0);
-    if (e.code === 'ArrowRight') steer(1, 0);
+    if (!inView() || e.metaKey || e.ctrlKey || e.altKey) return;
+    var turn = STEER[e.code];
+    if (turn || e.code === 'Space') e.preventDefault();
+    if (turn) steer(turn[0], turn[1]);
     if (e.code === 'Space' && !e.repeat) {
       if (state === 'idle' || state === 'ended') startCountdown();
       else if (state === 'playing') state = 'paused';
