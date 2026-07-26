@@ -55,8 +55,11 @@ window.GlassNav = (function () {
 
       // The chip is centred in the pill (left/top:50%); shift it to the word's
       // INK centre (box-centre delta + the per-word optical offset above).
-      const dx = (wr.left + wr.width / 2) - (pr.left + pr.width / 2) + inkOff[i].x;
-      const dy = (wr.top + wr.height / 2) - (pr.top + pr.height / 2) + inkOff[i].y;
+      // Rect deltas are visual px — divide by the stage-fit scale so the
+      // value lands right once the scaled stage multiplies it back.
+      const fs = window.__stageFitScale || 1;
+      const dx = ((wr.left + wr.width / 2) - (pr.left + pr.width / 2)) / fs + inkOff[i].x;
+      const dy = ((wr.top + wr.height / 2) - (pr.top + pr.height / 2)) / fs + inkOff[i].y;
       glass.style.setProperty('--dx', dx.toFixed(1) + 'px');
       glass.style.setProperty('--dy', dy.toFixed(1) + 'px');
 

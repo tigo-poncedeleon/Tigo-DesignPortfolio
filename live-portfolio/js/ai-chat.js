@@ -257,6 +257,9 @@
     }
 
     // fly the picked chip to where the question lands in the new bubble
+    // (rect deltas are visual px; ÷ the stage-fit scale converts them to
+    // the layout px the scaled panel expects)
+    const fs = window.__stageFitScale || 1;
     const startRect = chip.getBoundingClientRect();
     chip.style.opacity = '0';
     hidePrompts(others, () => {});
@@ -273,16 +276,16 @@
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: '10',
-      left: (startRect.left - panelRect.left - 1) + 'px',   /* −1: panel border */
-      top: (startRect.top - panelRect.top - 1) + 'px',
+      left: ((startRect.left - panelRect.left) / fs - 1) + 'px',   /* −1: panel border */
+      top: ((startRect.top - panelRect.top) / fs - 1) + 'px',
       transition: 'none',
     });
     panel.appendChild(clone);
     clone.offsetHeight;
     clone.style.transition = 'transform var(--t-lift) var(--ease-lift)';
     clone.style.transform =
-      'translate(' + (endRect.left - startRect.left) + 'px, ' +
-                     (endRect.top - startRect.top) + 'px)';
+      'translate(' + (endRect.left - startRect.left) / fs + 'px, ' +
+                     (endRect.top - startRect.top) / fs + 'px)';
     clone.addEventListener('transitionend', () => {
       questionEl.style.opacity = '1';
       clone.remove();
