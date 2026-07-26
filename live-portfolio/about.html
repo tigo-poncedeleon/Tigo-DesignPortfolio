@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
   <link rel="stylesheet" href="css/styles.css?v=32" />
-  <link rel="stylesheet" href="css/about.css?v=41" />
+  <link rel="stylesheet" href="css/about.css?v=51" />
 </head>
 
 <body>
@@ -129,51 +129,74 @@
             <h2>Craft</h2>
             <p>tools of the trade</p>
           </header>
-          <div class="craft-grid">
-            <article class="craft-card" style="--n:0">
-              <div class="craft-illo"><svg viewBox="0 0 160 160" aria-hidden="true">
-  <line class="guide" x1="14" y1="132" x2="146" y2="26" />
-  <rect class="stroke s1" x="22" y="30" width="92" height="76" rx="8" pathLength="1" />
-  <rect class="stroke s2" x="46" y="54" width="92" height="76" rx="8" pathLength="1" />
-  <circle class="dot" cx="46" cy="54" r="3.5" />
-  <circle class="dot" cx="138" cy="130" r="3.5" />
-</svg></div>
-              <span class="craft-label">product</span>
-              <div class="craft-chips"><span class="craft-chip">User Research</span><span class="craft-chip">Wireframing</span><span class="craft-chip">Interaction Design</span><span class="craft-chip">MVP Scoping</span><span class="craft-chip">Usability Testing</span></div>
-            </article>
-            <article class="craft-card" style="--n:1">
-              <div class="craft-illo"><svg viewBox="0 0 160 160" aria-hidden="true">
-  <line class="guide" x1="34" y1="118" x2="66" y2="42" />
-  <line class="guide" x1="126" y1="118" x2="102" y2="46" />
-  <path class="stroke s1" d="M22 118 C 54 30, 106 30, 138 118" pathLength="1" />
-  <circle class="dot" cx="22" cy="118" r="3.5" />
-  <circle class="dot" cx="138" cy="118" r="3.5" />
-  <circle class="dot hollow" cx="66" cy="42" r="4" />
-  <circle class="dot hollow" cx="102" cy="46" r="4" />
-</svg></div>
-              <span class="craft-label">design</span>
-              <div class="craft-chips"><span class="craft-chip">Figma</span><span class="craft-chip">Adobe Creative Cloud</span></div>
-            </article>
-            <article class="craft-card" style="--n:2">
-              <div class="craft-illo"><svg viewBox="0 0 160 160" aria-hidden="true">
-  <rect class="stroke s1" x="26" y="46" width="84" height="84" pathLength="1" />
-  <path class="stroke s2" d="M26 46 L54 22 H138 V106 L110 130 M138 22 L110 46 M138 106 L110 130" pathLength="1" />
-  <line class="guide" x1="26" y1="46" x2="138" y2="106" />
-  <line class="guide" x1="110" y1="46" x2="26" y2="130" />
-</svg></div>
-              <span class="craft-label">code</span>
-              <div class="craft-chips"><span class="craft-chip">HTML / CSS / JS</span><span class="craft-chip">Python</span><span class="craft-chip">C#</span><span class="craft-chip">Git</span></div>
-            </article>
-            <article class="craft-card" style="--n:3">
-              <div class="craft-illo"><svg viewBox="0 0 160 160" aria-hidden="true">
-  <circle class="stroke s1" cx="80" cy="80" r="58" pathLength="1" />
-  <ellipse class="stroke s2" cx="80" cy="80" rx="26" ry="58" pathLength="1" />
-  <ellipse class="guide" cx="80" cy="80" rx="58" ry="20" />
-  <line class="guide" x1="22" y1="80" x2="138" y2="80" />
-</svg></div>
-              <span class="craft-label">languages</span>
-              <div class="craft-chips"><span class="craft-chip">English &middot; fluent</span><span class="craft-chip">Spanish &middot; professional</span></div>
-            </article>
+          <!-- THE MAP — one diagram instead of four card lists: what I do
+               on the left, where it actually went on the right, and an ink
+               link for every real pairing. js/about.js measures the nodes and
+               draws the curves, then lights the paths through whatever the
+               cursor is on. Nothing here is a stock list — every link is a
+               thing that shipped. -->
+          <div class="map" id="craft-map">
+            <svg class="map-links" id="map-links" aria-hidden="true"></svg>
+
+            <div class="map-col map-skills">
+              <p class="map-head">what I do</p>
+              <div class="map-group">
+                <span class="map-group-label">product</span>
+                <button class="map-node" type="button" data-node="research">User Research</button>
+                <button class="map-node" type="button" data-node="wireframe">Wireframing</button>
+                <button class="map-node" type="button" data-node="ixd">Interaction Design</button>
+                <button class="map-node" type="button" data-node="mvp">MVP Scoping</button>
+                <button class="map-node" type="button" data-node="usability">Usability Testing</button>
+              </div>
+              <div class="map-group">
+                <span class="map-group-label">design</span>
+                <button class="map-node" type="button" data-node="figma">Figma</button>
+                <button class="map-node" type="button" data-node="adobe">Adobe Creative Cloud</button>
+              </div>
+              <div class="map-group">
+                <span class="map-group-label">code</span>
+                <button class="map-node" type="button" data-node="react">React</button>
+                <button class="map-node" type="button" data-node="web">HTML / CSS / JS</button>
+                <button class="map-node" type="button" data-node="python">Python</button>
+                <button class="map-node" type="button" data-node="csharp">C#</button>
+                <button class="map-node" type="button" data-node="git">Git</button>
+              </div>
+            </div>
+
+            <div class="map-col map-projects">
+              <p class="map-head">where it went</p>
+              <a class="map-node is-project" data-node="vicino" href="vicino.html">
+                <span class="map-mark"><img loading="lazy" src="Media/vicino-logo.webp" alt="" width="447" height="507" /></span>
+                <span class="map-name">Vicino AI<em>UX Engineer Intern &middot; 2026</em></span>
+              </a>
+              <a class="map-node is-project" data-node="pantry" href="pantrypal.html">
+                <span class="map-mark"><img loading="lazy" src="Media/pantrypal-logo.webp" alt="" width="803" height="409" /></span>
+                <span class="map-name">PantryPal<em>Product Designer &middot; 2025&ndash;26</em></span>
+              </a>
+              <a class="map-node is-project" data-node="uchicago" href="#resume">
+                <span class="map-mark"><img loading="lazy" src="Media/uchicago-emblem.webp" alt="" width="316" height="400" /></span>
+                <span class="map-name">UChicago study<em>UX Researcher &middot; 2025</em></span>
+              </a>
+              <a class="map-node is-project" data-node="nextlevel" href="nextlevel.html">
+                <span class="map-mark"><img loading="lazy" src="Media/NextLevelIcon.webp" alt="" width="1401" height="1406" /></span>
+                <span class="map-name">Next Level<em>Founding Visual Designer &middot; 2025</em></span>
+              </a>
+              <a class="map-node is-project" data-node="site" href="index.html#home">
+                <span class="map-mark map-mark-glyph">
+                  <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M4 12.5 L13 5 L22 12.5 M6.5 11 V20.5 H19.5 V11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </span>
+                <span class="map-name">this site<em>designed &amp; coded by hand</em></span>
+              </a>
+              <a class="map-node is-project" data-node="rogue" href="play.html">
+                <span class="map-mark map-mark-glyph">
+                  <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M8 10 V16 M5 13 H11 M17 12.5 h.01 M20 15.5 h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /><rect x="2.5" y="7" width="21" height="12" rx="6" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                </span>
+                <span class="map-name">Rogue Racers<em>Unity &middot; C# &middot; 2026</em></span>
+              </a>
+            </div>
+
+            <p class="map-note"><em>hover anything</em> &mdash; the links draw themselves</p>
+            <p class="map-aside">also: English &middot; fluent &nbsp;|&nbsp; Spanish &middot; professional working</p>
           </div>
         </section>
 
@@ -309,6 +332,6 @@
 
   <script src="js/stage-fit.js"></script>
   <script src="js/nav-touch.js"></script>
-  <script src="js/about.js"></script>
+  <script src="js/about.js?v=6"></script>
 </body>
 </html>

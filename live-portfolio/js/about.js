@@ -149,6 +149,126 @@
 
   }
 
+  // ============================================================
+  // THE MAP — skills chapter. Every pairing below is a thing that actually
+  // shipped; nothing here is filler. The curves are drawn from the nodes'
+  // OWN layout positions (offsetLeft/offsetTop, not getBoundingClientRect —
+  // those come back multiplied by stage-fit's scale and would put the ink
+  // in the wrong place), so the diagram re-solves itself if the type,
+  // the copy, or the frame ever changes.
+  // ============================================================
+  const MAP_LINKS = [
+    ['research',  ['pantry', 'uchicago']],
+    ['wireframe', ['pantry', 'vicino']],
+    ['ixd',       ['pantry', 'vicino', 'site']],
+    ['mvp',       ['pantry', 'nextlevel']],
+    ['usability', ['pantry', 'uchicago']],
+    ['figma',     ['pantry', 'vicino', 'nextlevel']],
+    ['adobe',     ['nextlevel']],
+    ['react',     ['vicino']],
+    ['web',       ['site', 'nextlevel', 'uchicago']],
+    ['python',    ['uchicago']],
+    ['csharp',    ['rogue']],
+    ['git',       ['site', 'vicino', 'rogue']],
+  ];
+
+  const mapEl = document.getElementById('craft-map');
+  const linkSvg = document.getElementById('map-links');
+  if (mapEl && linkSvg) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const nodes = new Map();
+    mapEl.querySelectorAll('.map-node').forEach((n) => nodes.set(n.dataset.node, n));
+
+    // node -> the links touching it, and the nodes on their far side
+    const wires = [];
+    const touching = new Map();
+    const note = (key, wire, other) => {
+      if (!touching.has(key)) touching.set(key, { wires: [], others: [] });
+      touching.get(key).wires.push(wire);
+      touching.get(key).others.push(other);
+    };
+
+    function draw() {
+      const W = mapEl.offsetWidth;
+      const H = mapEl.offsetHeight;
+      linkSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      // a node's port: skills hand off from their right edge, projects
+      // receive on their left
+      const port = (el, side) => {
+        let x = el.offsetLeft, y = el.offsetTop;
+        for (let p = el.offsetParent; p && p !== mapEl; p = p.offsetParent) {
+          x += p.offsetLeft; y += p.offsetTop;
+        }
+        return { x: side === 'right' ? x + el.offsetWidth : x, y: y + el.offsetHeight / 2 };
+      };
+      wires.forEach(({ path, from, to }) => {
+        const a = port(nodes.get(from), 'right');
+        const b = port(nodes.get(to), 'left');
+        // a flat S: the control points reach horizontally, so every curve
+        // leaves and arrives level and the bundle reads as one weave
+        const dx = Math.max((b.x - a.x) * 0.46, 60);
+        path.setAttribute('d',
+          `M${a.x} ${a.y} C${a.x + dx} ${a.y}, ${b.x - dx} ${b.y}, ${b.x} ${b.y}`);
+      });
+    }
+
+    let i = 0;
+    MAP_LINKS.forEach(([skill, projects]) => {
+      projects.forEach((project) => {
+        if (!nodes.has(skill) || !nodes.has(project)) return;
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('class', 'map-link');
+        // the draw-in works in stroke-dash units, so the path has to declare
+        // its length as 1 — without this, dasharray:1 means ONE PIXEL and
+        // every link renders as a dotted hairline
+        path.setAttribute('pathLength', '1');
+        path.style.setProperty('--i', i++);
+        linkSvg.appendChild(path);
+        const wire = { path, from: skill, to: project };
+        wires.push(wire);
+        note(skill, wire, project);
+        note(project, wire, skill);
+      });
+    });
+
+    draw();
+    // the type settles a frame or two after first paint, and a stale port
+    // would leave the ink hanging off its node
+    requestAnimationFrame(draw);
+    window.addEventListener('resize', draw);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+
+    const clear = () => {
+      mapEl.classList.remove('is-active');
+      nodes.forEach((n) => n.classList.remove('is-on', 'is-dim'));
+      wires.forEach((w) => w.path.classList.remove('is-on'));
+    };
+    const light = (key) => {
+      const hit = touching.get(key);
+      if (!hit) return;
+      mapEl.classList.add('is-active');
+      const on = new Set([key, ...hit.others]);
+      nodes.forEach((n, k) => {
+        n.classList.toggle('is-on', on.has(k));
+        n.classList.toggle('is-dim', !on.has(k));
+      });
+      wires.forEach((w) => {
+        const lit = hit.wires.includes(w);
+        // restart the ink animation rather than letting a half-drawn path
+        // linger from the last node the cursor was on
+        w.path.classList.remove('is-on');
+        if (lit) { void w.path.getBoundingClientRect(); w.path.classList.add('is-on'); }
+      });
+    };
+
+    nodes.forEach((n, key) => {
+      n.addEventListener('pointerenter', () => light(key));
+      n.addEventListener('focus', () => light(key));
+      n.addEventListener('blur', clear);
+    });
+    mapEl.addEventListener('pointerleave', clear);
+  }
+
   // ---- the letter: the visitor leaves their address on the from line
   // and the FormSubmit relay delivers the message straight to Tigo's
   // inbox (their address rides along as the reply-to). The old mailto

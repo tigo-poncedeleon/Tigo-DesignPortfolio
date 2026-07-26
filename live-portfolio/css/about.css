@@ -541,113 +541,192 @@
 }
 
 /* ============================================================
-   skills — four illustration cards, drawn in thin ink
+   skills — THE MAP. Not four lists of nouns: one diagram of
+   what I do (left) wired to where it actually went (right),
+   with an ink link for every real pairing. The links are drawn
+   by js/about.js from the nodes' own layout positions, so the
+   diagram is never hand-placed and never drifts.
+
+   At rest the whole web sits quiet and grey. Put the cursor on
+   any node and its own paths ink themselves in while everything
+   it does not touch falls back — so the answer to "what did you
+   use this on" is a shape, not a sentence.
    ============================================================ */
-.craft-grid {
+.map {
   position: absolute;
-  top: 164px;
+  top: 132px;
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
-  gap: 18px;
+  justify-content: space-between;
+  width: 1014px;
+  height: 604px;
 }
-.craft-card {
-  width: 240px;
-  height: 460px;
-  padding: 26px 20px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
-  border-radius: 31px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  transition: transform var(--t-lift) var(--ease-lift),
-              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease,
-              opacity var(--t-fade) ease calc(var(--n) * 0.09s),
-              translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
+.map-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
-.craft-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
-              0 1px 2px rgba(0, 0, 0, 0.06);
+
+.map-col {
+  position: relative;
+  z-index: 1;                  /* the nodes sit on top of their own wiring */
+  display: flex;
+  flex-direction: column;
 }
-.craft-illo {
-  height: 190px;
+.map-skills { width: 268px; align-items: flex-end; text-align: right; }
+.map-projects { width: 300px; justify-content: space-between; }
+
+.map-head {
+  margin-bottom: 20px;
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.3);
+}
+.map-group + .map-group { margin-top: 18px; }
+.map-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.map-group-label {
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.28);
+}
+
+/* every node is a real control — button on the left, link on the right */
+.map-node {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 16px;
+  line-height: 22px;
+  color: #5e5e5e;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--t-micro) ease, opacity var(--t-micro) ease;
+}
+.map-skills .map-node { justify-content: flex-end; }
+
+/* project nodes carry the employer's mark, asleep in grey until visited */
+.map-node.is-project { gap: 14px; padding: 6px 0; }
+.map-mark {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #e6e6e6;
+  background: rgba(233, 233, 233, 0.23);
+  color: #9a9a9a;
+  overflow: hidden;
+  transition: border-color var(--t-micro) ease, filter 0.25s ease,
+              opacity 0.25s ease, scale var(--t-snap) var(--ease-spring);
 }
-.craft-illo svg {
-  width: 160px;
-  height: 160px;
+.map-mark img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.5;
+  transition: filter 0.25s ease, opacity 0.25s ease;
 }
-/* on hover the illustration REDRAWS itself — the page's draw-in replayed
-   under the cursor: ink strokes wipe and re-flow in sequence, the dotted
-   construction guides march while the pen works, and the anchor dots
-   pop back in once the ink has landed */
-.craft-card:hover .craft-illo .stroke {
-  animation: craft-redraw 0.9s var(--ease-draw) both;
+.map-mark-glyph svg { width: 22px; height: 22px; }
+.map-name {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
-.craft-card:hover .craft-illo .stroke.s2 { animation-delay: 0.12s; }
-.craft-card:hover .craft-illo .stroke.s3 { animation-delay: 0.24s; }
-.craft-card:hover .craft-illo .guide {
-  animation: guide-march 1.4s linear infinite;
+.map-name em {
+  font-style: normal;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.35);
+  transition: color var(--t-micro) ease;
 }
-.craft-card:hover .craft-illo .dot {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: dot-pop var(--t-pop) var(--ease-pop) 0.5s both;
+
+/* ---- the lit state: js/about.js puts .is-on on the node under the cursor
+   and everything it touches, and .is-dim on everything it does not ---- */
+.map-node.is-on { color: var(--orange); }
+.map-node.is-on .map-name em { color: rgba(253, 143, 59, 0.75); }
+.map-node.is-on .map-mark {
+  border-color: rgba(253, 143, 59, 0.35);
+  scale: 1.08;
 }
-.craft-card:hover .craft-illo .dot.hollow { animation-delay: 0.66s; }
-@keyframes craft-redraw {
+.map-node.is-on .map-mark img { filter: none; opacity: 1; }
+.map-node.is-dim { opacity: 0.28; }
+.map-group-label { transition: opacity var(--t-micro) ease; }
+.map.is-active .map-group-label { opacity: 0.45; }
+
+.map-note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -34px;
+  text-align: center;
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.32);
+}
+.map-note em { font-style: normal; color: #5e5e5e; }
+/* the two languages have no project to point at, so they sit out of the
+   diagram rather than being wired to something invented */
+.map-aside {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -56px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.28);
+}
+
+/* ---- the wiring itself ---- */
+.map-link {
+  fill: none;
+  stroke: #dcdcdc;
+  stroke-width: 1.2;
+  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease,
+              opacity var(--t-micro) ease;
+}
+.map.is-active .map-link { opacity: 0.35; }
+/* a lit path re-inks itself left to right, the pen's habit everywhere else
+   on this site */
+.map-link.is-on {
+  stroke: var(--orange);
+  stroke-width: 1.7;
+  opacity: 1;
+  animation: map-ink 0.55s var(--ease-draw) both;
+}
+@keyframes map-ink {
   from { stroke-dashoffset: 1; }
   to   { stroke-dashoffset: 0; }
 }
-@keyframes guide-march {
-  to { stroke-dashoffset: -14; }        /* two 2-on/5-off periods */
+/* on arrival the whole web draws itself once, group by group */
+.about-slide:not(.revealed) .map-link { stroke-dashoffset: 1; }
+.map-link {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
 }
-@keyframes dot-pop {
-  0%   { opacity: 0; transform: scale(0); }
-  60%  { opacity: 1; transform: scale(1.45); }
-  100% { opacity: 1; transform: scale(1); }
+.about-slide .map-link {
+  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease,
+              opacity var(--t-micro) ease,
+              stroke-dashoffset 0.9s var(--ease-draw) calc(0.25s + var(--i, 0) * 0.02s);
 }
-.craft-label {
-  display: block;
-  margin-top: 14px;
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
-}
-.craft-chips {
-  margin-top: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-/* the ai suggestion chip, small — each one pops in with a little
-   overshoot once its card's illustration has drawn (delays ride the
-   card's --n plus the chip's own place in line) ---- */
-.craft-chip {
-  padding: 5px 12px;
-  font-size: 14px;
-  color: #5e5e5e;
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid #d9d9d9;
-  border-radius: 20px;
-  white-space: nowrap;
-  transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
-              border-color var(--t-micro) ease,
-              opacity 0.4s ease var(--cd, 0.9s),
-              translate 0.4s var(--ease-pop) var(--cd, 0.9s);
-}
-.about-slide:not(.revealed) .craft-chip { opacity: 0; translate: 0 8px; }
-.craft-chip:nth-child(1) { --cd: calc(var(--n) * 0.09s + 0.75s); }
-.craft-chip:nth-child(2) { --cd: calc(var(--n) * 0.09s + 0.83s); }
-.craft-chip:nth-child(3) { --cd: calc(var(--n) * 0.09s + 0.91s); }
-.craft-chip:nth-child(4) { --cd: calc(var(--n) * 0.09s + 0.99s); }
-.craft-chip:nth-child(5) { --cd: calc(var(--n) * 0.09s + 1.07s); }
-.craft-chip:hover {
-  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
-  border-color: rgba(253, 143, 59, 0.35);
-  color: var(--orange);
+
+/* the nodes deal in with the ledger's stagger */
+.about-slide:not(.revealed) :is(.map-col, .map-note) { opacity: 0; translate: 0 16px; }
+.map-col, .map-note {
+  transition: opacity var(--t-fade) ease 0.1s,
+              translate var(--t-rise) var(--ease-rise) 0.1s;
 }
 
 /* ============================================================
@@ -976,6 +1055,29 @@
     text-align: center;
   }
   /* the resume pair stacks on a phone — one door per line, centred */
+  /* the map's curves need a wide gap to read; a phone has none. The two
+     columns stack, the wiring is retired, and a tap still lights a node
+     and everything it touches — the relationship survives, the drawing
+     does not. */
+  .map {
+    position: static;
+    transform: none;
+    display: block;
+    width: auto;
+    height: auto;
+    margin-top: 26px;
+  }
+  .map-links { display: none; }
+  .map-col { width: auto; }
+  .map-skills { align-items: flex-start; text-align: left; }
+  .map-group { align-items: flex-start; }
+  .map-skills .map-node { justify-content: flex-start; }
+  .map-projects { margin-top: 32px; gap: 4px; }
+  .map-head { margin-bottom: 14px; }
+  .map-node { font-size: 15px; }
+  .map-note, .map-aside { position: static; margin-top: 22px; text-align: left; }
+  .map-aside { margin-top: 8px; }
+
   .slide-links {
     position: static;
     transform: none;
