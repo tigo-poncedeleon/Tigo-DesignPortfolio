@@ -174,7 +174,7 @@
     
       // mirror the chapter into the URL (replace, never push) so refresh
       // and back/forward land where the reader actually was
-      if (location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {
+      if (window.__hashReady && location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {
         history.replaceState(null, '', '#' + id);
       }
     };
@@ -190,6 +190,14 @@
       { root: scroller, threshold: 0.6 }
     );
     slides.forEach((s) => observer.observe(s));
+
+    // restore a deep link deterministically — the native anchor scroll can
+    // lose the race against the snap scroller and the scroll-spy; only
+    // after settling does the spy start mirroring the hash back
+    const target = slides.find((s) => '#' + s.id === location.hash);
+    if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    setTimeout(() => { window.__hashReady = true; }, 600);
+
 
     // the reading thread + the scroll hint's exit
     const thread = document.querySelector('.case-thread');

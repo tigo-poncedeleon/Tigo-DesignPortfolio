@@ -234,6 +234,7 @@ html, body {
   opacity: 0;
   transform: translate(-50%, -50%) translateY(48px);
   pointer-events: none;
+  visibility: hidden;          /* covered links can't take keyboard focus */
 }
 .stage.is-cover .frame-bottom {
   opacity: 0;
@@ -248,16 +249,21 @@ html, body {
   padding: 0;
   background: none;
   border: 0;
+  border-radius: 50%;                   /* the focus ring hugs the circle */
   line-height: 0;
   color: var(--ink);
   cursor: pointer;
-  transition: color var(--t-micro) ease, opacity 0.3s ease;
+  /* visibility flips only after the fade, so the exit still plays —
+     then the retired arrow can't take keyboard focus */
+  transition: color var(--t-micro) ease, opacity 0.3s ease,
+              visibility 0s linear 0.3s;
 }
 .open-arrow:hover,
 .open-arrow:focus-visible { color: var(--orange); }
 .stage:not(.is-cover) .open-arrow {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
 }
 
 /* suppresses the glide for ?open=1 deep links (set before first paint) */
