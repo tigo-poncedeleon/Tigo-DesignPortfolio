@@ -186,7 +186,7 @@
 /* faint chapter numeral — the notebook's page number */
 .case-num {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.35);
   font-variant-numeric: tabular-nums;
   margin-right: 2px;
 }
@@ -313,7 +313,7 @@
 }
 .spec-cell dt {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .spec-cell dd {
   margin-top: 2px;
@@ -376,7 +376,7 @@
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -461,7 +461,7 @@
   font: inherit;
   font-size: 12px;
   text-anchor: middle;
-  fill: rgba(0, 0, 0, 0.3);
+  fill: rgba(0, 0, 0, 0.42);
   opacity: 0;
   transition: opacity 0.5s ease 1.3s;
 }
@@ -517,7 +517,7 @@
 }
 .built-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   margin-right: 4px;
 }
 /* the audience trio wears the brand — one chip per palette color */
@@ -546,7 +546,7 @@
 }
 .hmw-label {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .hmw-q {
   margin-top: 6px;
@@ -618,7 +618,7 @@
 /* the reviewer's pen: a quiet ✕ on the discards, a ✓ on the keeper */
 .verdict::before {
   content: '\2715\2002';
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .verdict.is-yes::before {
   content: '\2713\2002';
@@ -631,7 +631,7 @@
 }
 .wire-name {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .wire-copy {
   margin-top: 10px;
@@ -692,7 +692,7 @@
 .flow-steps:hover .step-item.is-current:not(:hover) { color: var(--ink); }
 .step-n {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   font-variant-numeric: tabular-nums;
   transition: color var(--t-micro) ease;
 }
@@ -759,7 +759,7 @@
   left: 0;
   width: 100%;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 
 /* ============================================================
@@ -843,7 +843,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
@@ -907,7 +907,7 @@
 .learned p + p { margin-top: 10px; }
 .learned-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   margin-bottom: 12px;
 }
 .learned strong {
@@ -950,7 +950,7 @@
 }
 .bon span {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   opacity: 0;
   transition: opacity 0.6s ease 1.6s;
 }

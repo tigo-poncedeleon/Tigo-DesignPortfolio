@@ -312,7 +312,7 @@
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -429,7 +429,7 @@
   width: 34px;
   padding-top: 6px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.35);
   font-variant-numeric: tabular-nums;
   transition: color 0.2s ease;
 }
@@ -489,7 +489,7 @@
 }
 .xp-loc {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   white-space: nowrap;
 }
 /* the employer's mark — sleeping in grey until its row is visited */
@@ -597,7 +597,7 @@
   display: block;
   margin-top: 14px;
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .craft-chips {
   margin-top: 12px;
@@ -653,7 +653,7 @@
               opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
 }
 .compose:focus-within {
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(0, 0, 0, 0.42);
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 .compose-to {
@@ -664,7 +664,7 @@
 .to-label {
   min-width: 38px;                    /* to/from share a column, pills align */
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .to-chip {
   padding: 3px 10px;
@@ -729,7 +729,7 @@
 }
 .compose-hint {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   transition: color var(--t-micro) ease;
 }
 .compose-hint.is-sent { color: var(--orange); }
@@ -761,7 +761,7 @@
 }
 .compose-send[disabled] {
   cursor: default;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 /* on a successful send the little arrow LAUNCHES — up and out of the
    chip, then slips back in from below (about.js flags the button) */
@@ -804,7 +804,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;

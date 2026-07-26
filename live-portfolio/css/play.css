@@ -358,7 +358,7 @@
   background: rgba(233, 233, 233, 0.48);
   border-color: #d9d9d9;
 }
-.record-chip.is-offline .record-val { color: rgba(0, 0, 0, 0.3); }
+.record-chip.is-offline .record-val { color: rgba(0, 0, 0, 0.42); }
 /* a fresh record pops the chip once */
 .record-chip.is-pop { animation: record-pop 0.5s var(--ease-pop); }
 @keyframes record-pop {
@@ -417,7 +417,7 @@
 .entry-hint {
   margin-top: 10px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 /* the off-screen input that summons the OS keyboard on touch — present
    but invisible; the letter slots are the real display */
@@ -508,7 +508,7 @@
     font-size: 12px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.42);
   }
   .play-mobile-title {
     margin-top: 12px;

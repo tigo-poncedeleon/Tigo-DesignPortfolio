@@ -192,7 +192,7 @@
 }
 .case-num {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.35);
   font-variant-numeric: tabular-nums;
   margin-right: 2px;
 }
@@ -269,7 +269,7 @@
 }
 .spec-cell dt {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .spec-cell dd {
   margin-top: 2px;
@@ -369,7 +369,7 @@
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -443,7 +443,7 @@
   padding-top: 9px;
   font-size: 12.5px;
   text-align: center;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .story-photos .photo-card:nth-of-type(1) {
   top: 150px;
@@ -503,7 +503,7 @@
   padding-top: 9px;
   font-size: 12.5px;
   text-align: center;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .map-attr {
   display: block;
@@ -565,7 +565,7 @@
 .flow-steps:hover .step-item.is-current:not(:hover) { color: var(--ink); }
 .step-n {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   font-variant-numeric: tabular-nums;
   transition: color var(--t-micro) ease;
 }
@@ -576,7 +576,7 @@
   width: 260px;
   font-size: 13.25px;
   line-height: 19px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .qa-credit em { font-style: italic; }
 
@@ -644,14 +644,14 @@
 .qa-person figcaption {
   margin-top: 6px;
   font-size: 12.5px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .flow-hint {
   position: absolute;
   bottom: 14px;
   left: 30px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 
 /* the distilled DNA — one chip per brand pillar */
@@ -667,7 +667,7 @@
 }
 .built-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   margin-right: 4px;
 }
 .built-for .case-chip:nth-of-type(1) {
@@ -694,7 +694,7 @@
 }
 .hmw-label {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .hmw-q {
   margin-top: 6px;
@@ -836,7 +836,7 @@
 .wire-verdict .verdict::before,
 .colorway .verdict:not(.is-yes)::before {
   content: '\2715\2002';
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
 }
 .verdict.is-yes::before {
   content: '\2713\2002';
@@ -849,7 +849,7 @@
 }
 .wire-name {
   font-size: 15px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   white-space: nowrap;
 }
 .wire-copy {
@@ -1002,7 +1002,7 @@
   left: var(--ax);
   transform: translateX(-50%);
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   white-space: nowrap;
 }
 
@@ -1087,7 +1087,7 @@
   color: var(--nl-azure);
 }
 .look-index {
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1168,7 +1168,7 @@
 .learned p + p { margin-top: 10px; }
 .learned-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   margin-bottom: 12px;
 }
 .learned strong {
@@ -1475,7 +1475,7 @@
     opacity: 1;
     margin-top: 8px;
     text-align: center;
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.42);
   }
   /* the look overlay slims for the phone */
   .look-arrow.is-prev { left: 6px; }
