@@ -1,0 +1,122 @@
+/* ============================================================
+   404 — nothing at this address. One centred card in the site's
+   pen language (the vicino coming-soon card's close cousin): a
+   dotted page guide, two drawn lines, and a third stroke that
+   wanders off the sheet. Flow layout — responsive by construction.
+   ============================================================ */
+
+.lost-stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity var(--t-stage) ease;
+}
+.lost-stage.revealed { opacity: 1; }
+
+.lost-card {
+  text-align: center;
+  padding: 24px;
+  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
+}
+.lost-stage:not(.revealed) .lost-card {
+  opacity: 0;
+  translate: 0 16px;
+}
+
+/* ---- the line-art page: guide fades in, ink draws, the orange pen
+   dot rests where the trail goes cold ---- */
+.lost-illo .guide {
+  fill: none;
+  stroke: #d9d9d9;
+  stroke-width: 1.2;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.5s ease 1s;
+}
+.lost-stage.revealed .lost-illo .guide { opacity: 1; }
+.lost-illo .stroke {
+  fill: none;
+  stroke: #5e5e5e;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s var(--ease-draw) var(--sd, 0.4s);
+}
+.lost-illo .s1 { --sd: 0.4s; }
+.lost-illo .s2 { --sd: 0.8s; }
+.lost-stage.revealed .lost-illo .stroke { stroke-dashoffset: 0; }
+.lost-dot {
+  fill: var(--orange);
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  transition: transform var(--t-pop) var(--ease-pop) 1.6s;
+}
+.lost-stage.revealed .lost-dot { transform: scale(1); }
+
+.lost-title {
+  margin-top: 18px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.lost-title h1 {
+  font-size: 28px;
+  font-weight: 400;
+  color: #5e5e5e;
+  font-variant-numeric: tabular-nums;
+}
+.lost-title p {
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.lost-copy {
+  margin: 18px auto 0;
+  max-width: 420px;
+  font-size: 17px;
+  line-height: 26px;
+  color: #5e5e5e;
+}
+
+.lost-links {
+  display: flex;
+  justify-content: center;
+  gap: 46px;
+  margin-top: 26px;
+  white-space: nowrap;
+}
+.lost-link {
+  font-size: 16px;
+  color: #5e5e5e;
+  text-decoration: none;
+  transition: color var(--t-micro) ease;
+}
+.lost-link:hover,
+.lost-link:focus-visible { color: var(--orange); }
+
+@media (max-width: 700px) {
+  .lost-title { flex-direction: column; align-items: center; gap: 2px; }
+  .lost-title h1 { font-size: 24px; }
+  .lost-title p { font-size: 17px; }
+  .lost-copy { max-width: 320px; font-size: 16px; line-height: 25px; }
+  .lost-links { gap: 24px; flex-wrap: wrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lost-card { transition: opacity 0.25s ease; translate: none; }
+  .lost-illo .guide { transition: none; opacity: 1; }
+  .lost-illo .stroke { transition: none; stroke-dashoffset: 0; }
+  .lost-dot { transition: none; transform: scale(1); }
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tigo Ponce de León — Not found</title>
+  <meta name="description" content="404 — nothing at this address." />
+  <meta name="robots" content="noindex" />
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <meta name="theme-color" content="#fdfdfd" />
+  <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
+  <link rel="stylesheet" href="css/styles.css?v=29" />
+  <link rel="stylesheet" href="css/notfound.css?v=1" />
+</head>
+
+<body>
+  <main>
+    <section class="lost-stage">
+      <nav class="site-nav" aria-label="Site">
+        <a class="site-nav-home" href="index.html#home" aria-label="Back home">
+          <img src="Media/pong-house.svg" alt="" width="32" height="28" />
+        </a>
+        <div class="site-nav-reveal">
+          <div class="site-nav-words">
+            <a class="site-nav-word is-home" href="index.html#home">home</a>
+            <a class="site-nav-word" href="about.html">about</a>
+            <a class="site-nav-word" href="work.html">work</a>
+            <a class="site-nav-word" href="play.html">play</a>
+            <a class="site-nav-word" href="ai.html">ai</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-frost" aria-hidden="true"></div>
+
+      <!-- the pen went looking for this page: a dotted page guide, two
+           drawn lines, and a third stroke that wanders off the sheet —
+           the orange dot rests where the trail goes cold -->
+      <div class="lost-card">
+        <svg class="lost-illo" width="180" height="140" viewBox="0 0 180 140" aria-hidden="true">
+          <rect class="guide" x="46" y="12" width="88" height="116" rx="8" />
+          <path class="stroke s1" pathLength="1" d="M60 34 H120" />
+          <path class="stroke s1" pathLength="1" d="M60 52 H108" />
+          <path class="stroke s2" pathLength="1" d="M60 70 H96 C 116 70, 122 84, 138 92 C 150 98, 158 96, 164 90" />
+          <circle class="lost-dot" cx="167" cy="88" r="3.5" />
+        </svg>
+
+        <header class="lost-title">
+          <h1>404</h1>
+          <p>nothing at this address</p>
+        </header>
+
+        <p class="lost-copy">This page doesn&rsquo;t exist &mdash; or
+        hasn&rsquo;t been drawn yet. The trail goes cold here, but
+        everything real is a step away.</p>
+
+        <nav class="lost-links" aria-label="Somewhere real">
+          <a class="lost-link" href="index.html#home">&larr; back home</a>
+          <a class="lost-link" href="work.html">see the work &rarr;</a>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/nav-touch.js"></script>
+  <script>
+    // the stage's gentle fade-in, same as every page
+    requestAnimationFrame(function () {
+      document.querySelector('.lost-stage').classList.add('revealed');
+    });
+  </script>
+</body>
+</html>
