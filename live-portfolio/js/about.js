@@ -1,6 +1,6 @@
 // About page — stage fade-in, plus the hedcut portrait: the EXACT pipeline
 // from working-portfolio/js/line-portrait.js. A regular photo
-// (Media/face_cutout.png) is baked at runtime into an engraving on an
+// (Media/face_cutout.webp) is baked at runtime into an engraving on an
 // offscreen 2D canvas — ~150 roughly-horizontal ink ribbons whose
 // THICKNESS encodes tone, percentile-normalized so skin reads light —
 // then shown on a visible canvas that tilts toward the cursor with the
@@ -213,7 +213,7 @@
   const vctx = view.getContext('2d');
 
   // ---- line-portrait.js knobs, verbatim (light-mode path) ------------------
-  const SRC = 'Media/face_cutout.png';
+  const SRC = 'Media/face_cutout.webp';
   const SRC_W = 930, SRC_H = 1185;
   const SAMPLE_W = 320;
   const TEX_W = 1024;

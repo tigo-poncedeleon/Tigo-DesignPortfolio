@@ -434,6 +434,7 @@
 }
 .photo-card img {
   display: block;
+  height: auto;
   margin-left: auto;
   margin-right: auto;              /* centre the photo in the caption-width card */
   border-radius: 6px;
@@ -480,6 +481,7 @@
 .map-frame img {
   display: block;
   width: 100%;
+  height: auto;
   filter: grayscale(1) contrast(1.04);
   transition: filter 0.6s ease;
 }
@@ -637,6 +639,7 @@
 .qa-person img {
   display: block;
   width: 100%;
+  height: auto;
 }
 .qa-person figcaption {
   margin-top: 6px;
@@ -713,6 +716,7 @@
 .mark-sketch img {
   display: block;
   width: 100%;
+  height: auto;
 }
 .mark-copy {
   position: absolute;
@@ -804,6 +808,8 @@
   justify-content: center;
 }
 .wire-shot img {
+  width: auto;
+  height: auto;
   max-width: 100%;
   max-height: 100%;
   mix-blend-mode: multiply;
@@ -937,7 +943,7 @@
   background: #fff;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
-.apparel-card img { display: block; width: 100%; }
+.apparel-card img { display: block; width: 100%; height: auto; }
 
 /* the web surface keeps a little browser chrome (bar + dots + url) */
 .browser {
@@ -971,7 +977,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.browser img { display: block; width: 100%; }
+.browser img { display: block; width: 100%; height: auto; }
 
 /* whispered captions — each piece names itself as it straightens */
 .board-cap {

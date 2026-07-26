@@ -277,6 +277,7 @@
 .pitch-logo {
   display: block;
   height: 54px;
+  width: auto;              /* the height/width attrs reserve ratio only */
   margin-bottom: 26px;
 }
 /* the key phrases get a butter-yellow HIGHLIGHTER sweep — a real
@@ -591,6 +592,8 @@
   justify-content: center;
 }
 .wire-shot img {
+  width: auto;
+  height: auto;
   max-width: 100%;
   max-height: 100%;
 }
@@ -820,6 +823,7 @@
 }
 .food img {
   height: 74px;
+  width: auto;
   animation: food-bob 3.4s ease-in-out calc(var(--f, 0) * 0.4s) infinite;
 }
 .food:nth-child(1) { --f: 0; }
