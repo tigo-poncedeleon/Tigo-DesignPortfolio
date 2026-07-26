@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
   <link rel="stylesheet" href="css/styles.css?v=32" />
-  <link rel="stylesheet" href="css/about.css?v=48" />
+  <link rel="stylesheet" href="css/about.css?v=41" />
 </head>
 
 <body>
@@ -175,18 +175,6 @@
               <div class="craft-chips"><span class="craft-chip">English &middot; fluent</span><span class="craft-chip">Spanish &middot; professional</span></div>
             </article>
           </div>
-
-          <!-- THE MOTION BENCH — the six easing tokens that live in
-               css/styles.css :root, nothing mocked up. js/about.js draws each
-               curve from its own four control numbers, then plays it back:
-               the playhead rides the curve while the square runs the track on
-               exactly that timing, so the shape and the feel land together.
-               Hover, focus, or click any one of them. -->
-          <div class="bench">
-            <p class="bench-note">every move on this site rides one of six curves &mdash;
-              <em>hover one to feel it</em></p>
-            <div class="bench-row" id="bench-row"></div>
-          </div>
         </section>
 
         <section class="about-slide" id="resume" aria-label="Resume">
@@ -252,35 +240,6 @@
               <img loading="lazy" decoding="async" class="xp-logo" src="Media/NextLevelIcon.webp" alt="Next Level Drone Cleaning logo" width="1401" height="1406" />
             </article>
           </div>
-          <!-- THE SPINE — the same four postings laid on a real time axis
-               (Jul 2025 → Sep 2026, 14 months), so the shape of the run reads
-               at a glance: the autumn where the UChicago study overlapped
-               PantryPal, the gap before Vicino. --a/--b are the start and end
-               of each posting as a fraction of that span. It mirrors the
-               ledger above rather than adding anything, so it stays out of
-               the tab order — js/about.js links the two both ways for the
-               cursor, and lights a bar when its row takes focus. -->
-          <div class="spine" aria-hidden="true">
-            <div class="spine-lanes">
-              <div class="spine-lane"><span class="spine-num">01</span>
-                <span class="spine-rail"><span class="spine-bar" style="--a:.7857;--b:1"></span></span></div>
-              <div class="spine-lane"><span class="spine-num">02</span>
-                <span class="spine-rail"><span class="spine-bar" style="--a:.2857;--b:.5714"></span></span></div>
-              <div class="spine-lane"><span class="spine-num">03</span>
-                <span class="spine-rail"><span class="spine-bar" style="--a:.2857;--b:.4286"></span></span></div>
-              <div class="spine-lane"><span class="spine-num">04</span>
-                <span class="spine-rail"><span class="spine-bar" style="--a:0;--b:.2143"></span></span></div>
-            </div>
-            <div class="spine-axis">
-              <span class="spine-tick" style="--x:0"></span>
-              <span class="spine-tick" style="--x:.4286"></span>
-              <span class="spine-tick" style="--x:1"></span>
-              <span class="spine-year" style="--x:0">2025</span>
-              <span class="spine-year" style="--x:.4286">2026</span>
-              <span class="spine-note">hover a bar to open its posting</span>
-            </div>
-          </div>
-
           <!-- this chapter offers two doors: the paper version (set in the
                site's own type and rules — see resume-src/) and the work -->
           <div class="slide-links">
@@ -350,6 +309,6 @@
 
   <script src="js/stage-fit.js"></script>
   <script src="js/nav-touch.js"></script>
-  <script src="js/about.js?v=4"></script>
+  <script src="js/about.js"></script>
 </body>
 </html>
