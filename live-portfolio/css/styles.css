@@ -14,6 +14,26 @@
   --muted:  #717171;                  /* role, time */
   --orange: #fd8f3b;  /* FE7301 @ 75% as FIGMA flattens it (253,143,59) —
                          pinned solid for pixel-parity with the mocks */
+
+  /* ---- motion tokens — the site's whole vocabulary of movement.
+     Durations: micro feedback → snap → glide → lift → pop → entrance.
+     Easings: spring/glide/pop overshoot by increasing amounts; lift is a
+     soft ease-out for hover raises; rise is the entrance ease-out; draw
+     is the pen's material curve for stroke draw-ins. ---- */
+  --t-micro: 0.18s;                   /* color/opacity micro feedback */
+  --t-snap:  0.22s;                   /* chip spring-snaps */
+  --t-glide: 0.3s;                    /* menu-chip glides, nav expand */
+  --t-lift:  0.38s;                   /* card/photo hover lifts */
+  --t-pop:   0.45s;                   /* back-out dot/record pops */
+  --t-stage: 0.5s;                    /* page stage fade-in */
+  --t-fade:  0.55s;                   /* entrance opacity */
+  --t-rise:  0.6s;                    /* entrance translate */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --ease-glide:  cubic-bezier(0.34, 1.2, 0.5, 1);
+  --ease-lift:   cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-pop:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-rise:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-draw:   cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,7 +55,7 @@ html, body {
   width: 100%;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.5s ease;    /* gentle fade-in on load */
+  transition: opacity var(--t-stage) ease;  /* gentle fade-in on load */
 }
 .stage.revealed { opacity: 1; }
 
@@ -100,8 +120,8 @@ html, body {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   /* transform springs on the same curve as the chip so chip + word move as one */
-  transition: color 0.18s ease,
-              transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transition: color var(--t-micro) ease,
+              transform var(--t-snap) var(--ease-spring);
 }
 .word:focus-visible { outline: none; }
 /* set by glass-nav while the chip covers it — a touch of lift so the chip and
@@ -134,9 +154,9 @@ html, body {
   opacity: 0;
   pointer-events: none;               /* never blocks the word hover above it */
   transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.92);
-  transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1),   /* spring snap */
-              width 0.22s cubic-bezier(0.34, 1.4, 0.5, 1),
-              opacity 0.18s ease;
+  transition: transform var(--t-snap) var(--ease-spring),   /* spring snap */
+              width var(--t-snap) var(--ease-spring),
+              opacity var(--t-micro) ease;
 }
 .glass.show {
   opacity: 1;
@@ -173,12 +193,12 @@ html, body {
    frame; the name leads, pill + footer follow a beat later.
    ============================================================ */
 .frame-top {
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.7s var(--ease-rise);
 }
 .pill,
 .frame-bottom {
-  transition: opacity 0.55s ease 0.12s,
-              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+  transition: opacity var(--t-fade) ease 0.12s,
+              transform 0.7s var(--ease-rise) 0.12s;
 }
 .stage.is-cover .frame-top {
   transform: translate(-50%, 299px);    /* name text 80 → the cover's 379 */
@@ -204,7 +224,7 @@ html, body {
   line-height: 0;
   color: var(--ink);
   cursor: pointer;
-  transition: color 0.18s ease, opacity 0.3s ease;
+  transition: color var(--t-micro) ease, opacity 0.3s ease;
 }
 .open-arrow:hover,
 .open-arrow:focus-visible { color: var(--orange); }
@@ -290,7 +310,7 @@ html, body {
    squash on landing, then still (re-arms when the hover ends) */
 .site-nav-home:hover img,
 .site-nav-home:focus-visible img {
-  animation: home-hop 0.5s cubic-bezier(0.34, 1.2, 0.5, 1);
+  animation: home-hop 0.5s var(--ease-glide);
 }
 @keyframes home-hop {
   0%   { translate: 0 0;    scale: 1; }
@@ -304,7 +324,7 @@ html, body {
 .site-nav-reveal {
   display: grid;
   grid-template-columns: 0fr;
-  transition: grid-template-columns 0.3s cubic-bezier(0.34, 1.2, 0.5, 1);
+  transition: grid-template-columns var(--t-glide) var(--ease-glide);
 }
 .site-nav:hover .site-nav-reveal,
 .site-nav:focus-within .site-nav-reveal { grid-template-columns: 1fr; }
@@ -324,7 +344,7 @@ html, body {
   gap: 34px;
   height: 59px;
   opacity: 0;
-  transition: opacity 0.18s ease;
+  transition: opacity var(--t-micro) ease;
 }
 .site-nav-words > :first-child { margin-left: 18px; }
 /* the "home" word is display:none on desktop but still the DOM :first-child,
@@ -349,7 +369,7 @@ html, body {
   color: #5e5e5e;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 0.18s ease;
+  transition: color var(--t-micro) ease;
 }
 .site-nav-word::before {
   content: '';
@@ -364,7 +384,7 @@ html, body {
   border: 1px solid rgba(253, 143, 59, 0.35);
   border-radius: 33px;
   opacity: 0;
-  transition: opacity 0.18s ease;
+  transition: opacity var(--t-micro) ease;
 }
 .site-nav-word:hover,
 .site-nav-word.is-current { color: var(--orange); }
@@ -381,7 +401,7 @@ html, body {
 
 @media (prefers-reduced-motion: reduce) {
   .glass {
-    transition: opacity 0.18s ease;
+    transition: opacity var(--t-micro) ease;
     transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
   }
   .glass.show { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))); }
@@ -439,7 +459,7 @@ html, body {
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
     backdrop-filter: blur(14px) saturate(1.1);
     z-index: 40;
-    animation: nav-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: nav-rise 0.5s var(--ease-rise) both;
   }
   .site-nav:hover,
   .site-nav:focus-within { background: rgba(253, 253, 253, 0.82); }

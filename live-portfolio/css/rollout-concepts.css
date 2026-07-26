@@ -121,8 +121,8 @@
 .opt-a .a-phone .r-cap { margin-top: 8px; }
 /* only the framed pieces lift (never the bare phones) */
 .opt-a .r-browser, .opt-a .r-apparel {
-  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 0.18s ease;
+  transition: transform var(--t-lift) var(--ease-lift),
+              box-shadow var(--t-micro) ease;
 }
 .opt-a .a-web:hover .r-browser,
 .opt-a .a-app:hover .r-apparel { transform: translateY(-3px); }
@@ -153,7 +153,7 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.5, 1),
+  transition: transform 0.4s var(--ease-spring),
               opacity 0.3s ease, filter 0.3s ease;
 }
 .opt-b .b-web .r-browser { width: 242px; }
@@ -190,8 +190,8 @@
   position: absolute;
   margin: 0;
   rotate: var(--rot, 0deg);
-  transition: rotate 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: rotate 0.4s var(--ease-lift),
+              translate 0.5s var(--ease-rise);
 }
 .opt-c .c-piece:hover { rotate: 0deg; z-index: 12; }
 .opt-c .c-web:hover, .opt-c .c-app:hover { translate: 0 -4px; }

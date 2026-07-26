@@ -13,18 +13,18 @@
   width: 100%;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity var(--t-stage) ease;
 }
 .ai-stage.revealed { opacity: 1; }
 
 /* ---- entrance: title, panel, chips rise in turn — the site's
    case-study choreography ---- */
 .ai-title {
-  transition: opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
 }
 .ai-prompts {
-  transition: opacity 0.55s ease 0.2s,
-              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+  transition: opacity var(--t-fade) ease 0.2s,
+              translate var(--t-rise) var(--ease-rise) 0.2s;
 }
 .ai-stage:not(.revealed) :is(.ai-title, .ai-panel, .ai-prompts) {
   opacity: 0;
@@ -65,9 +65,9 @@
   background: rgba(241, 239, 239, 0.17);
   border: 1px solid #d9d9d9;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  transition: opacity 0.55s ease 0.08s,
-              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
-              border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: opacity var(--t-fade) ease 0.08s,
+              translate var(--t-rise) var(--ease-rise) 0.08s,
+              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease;
 }
 /* the panel wakes a touch under the cursor — the site card hover */
 .ai-panel:hover {
@@ -85,7 +85,7 @@
   transform: translateX(-50%);
   text-align: center;
   pointer-events: none;
-  transition: opacity 0.4s ease, translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.4s ease, translate 0.45s var(--ease-rise);
 }
 .ai-empty.is-gone {
   opacity: 0;
@@ -114,7 +114,7 @@
 .ai-spark .ray {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1) var(--rd, 0.5s);
+  transition: stroke-dashoffset 0.7s var(--ease-draw) var(--rd, 0.5s);
 }
 .ai-spark .ray.s1 { --rd: 0.5s; }
 .ai-spark .ray.s2 { --rd: 0.65s; }
@@ -125,7 +125,7 @@
   transform-box: fill-box;
   transform-origin: center;
   transform: scale(0);
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.1s;
+  transition: transform var(--t-pop) var(--ease-pop) 1.1s;
 }
 .ai-stage.revealed .ai-spark .spark-dot { transform: scale(1); }
 
@@ -180,7 +180,7 @@
 .ai-msg-ai   { margin-right: auto; }
 
 /* every fresh bubble rises in softly (restored history skips it) */
-.ai-msg { animation: msg-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.ai-msg { animation: msg-rise 0.45s var(--ease-rise); }
 .ai-msg.is-restored { animation: none; }
 @keyframes msg-rise {
   from { opacity: 0; translate: 0 10px; }
@@ -206,7 +206,7 @@
    so the fade is the only motion (no reflow, no shake) */
 .ai-word {
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease;      /* matches revealWords' 520ms tail */
 }
 .ai-word.is-in { opacity: 1; }
 
@@ -217,7 +217,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin: 2px 0 14px;
-  animation: msg-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: msg-rise 0.45s var(--ease-rise);
 }
 .fu-chip {
   padding: 7px 14px;
@@ -229,8 +229,8 @@
   color: #5e5e5e;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease,
-              border-color 0.18s ease, transform 0.18s ease;
+  transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
+              border-color var(--t-micro) ease, transform var(--t-micro) ease;
 }
 .fu-chip:hover,
 .fu-chip:focus-visible {
@@ -263,10 +263,10 @@
   color: #5e5e5e;
   white-space: nowrap;
   cursor: pointer;
-  transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+  transition: transform var(--t-lift) var(--ease-lift),
               opacity 0.38s ease,
-              background-color 0.18s ease, color 0.18s ease,
-              border-color 0.18s ease, box-shadow 0.18s ease;
+              background-color var(--t-micro) ease, color var(--t-micro) ease,
+              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease;
 }
 /* hover — the site's two signature moves, whispered: the surface firms up and
    lifts on the quiet two-part shadow, and the label warms to the nav's orange */
@@ -323,7 +323,7 @@
   border-radius: 20px;
   cursor: pointer;
   color: #5e5e5e;                      /* the arrow strokes currentColor */
-  transition: background-color 0.18s ease, color 0.18s ease;
+  transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
 }
 .ai-send:hover {
   background: #bfbfbf;

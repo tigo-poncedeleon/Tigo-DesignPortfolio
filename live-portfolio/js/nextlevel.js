@@ -375,7 +375,7 @@
     const step = (dir) => {
       if (look.hidden || closing) return;
       if (reduceMotion) { fill(cur + dir); return; }
-      lookPiece.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
+      lookPiece.style.transition = 'transform var(--t-micro) ease, opacity var(--t-micro) ease';
       lookPiece.style.transform =
         'translateX(' + -26 * dir + 'px) rotate(' + -1.2 * dir + 'deg)';
       lookPiece.style.opacity = '0';

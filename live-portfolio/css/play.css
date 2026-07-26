@@ -13,16 +13,16 @@
   width: 100%;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity var(--t-stage) ease;
 }
 .play-stage.revealed { opacity: 1; }
 
 /* ---- entrance: title, court, and record row rise in turn when the
    stage reveals — the case-study chapters' manner ---- */
-.play-title { transition: opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.play-title { transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise); }
 .record-row {
-  transition: opacity 0.55s ease 0.16s,
-              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.16s;
+  transition: opacity var(--t-fade) ease 0.16s,
+              translate var(--t-rise) var(--ease-rise) 0.16s;
 }
 .play-stage:not(.revealed) :is(.play-title, .board, .record-row) {
   opacity: 0;
@@ -90,9 +90,9 @@
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  transition: opacity 0.55s ease 0.08s,
-              translate 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
-              border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: opacity var(--t-fade) ease 0.08s,
+              translate var(--t-rise) var(--ease-rise) 0.08s,
+              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease;
 }
 /* the court wakes a touch under the cursor — the site card hover */
 .board:hover {
@@ -255,7 +255,7 @@
   border-radius: 50%;
   border: 1px solid #5e5e5e;
   background: transparent;
-  transition: background-color 0.18s ease;
+  transition: background-color var(--t-micro) ease;
 }
 .play-dot:hover { background: rgba(94, 94, 94, 0.45); }
 .play-dot[aria-current='page'] { background: #5e5e5e; }
@@ -321,11 +321,11 @@
 .record-crown path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.7s;
+  transition: stroke-dashoffset 1.1s var(--ease-draw) 0.7s;
 }
 .play-stage.revealed .record-crown path { stroke-dashoffset: 0; }
 .record-row:hover .record-crown path {
-  animation: crown-redraw 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: crown-redraw 0.7s var(--ease-draw) both;
 }
 @keyframes crown-redraw {
   from { stroke-dashoffset: 1; }
@@ -352,7 +352,7 @@
 }
 .record-chip.is-offline .record-val { color: rgba(0, 0, 0, 0.3); }
 /* a fresh record pops the chip once */
-.record-chip.is-pop { animation: record-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.record-chip.is-pop { animation: record-pop 0.5s var(--ease-pop); }
 @keyframes record-pop {
   0%   { transform: scale(1); }
   45%  { transform: scale(1.12); }
@@ -392,7 +392,7 @@
   font-size: 24px;
   color: #404040;
   border-bottom: 2px solid #d9d9d9;
-  transition: border-color 0.18s ease;
+  transition: border-color var(--t-micro) ease;
 }
 .entry-slot.is-cur { border-color: var(--orange); }
 .entry-slot.is-cur:empty::after {
@@ -436,7 +436,7 @@
   line-height: 0;
   cursor: pointer;
   color: #494949;
-  transition: color 0.18s ease;
+  transition: color var(--t-micro) ease;
 }
 .board-btn:hover,
 .board-btn:focus-visible { color: var(--orange); }
@@ -520,7 +520,7 @@
     font-size: 16px;
     color: #5e5e5e;
     text-decoration: none;
-    transition: color 0.18s ease;
+    transition: color var(--t-micro) ease;
   }
   .play-mobile-link:hover,
   .play-mobile-link:focus-visible { color: var(--orange); }

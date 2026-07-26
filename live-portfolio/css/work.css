@@ -13,7 +13,7 @@
   width: 100%;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity var(--t-stage) ease;
 }
 .work-stage.revealed { opacity: 1; }
 
@@ -123,7 +123,7 @@ a.work-img-vicino,
 a.work-img-pantry,
 a.work-img-drone {
   display: block;
-  transition: translate 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: translate var(--t-lift) var(--ease-lift);
 }
 a.work-img-vicino:hover,
 a.work-img-pantry:hover,
@@ -151,8 +151,8 @@ a.work-img-drone:hover { translate: 0 -4px; }
   backdrop-filter: blur(4px);
   opacity: 0.6;
   pointer-events: none;                 /* the image is the click target */
-  transition: opacity 0.22s ease, color 0.18s ease,
-              transform 0.22s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transition: opacity 0.22s ease, color var(--t-micro) ease,
+              transform var(--t-snap) var(--ease-spring);
 }
 /* the badge sits after its link, so firm it on the image's hover */
 .work-img-vicino:hover ~ .work-open,
@@ -185,7 +185,7 @@ a.work-img-drone:hover { translate: 0 -4px; }
   border-radius: 50%;
   border: 1px solid #5e5e5e;
   background: transparent;
-  transition: background-color 0.18s ease;
+  transition: background-color var(--t-micro) ease;
 }
 .work-dot:hover { background: rgba(94, 94, 94, 0.45); }
 .work-dot[aria-current='page'] { background: #5e5e5e; }
@@ -275,7 +275,7 @@ a.work-img-drone:hover { translate: 0 -4px; }
      its parts stagger up softly */
   .work-slide > * {
     transition: opacity 0.6s ease var(--d, 0s),
-                translate 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+                translate 0.7s var(--ease-rise) var(--d, 0s);
   }
   .work-slide:not(.revealed) > * { opacity: 0; translate: 0 22px; }
   .work-slide > .work-date { --d: 0.06s; }

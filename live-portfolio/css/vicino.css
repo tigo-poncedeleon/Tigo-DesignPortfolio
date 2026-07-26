@@ -14,14 +14,14 @@
   justify-content: center;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity var(--t-stage) ease;
 }
 .soon-stage.revealed { opacity: 1; }
 
 .soon-card {
   text-align: center;
   padding: 24px;
-  transition: opacity 0.55s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
 }
 .soon-stage:not(.revealed) .soon-card {
   opacity: 0;
@@ -48,7 +48,7 @@
   stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1) var(--sd, 0.4s);
+  transition: stroke-dashoffset 0.9s var(--ease-draw) var(--sd, 0.4s);
 }
 .soon-illo .s1 { --sd: 0.4s; }
 .soon-illo .s2 { --sd: 0.7s; }
@@ -59,7 +59,7 @@
   transform-box: fill-box;
   transform-origin: center;
   transform: scale(0);
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.7s;
+  transition: transform var(--t-pop) var(--ease-pop) 1.7s;
 }
 .soon-stage.revealed .soon-dot { transform: scale(1); }
 /* the pen keeps working while you watch */
@@ -100,7 +100,7 @@
   color: #404040;
   background: linear-gradient(rgba(253, 143, 59, 0.25), rgba(253, 143, 59, 0.25))
               no-repeat left 78% / 0% 0.58em;
-  transition: background-size 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.4s;
+  transition: background-size 0.55s var(--ease-draw) 1.4s;
 }
 .soon-stage.revealed .soon-copy strong { background-size: 100% 0.58em; }
 
@@ -128,7 +128,7 @@
   font-size: 16px;
   color: #5e5e5e;
   text-decoration: none;
-  transition: color 0.18s ease;
+  transition: color var(--t-micro) ease;
 }
 .soon-back:hover { color: var(--orange); }
 
