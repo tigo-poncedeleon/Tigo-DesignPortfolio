@@ -269,6 +269,82 @@
     mapEl.addEventListener('pointerleave', clear);
   }
 
+  // ============================================================
+  // THE ROUTE — resume chapter. One panel, refilled by whichever stop is
+  // current, so the detail never jumps around the frame. The skills listed
+  // per posting are read straight off MAP_LINKS above — the Craft map and
+  // this chapter are two views of one graph, and inverting the edges here
+  // means they can never fall out of step.
+  // ============================================================
+  const POSTS = {
+    nextlevel: { n: '04', role: 'Founding Visual Designer', co: 'Next Level Drone Cleaning',
+      date: 'Summer 2025',
+      sum: 'The complete visual identity for an early-stage drone-tech startup — brand, logo suite, and the marketing site, built with the founder.' },
+    uchicago: { n: '03', role: 'UX Researcher', co: 'University of Chicago',
+      date: 'Autumn 2025',
+      sum: 'An empirical study of interface homogenization across six AI-generated web apps, and the paper on what it means for human-centered design.' },
+    pantry: { n: '02', role: 'Product Designer', co: 'PantryPal',
+      date: 'Winter 2025\u201326',
+      sum: 'End-to-end design of an AI recipe app, from research through a production-ready prototype; task completion up 40% across testing rounds.' },
+    vicino: { n: '01', role: 'UX Engineer Intern', co: 'Vicino AI',
+      date: 'Summer 2026',
+      sum: 'Agentic generation and analytics for an AI marketing platform, and a Figma-to-React component library used across feature pages.' },
+  };
+  // reading order along the road, west to east
+  const ROUTE_ORDER = ['nextlevel', 'uchicago', 'pantry', 'vicino'];
+  const SKILL_NAMES = {
+    research: 'User Research', wireframe: 'Wireframing', ixd: 'Interaction Design',
+    mvp: 'MVP Scoping', usability: 'Usability Testing', figma: 'Figma',
+    adobe: 'Adobe Creative Cloud', react: 'React', web: 'HTML / CSS / JS',
+    python: 'Python', csharp: 'C#', git: 'Git',
+  };
+
+  const routeEl = document.getElementById('route');
+  const postEl = document.getElementById('post');
+  if (routeEl && postEl) {
+    const stops = Array.from(routeEl.querySelectorAll('.route-stop'));
+    const segs = Array.from(routeEl.querySelectorAll('.route-seg'));
+    const field = (id) => document.getElementById(id);
+    // invert the map's edges: which skills did this posting take?
+    const skillsFor = (post) => MAP_LINKS
+      .filter(([, projects]) => projects.includes(post))
+      .map(([skill]) => SKILL_NAMES[skill])
+      .filter(Boolean);
+
+    let current = 'vicino';
+    function show(post) {
+      if (post === current) return;
+      current = post;
+      const p = POSTS[post];
+      const i = ROUTE_ORDER.indexOf(post);
+      stops.forEach((s) => s.classList.toggle('is-on', s.dataset.post === post));
+      // the road behind the current stop is the road already travelled
+      segs.forEach((seg, k) => seg.classList.toggle('is-travelled', k < i));
+      postEl.classList.add('is-swapping');
+      setTimeout(() => {
+        field('post-num').textContent = p.n;
+        field('post-role').textContent = p.role;
+        field('post-co').textContent = p.co;
+        field('post-date').textContent = p.date;
+        field('post-sum').textContent = p.sum;
+        field('post-skills').innerHTML = skillsFor(post)
+          .map((name) => '<span>' + name + '</span>').join('');
+        postEl.classList.remove('is-swapping');
+      }, 190);
+    }
+
+    stops.forEach((stop) => {
+      stop.addEventListener('pointerenter', () => show(stop.dataset.post));
+      stop.addEventListener('focus', () => show(stop.dataset.post));
+      stop.addEventListener('click', () => show(stop.dataset.post));
+    });
+
+    // paint the resting state (the newest posting) without the swap beat
+    field('post-skills').innerHTML = skillsFor('vicino')
+      .map((name) => '<span>' + name + '</span>').join('');
+    segs.forEach((seg) => seg.classList.add('is-travelled'));
+  }
+
   // ---- the letter: the visitor leaves their address on the from line
   // and the FormSubmit relay delivers the message straight to Tigo's
   // inbox (their address rides along as the reply-to). The old mailto

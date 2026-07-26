@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
   <link rel="stylesheet" href="css/styles.css?v=32" />
-  <link rel="stylesheet" href="css/about.css?v=51" />
+  <link rel="stylesheet" href="css/about.css?v=54" />
 </head>
 
 <body>
@@ -166,19 +166,19 @@
             <div class="map-col map-projects">
               <p class="map-head">where it went</p>
               <a class="map-node is-project" data-node="vicino" href="vicino.html">
-                <span class="map-mark"><img loading="lazy" src="Media/vicino-logo.webp" alt="" width="447" height="507" /></span>
+                <span class="map-mark"><img src="Media/vicino-logo.webp" alt="" width="447" height="507" /></span>
                 <span class="map-name">Vicino AI<em>UX Engineer Intern &middot; 2026</em></span>
               </a>
               <a class="map-node is-project" data-node="pantry" href="pantrypal.html">
-                <span class="map-mark"><img loading="lazy" src="Media/pantrypal-logo.webp" alt="" width="803" height="409" /></span>
+                <span class="map-mark"><img src="Media/pantrypal-logo.webp" alt="" width="803" height="409" /></span>
                 <span class="map-name">PantryPal<em>Product Designer &middot; 2025&ndash;26</em></span>
               </a>
               <a class="map-node is-project" data-node="uchicago" href="#resume">
-                <span class="map-mark"><img loading="lazy" src="Media/uchicago-emblem.webp" alt="" width="316" height="400" /></span>
+                <span class="map-mark"><img src="Media/uchicago-emblem.webp" alt="" width="316" height="400" /></span>
                 <span class="map-name">UChicago study<em>UX Researcher &middot; 2025</em></span>
               </a>
               <a class="map-node is-project" data-node="nextlevel" href="nextlevel.html">
-                <span class="map-mark"><img loading="lazy" src="Media/NextLevelIcon.webp" alt="" width="1401" height="1406" /></span>
+                <span class="map-mark"><img src="Media/NextLevelIcon.webp" alt="" width="1401" height="1406" /></span>
                 <span class="map-name">Next Level<em>Founding Visual Designer &middot; 2025</em></span>
               </a>
               <a class="map-node is-project" data-node="site" href="index.html#home">
@@ -205,63 +205,51 @@
             <h2>Experience</h2>
             <p>three teams, two continents</p>
           </header>
-          <!-- the LEDGER: four postings as one ruled typographic column,
-               newest first. The hovered/focused row breathes open (flex
-               accordion) while the others compress; the summary rises in
-               and the employer's mark wakes from grey to colour. -->
-          <div class="xp-ledger">
-            <article class="xp-row" style="--n:0" tabindex="0">
-              <span class="xp-num">01</span>
-              <div class="xp-main">
-                <p class="xp-role">UX Engineer Intern</p>
-                <p class="xp-co">Vicino AI</p>
-                <p class="xp-sum">Agentic generation and analytics for an AI marketing platform; a Figma-to-React component library.</p>
-              </div>
-              <div class="xp-when">
-                <span class="xp-date">Summer 2026</span>
-                <span class="xp-loc">Bellevue, WA</span>
-              </div>
-              <img loading="lazy" decoding="async" class="xp-logo" src="Media/vicino-logo.webp" alt="Vicino AI logo" width="447" height="507" />
-            </article>
-            <article class="xp-row" style="--n:1" tabindex="0">
-              <span class="xp-num">02</span>
-              <div class="xp-main">
-                <p class="xp-role">Product Designer</p>
-                <p class="xp-co">PantryPal</p>
-                <p class="xp-sum">End-to-end AI recipe app; task completion up 40% across testing rounds.</p>
-              </div>
-              <div class="xp-when">
-                <span class="xp-date">Winter 2025&ndash;26</span>
-                <span class="xp-loc">Chicago, IL</span>
-              </div>
-              <img loading="lazy" decoding="async" class="xp-logo" src="Media/pantrypal-logo.webp" alt="PantryPal logo" width="803" height="409" />
-            </article>
-            <article class="xp-row" style="--n:2" tabindex="0">
-              <span class="xp-num">03</span>
-              <div class="xp-main">
-                <p class="xp-role">UX Researcher</p>
-                <p class="xp-co">University of Chicago</p>
-                <p class="xp-sum">Studied interface homogenization across six AI-generated web apps.</p>
-              </div>
-              <div class="xp-when">
-                <span class="xp-date">Autumn 2025</span>
-                <span class="xp-loc">Chicago, IL</span>
-              </div>
-              <img loading="lazy" decoding="async" class="xp-logo" src="Media/uchicago-emblem.webp" alt="University of Chicago emblem" width="316" height="400" />
-            </article>
-            <article class="xp-row" style="--n:3" tabindex="0">
-              <span class="xp-num">04</span>
-              <div class="xp-main">
-                <p class="xp-role">Founding Visual Designer</p>
-                <p class="xp-co">Next Level Drone Cleaning</p>
-                <p class="xp-sum">Complete brand identity and marketing site for a drone-tech startup.</p>
-              </div>
-              <div class="xp-when">
-                <span class="xp-date">Summer 2025</span>
-                <span class="xp-loc">Kortrijk, Belgium</span>
-              </div>
-              <img loading="lazy" decoding="async" class="xp-logo" src="Media/NextLevelIcon.webp" alt="Next Level Drone Cleaning logo" width="1401" height="1406" />
-            </article>
+          <!-- THE ROUTE — the map again, but laid by time instead of by
+               capability: four postings in order along a line that climbs
+               left to right, Kortrijk to Chicago to Bellevue. Hovering a stop
+               inks the road travelled up to it and fills the panel below with
+               that posting — including the skills it took, which are the same
+               nodes the Craft map wires. Coordinates live in the SVG and the
+               stops are placed on them, so the drawing and the marks can
+               never drift apart. -->
+          <div class="route" id="route">
+            <svg class="route-road" viewBox="0 0 1014 300" aria-hidden="true">
+              <path class="route-seg" data-seg="0" pathLength="1"
+                    d="M100 250 C 190 250, 280 196, 368 188" />
+              <path class="route-seg" data-seg="1" pathLength="1"
+                    d="M368 188 C 456 180, 548 168, 636 156" />
+              <path class="route-seg" data-seg="2" pathLength="1"
+                    d="M636 156 C 730 144, 830 106, 914 62" />
+            </svg>
+
+            <button class="route-stop" type="button" data-post="nextlevel" style="--x:100px;--y:250px">
+              <span class="route-mark"><img src="Media/NextLevelIcon.webp" alt="" width="1401" height="1406" /></span>
+              <span class="route-tag">Kortrijk<em>Belgium</em></span>
+            </button>
+            <button class="route-stop" type="button" data-post="uchicago" style="--x:368px;--y:188px">
+              <span class="route-mark"><img src="Media/uchicago-emblem.webp" alt="" width="316" height="400" /></span>
+              <span class="route-tag">Chicago<em>Illinois</em></span>
+            </button>
+            <button class="route-stop" type="button" data-post="pantry" style="--x:636px;--y:156px">
+              <span class="route-mark"><img src="Media/pantrypal-logo.webp" alt="" width="803" height="409" /></span>
+              <span class="route-tag">Chicago<em>Illinois</em></span>
+            </button>
+            <button class="route-stop is-on" type="button" data-post="vicino" style="--x:914px;--y:62px">
+              <span class="route-mark"><img src="Media/vicino-logo.webp" alt="" width="447" height="507" /></span>
+              <span class="route-tag">Bellevue<em>Washington</em></span>
+            </button>
+          </div>
+
+          <!-- one panel, refilled by whichever stop is current (the newest
+               posting at rest) — so the detail never jumps around the frame -->
+          <div class="post" id="post">
+            <p class="post-num"><span id="post-num">01</span> <em>of four</em></p>
+            <h3 class="post-role" id="post-role">UX Engineer Intern</h3>
+            <p class="post-co"><span id="post-co">Vicino AI</span>
+              <span class="post-date" id="post-date">Summer 2026</span></p>
+            <p class="post-sum" id="post-sum">Agentic generation and analytics for an AI marketing platform; a Figma-to-React component library.</p>
+            <div class="post-skills" id="post-skills"></div>
           </div>
           <!-- this chapter offers two doors: the paper version (set in the
                site's own type and rules — see resume-src/) and the work -->
@@ -332,6 +320,6 @@
 
   <script src="js/stage-fit.js"></script>
   <script src="js/nav-touch.js"></script>
-  <script src="js/about.js?v=6"></script>
+  <script src="js/about.js?v=7"></script>
 </body>
 </html>

@@ -370,115 +370,142 @@
 .about-slide.revealed .dot { opacity: 1; }
 
 /* ============================================================
-   resume — the LEDGER: four postings as ONE ruled typographic
-   column, newest first (no cards; the craft grid keeps those).
-   The rows share a fixed height: the hovered/focused row
-   BREATHES OPEN via flex-grow while the others compress, so the
-   column never changes size. Opening reveals the summary and
-   wakes the employer's mark from grey to colour; each row's
-   hairline draws itself when the chapter arrives.
+   resume — THE ROUTE. The Craft map again, laid by time rather
+   than by capability: four stops in order on a road that climbs
+   left to right, Kortrijk → Chicago → Bellevue. Hovering a stop
+   inks the road travelled up to it and refills the one panel
+   below, so the detail never jumps around the frame.
+
+   The road's coordinates live in the SVG; the stops are placed
+   on the same numbers via --x/--y, so the drawing and the marks
+   cannot drift apart.
    ============================================================ */
-.xp-ledger {
+.route {
   position: absolute;
-  top: 140px;
+  top: 128px;
   left: var(--ax);
   transform: translateX(-50%);
+  width: 1014px;
+  height: 300px;
+}
+.route-road {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.route-seg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease;
+}
+/* the road inks itself on arrival, stop by stop */
+.about-slide:not(.revealed) .route-seg { stroke-dashoffset: 1; }
+.route-seg { stroke-dashoffset: 0; }
+.about-slide .route-seg {
+  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease,
+              stroke-dashoffset 0.8s var(--ease-draw) calc(0.3s + var(--seg, 0) * 0.22s);
+}
+.route-seg[data-seg='1'] { --seg: 1; }
+.route-seg[data-seg='2'] { --seg: 2; }
+/* travelled = everything up to and including the current stop */
+.route-seg.is-travelled { stroke: var(--orange); stroke-width: 2; }
+
+.route-stop {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  width: 880px;
-  height: 460px;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
 }
-.xp-row {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
+.route-mark {
   display: flex;
-  align-items: flex-start;
-  gap: 28px;
-  padding: 24px 18px 0;
-  transition: flex-grow 0.5s var(--ease-rise),
-              opacity var(--t-fade) ease calc(var(--n) * 0.09s),
-              translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid #e0e0e0;
+  transition: border-color var(--t-micro) ease,
+              box-shadow var(--t-micro) ease,
+              scale var(--t-snap) var(--ease-spring);
 }
-.xp-row:hover,
-.xp-row:focus-visible { flex-grow: 2; }
-/* the rules: a hairline under every row (plus one over the first)
-   that draws itself left → right on reveal, top to bottom */
-.xp-row::after,
-.xp-row:first-child::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: #e3e3e3;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.7s var(--ease-draw)
-              calc(0.2s + var(--n) * 0.12s);
-}
-.xp-row:first-child::before { top: 0; bottom: auto; transition-delay: 0.1s; }
-.about-slide.revealed .xp-row::after,
-.about-slide.revealed .xp-row:first-child::before { transform: scaleX(1); }
-
-/* the margin index — quiet numerals that warm when their row opens */
-.xp-num {
-  flex: none;
+.route-mark img {
   width: 34px;
-  padding-top: 6px;
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.35);
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s ease;
+  height: 34px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.42;
+  transition: filter 0.25s ease, opacity 0.25s ease;
 }
-.xp-row:hover .xp-num,
-.xp-row:focus-visible .xp-num { color: var(--orange); }
+.route-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 14px;
+  color: #5e5e5e;
+  white-space: nowrap;
+  transition: color var(--t-micro) ease;
+}
+.route-tag em {
+  font-style: normal;
+  font-size: 11.5px;
+  color: rgba(0, 0, 0, 0.32);
+}
+/* the current stop: mark awake, ring warm, label lit */
+.route-stop.is-on .route-mark {
+  border-color: rgba(253, 143, 59, 0.45);
+  box-shadow: 0 0 0 5px rgba(253, 143, 59, 0.1);
+  scale: 1.06;
+}
+.route-stop.is-on .route-mark img { filter: none; opacity: 1; }
+.route-stop.is-on .route-tag { color: var(--orange); }
 
-.xp-main { flex: 1; min-width: 0; }
-.xp-role {
-  font-size: 22px;
-  line-height: 28px;
+/* ---- the panel every stop fills ---- */
+.post {
+  position: absolute;
+  top: 470px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  width: 640px;
+  text-align: center;
+}
+.post-num {
+  font-size: 13.25px;
+  color: var(--orange);
+  font-variant-numeric: tabular-nums;
+}
+.post-num em { font-style: normal; color: rgba(0, 0, 0, 0.3); }
+.post-role {
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 400;
   color: #404040;
 }
-.xp-co {
-  margin-top: 4px;
-  font-size: 15px;
-  color: #767676;                    /* quiet locator label under the role */
-}
-/* the summary waits below the fold of the closed row and rises in once
-   the row opens — the readable body line (mid grey, not the faint
-   caption tone), so "what I did" actually reads */
-.xp-sum {
-  margin-top: 15px;
-  max-width: 520px;
-  font-size: 15.5px;
-  line-height: 23px;
-  color: #5e5e5e;
-  opacity: 0;
-  translate: 0 8px;
-  transition: opacity 0.25s ease,
-              translate 0.35s var(--ease-rise);
-}
-.xp-row:hover .xp-sum,
-.xp-row:focus-visible .xp-sum {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: 0.12s;
-}
-
-/* the right margin: date chip over location, then the mark */
-.xp-when {
-  flex: none;
+.post-co {
+  margin-top: 5px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 7px;
-  padding-top: 3px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #767676;
 }
-.xp-date {
-  display: inline-block;
+.post-date {
   padding: 3px 9px;
   font-size: 13.25px;
   color: #5e5e5e;
@@ -487,29 +514,47 @@
   border-radius: 6.625px;
   white-space: nowrap;
 }
-.xp-loc {
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+.post-sum {
+  margin: 14px auto 0;
+  max-width: 520px;
+  font-size: 15.5px;
+  line-height: 23px;
+  color: #5e5e5e;
+}
+/* the same nodes the Craft map wires — the two chapters are one graph */
+.post-skills {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+}
+.post-skills span {
+  padding: 4px 11px;
+  font-size: 13px;
+  color: #5e5e5e;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
   white-space: nowrap;
 }
-/* the employer's mark — sleeping in grey until its row is visited */
-.xp-logo {
-  flex: none;
-  width: 96px;
-  height: 46px;
-  margin-top: 4px;
-  object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.45;
-  transition: filter 0.25s ease, opacity 0.25s ease,
-              scale 0.4s var(--ease-spring);
+/* the swap: the old posting bows out, the new one rises in its place */
+.post.is-swapping :is(.post-num, .post-role, .post-co, .post-sum, .post-skills) {
+  opacity: 0;
+  translate: 0 6px;
 }
-.xp-row:hover .xp-logo,
-.xp-row:focus-visible .xp-logo {
-  filter: none;
-  opacity: 1;
-  scale: 1.12;
+.post :is(.post-num, .post-role, .post-co, .post-sum, .post-skills) {
+  transition: opacity 0.2s ease, translate 0.28s var(--ease-rise);
 }
+
+.about-slide:not(.revealed) :is(.route-stop, .post) { opacity: 0; translate: 0 16px; }
+.route-stop, .post {
+  transition: opacity var(--t-fade) ease calc(0.15s + var(--d, 0s)),
+              translate var(--t-rise) var(--ease-rise) calc(0.15s + var(--d, 0s));
+}
+
+/* the quiet door each chapter ends on (the ledger that used to define this
+   is gone; the rule is not) */
 .slide-link {
   position: absolute;
   top: 618px;
@@ -527,7 +572,7 @@
    the wrapper takes over the positioning so the pair centres as a unit */
 .slide-links {
   position: absolute;
-  top: 618px;
+  top: 726px;
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -1077,6 +1122,35 @@
   .map-node { font-size: 15px; }
   .map-note, .map-aside { position: static; margin-top: 22px; text-align: left; }
   .map-aside { margin-top: 8px; }
+
+  /* the route's road needs the full 1014px to read as a climb; on a phone
+     the four stops become a plain row and the panel takes the width */
+  .route {
+    position: static;
+    transform: none;
+    display: flex;
+    justify-content: space-between;
+    width: auto;
+    height: auto;
+    margin-top: 22px;
+  }
+  .route-road { display: none; }
+  .route-stop { position: static; transform: none; gap: 7px; }
+  .route-mark { width: 46px; height: 46px; }
+  .route-mark img { width: 26px; height: 26px; }
+  .route-tag { font-size: 12px; }
+  .route-tag em { font-size: 10.5px; }
+  .post {
+    position: static;
+    transform: none;
+    width: auto;
+    margin-top: 26px;
+    text-align: left;
+  }
+  .post-role { font-size: 21px; }
+  .post-co { justify-content: flex-start; flex-wrap: wrap; row-gap: 6px; }
+  .post-sum { margin-left: 0; font-size: 15px; }
+  .post-skills { justify-content: flex-start; }
 
   .slide-links {
     position: static;
