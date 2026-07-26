@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Santiago (Tigo) Ponce de León — Resume</title>
+<style>
+/* ============================================================
+   Resume — the portfolio's design language on Letter paper.
+   Everything here is lifted from live-portfolio/css: the --bg /
+   --ink / --orange tokens, SF Pro at weight 400 (hierarchy comes
+   from SIZE and TONE, never bold), the .xp-ledger's numbered
+   rows + hairlines, the .xp-date chip recipe, and the .craft-chip
+   pill. One accent: the portfolio chip wears the sitewide warm
+   wash (the colour the nav gives the page you're on).
+   ============================================================ */
+
+:root {
+  --bg:     #fdfdfd;
+  --ink:    #404040;
+  --orange: #fd8f3b;
+  --rule:   #e3e3e3;
+  --chip-b: #d9d9d9;
+  --co:     #404040;                  /* employer / institution */
+  --role:   rgba(0, 0, 0, 0.42);      /* the quiet half of a title pair */
+  --body:   #5e5e5e;                  /* the readable body tone */
+  --meta:   rgba(0, 0, 0, 0.42);
+  --num:    rgba(0, 0, 0, 0.35);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+               system-ui, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  /* chips and hairlines are the structure here, not decoration — they have
+     to survive the print pipeline */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.sheet {
+  width: 8.5in;
+  padding: 44px 56px 34px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- header: the site's title pair (.about-title / .work-title) — one
+   name, one quiet phrase beside it on the same baseline ---- */
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 11px;
+  white-space: nowrap;
+}
+.head h1 {
+  font-size: 25px;
+  font-weight: 400;
+  color: #5e5e5e;
+  letter-spacing: -0.1px;
+}
+.head p {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.summary {
+  margin-top: 10px;
+  max-width: 600px;
+  font-size: 12.4px;
+  line-height: 18px;
+  color: var(--body);
+}
+
+/* ---- contact as chips: the .xp-date recipe, with the portfolio wearing
+   the sitewide warm wash so the one link that matters most reads first ---- */
+.contact {
+  margin-top: 11px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.contact a {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11.6px;
+  color: var(--body);
+  background: rgba(0, 0, 0, 0.03);
+  border: 0.663px solid var(--chip-b);
+  border-radius: 6.625px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.contact a.is-site {
+  background: rgba(253, 143, 59, 0.13);
+  border-color: rgba(253, 143, 59, 0.35);
+  color: var(--orange);
+}
+
+/* ---- section label: lowercase and quiet (.craft-label / .learned-label),
+   over the ledger's drawn hairline ---- */
+.section { margin-top: 15px; }
+.label {
+  font-size: 12.4px;
+  color: var(--meta);
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ---- the ledger: one ruled typographic column, a margin numeral per row,
+   dates and location in the right margin (css/about.css .xp-*) ---- */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 9px 2px 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.section .row:last-child { border-bottom: 0; padding-bottom: 4px; }
+
+.num {
+  flex: none;
+  width: 22px;
+  padding-top: 2px;
+  font-size: 11.6px;
+  color: var(--num);
+  font-variant-numeric: tabular-nums;
+}
+.main { flex: 1; min-width: 0; }
+
+/* the title pair again, one step down: employer in the ink tone, the role
+   beside it in the quiet tone — no bold anywhere on this page */
+.co {
+  font-size: 14.4px;
+  line-height: 18px;
+  color: var(--co);
+}
+.co span {
+  font-size: 12.6px;
+  color: var(--role);
+}
+.detail {
+  margin-top: 4px;
+  font-size: 12.2px;
+  line-height: 17px;
+  color: var(--body);
+}
+.detail em { font-style: normal; color: var(--co); }
+
+ul { margin-top: 5px; list-style: none; }
+li {
+  position: relative;
+  padding-left: 13px;
+  font-size: 12.2px;
+  line-height: 17.6px;
+  color: var(--body);
+}
+li + li { margin-top: 4px; }
+/* the site's resting dot — 3px, quiet, never a glyph bullet */
+li::before {
+  content: '';
+  position: absolute;
+  left: 1px;
+  top: 7px;
+  width: 3.4px;
+  height: 3.4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+/* right margin: date chip over location (.xp-when) */
+.when {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  padding-top: 1px;
+}
+.date {
+  display: inline-block;
+  padding: 3px 9px;
+  font-size: 11.6px;
+  color: var(--body);
+  background: rgba(0, 0, 0, 0.03);
+  border: 0.663px solid var(--chip-b);
+  border-radius: 6.625px;
+  white-space: nowrap;
+}
+.loc {
+  font-size: 11.6px;
+  color: var(--meta);
+  white-space: nowrap;
+}
+
+/* ---- skills: the .craft-chip pill, grouped under lowercase labels ---- */
+.craft {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 5.5px 2px;
+  border-bottom: 1px solid var(--rule);
+}
+.craft:last-child { border-bottom: 0; }
+.craft-label {
+  flex: none;
+  width: 82px;
+  font-size: 12.2px;
+  color: var(--meta);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  padding: 3.5px 10px;
+  font-size: 11.6px;
+  color: var(--body);
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid var(--chip-b);
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+
+</style></head>
+<body>
+<div class="sheet">
+
+  <header class="head">
+    <h1>Santiago (Tigo) Ponce de León</h1>
+    <p>product design engineer</p>
+  </header>
+
+  <p class="summary">A designer who ships the code &mdash; research and product thinking
+  through to React in production, in service of software that is both useful and pleasurable.</p>
+
+  <nav class="contact">
+    <a class="is-site" href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>
+    <a href="mailto:tigoponcedeleon@uchicago.edu">tigoponcedeleon@uchicago.edu</a>
+    <a href="https://linkedin.com/in/tigoponcedeleon">linkedin.com/in/tigoponcedeleon</a>
+  </nav>
+
+  <section class="section">
+    <p class="label">experience</p>
+
+    <div class="row">
+      <span class="num">01</span>
+      <div class="main">
+        <p class="co">Vicino AI <span>UX Engineer Intern</span></p>
+        <ul>
+          <li>Designing product experiences across key workflows for an AI-powered video and
+          marketing platform, turning agentic creative concepts into user-centered interfaces.</li>
+          <li>Building front-end UI components in React, bridging Figma designs and production
+          code to accelerate design-to-engineer handoff.</li>
+          <li>Shaping and documenting the platform&rsquo;s visual language and interaction patterns
+          into a scalable component library used across feature pages.</li>
+        </ul>
+      </div>
+      <div class="when">
+        <span class="date">Jun &ndash; Aug 2026</span>
+        <span class="loc">Bellevue, WA</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="num">02</span>
+      <div class="main">
+        <p class="co">PantryPal <span>Digital Product Designer</span></p>
+        <ul>
+          <li>Owned end-to-end design of an AI mobile app generating personalized recipes from
+          household ingredients, cutting food waste through intelligent inventory reuse.</li>
+          <li>Led user research across interviews and usability tests, synthesizing findings into
+          design decisions that improved task completion 40% between testing rounds.</li>
+          <li>Shipped a production-ready Figma prototype &mdash; wireframes through high-fidelity
+          UI, a documented component library, responsive layouts, and interaction patterns.</li>
+        </ul>
+      </div>
+      <div class="when">
+        <span class="date">Nov 2025 &ndash; Feb 2026</span>
+        <span class="loc">Chicago, IL</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="num">03</span>
+      <div class="main">
+        <p class="co">University of Chicago <span>UX Researcher</span></p>
+        <ul>
+          <li>Ran an empirical study of visual and interaction patterns across six AI-generated
+          recipe web apps to measure interface homogenization.</li>
+          <li>Deployed prototypes via GitHub Pages and authored the paper on how AI models
+          operationalize a statistical consensus of product design convention.</li>
+        </ul>
+      </div>
+      <div class="when">
+        <span class="date">Nov &ndash; Dec 2025</span>
+        <span class="loc">Chicago, IL</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="num">04</span>
+      <div class="main">
+        <p class="co">Next Level Drone Cleaning <span>Founding Visual Designer</span></p>
+        <ul>
+          <li>Designed the complete visual identity for an early-stage drone-tech startup from
+          scratch: brand guidelines, logo suite, and collateral across web, print, and pitch.</li>
+          <li>Built the responsive marketing site (nextleveldronecleaning.be) with the founder,
+          plus component libraries that held the team consistent without ongoing design help.</li>
+        </ul>
+      </div>
+      <div class="when">
+        <span class="date">Jul &ndash; Sep 2025</span>
+        <span class="loc">Kortrijk, Belgium</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="label">education</p>
+    <div class="row">
+      <span class="num">&mdash;</span>
+      <div class="main">
+        <p class="co">University of Chicago <span>B.A. Media Arts &amp; Design and Computer Science</span></p>
+        <p class="detail">Coursework: Human-Computer Interaction, Internet Art &amp; Web Design,
+        Branding &amp; Visual Systems<br />
+        Honors: Spain Foreign Language Acquisition Grant &mdash; immersive study in Madrid, Summer 2025</p>
+      </div>
+      <div class="when">
+        <span class="date">May 2027</span>
+        <span class="loc">Chicago, IL</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="label">skills</p>
+    <div class="craft">
+      <span class="craft-label">product</span>
+      <div class="chips">
+        <span class="chip">User Research</span><span class="chip">Wireframing</span><span class="chip">Interaction Design</span><span class="chip">MVP Scoping</span><span class="chip">Usability Testing</span>
+      </div>
+    </div>
+    <div class="craft">
+      <span class="craft-label">frontend</span>
+      <div class="chips">
+        <span class="chip">React</span><span class="chip">HTML / CSS / JS</span><span class="chip">Python</span><span class="chip">C#</span><span class="chip">Git</span>
+      </div>
+    </div>
+    <div class="craft">
+      <span class="craft-label">design</span>
+      <div class="chips">
+        <span class="chip">Figma</span><span class="chip">Adobe Creative Cloud</span>
+      </div>
+    </div>
+    <div class="craft">
+      <span class="craft-label">languages</span>
+      <div class="chips">
+        <span class="chip">Spanish &mdash; professional working</span><span class="chip">English &mdash; fluent</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

@@ -523,6 +523,23 @@
 .slide-link:hover,
 .slide-link:focus-visible { color: var(--orange); }
 
+/* the resume chapter carries TWO doors on the line the others give one —
+   the wrapper takes over the positioning so the pair centres as a unit */
+.slide-links {
+  position: absolute;
+  top: 618px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 28px;
+  white-space: nowrap;
+}
+.slide-links .slide-link {
+  position: static;
+  transform: none;
+}
+
 /* ============================================================
    skills — four illustration cards, drawn in thin ink
    ============================================================ */
@@ -958,6 +975,14 @@
     margin-top: 26px;
     text-align: center;
   }
+  /* the resume pair stacks on a phone — one door per line, centred */
+  .slide-links {
+    position: static;
+    transform: none;
+    display: block;
+    white-space: normal;
+  }
+  .slide-links .slide-link + .slide-link { margin-top: 14px; }
 
   /* 04 · contact — the letter fills the width, socials beneath */
   .compose {
