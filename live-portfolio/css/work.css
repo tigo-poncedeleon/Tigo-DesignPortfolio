@@ -125,9 +125,9 @@ a.work-img-drone {
   display: block;
   transition: translate var(--t-lift) var(--ease-lift);
 }
-a.work-img-vicino:hover,
-a.work-img-pantry:hover,
-a.work-img-drone:hover { translate: 0 -4px; }
+a.work-img-vicino:hover, a.work-img-vicino:focus-visible,
+a.work-img-pantry:hover, a.work-img-pantry:focus-visible,
+a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
 
 /* the only click affordance — a minimal "opens" arrow in each project's
    top-right CORNER (at the header level, clear of the centred image, so it
@@ -155,9 +155,9 @@ a.work-img-drone:hover { translate: 0 -4px; }
               transform var(--t-snap) var(--ease-spring);
 }
 /* the badge sits after its link, so firm it on the image's hover */
-.work-img-vicino:hover ~ .work-open,
-.work-img-pantry:hover ~ .work-open,
-.work-img-drone:hover ~ .work-open {
+.work-img-vicino:hover ~ .work-open, .work-img-vicino:focus-visible ~ .work-open,
+.work-img-pantry:hover ~ .work-open, .work-img-pantry:focus-visible ~ .work-open,
+.work-img-drone:hover ~ .work-open, .work-img-drone:focus-visible ~ .work-open {
   opacity: 1;
   color: #404040;
   transform: translate(1px, -1px);
@@ -187,7 +187,7 @@ a.work-img-drone:hover { translate: 0 -4px; }
   background: transparent;
   transition: background-color var(--t-micro) ease;
 }
-.work-dot:hover { background: rgba(94, 94, 94, 0.45); }
+.work-dot:hover, .work-dot:focus-visible { background: rgba(94, 94, 94, 0.45); }
 .work-dot[aria-current='page'] { background: #5e5e5e; }
 
 @media (prefers-reduced-motion: reduce) {

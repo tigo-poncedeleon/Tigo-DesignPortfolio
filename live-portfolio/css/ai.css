@@ -325,7 +325,8 @@
   color: #5e5e5e;                      /* the arrow strokes currentColor */
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
 }
-.ai-send:hover {
+.ai-send:hover,
+.ai-send:focus-visible {
   background: #bfbfbf;
   color: var(--orange);                /* the arrow warms, site manner */
 }

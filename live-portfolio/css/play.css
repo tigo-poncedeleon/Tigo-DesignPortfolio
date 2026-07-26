@@ -257,7 +257,7 @@
   background: transparent;
   transition: background-color var(--t-micro) ease;
 }
-.play-dot:hover { background: rgba(94, 94, 94, 0.45); }
+.play-dot:hover, .play-dot:focus-visible { background: rgba(94, 94, 94, 0.45); }
 .play-dot[aria-current='page'] { background: #5e5e5e; }
 
 /* ---- centre overlays: tallies or countdown ---- */

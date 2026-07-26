@@ -115,7 +115,6 @@
 .about-menu a:nth-of-type(3) { --d: 0.44s; }
 .about-menu a:nth-of-type(4) { --d: 0.51s; }
 .menu-item svg { flex: none; }
-.menu-item:focus-visible { outline: none; }
 .menu-item:hover,
 .menu-item:focus-visible,
 .menu-item.is-current,
@@ -398,7 +397,6 @@
   align-items: flex-start;
   gap: 28px;
   padding: 24px 18px 0;
-  outline: none;
   transition: flex-grow 0.5s var(--ease-rise),
               opacity var(--t-fade) ease calc(var(--n) * 0.09s),
               translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
@@ -522,7 +520,8 @@
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
-.slide-link:hover { color: var(--orange); }
+.slide-link:hover,
+.slide-link:focus-visible { color: var(--orange); }
 
 /* ============================================================
    skills — four illustration cards, drawn in thin ink

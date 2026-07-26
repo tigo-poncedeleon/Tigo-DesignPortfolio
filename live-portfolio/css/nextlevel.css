@@ -7,17 +7,24 @@
    --ax = midline of [247px … right edge].
    ============================================================ */
 
-.case-stage {
-  /* inside the case study the accents speak NEXT LEVEL, not the site
-     orange: sky blue is the wash (the brand's #B8EDF8), a deeper azure
-     is the ink, navy anchors the thread */
+/* inside the case study the accents speak NEXT LEVEL, not the site
+   orange: sky blue is the wash (the brand's #B8EDF8), a deeper azure
+   is the ink, navy anchors the thread. Declared on the .look overlay
+   too — it lives OUTSIDE .case-stage in the DOM, so it doesn't inherit
+   the stage's scope. */
+.case-stage, .look {
   --nl-sky: #b8edf8;
   --nl-azure: #2b7cc4;
   --nl-navy: #24405e;
   --nl-wash: rgba(184, 237, 248, 0.4);
   --nl-line: rgba(122, 191, 209, 0.55);
   --nl-mark: rgba(151, 222, 240, 0.6);
+}
+/* the keyboard ring speaks the case's ink here, not the site orange */
+.case-stage :focus-visible,
+.look :focus-visible { outline-color: var(--nl-azure); }
 
+.case-stage {
   position: relative;
   height: 100vh;
   height: 100dvh;
@@ -117,7 +124,6 @@
 .case-menu a:nth-of-type(6) { --d: 0.65s; }
 .case-menu a:nth-of-type(7) { --d: 0.72s; }
 .menu-item svg { flex: none; }
-.menu-item:focus-visible { outline: none; }
 .menu-item:hover,
 .menu-item:focus-visible,
 .menu-item.is-current,
@@ -311,10 +317,10 @@
   border-bottom: 1px solid transparent;
   transition: border-color var(--t-micro) ease;
 }
-.site-link:hover { color: var(--nl-azure); }
-.site-link:hover .site-link-url { border-bottom-color: var(--nl-line); }
+.site-link:hover, .site-link:focus-visible { color: var(--nl-azure); }
+.site-link:hover .site-link-url, .site-link:focus-visible .site-link-url { border-bottom-color: var(--nl-line); }
 .site-link-arrow { transition: transform var(--t-snap) var(--ease-spring); }
-.site-link:hover .site-link-arrow { transform: translate(2px, -2px); }
+.site-link:hover .site-link-arrow, .site-link:focus-visible .site-link-arrow { transform: translate(2px, -2px); }
 .site-live-dot {
   width: 8px;
   height: 8px;
@@ -551,7 +557,6 @@
   cursor: pointer;
   transition: color var(--t-micro) ease;
 }
-.step-item:focus-visible { outline: none; }
 .step-item:hover,
 .step-item:focus-visible,
 .step-item.is-current { color: var(--nl-azure); }
@@ -881,7 +886,6 @@
 .board-piece:focus-visible {
   rotate: 0deg;
   z-index: 12;
-  outline: none;
 }
 /* the wall: web upper-left, the three handsets fanned right,
    apparel tucked under the browser */
@@ -1104,7 +1108,6 @@
 .look.is-open :is(.look-arrow, .look-close) { opacity: 1; }
 .look-arrow:hover, .look-close:hover,
 .look-arrow:focus-visible, .look-close:focus-visible {
-  outline: none;
   color: var(--nl-azure);
   background: rgba(43, 124, 196, 0.08);
 }
@@ -1181,7 +1184,7 @@
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
-.case-link:hover { color: var(--nl-azure); }
+.case-link:hover, .case-link:focus-visible { color: var(--nl-azure); }
 
 @media (prefers-reduced-motion: reduce) {
   .case-scroll { scroll-behavior: auto; }

@@ -38,6 +38,17 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ---- keyboard focus: ONE ring sitewide — the warm accent, floated 3px
+   off the element so it never collides with a border or chip. Pointer
+   focus stays quiet (:focus-visible). Text fields opt out; they carry
+   their own designed border + caret states. ---- */
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+input:focus-visible,
+textarea:focus-visible { outline: none; }
+
 html, body {
   background: var(--bg);
   color: var(--ink);
@@ -123,7 +134,6 @@ html, body {
   transition: color var(--t-micro) ease,
               transform var(--t-snap) var(--ease-spring);
 }
-.word:focus-visible { outline: none; }
 /* set by glass-nav while the chip covers it — a touch of lift so the chip and
    word rise together */
 .word.hot { color: var(--orange); transform: scale(1.02); }
@@ -228,7 +238,6 @@ html, body {
 }
 .open-arrow:hover,
 .open-arrow:focus-visible { color: var(--orange); }
-.open-arrow:focus-visible { outline: none; }
 .stage:not(.is-cover) .open-arrow {
   opacity: 0;
   pointer-events: none;
@@ -387,8 +396,10 @@ html, body {
   transition: opacity var(--t-micro) ease;
 }
 .site-nav-word:hover,
+.site-nav-word:focus-visible,
 .site-nav-word.is-current { color: var(--orange); }
 .site-nav-word:hover::before,
+.site-nav-word:focus-visible::before,
 .site-nav-word.is-current::before { opacity: 1; }
 /* while the cursor is on some other word, the resting current-page chip
    steps aside so only one chip shows at a time */

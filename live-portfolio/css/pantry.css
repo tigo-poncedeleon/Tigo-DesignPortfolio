@@ -28,6 +28,8 @@
   transition: opacity var(--t-stage) ease;
 }
 .case-stage.revealed { opacity: 1; }
+/* the keyboard ring speaks the case's ink here, not the site orange */
+.case-stage :focus-visible { outline-color: var(--pp-red); }
 
 /* ---- the sidebar: hairline at 247 that draws itself top-down,
    menu aligned to the house chip (left 31 / padding 17.5 puts the
@@ -119,7 +121,6 @@
 .case-menu a:nth-of-type(5) { --d: 0.58s; }
 .case-menu a:nth-of-type(6) { --d: 0.65s; }
 .menu-item svg { flex: none; }
-.menu-item:focus-visible { outline: none; }
 .menu-item:hover,
 .menu-item:focus-visible,
 .menu-item.is-current,
@@ -682,7 +683,6 @@
   cursor: pointer;
   transition: color var(--t-micro) ease;
 }
-.step-item:focus-visible { outline: none; }
 .step-item:hover,
 .step-item:focus-visible,
 .step-item.is-current { color: var(--pp-red); }
@@ -925,7 +925,7 @@
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
-.case-link:hover { color: var(--pp-red); }
+.case-link:hover, .case-link:focus-visible { color: var(--pp-red); }
 
 /* the notebook's last word: a small tomato and a wish, pinned to the
    bottom of the final page */
