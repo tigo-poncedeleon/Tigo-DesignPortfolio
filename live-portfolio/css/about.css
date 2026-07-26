@@ -370,142 +370,115 @@
 .about-slide.revealed .dot { opacity: 1; }
 
 /* ============================================================
-   resume — THE ROUTE. The Craft map again, laid by time rather
-   than by capability: four stops in order on a road that climbs
-   left to right, Kortrijk → Chicago → Bellevue. Hovering a stop
-   inks the road travelled up to it and refills the one panel
-   below, so the detail never jumps around the frame.
-
-   The road's coordinates live in the SVG; the stops are placed
-   on the same numbers via --x/--y, so the drawing and the marks
-   cannot drift apart.
+   resume — the LEDGER: four postings as ONE ruled typographic
+   column, newest first (no cards; the craft grid keeps those).
+   The rows share a fixed height: the hovered/focused row
+   BREATHES OPEN via flex-grow while the others compress, so the
+   column never changes size. Opening reveals the summary and
+   wakes the employer's mark from grey to colour; each row's
+   hairline draws itself when the chapter arrives.
    ============================================================ */
-.route {
+.xp-ledger {
   position: absolute;
-  top: 128px;
+  top: 140px;
   left: var(--ax);
   transform: translateX(-50%);
-  width: 1014px;
-  height: 300px;
-}
-.route-road {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.route-seg {
-  fill: none;
-  stroke: #e0e0e0;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease;
-}
-/* the road inks itself on arrival, stop by stop */
-.about-slide:not(.revealed) .route-seg { stroke-dashoffset: 1; }
-.route-seg { stroke-dashoffset: 0; }
-.about-slide .route-seg {
-  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease,
-              stroke-dashoffset 0.8s var(--ease-draw) calc(0.3s + var(--seg, 0) * 0.22s);
-}
-.route-seg[data-seg='1'] { --seg: 1; }
-.route-seg[data-seg='2'] { --seg: 2; }
-/* travelled = everything up to and including the current stop */
-.route-seg.is-travelled { stroke: var(--orange); stroke-width: 2; }
-
-.route-stop {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 9px;
-  padding: 0;
-  background: none;
-  border: 0;
-  font: inherit;
-  cursor: pointer;
+  width: 880px;
+  height: 460px;
 }
-.route-mark {
+.xp-row {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 1px solid #e0e0e0;
-  transition: border-color var(--t-micro) ease,
-              box-shadow var(--t-micro) ease,
-              scale var(--t-snap) var(--ease-spring);
+  align-items: flex-start;
+  gap: 28px;
+  padding: 24px 18px 0;
+  transition: flex-grow 0.5s var(--ease-rise),
+              opacity var(--t-fade) ease calc(var(--n) * 0.09s),
+              translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
 }
-.route-mark img {
+.xp-row:hover,
+.xp-row:focus-visible { flex-grow: 2; }
+/* the rules: a hairline under every row (plus one over the first)
+   that draws itself left → right on reveal, top to bottom */
+.xp-row::after,
+.xp-row:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #e3e3e3;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-draw)
+              calc(0.2s + var(--n) * 0.12s);
+}
+.xp-row:first-child::before { top: 0; bottom: auto; transition-delay: 0.1s; }
+.about-slide.revealed .xp-row::after,
+.about-slide.revealed .xp-row:first-child::before { transform: scaleX(1); }
+
+/* the margin index — quiet numerals that warm when their row opens */
+.xp-num {
+  flex: none;
   width: 34px;
-  height: 34px;
-  object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.42;
-  transition: filter 0.25s ease, opacity 0.25s ease;
-}
-.route-tag {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  font-size: 14px;
-  color: #5e5e5e;
-  white-space: nowrap;
-  transition: color var(--t-micro) ease;
-}
-.route-tag em {
-  font-style: normal;
-  font-size: 11.5px;
-  color: rgba(0, 0, 0, 0.32);
-}
-/* the current stop: mark awake, ring warm, label lit */
-.route-stop.is-on .route-mark {
-  border-color: rgba(253, 143, 59, 0.45);
-  box-shadow: 0 0 0 5px rgba(253, 143, 59, 0.1);
-  scale: 1.06;
-}
-.route-stop.is-on .route-mark img { filter: none; opacity: 1; }
-.route-stop.is-on .route-tag { color: var(--orange); }
-
-/* ---- the panel every stop fills ---- */
-.post {
-  position: absolute;
-  top: 470px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  width: 640px;
-  text-align: center;
-}
-.post-num {
+  padding-top: 6px;
   font-size: 13.25px;
-  color: var(--orange);
+  color: rgba(0, 0, 0, 0.35);
   font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease;
 }
-.post-num em { font-style: normal; color: rgba(0, 0, 0, 0.3); }
-.post-role {
-  margin-top: 8px;
-  font-size: 28px;
-  font-weight: 400;
+.xp-row:hover .xp-num,
+.xp-row:focus-visible .xp-num { color: var(--orange); }
+
+.xp-main { flex: 1; min-width: 0; }
+.xp-role {
+  font-size: 22px;
+  line-height: 28px;
   color: #404040;
 }
-.post-co {
-  margin-top: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 16px;
-  color: #767676;
+.xp-co {
+  margin-top: 4px;
+  font-size: 15px;
+  color: #767676;                    /* quiet locator label under the role */
 }
-.post-date {
+/* the summary waits below the fold of the closed row and rises in once
+   the row opens — the readable body line (mid grey, not the faint
+   caption tone), so "what I did" actually reads */
+.xp-sum {
+  margin-top: 15px;
+  max-width: 520px;
+  font-size: 15.5px;
+  line-height: 23px;
+  color: #5e5e5e;
+  opacity: 0;
+  translate: 0 8px;
+  transition: opacity 0.25s ease,
+              translate 0.35s var(--ease-rise);
+}
+.xp-row:hover .xp-sum,
+.xp-row:focus-visible .xp-sum {
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: 0.12s;
+}
+
+/* the right margin: date chip over location, then the mark */
+.xp-when {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  padding-top: 3px;
+}
+.xp-date {
+  display: inline-block;
   padding: 3px 9px;
   font-size: 13.25px;
   color: #5e5e5e;
@@ -514,47 +487,29 @@
   border-radius: 6.625px;
   white-space: nowrap;
 }
-.post-sum {
-  margin: 14px auto 0;
-  max-width: 520px;
-  font-size: 15.5px;
-  line-height: 23px;
-  color: #5e5e5e;
-}
-/* the same nodes the Craft map wires — the two chapters are one graph */
-.post-skills {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 7px;
-}
-.post-skills span {
-  padding: 4px 11px;
-  font-size: 13px;
-  color: #5e5e5e;
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid #d9d9d9;
-  border-radius: 20px;
+.xp-loc {
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.42);
   white-space: nowrap;
 }
-/* the swap: the old posting bows out, the new one rises in its place */
-.post.is-swapping :is(.post-num, .post-role, .post-co, .post-sum, .post-skills) {
-  opacity: 0;
-  translate: 0 6px;
+/* the employer's mark — sleeping in grey until its row is visited */
+.xp-logo {
+  flex: none;
+  width: 96px;
+  height: 46px;
+  margin-top: 4px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.45;
+  transition: filter 0.25s ease, opacity 0.25s ease,
+              scale 0.4s var(--ease-spring);
 }
-.post :is(.post-num, .post-role, .post-co, .post-sum, .post-skills) {
-  transition: opacity 0.2s ease, translate 0.28s var(--ease-rise);
+.xp-row:hover .xp-logo,
+.xp-row:focus-visible .xp-logo {
+  filter: none;
+  opacity: 1;
+  scale: 1.12;
 }
-
-.about-slide:not(.revealed) :is(.route-stop, .post) { opacity: 0; translate: 0 16px; }
-.route-stop, .post {
-  transition: opacity var(--t-fade) ease calc(0.15s + var(--d, 0s)),
-              translate var(--t-rise) var(--ease-rise) calc(0.15s + var(--d, 0s));
-}
-
-/* the quiet door each chapter ends on (the ledger that used to define this
-   is gone; the rule is not) */
 .slide-link {
   position: absolute;
   top: 618px;
@@ -572,7 +527,7 @@
    the wrapper takes over the positioning so the pair centres as a unit */
 .slide-links {
   position: absolute;
-  top: 726px;
+  top: 618px;
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -586,192 +541,113 @@
 }
 
 /* ============================================================
-   skills — THE MAP. Not four lists of nouns: one diagram of
-   what I do (left) wired to where it actually went (right),
-   with an ink link for every real pairing. The links are drawn
-   by js/about.js from the nodes' own layout positions, so the
-   diagram is never hand-placed and never drifts.
-
-   At rest the whole web sits quiet and grey. Put the cursor on
-   any node and its own paths ink themselves in while everything
-   it does not touch falls back — so the answer to "what did you
-   use this on" is a shape, not a sentence.
+   skills — four illustration cards, drawn in thin ink
    ============================================================ */
-.map {
+.craft-grid {
   position: absolute;
-  top: 132px;
+  top: 164px;
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
-  justify-content: space-between;
-  width: 1014px;
-  height: 604px;
+  gap: 18px;
 }
-.map-links {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
+.craft-card {
+  width: 240px;
+  height: 460px;
+  padding: 26px 20px;
+  background: rgba(233, 233, 233, 0.23);
+  border: 2px solid #eeeded;
+  border-radius: 31px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: transform var(--t-lift) var(--ease-lift),
+              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease,
+              opacity var(--t-fade) ease calc(var(--n) * 0.09s),
+              translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
 }
-
-.map-col {
-  position: relative;
-  z-index: 1;                  /* the nodes sit on top of their own wiring */
-  display: flex;
-  flex-direction: column;
+.craft-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
+              0 1px 2px rgba(0, 0, 0, 0.06);
 }
-.map-skills { width: 268px; align-items: flex-end; text-align: right; }
-.map-projects { width: 300px; justify-content: space-between; }
-
-.map-head {
-  margin-bottom: 20px;
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.3);
-}
-.map-group + .map-group { margin-top: 18px; }
-.map-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.map-group-label {
-  margin-bottom: 6px;
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.28);
-}
-
-/* every node is a real control — button on the left, link on the right */
-.map-node {
-  display: flex;
-  align-items: center;
-  padding: 4px 0;
-  background: none;
-  border: 0;
-  font: inherit;
-  font-size: 16px;
-  line-height: 22px;
-  color: #5e5e5e;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color var(--t-micro) ease, opacity var(--t-micro) ease;
-}
-.map-skills .map-node { justify-content: flex-end; }
-
-/* project nodes carry the employer's mark, asleep in grey until visited */
-.map-node.is-project { gap: 14px; padding: 6px 0; }
-.map-mark {
-  flex: none;
+.craft-illo {
+  height: 190px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid #e6e6e6;
-  background: rgba(233, 233, 233, 0.23);
-  color: #9a9a9a;
-  overflow: hidden;
-  transition: border-color var(--t-micro) ease, filter 0.25s ease,
-              opacity 0.25s ease, scale var(--t-snap) var(--ease-spring);
 }
-.map-mark img {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.5;
-  transition: filter 0.25s ease, opacity 0.25s ease;
+.craft-illo svg {
+  width: 160px;
+  height: 160px;
 }
-.map-mark-glyph svg { width: 22px; height: 22px; }
-.map-name {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
+/* on hover the illustration REDRAWS itself — the page's draw-in replayed
+   under the cursor: ink strokes wipe and re-flow in sequence, the dotted
+   construction guides march while the pen works, and the anchor dots
+   pop back in once the ink has landed */
+.craft-card:hover .craft-illo .stroke {
+  animation: craft-redraw 0.9s var(--ease-draw) both;
 }
-.map-name em {
-  font-style: normal;
-  font-size: 12px;
-  line-height: 16px;
-  color: rgba(0, 0, 0, 0.35);
-  transition: color var(--t-micro) ease;
+.craft-card:hover .craft-illo .stroke.s2 { animation-delay: 0.12s; }
+.craft-card:hover .craft-illo .stroke.s3 { animation-delay: 0.24s; }
+.craft-card:hover .craft-illo .guide {
+  animation: guide-march 1.4s linear infinite;
 }
-
-/* ---- the lit state: js/about.js puts .is-on on the node under the cursor
-   and everything it touches, and .is-dim on everything it does not ---- */
-.map-node.is-on { color: var(--orange); }
-.map-node.is-on .map-name em { color: rgba(253, 143, 59, 0.75); }
-.map-node.is-on .map-mark {
-  border-color: rgba(253, 143, 59, 0.35);
-  scale: 1.08;
+.craft-card:hover .craft-illo .dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dot-pop var(--t-pop) var(--ease-pop) 0.5s both;
 }
-.map-node.is-on .map-mark img { filter: none; opacity: 1; }
-.map-node.is-dim { opacity: 0.28; }
-.map-group-label { transition: opacity var(--t-micro) ease; }
-.map.is-active .map-group-label { opacity: 0.45; }
-
-.map-note {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -34px;
-  text-align: center;
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.32);
-}
-.map-note em { font-style: normal; color: #5e5e5e; }
-/* the two languages have no project to point at, so they sit out of the
-   diagram rather than being wired to something invented */
-.map-aside {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -56px;
-  text-align: center;
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.28);
-}
-
-/* ---- the wiring itself ---- */
-.map-link {
-  fill: none;
-  stroke: #dcdcdc;
-  stroke-width: 1.2;
-  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease,
-              opacity var(--t-micro) ease;
-}
-.map.is-active .map-link { opacity: 0.35; }
-/* a lit path re-inks itself left to right, the pen's habit everywhere else
-   on this site */
-.map-link.is-on {
-  stroke: var(--orange);
-  stroke-width: 1.7;
-  opacity: 1;
-  animation: map-ink 0.55s var(--ease-draw) both;
-}
-@keyframes map-ink {
+.craft-card:hover .craft-illo .dot.hollow { animation-delay: 0.66s; }
+@keyframes craft-redraw {
   from { stroke-dashoffset: 1; }
   to   { stroke-dashoffset: 0; }
 }
-/* on arrival the whole web draws itself once, group by group */
-.about-slide:not(.revealed) .map-link { stroke-dashoffset: 1; }
-.map-link {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
+@keyframes guide-march {
+  to { stroke-dashoffset: -14; }        /* two 2-on/5-off periods */
 }
-.about-slide .map-link {
-  transition: stroke var(--t-micro) ease, stroke-width var(--t-micro) ease,
-              opacity var(--t-micro) ease,
-              stroke-dashoffset 0.9s var(--ease-draw) calc(0.25s + var(--i, 0) * 0.02s);
+@keyframes dot-pop {
+  0%   { opacity: 0; transform: scale(0); }
+  60%  { opacity: 1; transform: scale(1.45); }
+  100% { opacity: 1; transform: scale(1); }
 }
-
-/* the nodes deal in with the ledger's stagger */
-.about-slide:not(.revealed) :is(.map-col, .map-note) { opacity: 0; translate: 0 16px; }
-.map-col, .map-note {
-  transition: opacity var(--t-fade) ease 0.1s,
-              translate var(--t-rise) var(--ease-rise) 0.1s;
+.craft-label {
+  display: block;
+  margin-top: 14px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.42);
+}
+.craft-chips {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* the ai suggestion chip, small — each one pops in with a little
+   overshoot once its card's illustration has drawn (delays ride the
+   card's --n plus the chip's own place in line) ---- */
+.craft-chip {
+  padding: 5px 12px;
+  font-size: 14px;
+  color: #5e5e5e;
+  background: rgba(233, 233, 233, 0.48);
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
+              border-color var(--t-micro) ease,
+              opacity 0.4s ease var(--cd, 0.9s),
+              translate 0.4s var(--ease-pop) var(--cd, 0.9s);
+}
+.about-slide:not(.revealed) .craft-chip { opacity: 0; translate: 0 8px; }
+.craft-chip:nth-child(1) { --cd: calc(var(--n) * 0.09s + 0.75s); }
+.craft-chip:nth-child(2) { --cd: calc(var(--n) * 0.09s + 0.83s); }
+.craft-chip:nth-child(3) { --cd: calc(var(--n) * 0.09s + 0.91s); }
+.craft-chip:nth-child(4) { --cd: calc(var(--n) * 0.09s + 0.99s); }
+.craft-chip:nth-child(5) { --cd: calc(var(--n) * 0.09s + 1.07s); }
+.craft-chip:hover {
+  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
+  border-color: rgba(253, 143, 59, 0.35);
+  color: var(--orange);
 }
 
 /* ============================================================
@@ -1100,58 +976,6 @@
     text-align: center;
   }
   /* the resume pair stacks on a phone — one door per line, centred */
-  /* the map's curves need a wide gap to read; a phone has none. The two
-     columns stack, the wiring is retired, and a tap still lights a node
-     and everything it touches — the relationship survives, the drawing
-     does not. */
-  .map {
-    position: static;
-    transform: none;
-    display: block;
-    width: auto;
-    height: auto;
-    margin-top: 26px;
-  }
-  .map-links { display: none; }
-  .map-col { width: auto; }
-  .map-skills { align-items: flex-start; text-align: left; }
-  .map-group { align-items: flex-start; }
-  .map-skills .map-node { justify-content: flex-start; }
-  .map-projects { margin-top: 32px; gap: 4px; }
-  .map-head { margin-bottom: 14px; }
-  .map-node { font-size: 15px; }
-  .map-note, .map-aside { position: static; margin-top: 22px; text-align: left; }
-  .map-aside { margin-top: 8px; }
-
-  /* the route's road needs the full 1014px to read as a climb; on a phone
-     the four stops become a plain row and the panel takes the width */
-  .route {
-    position: static;
-    transform: none;
-    display: flex;
-    justify-content: space-between;
-    width: auto;
-    height: auto;
-    margin-top: 22px;
-  }
-  .route-road { display: none; }
-  .route-stop { position: static; transform: none; gap: 7px; }
-  .route-mark { width: 46px; height: 46px; }
-  .route-mark img { width: 26px; height: 26px; }
-  .route-tag { font-size: 12px; }
-  .route-tag em { font-size: 10.5px; }
-  .post {
-    position: static;
-    transform: none;
-    width: auto;
-    margin-top: 26px;
-    text-align: left;
-  }
-  .post-role { font-size: 21px; }
-  .post-co { justify-content: flex-start; flex-wrap: wrap; row-gap: 6px; }
-  .post-sum { margin-left: 0; font-size: 15px; }
-  .post-skills { justify-content: flex-start; }
-
   .slide-links {
     position: static;
     transform: none;
