@@ -402,7 +402,8 @@
               translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
 }
 .xp-row:hover,
-.xp-row:focus-visible { flex-grow: 2; }
+.xp-row:focus-visible,
+.xp-row.is-open { flex-grow: 2; }
 /* the rules: a hairline under every row (plus one over the first)
    that draws itself left → right on reveal, top to bottom */
 .xp-row::after,
@@ -434,7 +435,8 @@
   transition: color 0.2s ease;
 }
 .xp-row:hover .xp-num,
-.xp-row:focus-visible .xp-num { color: var(--orange); }
+.xp-row:focus-visible .xp-num,
+.xp-row.is-open .xp-num { color: var(--orange); }
 
 .xp-main { flex: 1; min-width: 0; }
 .xp-role {
@@ -462,7 +464,8 @@
               translate 0.35s var(--ease-rise);
 }
 .xp-row:hover .xp-sum,
-.xp-row:focus-visible .xp-sum {
+.xp-row:focus-visible .xp-sum,
+.xp-row.is-open .xp-sum {
   opacity: 1;
   translate: 0 0;
   transition-delay: 0.12s;
@@ -505,7 +508,8 @@
               scale 0.4s var(--ease-spring);
 }
 .xp-row:hover .xp-logo,
-.xp-row:focus-visible .xp-logo {
+.xp-row:focus-visible .xp-logo,
+.xp-row.is-open .xp-logo {
   filter: none;
   opacity: 1;
   scale: 1.12;
@@ -523,11 +527,261 @@
 .slide-link:hover,
 .slide-link:focus-visible { color: var(--orange); }
 
+/* ============================================================
+   THE MOTION BENCH — the six --ease-* tokens from styles.css,
+   each drawn from its own four control numbers and played back
+   by js/about.js. The playhead rides the curve while the square
+   runs the track on exactly that timing, so you see the shape
+   and feel the result at the same moment. The claim on the
+   cards above is "interaction design"; this is the evidence.
+   ============================================================ */
+.bench {
+  position: absolute;
+  top: 638px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  width: 1014px;
+  transition: opacity var(--t-fade) ease 0.45s,
+              translate var(--t-rise) var(--ease-rise) 0.45s;
+}
+.about-slide:not(.revealed) .bench { opacity: 0; translate: 0 14px; }
+
+.bench-note {
+  text-align: center;
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.42);
+}
+.bench-note em {
+  font-style: normal;
+  color: #5e5e5e;
+}
+.bench-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+/* a real button — hover, focus and click all play it */
+.bench-ease {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 6px 8px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--t-micro) ease, border-color var(--t-micro) ease;
+}
+.bench-ease:hover,
+.bench-ease.is-playing {
+  background: rgba(233, 233, 233, 0.34);
+  border-color: #eeeded;
+}
+
+.bench-curve {
+  width: 70px;
+  height: 76px;   /* the viewBox's 76:82 aspect — a distorted unit square
+                     would misread every curve on the row */
+}
+/* the unit square the curve is drawn in — the same dotted construction
+   guide the craft illustrations use */
+.bench-frame {
+  fill: none;
+  stroke: #dedede;
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.bench-path {
+  fill: none;
+  stroke: #8f8f8f;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke var(--t-micro) ease;
+}
+.bench-ease:hover .bench-path,
+.bench-ease.is-playing .bench-path { stroke: #5e5e5e; }
+/* the playhead: parked at the start, riding the curve while it plays */
+.bench-head {
+  fill: var(--orange);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.bench-ease.is-playing .bench-head { opacity: 1; }
+
+/* name and numbers share one line — the strip has 164px to live in */
+.bench-meta {
+  margin-top: 7px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  max-width: 100%;
+}
+.bench-name {
+  font-size: 13.25px;
+  color: #5e5e5e;
+}
+.bench-ease:hover .bench-name,
+.bench-ease.is-playing .bench-name { color: var(--orange); }
+.bench-val {
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.32);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the track: what the curve actually feels like, on the site's own chip */
+.bench-track {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  margin-top: 7px;
+}
+.bench-track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5.5px;
+  height: 1px;
+  background: #e6e6e6;
+}
+/* the landing mark: where progress = 1 actually is. spring, glide and pop
+   are meant to sail PAST it and settle back (they peak at 1.05, 1.01 and
+   1.10), so the travel stops short of the rail's end and the overshoot has
+   somewhere to go instead of spilling into the next curve along */
+.bench-track::after {
+  content: '';
+  position: absolute;
+  left: calc(100% - 25.5px);
+  top: 1px;
+  width: 1px;
+  height: 11px;
+  background: #e0e0e0;
+}
+.bench-square {
+  position: absolute;
+  top: 2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 2.5px;
+  background: #cfcfcf;
+  /* --t is the eased progress js/about.js reads off the curve above — the
+     very same number that puts the playhead where it is */
+  left: calc(var(--t, 0) * (100% - 30px));
+  transition: background-color var(--t-micro) ease;
+}
+.bench-ease:hover .bench-square,
+.bench-ease.is-playing .bench-square { background: var(--orange); }
+
+/* ============================================================
+   THE SPINE — the ledger's four postings on a real time axis.
+   Each bar is placed by --a/--b (fractions of Jul 2025 → Sep
+   2026, authored in about.html), one lane per row so the lanes
+   line up with the column above. Hovering either half lights
+   the other; js/about.js does the wiring.
+   ============================================================ */
+.spine {
+  position: absolute;
+  top: 628px;
+  left: var(--ax);
+  transform: translateX(-50%);
+  width: 880px;
+}
+.spine-lanes {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+/* each lane borrows the ledger's own gutter — same 18px inset, same 34px
+   numeral column, same 28px gap — so a bar reads as the row directly above
+   it rather than as four loose dashes */
+.spine-lane {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 18px;
+}
+.spine-num {
+  flex: none;
+  width: 34px;
+  font-size: 13.25px;
+  color: rgba(0, 0, 0, 0.35);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--t-micro) ease;
+}
+.spine-rail {
+  position: relative;
+  flex: 1;
+  height: 11px;
+}
+.spine-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 5.5px;
+  /* the bar occupies its own months of the axis and nothing else */
+  left: calc(var(--a) * 100%);
+  width: calc((var(--b) - var(--a)) * 100%);
+  background: #dedede;
+  /* the ledger's rules draw themselves left→right on arrival; the bars grow
+     the same way, each following its own row */
+  transform-origin: left;
+  transition: background-color var(--t-micro) ease,
+              transform 0.7s var(--ease-draw) calc(0.3s + var(--n, 0) * 0.09s);
+}
+.about-slide:not(.revealed) .spine-bar { transform: scaleX(0); }
+.spine-lane:nth-child(1) .spine-bar { --n: 0; }
+.spine-lane:nth-child(2) .spine-bar { --n: 1; }
+.spine-lane:nth-child(3) .spine-bar { --n: 2; }
+.spine-lane:nth-child(4) .spine-bar { --n: 3; }
+/* lit = its row is hovered or focused (and vice versa) */
+.spine-bar.is-lit {
+  background: var(--orange);
+  transition: background-color var(--t-micro) ease;
+}
+.spine-lane:has(.is-lit) .spine-num { color: var(--orange); }
+.spine-bar:hover { background: #cdcdcd; }
+
+/* the axis: a hairline under the rails only, ticked at each year boundary */
+.spine-axis {
+  position: relative;
+  height: 22px;
+  margin: 9px 18px 0 80px;
+  border-top: 1px solid #e3e3e3;
+}
+.spine-tick {
+  position: absolute;
+  top: -1px;
+  left: calc(var(--x) * 100%);
+  width: 1px;
+  height: 5px;
+  background: #d9d9d9;
+}
+.spine-year {
+  position: absolute;
+  top: 6px;
+  left: calc(var(--x) * 100%);
+  margin-left: 6px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+/* says what the strip is before anyone mistakes it for a loading state */
+.spine-note {
+  position: absolute;
+  top: 6px;
+  right: 0;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
 /* the resume chapter carries TWO doors on the line the others give one —
    the wrapper takes over the positioning so the pair centres as a unit */
 .slide-links {
   position: absolute;
-  top: 618px;
+  top: 762px;
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -976,6 +1230,37 @@
     text-align: center;
   }
   /* the resume pair stacks on a phone — one door per line, centred */
+  /* the bench keeps its curves on a phone — a tap plays one, same as a
+     hover — but six across will not fit, so it wraps to two rows of three
+     and the numbers step down */
+  .bench {
+    position: static;
+    transform: none;
+    width: auto;
+    margin-top: 30px;
+  }
+  .bench-row { flex-wrap: wrap; gap: 6px; }
+  .bench-ease { flex: 0 0 calc(33.333% - 4px); padding: 6px 2px 8px; }
+  .bench-curve { width: 56px; height: 61px; }
+  .bench-meta { gap: 4px; }
+  .bench-name { font-size: 12px; }
+  .bench-val { font-size: 9px; }
+  .bench-note { font-size: 12.5px; }
+
+  /* the spine stays as a chart — it reads fine without a cursor — but its
+     numerals go (the ledger drops .xp-num here too) and the hover prompt
+     would be a lie on a touch screen */
+  .spine {
+    position: static;
+    transform: none;
+    width: auto;
+    margin-top: 26px;
+  }
+  .spine-lane { padding: 0; gap: 0; }
+  .spine-num { display: none; }
+  .spine-axis { margin: 9px 0 0; }
+  .spine-note { display: none; }
+
   .slide-links {
     position: static;
     transform: none;
@@ -1011,6 +1296,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .about-scroll { scroll-behavior: auto; }
+  /* the bench's playback is refused outright in js/about.js — the curves
+     still draw, they just never run. The bars arrive already grown. */
+  .spine-bar { transition: background-color var(--t-micro) ease; }
+  .about-slide:not(.revealed) .spine-bar { transform: none; }
+  .bench { transition: opacity 0.25s ease; translate: none; }
+  .about-slide:not(.revealed) .bench { translate: none; }
   .about-title, .about-portrait, .story-bio,
   .xp-row, .craft-card, .craft-chip, .slide-link,
   .compose, .social-row {
