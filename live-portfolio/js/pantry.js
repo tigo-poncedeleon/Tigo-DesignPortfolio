@@ -1,5 +1,5 @@
 // PantryPal case study — the about page's chapter mechanics (stage
-// fade-in, wheel paging, sidebar scroll-spy with the gliding warm chip,
+// fade-in, sidebar scroll-spy with the gliding warm chip,
 // the reading thread) plus this page's own toy: the six-step flow
 // walkthrough (steps · phone · caption, driven by click / phone-tap /
 // arrow keys).
@@ -98,7 +98,7 @@
   };
 
   // ≤700px the deck unrolls into one document scroll (see pantry.css) —
-  // no wheel paging, no sidebar chrome; slides reveal via a plain
+  // no sidebar chrome; slides reveal via a plain
   // viewport observer instead
   const MOBILE = window.matchMedia('(max-width: 700px)').matches;
 
@@ -138,31 +138,6 @@
       trackRP();
     }
   } else if (scroller && slides.length && dots.length === slides.length) {
-    const prefersReduced =
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // one-screen wheel paging (the about page's gesture detection)
-    let lastWheel = 0;
-    let acc = 0;
-    let fired = false;
-    scroller.addEventListener('wheel', (e) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      const now = performance.now();
-      if (now - lastWheel > 150) { acc = 0; fired = false; }
-      lastWheel = now;
-      acc += e.deltaY;
-      if (fired || Math.abs(acc) < 30) return;
-      fired = true;
-      const i = Math.round(scroller.scrollTop / scroller.clientHeight);
-      const next = Math.min(Math.max(i + (acc > 0 ? 1 : -1), 0), slides.length - 1);
-      if (next === i) return;
-      slides[next].scrollIntoView({
-        behavior: prefersReduced ? 'auto' : 'smooth',
-        block: 'start',
-      });
-    }, { passive: false });
-
     const setCurrent = (id) => {
       dots.forEach((dot) => {
         const on = dot.getAttribute('href') === '#' + id;
@@ -192,8 +167,8 @@
     slides.forEach((s) => observer.observe(s));
 
     // restore a deep link deterministically — the native anchor scroll can
-    // lose the race against the snap scroller and the scroll-spy; only
-    // after settling does the spy start mirroring the hash back
+    // lose the race against the scroll-spy; only after settling does the
+    // spy start mirroring the hash back
     const target = slides.find((s) => '#' + s.id === location.hash);
     if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
     setTimeout(() => { window.__hashReady = true; }, 600);

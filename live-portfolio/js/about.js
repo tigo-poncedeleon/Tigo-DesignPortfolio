@@ -10,8 +10,8 @@
   const stage = document.querySelector('.about-stage');
   if (stage) requestAnimationFrame(() => stage.classList.add('revealed'));
 
-  // ---- the chapter stack: one-screen wheel paging DOWN the sections,
-  // the sidebar menu tracking the current one (Figma 1436:260) + a
+  // ---- the chapter stack: natural scroll down the sections, the
+  // sidebar menu tracking the current one (Figma 1436:260) + a
   // .revealed class per slide for the entrance ----
   const scroller = document.getElementById('about-scroll');
   const slides = Array.from(document.querySelectorAll('.about-slide'));
@@ -23,7 +23,7 @@
   }
 
   // ≤700px the chapters unroll into one document scroll (see about.css) —
-  // no wheel paging, no sidebar chrome, no thread; the shared site-nav
+  // no sidebar chrome, no thread; the shared site-nav
   // bottom bar (styles.css) is the mobile nav. Slides reveal via a plain
   // viewport observer instead.
   const MOBILE = window.matchMedia('(max-width: 700px)').matches;
@@ -37,9 +37,6 @@
     );
     slides.forEach((s) => io.observe(s));
   } else if (scroller && slides.length && dots.length === slides.length) {
-    const prefersReduced =
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     // ---- the sidebar chip: ONE flat pill that glides between the menu
     // words — following the cursor while it's in the menu, resting on the
     // current chapter otherwise (the home pill's manner, turned vertical) ----
@@ -90,28 +87,6 @@
     }, { passive: true });
     trackScroll();
 
-    let lastWheel = 0;
-    let acc = 0;
-    let fired = false;
-    scroller.addEventListener('wheel', (e) => {
-      if (e.target.closest('.compose')) return;             // writing, not paging
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;  // sideways = noise
-      e.preventDefault();
-      const now = performance.now();
-      if (now - lastWheel > 150) { acc = 0; fired = false; }
-      lastWheel = now;
-      acc += e.deltaY;
-      if (fired || Math.abs(acc) < 30) return;
-      fired = true;
-      const i = Math.round(scroller.scrollTop / scroller.clientHeight);
-      const next = Math.min(Math.max(i + (acc > 0 ? 1 : -1), 0), slides.length - 1);
-      if (next === i) return;
-      slides[next].scrollIntoView({
-        behavior: prefersReduced ? 'auto' : 'smooth',
-        block: 'start',
-      });
-    }, { passive: false });
-
     const setCurrent = (id) => {
       dots.forEach((dot) => {
         const on = dot.getAttribute('href') === '#' + id;
@@ -141,8 +116,8 @@
     slides.forEach((s) => observer.observe(s));
 
     // restore a deep link deterministically — the native anchor scroll can
-    // lose the race against the snap scroller and the scroll-spy; only
-    // after settling does the spy start mirroring the hash back
+    // lose the race against the scroll-spy; only after settling does the
+    // spy start mirroring the hash back
     const target = slides.find((s) => '#' + s.id === location.hash);
     if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
     setTimeout(() => { window.__hashReady = true; }, 600);

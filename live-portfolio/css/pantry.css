@@ -148,7 +148,6 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
@@ -158,8 +157,6 @@
   flex: none;
   width: 100%;
   height: 100%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   --ax: calc(50% + 123.5px);
 }
 
@@ -975,7 +972,6 @@
     inset: auto;
     display: block;
     overflow: visible;
-    scroll-snap-type: none;
   }
   .case-slide {
     height: auto;
