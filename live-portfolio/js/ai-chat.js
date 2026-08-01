@@ -93,11 +93,114 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
+
+  /* ============================================================
+     Drag and resize.
+
+     Position and size live in inline left/top/width/height once the
+     visitor has touched them, which means CSS owns the defaults until
+     they do — nothing is written down until there is a preference to
+     write. Both are clamped into the viewport on every move AND on
+     resize, so a sheet dragged to the corner of a wide window cannot
+     strand itself off-screen when the window narrows.
+     ============================================================ */
+  const GEO_KEY = 'ai.box';
+  const MINW = 340, MINH = 320;
+
+  const clampBox = (b) => {
+    const w = Math.max(MINW, Math.min(b.w, window.innerWidth - 16));
+    const h = Math.max(MINH, Math.min(b.h, window.innerHeight - 16));
+    return {
+      w: w, h: h,
+      x: Math.max(8, Math.min(b.x, window.innerWidth - w - 8)),
+      y: Math.max(8, Math.min(b.y, window.innerHeight - h - 8)),
+    };
+  };
+
+  const applyBox = (b) => {
+    const c = clampBox(b);
+    stage.style.left = c.x + 'px';
+    stage.style.top = c.y + 'px';
+    stage.style.right = 'auto';
+    stage.style.bottom = 'auto';
+    stage.style.width = c.w + 'px';
+    stage.style.height = c.h + 'px';
+    try { sessionStorage.setItem(GEO_KEY, JSON.stringify(c)); } catch (err) { /* private mode */ }
+    return c;
+  };
+
+  const savedBox = () => {
+    try {
+      const b = JSON.parse(sessionStorage.getItem(GEO_KEY) || 'null');
+      return (b && b.w && b.h) ? b : null;
+    } catch (err) { return null; }
+  };
+
+  // the sheet's current box, read from layout the first time it is moved
+  const liveBox = () => {
+    const r = stage.getBoundingClientRect();
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  };
+
+  const wireDrag = () => {
+    const head = stage.querySelector('.ai-sheet-head');
+    const grip = document.createElement('div');
+    grip.className = 'ai-grip';
+    grip.title = 'Drag to resize';
+    stage.appendChild(grip);
+
+    let mode = null, id = null, start = null, box = null;
+
+    const begin = (m) => (e) => {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      if (e.target.closest('.ai-x')) return;      // the close button is not a handle
+      mode = m; id = e.pointerId;
+      box = liveBox();
+      start = { x: e.clientX, y: e.clientY };
+      (m === 'move' ? head : grip).setPointerCapture(id);
+      document.documentElement.classList.add('ai-dragging');
+      e.preventDefault();
+    };
+    const move = (e) => {
+      if (mode === null || e.pointerId !== id) return;
+      const dx = e.clientX - start.x, dy = e.clientY - start.y;
+      if (mode === 'move') applyBox({ x: box.x + dx, y: box.y + dy, w: box.w, h: box.h });
+      else applyBox({ x: box.x, y: box.y, w: box.w + dx, h: box.h + dy });
+    };
+    const end = (e) => {
+      if (mode === null) return;
+      try { (mode === 'move' ? head : grip).releasePointerCapture(id); } catch (err) { /* gone */ }
+      mode = null; id = null;
+      document.documentElement.classList.remove('ai-dragging');
+    };
+
+    head.addEventListener('pointerdown', begin('move'));
+    grip.addEventListener('pointerdown', begin('size'));
+    [head, grip].forEach((el) => {
+      el.addEventListener('pointermove', move);
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
+    });
+    // double-click the header to put the sheet back where it started
+    head.addEventListener('dblclick', () => {
+      ['left', 'top', 'right', 'bottom', 'width', 'height']
+        .forEach((k) => stage.style.removeProperty(k));
+      try { sessionStorage.removeItem(GEO_KEY); } catch (err) { /* fine */ }
+    });
+    // a window that narrows must not strand the sheet outside it
+    window.addEventListener('resize', () => {
+      if (stage.style.width) applyBox(liveBox());
+    });
+  };
+
   if (overlay) {
     const scrim = document.getElementById('ai-scrim');
     if (scrim) scrim.addEventListener('click', close);
     const x = overlay.querySelector('.ai-x');
     if (x) x.addEventListener('click', close);
+    wireDrag();
+    const b = savedBox();
+    if (b) applyBox(b);          // where the visitor last left it
   } else {
     // no shell (or an older page): behave exactly as before
     requestAnimationFrame(() => stage && stage.classList.add('revealed'));

@@ -90,6 +90,11 @@
   border-bottom: 0.648px solid #d9d9d9;
   color: #5e5e5e;
 }
+/* the header is the drag handle, so it says so */
+.ai-sheet-head { cursor: grab; user-select: none; }
+html.ai-dragging .ai-sheet-head { cursor: grabbing; }
+html.ai-dragging .ai-stage { transition: none; }   /* track the pointer exactly */
+html.ai-dragging { user-select: none; }
 .ai-sheet-head svg { flex: none; width: 16px; height: 16px; }
 .ai-sheet-title { font-size: 13.5px; }
 .ai-sheet-head #ai-sub {
@@ -117,6 +122,29 @@
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
 }
 .ai-x svg { width: 17px; height: 17px; }
+
+/* the resize grip: two hairlines in the corner, the universal shorthand */
+.ai-grip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  z-index: 2;
+}
+.ai-grip::before,
+.ai-grip::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  background: #c9c9c9;
+  transition: background-color var(--t-micro) ease;
+}
+.ai-grip::before { bottom: 4px; width: 9px; height: 1.5px; }
+.ai-grip::after  { bottom: 4px; width: 1.5px; height: 9px; }
+.ai-grip:hover::before,
+.ai-grip:hover::after { background: var(--orange); }
 .ai-x:hover,
 .ai-x:focus-visible { color: var(--orange); background: rgba(253, 143, 59, 0.13); }
 
