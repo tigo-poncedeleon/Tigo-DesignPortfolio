@@ -89,7 +89,22 @@
    by a panel nobody has seen yet. When the class comes off at the end of
    the typing, the rail slides in on its own transition and the card
    reflows around it — the same movement as closing, run backwards. */
-html.intro-pending :is(.shell-chrome, .shell-side) { transition: none; }
+html.intro-pending :is(.shell-chrome, .shell-side, .shell-card) { transition: none; }
+
+/* During the intro there is no furniture at all — the card owns the whole
+   viewport and the name types on plain white. The chrome is pulled UP out
+   of the layout by exactly its own height and the rail is pushed LEFT by
+   exactly its own width, both in the pose they take when closed, so
+   letting the class go is not an entrance that had to be written: it is
+   the same two closings, run backwards.
+
+   They arrive together and perpendicular — one down, one right — which
+   reads as the frame assembling around the name rather than as two
+   separate things animating. */
+html.intro-pending .shell-chrome {
+  margin-top: calc(-1 * var(--shell-chrome-h));
+  opacity: 0;
+}
 html.intro-pending .shell-side {
   margin-left: calc(-1 * var(--shell-rail));
   opacity: 0;
@@ -97,6 +112,8 @@ html.intro-pending .shell-side {
 }
 html.intro-pending .side-grip { left: 0; opacity: 0; pointer-events: none; }
 html.intro-pending .chrome-left { width: auto; }
+/* the corner is a detail of the frame, so it arrives with the frame */
+html.intro-pending .shell-card { border-radius: 0; }
 
 /* The left cluster spans the rail's column and holds ONE button. The
    traffic lights are gone: a full-bleed app has no window to close, and
@@ -495,7 +512,17 @@ html.rail-dragging .side-grip { background: var(--orange); }
    panel they sit in is still travelling right. So they simply come with
    it, and the chrome fades up over the same beat. */
 html.intro-run .side-group { transition: none; }
-html.intro-run .shell-chrome { transition: opacity var(--t-fade) ease; }
+/* the chrome travels on the rail's own curve, so the two arrivals are
+   visibly the same gesture */
+html.intro-run .shell-chrome {
+  /* the fade rides the same 0.3s as the slide, so the chrome arrives as
+     one gesture rather than sliding in and then becoming visible */
+  transition: opacity var(--t-glide) ease,
+              margin-top var(--t-glide) var(--ease-glide);
+}
+html.intro-run .shell-card {
+  transition: border-radius var(--t-glide) var(--ease-glide);
+}
 .side-label {
   margin: 14px 0 3px;
   padding: 0 10px;
