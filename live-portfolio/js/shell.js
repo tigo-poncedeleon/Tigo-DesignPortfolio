@@ -258,9 +258,8 @@
       if (btn.dataset.act === 'back') history.back();
       else if (btn.dataset.act === 'fwd') history.forward();
       else if (btn.dataset.act === 'rail') toggleRail();
-      else if (btn.classList.contains('chrome-new') && window.ShellTabs) {
-        window.ShellTabs.open();
-      }
+      // NOT the + — it lives inside the tab strip, and js/tabs.js owns
+      // every click in there. Handling it here too opened two tabs.
     });
   };
 

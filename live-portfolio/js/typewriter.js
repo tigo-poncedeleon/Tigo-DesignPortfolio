@@ -25,6 +25,8 @@
   const harness = new URLSearchParams(location.search).has('reveal');
 
   const done = () => {
+    // dropping intro-pending releases the rail: it slides in from behind
+    // the card's edge on its own 0.3s transition while the card reflows
     root.classList.remove('intro-pending');
     root.classList.add('intro-run');
     try { sessionStorage.setItem(KEY, '1'); } catch (err) { /* private mode */ }

@@ -80,9 +80,23 @@
   transition: opacity var(--t-micro) ease;
 }
 .shell-chrome.is-lit { opacity: 1; }
-/* held from before first paint (the inline script in <head>) so the
-   furniture is already invisible when it is built — no flash to hide */
+/* Held from before first paint (the inline script in <head>) so the
+   furniture is already invisible when it is built — no flash to hide.
+
+   The rail is also held OUT of the layout, in exactly the pose it takes
+   when closed. That is what lets the name type dead-centre of the whole
+   screen rather than centred in a card that has been pushed 260px right
+   by a panel nobody has seen yet. When the class comes off at the end of
+   the typing, the rail slides in on its own transition and the card
+   reflows around it — the same movement as closing, run backwards. */
 html.intro-pending :is(.shell-chrome, .shell-side) { transition: none; }
+html.intro-pending .shell-side {
+  margin-left: calc(-1 * var(--shell-rail));
+  opacity: 0;
+  pointer-events: none;
+}
+html.intro-pending .side-grip { left: 0; opacity: 0; pointer-events: none; }
+html.intro-pending .chrome-left { width: auto; }
 
 /* The left cluster spans the rail's column and holds ONE button. The
    traffic lights are gone: a full-bleed app has no window to close, and
@@ -414,13 +428,13 @@ html.rail-dragging .side-grip { background: var(--orange); }
 /* The face is the about page's face, painted smaller — and it needs room
    to be that. Below about 56px the ribbons collapse and the eyes
    disappear into the brow band; no resampling fixes that, because the
-   information is not representable in the pixels. 72 is where it reads
-   unmistakably as the same portrait, so the identity block is built
-   around the face rather than the face squeezed into a row. */
+   information is not representable in the pixels. 56 is the floor where
+   the eyes still survive the shrink, so that is where it sits — small,
+   but not so small that it stops being a face. */
 .side-avatar {
   position: relative;
-  width: 72px;
-  height: 92px;                 /* 72 / 0.785, the source's own aspect */
+  width: 56px;
+  height: 71px;                 /* 56 / 0.785, the source's own aspect */
   flex: none;
 }
 .side-avatar > * { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -474,12 +488,14 @@ html.rail-dragging .side-grip { background: var(--orange); }
 .side-group { display: block; opacity: 0; }
 .shell-side.is-lit .side-group { opacity: 1; }
 
-html.intro-run .side-group {
-  translate: -10px 0;
-  transition: opacity var(--t-fade) ease calc(var(--n, 0) * 70ms),
-              translate var(--t-rise) var(--ease-rise) calc(var(--n, 0) * 70ms);
-}
-html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
+/* On the home page's first visit the panel itself is the movement — it
+   slides in from behind the card's edge with its contents already in
+   place. Staggering the groups on top of that would be two motions
+   describing one arrival, and they fight: the rows drift right while the
+   panel they sit in is still travelling right. So they simply come with
+   it, and the chrome fades up over the same beat. */
+html.intro-run .side-group { transition: none; }
+html.intro-run .shell-chrome { transition: opacity var(--t-fade) ease; }
 .side-label {
   margin: 14px 0 3px;
   padding: 0 10px;
