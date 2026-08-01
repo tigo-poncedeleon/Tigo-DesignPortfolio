@@ -21,9 +21,10 @@
 
   const R = 66;                 // sphere radius, SVG user units
   const CX = 84, CY = 84;       // centre of a 168-box
-  const TILT = 20 * Math.PI / 180;   // enough to show the polar cap and give
-                                     // the ball volume; more and the equator
-                                     // bows into a lens
+  const TILT0 = 20;                  // degrees: enough to show the polar cap
+                                     // and give the ball volume; more and the
+                                     // equator bows into a lens
+  let tilt = TILT0 * Math.PI / 180;  // and the visitor can change it
   const RAD = Math.PI / 180;
   const EARTH_KM = 6371;
 
@@ -37,9 +38,9 @@
   const basis = (lam0) => {
     const l = lam0 * RAD;
     return {
-      view: [Math.cos(TILT) * Math.cos(l), Math.cos(TILT) * Math.sin(l), Math.sin(TILT)],
+      view: [Math.cos(tilt) * Math.cos(l), Math.cos(tilt) * Math.sin(l), Math.sin(tilt)],
       east: [-Math.sin(l), Math.cos(l), 0],
-      up: [-Math.sin(TILT) * Math.cos(l), -Math.sin(TILT) * Math.sin(l), Math.cos(TILT)],
+      up: [-Math.sin(tilt) * Math.cos(l), -Math.sin(tilt) * Math.sin(l), Math.cos(tilt)],
     };
   };
   const project = (v, B) => [CX + R * dot(v, B.east), CY - R * dot(v, B.up)];
@@ -170,6 +171,7 @@
      ============================================================ */
   let card = null, svgEl = null, geo = null, raf = 0, openT = 0, closeT = 0;
   let isOpen = false;
+  let lam = 0;                       // where the globe is pointing right now
 
   const build = () => {
     card = document.createElement('div');
@@ -200,6 +202,7 @@
   };
 
   const draw = (lam0) => {
+    lam = lam0;
     const B = basis(lam0);
     let mer = '';
     for (let lon = -180; lon < 180; lon += 30) mer += ' ' + curve(meridian(lon), -90, 90, 46, B);
@@ -242,6 +245,7 @@
       geo.region + (geo.offset ? ' · UTC' + geo.offset.replace(/(\d\d)(\d\d)/, '$1:$2') : '');
   };
 
+  let dragging = false;
   const spin = () => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const target = geo ? geo.lon : 0;
@@ -252,6 +256,7 @@
     cancelAnimationFrame(raf);
     card.classList.remove('is-landed');
     (function step(now) {
+      if (dragging) { card.classList.add('is-landed'); return; }  // hands win
       const k = Math.min(1, (now - t0) / dur);
       const e = 1 - Math.pow(1 - k, 4);    // ease-out quartic, --ease-rise's twin
       draw(from + (target - from) * e);
@@ -277,6 +282,48 @@
     setTimeout(() => { if (!isOpen) card.hidden = true; }, 320);
   };
 
+  /* ---- Turn it with your hand.
+     Horizontal drag rotates longitude, vertical drag changes the tilt —
+     the two axes a real globe gives you. Tilt is clamped to +-80 rather
+     than +-90: at the pole the view vector aligns with the axis, every
+     meridian collapses onto the same point, and the drawing degenerates.
+     Double-click puts it back where it landed. ---- */
+  const wireDrag = () => {
+    const LON_PER_PX = 0.62;
+    const LAT_PER_PX = 0.45;
+    let id = null, x0 = 0, y0 = 0, lam0 = 0, tilt0 = 0;
+
+    svgEl.addEventListener('pointerdown', (e) => {
+      id = e.pointerId;
+      dragging = true;
+      cancelAnimationFrame(raf);
+      x0 = e.clientX; y0 = e.clientY;
+      lam0 = lam; tilt0 = tilt;
+      try { svgEl.setPointerCapture(id); } catch (err) { /* no live pointer */ }
+      card.classList.add('is-turning');
+      e.preventDefault();
+    });
+    svgEl.addEventListener('pointermove', (e) => {
+      if (id === null || e.pointerId !== id) return;
+      tilt = Math.max(-80, Math.min(80,
+        tilt0 / RAD + (e.clientY - y0) * LAT_PER_PX)) * RAD;
+      draw(lam0 - (e.clientX - x0) * LON_PER_PX);
+    });
+    const end = () => {
+      if (id === null) return;
+      try { svgEl.releasePointerCapture(id); } catch (err) { /* already gone */ }
+      id = null;
+      dragging = false;
+      card.classList.remove('is-turning');
+    };
+    svgEl.addEventListener('pointerup', end);
+    svgEl.addEventListener('pointercancel', end);
+    svgEl.addEventListener('dblclick', () => {
+      tilt = TILT0 * RAD;
+      draw(geo ? geo.lon : 0);
+    });
+  };
+
   /* ---- wiring: hover intent, click to pin, Escape and outside to close ---- */
   const wire = () => {
     const row = document.querySelector('[data-globe]');
@@ -300,8 +347,12 @@
     });
     card.addEventListener('pointerenter', () => clearTimeout(closeT));
     card.addEventListener('pointerleave', () => {
-      if (!pinned) closeT = setTimeout(hide, 220);
+      // turning the globe drags the pointer well outside the card; closing
+      // it out from under the hand would be absurd
+      if (!pinned && !dragging) closeT = setTimeout(hide, 220);
     });
+    // exploring counts as wanting it open
+    svgEl.addEventListener('pointerdown', () => { pinned = true; });
     row.addEventListener('click', (e) => {
       e.preventDefault();
       pinned = !pinned;
@@ -318,6 +369,7 @@
   };
 
   build();
+  wireDrag();
   wire();
   geo = window.FrameClock && window.FrameClock.geo();
   if (geo) { fill(); }

@@ -574,7 +574,20 @@ html.intro-run .shell-card {
 .globe-card[hidden] { display: none; }
 .globe-card.is-lit { opacity: 1; translate: 0 0; }
 
-.globe { display: block; width: 168px; height: 168px; margin: 0 auto 4px; }
+.globe {
+  display: block;
+  width: 168px;
+  height: 168px;
+  margin: 0 auto 4px;
+  cursor: grab;
+  touch-action: none;           /* a drag turns the globe, never scrolls */
+}
+.globe-card.is-turning .globe { cursor: grabbing; }
+/* while a hand is on it the pin and arc stop easing — they should track
+   the geometry exactly, not lag a frame behind it */
+.globe-card.is-turning :is(.globe-arc, .globe-home circle, .pin-drop) {
+  transition: none;
+}
 /* the site's construction line, and its slow crawl (ai.css's spark-march) */
 .globe .guide {
   fill: none;
