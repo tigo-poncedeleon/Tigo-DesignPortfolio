@@ -35,6 +35,9 @@
   }, { passive: false });
 
   const setCurrent = (id) => {
+    // the sidebar hears where the page is. Emitted BEFORE the
+    // __hashReady gate below, so the rail never lags the scroll.
+    window.dispatchEvent(new CustomEvent('shell:section', { detail: { id: id } }));
     dots.forEach((dot) => {
       if (dot.getAttribute('href') === '#' + id) dot.setAttribute('aria-current', 'page');
       else dot.removeAttribute('aria-current');

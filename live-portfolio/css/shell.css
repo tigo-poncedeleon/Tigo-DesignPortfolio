@@ -317,9 +317,23 @@ html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
   box-shadow: inset 0 0 0 1px rgba(253, 143, 59, 0.35);
 }
 .side-row.is-trail { color: var(--ink); }
-/* while the cursor is on some other row the resting current chip steps
-   aside, so only one row is ever lit (the site-nav's manner) */
-.side-scroll:hover .side-row.is-current:not(:hover) {
+
+/* the section the page is scrolled to. ONE chip at a time — the site's
+   rule everywhere — so when a section is lit the page row above it steps
+   back to plain accent text and hands the chip down. */
+.side-row.is-here {
+  color: var(--orange);
+  background: rgba(253, 143, 59, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(253, 143, 59, 0.35);
+}
+.side-scroll.has-here .side-row.is-current {
+  background: none;
+  box-shadow: none;
+}
+
+/* while the cursor is on some other row the resting chip steps aside,
+   so only one row is ever lit (the site-nav's manner) */
+.side-scroll:hover :is(.side-row.is-current, .side-row.is-here):not(:hover) {
   color: var(--ink);
   background: none;
   box-shadow: none;
@@ -387,6 +401,23 @@ html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
   border-left: 1px solid #ececec;
 }
 .side-kids[hidden] { display: none; }
+
+/* the reading thread, re-homed. The same --p the .about-thread poured
+   down the page's hairline now inks this one, so how deep you have read
+   is still drawn — just in the rail that survives the page. */
+.side-kids::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: calc(var(--p, 0) * 100%);
+  border-radius: 1px;
+  background: var(--orange);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.side-kids[style*='--p']::before { opacity: 1; }
 
 /* ---- the ask pill (the reference's "New chat") ---- */
 .side-foot {

@@ -324,8 +324,104 @@
     });
   };
 
+  // ============================================================
+  // Section navigation
+  //
+  // Sidebar links are always FULL hrefs (pantrypal.html#craft, never a
+  // bare #craft) so the identical tree can be emitted on all nine pages
+  // and every row stays crawlable and cmd-clickable. When the href
+  // happens to point at the page you are already on, this intercepts.
+  // ============================================================
+  const SCROLLERS = '.about-scroll, .case-scroll, .work-scroll, .play-scroll';
+  const SLIDES = '.about-slide, .case-slide, .work-slide, .play-slide';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const markCurrent = (id) => {
+    if (!side) return;
+    side.querySelectorAll('.side-row.is-here').forEach((r) => r.classList.remove('is-here'));
+    // only the section is looked for INSIDE the current page's own subtree,
+    // so pantrypal's "process" never lights nextlevel's
+    const scope = (side.querySelector('.side-row.is-current') || side).closest('.side-node') || side;
+    const link = id && scope.querySelector('.side-link[data-sec="' + id + '"]');
+    if (link) link.closest('.side-row').classList.add('is-here');
+    // one chip at a time, the site's rule everywhere: when a section is
+    // lit the page row steps back to plain accent text
+    const scroll = document.getElementById('side-scroll');
+    if (scroll) scroll.classList.toggle('has-here', !!link);
+    const label = document.getElementById('tab-label');
+    if (label) {
+      label.innerHTML = esc(title) +
+        (link ? ' <span class="tab-sec">/ ' + esc(link.querySelector('.side-text').textContent) +
+          '</span>' : '');
+    }
+  };
+
+  const goToSection = (target, hash) => {
+    const scroller = target.closest(SCROLLERS);
+    const behavior = reduced() ? 'auto' : 'smooth';
+
+    if (scroller && getComputedStyle(scroller).overflowX !== 'hidden') {
+      // HORIZONTAL (work, play): scroll-snap-stop:always halts a smooth
+      // multi-slide scrollIntoView at the FIRST snap point, so drive the
+      // scroller directly — and jump outright when it is more than one
+      // slide away, since a snapped crawl through the middle reads as a bug
+      const kids = Array.from(scroller.children).filter((el) => el.matches(SLIDES));
+      const i = kids.indexOf(target);
+      if (i < 0) return;
+      const from = Math.round(scroller.scrollLeft / scroller.clientWidth);
+      scroller.scrollTo({
+        left: i * scroller.clientWidth,
+        behavior: Math.abs(i - from) > 1 ? 'auto' : behavior,
+      });
+    } else {
+      target.scrollIntoView({ behavior: behavior, block: 'start', inline: 'nearest' });
+    }
+
+    // the deep-link race the observers guard against is over by definition
+    // once a visitor has clicked something
+    window.__hashReady = true;
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+    markCurrent(hash.slice(1));           // optimistic; the spy confirms shortly
+  };
+
+  const wireNav = () => {
+    if (!side) return;
+    side.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href]');
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const url = new URL(a.getAttribute('href'), location.href);
+      if (url.pathname !== location.pathname || !url.hash) return;   // a real navigation
+      const target = document.querySelector(url.hash);
+      if (!target) return;
+      e.preventDefault();
+      goToSection(target, url.hash);
+    });
+
+    // back/forward, and any anchor the delegate above does not own.
+    // No re-entrancy: goToSection uses replaceState, which never fires this.
+    window.addEventListener('hashchange', () => {
+      const el = location.hash && document.querySelector(location.hash);
+      if (el && el.matches(SLIDES)) goToSection(el, location.hash);
+    });
+
+    // The five scroll-spies each own their page's hash and always did;
+    // they simply say out loud where they landed. One-directional — the
+    // shell never writes history except from goToSection above — so the
+    // pages keep working with shell.js absent, the same posture as
+    // nav-touch.js. Duplicating five IntersectionObservers here would
+    // mean two sources of truth that disagree at threshold boundaries.
+    window.addEventListener('shell:section', (e) => markCurrent(e.detail.id));
+    window.addEventListener('shell:progress', (e) => {
+      const kids = side.querySelector('.side-row.is-current')
+        && side.querySelector('.side-row.is-current').closest('.side-node')
+             .querySelector(':scope > .side-kids');
+      if (kids) kids.style.setProperty('--p', e.detail.p);
+    });
+  };
+
   buildChrome();
   buildSide();
+  wireNav();
 
   // ---- light up. The home page hands this to the typewriter so the name
   // types before the furniture arrives; every other page just appears.
@@ -339,5 +435,5 @@
     lightUp();
   }
 
-  window.Shell = { page, lightUp, toggleRail };
+  window.Shell = { page, lightUp, toggleRail, markCurrent };
 })();

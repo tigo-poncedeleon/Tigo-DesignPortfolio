@@ -139,6 +139,9 @@
     }
   } else if (scroller && slides.length && dots.length === slides.length) {
     const setCurrent = (id) => {
+      // the sidebar hears where the page is. Emitted BEFORE the
+      // __hashReady gate below, so the rail never lags the scroll.
+      window.dispatchEvent(new CustomEvent('shell:section', { detail: { id: id } }));
       dots.forEach((dot) => {
         const on = dot.getAttribute('href') === '#' + id;
         if (on) dot.setAttribute('aria-current', 'page');
@@ -184,6 +187,10 @@
         thread.style.setProperty('--p', max ? scroller.scrollTop / max : 0);
       }
       if (stage) stage.classList.toggle('is-scrolled', scroller.scrollTop > 40);
+      // the same fraction the reading thread used to pour down the
+      // hairline now feeds the sidebar's chapter rail
+      window.dispatchEvent(new CustomEvent('shell:progress',
+        { detail: { p: max ? scroller.scrollTop / max : 0 } }));
     };
     scroller.addEventListener('scroll', () => {
       if (!threadRaf) threadRaf = requestAnimationFrame(trackScroll);
