@@ -219,12 +219,6 @@
     return FAVICON[id];
   };
 
-  // what the + offers when you hold on it: the site's top-level pages, in
-  // tree order, so the menu cannot drift from the rail
-  const tabTargets = () => rows()
-    .filter((r) => ['home', 'about', 'work', 'play'].indexOf(r.id) >= 0)
-    .map((r) => ({ page: r.id, title: r.text, href: r.href }));
-
   // the chain of ids that must be open for the current page to be visible
   const ANCESTORS = { vicino: ['work'], pantrypal: ['work'], nextlevel: ['work'] };
   const openChain = new Set([page].concat(ANCESTORS[page] || []));
@@ -275,8 +269,7 @@
     // the strip's own contents belong to js/tabs.js
     if (window.ShellTabs) {
       window.ShellTabs.mount(document.getElementById('tab-list'),
-        { page: page, title: title, icon: faviconFor, plus: svg(G.plus),
-          targets: tabTargets() });
+        { page: page, title: title, icon: faviconFor, plus: svg(G.plus) });
     }
 
     // back is honest about whether there is anywhere to go; forward has no
@@ -295,10 +288,76 @@
     });
   };
 
+  /* ---- Hovering the name decodes it: every letter starts as a random
+     character and locks into place left to right, the way the site's
+     other text draws itself in rather than simply appearing.
+
+     Two details keep it from being annoying. Spaces never scramble, so
+     the word shape holds and you can still read the LENGTH of the name
+     while it resolves. And the width is locked before the first frame —
+     random glyphs are not the same width as real ones, and without that
+     the whole line would jitter for the duration. ---- */
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/\\<>+*#';
+  const scramble = (el, dur) => {
+    if (el.dataset.busy) return;
+    const text = el.dataset.text || el.textContent;
+    el.dataset.text = text;
+    el.dataset.busy = '1';
+    el.style.width = el.getBoundingClientRect().width + 'px';
+    const t0 = performance.now();
+    const lockAt = text.split('').map((_, i) => (i / text.length) * dur * 0.72);
+    const finish = () => {
+      if (!el.dataset.busy) return;
+      clearTimeout(el._scrambleT);
+      el.textContent = text;
+      el.style.width = '';
+      delete el.dataset.busy;
+    };
+    // A hard stop on a timer, not just on the rAF loop. Background the tab
+    // mid-hover and rAF stops being called at all — without this the name
+    // would still be a row of random glyphs when you came back to it.
+    el._scrambleT = setTimeout(finish, dur + 120);
+    (function step(now) {
+      if (!el.dataset.busy) return;
+      const t = (now || performance.now()) - t0;
+      if (t >= dur) { finish(); return; }
+      el.textContent = text.split('').map((ch, i) =>
+        (ch === ' ' || t > lockAt[i]) ? ch
+          : GLYPHS[(Math.random() * GLYPHS.length) | 0]).join('');
+      requestAnimationFrame(step);
+    })(t0);
+  };
+
+  const wireName = () => {
+    const id = side && side.querySelector('.side-id');
+    if (!id) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const name = id.querySelector('.side-name');
+    const role = id.querySelector('.side-role');
+    id.addEventListener('pointerenter', () => {
+      if (name) scramble(name, 620);
+      if (role) scramble(role, 520);
+    });
+  };
+
   // ---- the rail: closed means CLOSED, and its width belongs to the visitor
   const RAIL_KEY = 'shell.rail';
   const WIDTH_KEY = 'shell.railw';
   const MIN = 180, MAX = 420;
+
+  // A hard floor, computed rather than guessed: the rail may never be
+  // narrower than the chrome's own left cluster, or the seam would cut
+  // straight through the location and the time it sits above. Measured
+  // from the chip's NATURAL width (scrollWidth) rather than its current
+  // one — the chip ellipsises as the rail narrows, so using its rendered
+  // width would let the floor chase itself down.
+  const floorW = () => {
+    if (!chrome) return MIN;
+    const toggle = chrome.querySelector('.chrome-btn');
+    const place = chrome.querySelector('.chrome-place');
+    if (!toggle || !place) return MIN;
+    return Math.max(MIN, 10 + toggle.offsetWidth + 6 + place.scrollWidth + 10);
+  };
 
   const toggleRail = () => {
     const next = !root.classList.contains('rail-closed');
@@ -312,6 +371,13 @@
     if (localStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-closed');
     const w = parseFloat(localStorage.getItem(WIDTH_KEY));
     if (w >= MIN && w <= MAX) root.style.setProperty('--shell-rail', w + 'px');
+    // a width stored before the clock knew the city could now be too narrow
+    requestAnimationFrame(() => {
+      const f = floorW();
+      if (parseFloat(getComputedStyle(root).getPropertyValue('--shell-rail')) < f) {
+        root.style.setProperty('--shell-rail', f + 'px');
+      }
+    });
   } catch (err) { /* private mode — the rail just starts at its default */ }
 
   // Dragging the seam resizes the rail, and the card reflows underneath in
@@ -328,7 +394,7 @@
     });
     grip.addEventListener('pointermove', (e) => {
       if (id === null) return;
-      const w = Math.max(MIN, Math.min(MAX,
+      const w = Math.max(floorW(), Math.min(MAX,
         e.clientX - shell.getBoundingClientRect().left));
       root.style.setProperty('--shell-rail', w + 'px');
     });
@@ -397,7 +463,6 @@
     '<a class="now-row is-link" href="vicino.html">' +
       '<span class="now-dot is-live" aria-hidden="true"></span>' +
       '<span class="now-text">Vicino AI</span>' +
-      '<span class="now-meta">intern</span>' +
     '</a>';
 
   const buildSide = () => {
@@ -653,6 +718,7 @@
   buildChrome();
   buildSide();
   buildAI();
+  wireName();
 
   const grip = document.createElement('div');
   grip.className = 'side-grip';

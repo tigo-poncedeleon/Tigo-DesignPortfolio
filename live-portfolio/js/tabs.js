@@ -24,7 +24,6 @@ window.ShellTabs = (() => {
   const HOME = { page: 'home', title: 'Home', href: 'index.html#home' };
 
   let box = null;          // the strip element
-  let targets = null;      // what the + menu offers, supplied by shell.js
   let iconOf = null;       // (pageId) → favicon markup, supplied by shell.js
   let plusGlyph = '';      // ditto, so tabs.js owns no icon vocabulary
   let rec = null;
@@ -125,8 +124,8 @@ window.ShellTabs = (() => {
   };
 
   /* ---- operations ---- */
-  const open = (target) => {
-    const t = target || HOME;
+  const open = () => {
+    const t = HOME;
     const btn = box && box.querySelector('.chrome-new');
     if (rec.tabs.length >= CAP) {          // the cap is legible, not silent
       if (btn) {
@@ -192,76 +191,19 @@ window.ShellTabs = (() => {
         'title="New tab ⌥T" aria-label="New tab">' + plusGlyph + '</button>';
   };
 
-  /* ---- the + is also a menu: hold on it and it offers the pages
-     directly, so opening "a new tab on Work" is one gesture instead of
-     new-tab-then-navigate. Everything in it is prefetched on hover. ---- */
-  let menu = null, menuT = 0;
-  const buildMenu = () => {
-    menu = document.createElement('div');
-    menu.className = 'tab-menu';
-    menu.hidden = true;
-    menu.innerHTML = targets.map((t) =>
-      '<button class="tab-menu-row" type="button" data-href="' + esc(t.href) + '" ' +
-        'data-page="' + esc(t.page) + '" data-title="' + esc(t.title) + '">' +
-        '<span class="tab-menu-ico">' + (iconOf ? iconOf(t.page) : '') + '</span>' +
-        '<span>' + esc(t.title) + '</span>' +
-      '</button>').join('');
-    document.getElementById('shell').appendChild(menu);
-
-    menu.addEventListener('pointerover', (e) => {
-      const r = e.target.closest('.tab-menu-row');
-      if (r) prefetch(r.dataset.href);
-    });
-    menu.addEventListener('click', (e) => {
-      const r = e.target.closest('.tab-menu-row');
-      if (!r) return;
-      hideMenu();
-      open({ page: r.dataset.page, title: r.dataset.title, href: r.dataset.href });
-    });
-    menu.addEventListener('pointerenter', () => clearTimeout(menuT));
-    menu.addEventListener('pointerleave', () => { menuT = setTimeout(hideMenu, 220); });
-  };
-
-  const showMenu = (btn) => {
-    if (!menu || !menu.hidden) return;
-    const r = btn.getBoundingClientRect();
-    menu.hidden = false;
-    menu.style.left = Math.round(r.left - 6) + 'px';
-    menu.style.top = Math.round(r.bottom + 4) + 'px';
-    menu.offsetHeight;
-    menu.classList.add('is-lit');
-  };
-  const hideMenu = () => {
-    if (!menu || menu.hidden) return;
-    menu.classList.remove('is-lit');
-    setTimeout(() => { if (!menu.classList.contains('is-lit')) menu.hidden = true; }, 200);
-  };
-
   /* ---- wiring ---- */
   const mount = (el, seed) => {
     box = el;
     iconOf = seed.icon;
     plusGlyph = seed.plus || '+';
-    targets = seed.targets || [HOME];
     reconcile(seed);
     render();
-    buildMenu();
 
-    // hovering the + primes Home and offers the rest
+    // Hovering primes what a click would load — the + always means Home,
+    // and a background tab means wherever it points. By the time the
+    // click lands the document is already in cache.
     box.addEventListener('pointerover', (e) => {
-      const plus = e.target.closest('.chrome-new');
-      if (!plus) return;
-      prefetch(HOME.href);
-      clearTimeout(menuT);
-      menuT = setTimeout(() => showMenu(plus), 260);
-    });
-    box.addEventListener('pointerout', (e) => {
-      if (!e.target.closest('.chrome-new')) return;
-      clearTimeout(menuT);
-      menuT = setTimeout(hideMenu, 220);
-    });
-    // and hovering a tab primes the page it would take you to
-    box.addEventListener('pointerover', (e) => {
+      if (e.target.closest('.chrome-new')) { prefetch(HOME.href); return; }
       const tab = e.target.closest('.chrome-tab');
       if (!tab) return;
       const t = rec.tabs[at(tab.dataset.id)];
