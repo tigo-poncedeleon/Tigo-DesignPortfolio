@@ -133,6 +133,26 @@ window.Portrait = (() => {
     return off;
   };
 
+  // Downscaling 1024px of ribbons straight into 120px in one drawImage
+  // throws away most of the samples between output pixels — that is what
+  // turns an engraving into stripes. Halving repeatedly averages every
+  // source pixel into the result instead, which is the difference between
+  // "shrunk" and "resampled".
+  const shrink = (tex, w, h) => {
+    let src = tex;
+    while (src.width > w * 2 && src.height > h * 2) {
+      const half = document.createElement('canvas');
+      half.width = Math.max(w, Math.round(src.width / 2));
+      half.height = Math.max(h, Math.round(src.height / 2));
+      const hc = half.getContext('2d');
+      hc.imageSmoothingEnabled = true;
+      hc.imageSmoothingQuality = 'high';
+      hc.drawImage(src, 0, 0, half.width, half.height);
+      src = half;
+    }
+    return src;
+  };
+
   const paint = (canvas, tex, ratio) => {
     const dpr = ratio || Math.min(window.devicePixelRatio || 1, 2);
     const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -140,8 +160,11 @@ window.Portrait = (() => {
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(tex, 0, 0, tex.width, tex.height, 0, 0, canvas.width, canvas.height);
+    const src = shrink(tex, canvas.width, canvas.height);
+    ctx.drawImage(src, 0, 0, src.width, src.height, 0, 0, canvas.width, canvas.height);
   };
 
   /* ============================================================
@@ -214,43 +237,41 @@ window.Portrait = (() => {
   /* ============================================================
      The rail's 26px head.
 
-     At 40px the ribbons cannot be both visible AND fine enough to describe
-     a face: matching about's lines-per-pixel gave stripes you read before
-     you read the person. The way out is to stop trying to resolve
-     individual ribbons and OVERSAMPLE instead — draw all 150 of about's
-     lines, render into a 3x backing store, and let the downsample turn
-     them into continuous tone. The stripes become shading, and the eyes,
-     brows and hair come back.
+     It is the SAME BAKE as the about page — same texture, same 150
+     ribbons, same wobble — painted into a smaller canvas. Nothing is
+     re-tuned for the size, because every attempt to re-tune it produced
+     something that was recognisably not the about face: coarse ribbons
+     read as stripes, fine ones as mud.
 
-     3x specifically, not more: at 4x the ribbon pitch re-aligns with the
-     pixel grid and the banding returns. Tested 150/190/240 lines at 4x —
-     all worse than 150 at 3x.
-
-     The near-full thickness range (0.12 to 0.94 of the spacing) is what
-     gives the tone its contrast. It would be far too harsh if the ribbons
-     were resolvable; at sub-pixel width it is simply the dynamic range.
-
-     WAVE_AMP stays zero: the 26px wavelength falls below the Nyquist limit
-     of a 1px step at this texture width, so the hand-engraved wobble
-     cannot be drawn, only aliased.
+     What makes it work is how it is shrunk, not how it is drawn. See
+     shrink() above: 1024 to 120 in one drawImage discards most of the
+     samples between output pixels, while halving repeatedly averages all
+     of them in.
 
      And it is CACHED. Without this a 10-35ms blocking bake would run on
      nine pages instead of one; with it, eight of nine loads in a session
      are a ~1ms drawImage that never even fetches the source. The one
      write happens in idle time, never on a critical frame.
      ============================================================ */
+  // About's constants, verbatim — waveAmp and all. The rail face is not a
+  // different portrait tuned for a small box; it is THE portrait, painted
+  // smaller. Every attempt to re-tune it for 40px made it look like
+  // something else: coarse ribbons read as stripes, fine ones as mud. The
+  // only version that looks like the about page is the one that IS the
+  // about page, resampled by shrink() above.
   const MINI = {
-    sampleW: 300,
-    texW: 520,
-    nLines: 150,           // about's own line count, oversampled into tone
-    step: 1,
-    minThick: 0.12,
-    maxThickFrac: 0.94,
-    waveAmp: 0,
+    sampleW: 320,
+    texW: 1024,
+    nLines: 150,
+    step: 2,
+    minThick: 0.7,
+    maxThickFrac: 0.92,
+    waveAmp: 0.8,
     waveLen: 26,
   };
+
   const CACHE_KEY = 'shell.avatar';
-  const CACHE_V = 3;
+  const CACHE_V = 4;
   const MINI_DPR = 3;
 
   // What is cached is the PAINTED 52x66 canvas, not the 312x398 texture —
