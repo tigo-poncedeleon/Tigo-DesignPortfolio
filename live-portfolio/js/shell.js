@@ -248,12 +248,25 @@
   const flatten = (rows) => rows.reduce((acc, r) =>
     acc.concat([r], r.kids ? flatten(r.kids) : []), []);
   let ROWS = null;
-  const faviconFor = (id) => {
+  const FAVICON = {};                    // built once, not on every repaint
+  const rows = () => {
     if (!ROWS) ROWS = TREE.reduce((acc, g) => acc.concat(flatten(g.rows || [])), []);
-    const r = ROWS.find((x) => x.id === id);
-    if (r && r.mark) return '<img src="' + r.mark + '" alt="" />';
-    return svg(G[(r && r.icon) || 'link'], 2.1);
+    return ROWS;
   };
+  const faviconFor = (id) => {
+    if (FAVICON[id]) return FAVICON[id];
+    const r = rows().find((x) => x.id === id);
+    FAVICON[id] = (r && r.mark)
+      ? '<img src="' + r.mark + '" alt="" />'
+      : svg(G[(r && r.icon) || 'link'], 2.1);
+    return FAVICON[id];
+  };
+
+  // what the + offers when you hold on it: the site's top-level pages, in
+  // tree order, so the menu cannot drift from the rail
+  const tabTargets = () => rows()
+    .filter((r) => ['home', 'about', 'work', 'play'].indexOf(r.id) >= 0)
+    .map((r) => ({ page: r.id, title: r.text, href: r.href }));
 
   // the chain of ids that must be open for the current page to be visible
   const ANCESTORS = { vicino: ['work'], pantrypal: ['work'], nextlevel: ['work'] };
@@ -305,7 +318,8 @@
     // the strip's own contents belong to js/tabs.js
     if (window.ShellTabs) {
       window.ShellTabs.mount(document.getElementById('tab-list'),
-        { page: page, title: title, icon: faviconFor, plus: svg(G.plus) });
+        { page: page, title: title, icon: faviconFor, plus: svg(G.plus),
+          targets: tabTargets() });
     }
 
     // back is honest about whether there is anywhere to go; forward has no

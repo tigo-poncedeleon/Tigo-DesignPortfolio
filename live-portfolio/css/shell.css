@@ -342,13 +342,71 @@ html.rail-closed .chrome-left { width: auto; }
 .tab-list.is-icon-only .tab-label { display: none; }
 .tab-list.is-icon-only .chrome-tab { flex: 0 0 44px; justify-content: center; padding: 0; }
 
+/* ---- the + menu: hold on it and the pages are one click away ---- */
+.tab-menu {
+  position: fixed;
+  z-index: 80;
+  min-width: 156px;
+  padding: 5px;
+  background: var(--bg);
+  border: 1px solid var(--shell-line);
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  translate: 0 -4px;
+  transition: opacity var(--t-micro) ease, translate var(--t-glide) var(--ease-glide);
+}
+.tab-menu[hidden] { display: none; }
+.tab-menu.is-lit { opacity: 1; translate: 0 0; }
+.tab-menu-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 30px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: #5e5e5e;
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
+}
+.tab-menu-row:hover,
+.tab-menu-row:focus-visible {
+  color: var(--orange);
+  background: rgba(253, 143, 59, 0.13);
+}
+.tab-menu-ico {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+}
+.tab-menu-ico > svg,
+.tab-menu-ico > img { display: block; width: 100%; height: 100%; }
+.tab-menu-ico > img { border-radius: 3px; object-fit: contain; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-menu { transition: opacity 0.15s ease; translate: none; }
+}
+
 /* the cap is legible: the + shakes rather than doing nothing */
 @keyframes tab-cap-shake {
   0%, 100% { translate: 0; }
   25%      { translate: -3px; }
   75%      { translate: 3px; }
 }
-.tab-list .chrome-new { align-self: center; margin: 0 0 3px 4px; }
+/* The + sits on the tabs' own centre line, not the strip's. Tabs are 32
+   tall standing on a 40 strip, so their centre is 24 down; a 26px button
+   centred in the strip lands at 18.5 and reads as floating above the row.
+   flex-end plus 3 puts its centre at 24 — level with the close buttons
+   inside the tabs. */
+.tab-list .chrome-new { align-self: flex-end; margin: 0 0 3px 4px; }
 .chrome-new.is-capped { animation: tab-cap-shake 0.18s var(--ease-glide) 2; }
 
 /* ============================================================
