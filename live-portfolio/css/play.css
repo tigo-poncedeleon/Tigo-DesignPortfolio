@@ -6,10 +6,12 @@
    positions are exact at 832px tall.
    ============================================================ */
 
+/* the stage fills the shell's content card, pinned to an exact
+   1280x832 — so every Figma offset lands where it was drawn instead
+   of stretching with the viewport (js/stage-fit.js) */
 .play-stage {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   opacity: 0;

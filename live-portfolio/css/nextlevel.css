@@ -24,10 +24,12 @@
 .case-stage :focus-visible,
 .look :focus-visible { outline-color: var(--nl-azure); }
 
+/* the stage fills the shell's content card, pinned to an exact
+   1280x832 — so every Figma offset lands where it was drawn instead
+   of stretching with the viewport (js/stage-fit.js) */
 .case-stage {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   opacity: 0;
@@ -1009,8 +1011,11 @@
    cloned surface FLIPs up from its board rect (js sets the start
    transform; the transition below flies it home), tape still on.
    ============================================================ */
+/* absolute, NOT fixed: inside the shell's transformed window a fixed
+   element is positioned against the shell, so inset:0 would cover the
+   chrome and sidebar too. .shell-card > main is the containing block. */
 .look {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 120;
   display: flex;

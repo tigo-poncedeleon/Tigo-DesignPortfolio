@@ -19,9 +19,11 @@
   --pp-yellow-line: rgba(226, 168, 68, 0.55);
   --pp-mark: rgba(255, 214, 126, 0.6);
 
+  /* the stage fills the shell's content card, pinned to an exact
+     1280x832 — so every Figma offset lands where it was drawn instead
+     of stretching with the viewport (js/stage-fit.js) */
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   opacity: 0;

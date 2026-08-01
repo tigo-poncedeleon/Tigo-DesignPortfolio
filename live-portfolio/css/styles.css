@@ -290,13 +290,18 @@ html, body {
    (2026-07-22, "just slightly smaller entire nav bar even when
    expanded" — NOT the 1395 mocks' 52×50, which was tried 2026-07-21
    and reverted as too small).
+
+   As of the shell (css/shell.css) the SIDEBAR is the nav on desktop, so
+   this whole bar is retired above 700px and survives only as the phone
+   tab bar below it. The expand-on-hover machinery here is kept for now
+   because the mobile bar still inherits its base chip and word styles.
    ============================================================ */
 .site-nav {
   position: absolute;
   top: 27px;
   left: 31px;
   z-index: 10;                /* the expanded bar rides OVER the page title */
-  display: flex;
+  display: none;              /* desktop: the sidebar is the nav */
   align-items: center;
   height: 59px;
   border-radius: 21.5px;
@@ -470,7 +475,9 @@ html, body {
   .open-arrow { display: none; }
   .stage.is-cover .frame-top { transform: translate(-50%, -50%); }
 
-  /* the home bar joins every subpage's bottom bar (it's hidden on desktop) */
+  /* the bar comes back: below 700 it is the nav on EVERY page, home
+     included (the shell and its sidebar dissolve at this width) */
+  .site-nav,
   .site-nav.is-mobile-only { display: flex; }
 
   /* ---- site nav: a floating BOTTOM BAR (instagram's manner) — the words

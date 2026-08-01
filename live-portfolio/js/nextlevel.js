@@ -323,8 +323,13 @@
     const towardBoard = () => {
       const from = surfaceOf(pieces[cur]).getBoundingClientRect();
       const to = surfaceOf(lookPiece).getBoundingClientRect();
-      const dx = from.left + from.width / 2 - (to.left + to.width / 2);
-      const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+      // both rects are VISUAL px inside the scaled shell; the transform we
+      // return is applied in the shell's own (layout) space, so divide the
+      // translate back out. The scale is a ratio of two same-space widths
+      // and so is already correct.
+      const fs = window.__stageFitScale || 1;
+      const dx = (from.left + from.width / 2 - (to.left + to.width / 2)) / fs;
+      const dy = (from.top + from.height / 2 - (to.top + to.height / 2)) / fs;
       const rot = getComputedStyle(pieces[cur]).rotate;
       return 'translate(' + dx + 'px, ' + dy + 'px)' +
         ' scale(' + from.width / to.width + ')' +
