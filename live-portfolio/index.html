@@ -20,6 +20,12 @@
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
   <link rel="stylesheet" href="css/styles.css?v=33" />
   <link rel="stylesheet" href="css/shell.css?v=1" />
+  <!-- set before first paint so the chrome and sidebar are already held at
+       opacity 0 when they are built — the intro has no flash to hide -->
+  <script>
+    document.documentElement.className += ' js' +
+      (sessionStorage.getItem('shell.intro') ? '' : ' intro-pending');
+  </script>
 </head>
 
 <body>
@@ -33,48 +39,29 @@
       <aside class="shell-side" id="shell-side"></aside>
       <div class="shell-card" id="shell-card">
   <main>
-    <!-- The stage opens on the COVER frame (Figma 1408:28): name + role
-         dead-centre and the arrow below. Clicking the arrow or any scroll
-         gesture removes is-cover (js/home-open.js) and the page settles
-         into the nav frame (1401:112). One-way. -->
-    <section id="stage" class="stage is-cover">
-      <!-- top: name + role -->
-      <header class="frame-top">
-        <h1 class="frame-name">Tigo Ponce de León</h1>
-        <p class="frame-role">product design engineer</p>
+    <!-- The home card holds the name pair and nothing else. The pill of
+         words retired with the cover frame — the sidebar is the nav now —
+         so the one thing that happens on arrival is that the name writes
+         itself (js/typewriter.js).
+
+         Each line is a grid: a hidden ghost copy reserves the full width
+         from frame one, so the centred header cannot drift while it types.
+         The .sr-only copy is what assistive tech reads; the animated span
+         is decoration. -->
+    <section id="stage" class="stage">
+      <header class="frame-top" id="type-head">
+        <h1 class="frame-name tw-line">
+          <span class="sr-only">Tigo Ponce de León</span>
+          <span class="tw-ghost" aria-hidden="true">Tigo Ponce de León</span>
+          <span class="tw" data-text="Tigo Ponce de León" aria-hidden="true"></span>
+        </h1>
+        <p class="frame-role tw-line">
+          <span class="sr-only">product design engineer</span>
+          <span class="tw-ghost" aria-hidden="true">product design engineer</span>
+          <span class="tw" data-text="product design engineer" aria-hidden="true"></span>
+        </p>
+        <i class="tw-caret" id="tw-caret" aria-hidden="true"></i>
       </header>
-
-      <!-- centre: the pill of words + the grey chip that rides UNDER the hovered
-           word (moved and resized by glass-nav.js). The chip is declared first so
-           it paints behind the words, matching Figma's node order. -->
-      <div class="pill" id="pill">
-        <div class="glass" id="glass" aria-hidden="true"></div>
-        <!-- real links (crawlable, cmd-clickable); glass-nav.js only drives
-             the chip and the touch first-tap-preview behavior -->
-        <div class="words" id="words">
-          <a class="word" href="about.html" data-word="about">about</a>
-          <a class="word" href="work.html" data-word="work">work</a>
-          <a class="word" href="play.html" data-word="play">play</a>
-          <a class="word" href="ai.html" data-word="ai">ai</a>
-        </div>
-      </div>
-
-      <!-- bottom: current state + live local time -->
-      <footer class="frame-bottom">
-        <p class="frame-state" data-clock="state">Oregon</p>
-        <p class="frame-time" data-clock="time">--:--:-- --</p>
-      </footer>
-
-      <!-- cover-frame arrow (Figma 1408:40: arrow.up.circle, 39×39 @ 620,742) -->
-      <button class="open-arrow" id="open-arrow" type="button" aria-label="Enter site">
-        <svg width="39" height="39" viewBox="0 0 39 39" aria-hidden="true">
-          <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
-            <circle cx="19.5" cy="19.5" r="17.2" />
-            <path d="M19.5 27 V13" />
-            <path d="M13 19 L19.5 12.5 L26 19" stroke-linejoin="round" />
-          </g>
-        </svg>
-      </button>
     </section>
   </main>
       </div>
@@ -103,9 +90,8 @@
   <script src="js/shell.js?v=1"></script>
   <script src="js/stage-fit.js?v=2"></script>
   <script src="js/frame-clock.js?v=2"></script>
-  <script src="js/glass-nav.js?v=10"></script>
-  <script src="js/home-open.js"></script>
+  <script src="js/typewriter.js?v=1"></script>
   <script src="js/nav-touch.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=2"></script>
 </body>
 </html>

@@ -1,11 +1,14 @@
 /* ============================================================
-   Tigo Ponce de León — landing frame
-   Name · pill of words · state + local time
+   Tigo Ponce de León — shared base
+
+   Tokens, the focus ring, the type stack, and the two pieces of chrome
+   that outlived the original landing frame: the home card's name pair
+   (which now types itself) and the site-nav, retired to a phone tab bar
+   by the shell's sidebar.
 
    Geometry is a 1:1 copy of Figma frame 1366:310 (1280×832): fixed px,
-   desktop only. Name/role anchor to the top, the pill centres in the
-   viewport, the footer anchors to the bottom — exact at 832px tall.
-   Hover state: flat grey chip + orange word (Figma 1380:150).
+   desktop only. The pill of words, the cover frame and the clock footer
+   retired with the shell — the sidebar is the nav and carries the clock.
    ============================================================ */
 
 :root {
@@ -88,15 +91,13 @@ html, body {
 }
 .stage.revealed { opacity: 1; }
 
-/* ---- top: name + role ----
-   Figma 1401:112: name text top y=80, role y=118 → 38px apart; 28px type.
-   In the COVER state (1408:28) the pair rides 299px down to dead-centre
-   (name at y=379) — see the opening block at the end of the home styles. */
+/* ---- the name pair, dead-centre of the card. The cover frame retired
+   with the pill, so this is the resting position, not a waypoint. ---- */
 .frame-top {
   position: absolute;
-  top: 80px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   text-align: center;
   white-space: nowrap;
 }
@@ -113,173 +114,35 @@ html, body {
   color: rgba(0, 0, 0, 0.3);
 }
 
-/* ---- centre: the pill (Figma 1401:113: 432×69) ---- */
-.pill {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 432px;
-  height: 69px;
-  border-radius: 30px;
-  background: rgba(233, 233, 233, 0.2);
-  border: 2px solid #eeeded;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ---- the name types itself (js/typewriter.js) ----
+   Each line is a grid so the hidden ghost copy reserves the full width
+   from frame one: the centred header cannot grow or drift while it types.
+   One caret, moved between the lines, so it DROPS from the name to the
+   role rather than two carets blinking at each other. ---- */
+.tw-line { display: grid; justify-items: center; }
+.tw-line > .tw-ghost,
+.tw-line > .tw { grid-area: 1 / 1; }
+.tw-ghost { visibility: hidden; }
+
+.tw-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--orange);
+  vertical-align: -0.14em;
+  margin-left: 3px;
+  animation: tw-blink 1.06s steps(1) infinite;
+}
+.tw-caret.is-typing { animation: none; opacity: 1; }  /* real terminals hold */
+.tw-caret.is-done { opacity: 0; transition: opacity 0.2s ease; }
+@keyframes tw-blink {
+  0%, 53%      { opacity: 1; }
+  53.01%, 100% { opacity: 0; }
 }
 
-/* Figma sits this row a hair left of the pill's centre while every other
-   element centres on x=640 — read as mock drift, so it's centred here. */
-.words {
-  position: relative;
-  z-index: 1;                         /* ON TOP of the grey chip — never tinted */
-  display: flex;
-  align-items: center;
-  gap: 55px;
-}
-.word {
-  font: inherit;
-  font-size: 28px;                    /* exact Figma size (1401:114) */
-  line-height: 33px;
-  color: #5e5e5e;
-  background: none;
-  border: 0;
-  padding: 0;
-  text-decoration: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  /* transform springs on the same curve as the chip so chip + word move as one */
-  transition: color var(--t-micro) ease,
-              transform var(--t-snap) var(--ease-spring);
-}
-/* set by glass-nav while the chip covers it — a touch of lift so the chip and
-   word rise together */
-.word.hot { color: var(--orange); transform: scale(1.02); }
-
-/* ---- the grey chip that rides UNDER the hovered word ----
-   The chip sits BEHIND the words, so the grey never touches the glyphs — that
-   is what keeps the orange vivid. Figma's glyph cores measure (253,143,59);
-   compositing the same grey ON TOP instead yields a bleached (243,189,145).
-   z-index 0 is load-bearing — do NOT raise it above .words.
-
-   Flat fill per Figma 1380:150's highlight chip. Width is set per-word by JS
-   (word width + PANE_PAD). */
-.glass {
-  --dx: 0px;                          /* JS: offsets to the word's INK centre */
-  --dy: 0px;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 0;                         /* BEHIND .words (z:1) — see above */
-  width: 90px;                        /* JS overrides per word */
-  height: 41px;                       /* old 55 × the 28/37.6 word rescale */
-  border-radius: 37px;                /* > height/2 → clamps to a full pill, as in Figma */
-  /* the warm wash — every hover pill sitewide carries this (2026-07-23) */
-  background: rgba(253, 143, 59, 0.13);
-  border: 1px solid rgba(253, 143, 59, 0.35);
-
-  opacity: 0;
-  pointer-events: none;               /* never blocks the word hover above it */
-  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.92);
-  transition: transform var(--t-snap) var(--ease-spring),   /* spring snap */
-              width var(--t-snap) var(--ease-spring),
-              opacity var(--t-micro) ease;
-}
-.glass.show {
-  opacity: 1;
-  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1);
-}
-
-/* ---- bottom: current state + live local time (Figma 1401:119: Oregon top
-   701, time top 734 → block bottoms out 65px above the frame edge) ---- */
-.frame-bottom {
-  position: absolute;
-  bottom: 65px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  white-space: nowrap;
-}
-.frame-state {
-  font-size: 28px;
-  line-height: 33px;
-  color: #5e5e5e;
-}
-.frame-time {
-  font-size: 28px;
-  line-height: 33px;
-  color: rgba(0, 0, 0, 0.39);         /* 1401:121 */
-  font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
-}
-
-/* ============================================================
-   Opening cover (Figma 1408:28 → 1401:112, one-way)
-   .stage starts as .is-cover: name+role dead-centre, pill/footer waiting
-   below, arrow at the bottom. js/home-open.js strips the class on the
-   first scroll gesture / arrow click and everything glides into the nav
-   frame; the name leads, pill + footer follow a beat later.
-   ============================================================ */
-.frame-top {
-  transition: transform 0.7s var(--ease-rise);
-}
-.pill,
-.frame-bottom {
-  transition: opacity var(--t-fade) ease 0.12s,
-              transform 0.7s var(--ease-rise) 0.12s;
-}
-.stage.is-cover .frame-top {
-  transform: translate(-50%, 299px);    /* name text 80 → the cover's 379 */
-}
-.stage.is-cover .pill {
-  opacity: 0;
-  transform: translate(-50%, -50%) translateY(48px);
-  pointer-events: none;
-  visibility: hidden;          /* covered links can't take keyboard focus */
-}
-.stage.is-cover .frame-bottom {
-  opacity: 0;
-  transform: translateX(-50%) translateY(48px);
-}
-
-.open-arrow {
-  position: absolute;
-  bottom: 51px;                         /* glyph 742..781 in the 832 frame */
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 50%;                   /* the focus ring hugs the circle */
-  line-height: 0;
-  color: var(--ink);
-  cursor: pointer;
-  /* visibility flips only after the fade, so the exit still plays —
-     then the retired arrow can't take keyboard focus */
-  transition: color var(--t-micro) ease, opacity 0.3s ease,
-              visibility 0s linear 0.3s;
-}
-.open-arrow:hover,
-.open-arrow:focus-visible { color: var(--orange); }
-.stage:not(.is-cover) .open-arrow {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-/* suppresses the glide for ?open=1 deep links (set before first paint) */
-.stage.no-anim .frame-top,
-.stage.no-anim .pill,
-.stage.no-anim .frame-bottom,
-.stage.no-anim .open-arrow { transition: none; }
-
-/* reduced motion: positions jump instantly, only opacity still fades */
-@media (prefers-reduced-motion: reduce) {
-  .frame-top { transition: none; }
-  .pill,
-  .frame-bottom { transition: opacity 0.25s ease; }
-}
+/* without JS the text simply IS there */
+html:not(.js) .tw::after { content: attr(data-text); }
+html:not(.js) .tw-caret { display: none; }
 
 /* ============================================================
    Top-left site nav (play/ai pages) — Figma 1380:150
@@ -397,7 +260,7 @@ html, body {
   transition-delay: 0.08s;
 }
 
-/* every word carries a hidden flat chip (same family as .glass); it lights
+/* every word carries a hidden flat chip — the sitewide warm wash; it lights
    under the cursor, and rests on the current page when nothing is hovered */
 .site-nav-word {
   position: relative;
@@ -441,11 +304,6 @@ html, body {
 .site-nav-word svg { display: none; flex: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .glass {
-    transition: opacity var(--t-micro) ease;
-    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
-  }
-  .glass.show { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))); }
   .site-nav-home:hover img,
   .site-nav-home:focus-visible img { animation: none; }
 }
@@ -464,16 +322,8 @@ html, body {
   /* ---- home: name + role centred in the middle of the screen; the shared
      site-nav bottom bar below is the nav, exactly like every other page.
      The hero pill, the clock footer, and the opening cover all retire. ---- */
-  .frame-top {
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
   .frame-name { font-size: 23px; line-height: 32px; }
   .frame-role { font-size: 17px; line-height: 26px; }
-  .pill,
-  .frame-bottom,
-  .open-arrow { display: none; }
-  .stage.is-cover .frame-top { transform: translate(-50%, -50%); }
 
   /* the bar comes back: below 700 it is the nav on EVERY page, home
      included (the shell and its sidebar dissolve at this width) */
@@ -548,9 +398,6 @@ html, body {
   }
   .site-nav-word.is-home { display: flex; }              /* show the home tab */
   .site-nav-word[href="play.html"] { display: none; }    /* Play retired on mobile */
-
-  /* home hero pill drops Play to match the bottom bar */
-  .word[data-word="play"] { display: none; }
 }
 
 @keyframes nav-rise {

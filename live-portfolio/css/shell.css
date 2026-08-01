@@ -79,6 +79,9 @@ html.rail-collapsed .shell {
   transition: opacity var(--t-micro) ease;
 }
 .shell-chrome.is-lit { opacity: 1; }
+/* held from before first paint (the inline script in <head>) so the
+   furniture is already invisible when it is built — no flash to hide */
+html.intro-pending :is(.shell-chrome, .shell-side) { transition: none; }
 
 /* the left cluster occupies exactly the sidebar's column, so the tab
    below starts flush with the card's left edge — as in the reference.
@@ -259,8 +262,21 @@ html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
 }
 .side-scroll::-webkit-scrollbar-track { background: none; }
 
-/* ---- groups: a quiet lowercase label over a run of rows ---- */
-.side-group { display: block; }
+/* ---- groups: a quiet lowercase label over a run of rows.
+   No transition by DEFAULT, deliberately: on every navigation the rail
+   must appear to have never moved — that is the whole illusion a
+   persistent sidebar buys, and a fade on each page load would give it
+   away. Only the home page's first visit animates, sequenced behind the
+   typewriter, reusing the entrance idiom the chapter rails used. ---- */
+.side-group { display: block; opacity: 0; }
+.shell-side.is-lit .side-group { opacity: 1; }
+
+html.intro-run .side-group {
+  translate: -10px 0;
+  transition: opacity var(--t-fade) ease calc(var(--n, 0) * 70ms),
+              translate var(--t-rise) var(--ease-rise) calc(var(--n, 0) * 70ms);
+}
+html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
 .side-label {
   margin: 14px 0 3px;
   padding: 0 10px;
@@ -324,6 +340,11 @@ html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
 
 @media (prefers-reduced-motion: reduce) {
   .now-dot.is-live { animation: none; }
+  /* the rail appears; it does not perform */
+  html.intro-run .side-group {
+    translate: none;
+    transition: opacity 0.25s ease;
+  }
 }
 
 /* ---- a row. Identical at every depth: the indent comes from the
