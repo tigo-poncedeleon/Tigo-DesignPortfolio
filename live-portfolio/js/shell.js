@@ -315,11 +315,13 @@
 
   const nowHTML = () => {
     let h =
-      '<div class="now-row">' +
+      // a button, not a link — it opens a panel (js/globe.js)
+      '<button class="now-row is-globe" type="button" data-globe ' +
+        'aria-label="Where you are">' +
         '<span class="now-dot" aria-hidden="true"></span>' +
         '<span class="now-text" data-clock="state">Oregon</span>' +
         '<span class="now-meta" data-clock="time">--:--:-- --</span>' +
-      '</div>' +
+      '</button>' +
       '<a class="now-row is-link" href="vicino.html">' +
         '<span class="now-dot is-live" aria-hidden="true"></span>' +
         '<span class="now-text">Vicino AI</span>' +

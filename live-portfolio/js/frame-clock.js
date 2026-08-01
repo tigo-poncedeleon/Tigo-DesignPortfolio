@@ -10,18 +10,32 @@
 // page; it now runs on nine, and asking ipapi where you are nine times to
 // get the same answer is rude to a free service and slow for the visitor.
 window.FrameClock = (function () {
-  const FALLBACK = { region: 'Oregon', timezone: 'America/Los_Angeles' };
-  const GEO_KEY = 'shell.geo';
+  // widened so the globe is never blank, even offline
+  const FALLBACK = {
+    region: 'Oregon', timezone: 'America/Los_Angeles',
+    city: 'Bend', country: 'United States', lat: 44.06, lon: -121.31,
+  };
+  // A NEW key, not a shape check on the old one: shell.geo holds two fields
+  // and its read path short-circuits before the fetch, so anyone mid-session
+  // would never get lat/lon. Let the old key rot with the session.
+  const GEO_KEY = 'shell.geo2';
   let timer = null;
   let booted = false;
+  let geo = null;
 
   const cached = () => {
     try { return JSON.parse(sessionStorage.getItem(GEO_KEY) || 'null'); }
     catch (err) { return null; }
   };
-  const remember = (geo) => {
-    try { sessionStorage.setItem(GEO_KEY, JSON.stringify(geo)); }
+  const remember = (g) => {
+    try { sessionStorage.setItem(GEO_KEY, JSON.stringify(g)); }
     catch (err) { /* private mode — we just ask again next page */ }
+  };
+
+  // the globe builds off this rather than racing the fetch
+  const publish = (g) => {
+    geo = g;
+    window.dispatchEvent(new CustomEvent('shell:geo', { detail: g }));
   };
 
   function start(timezone, region) {
@@ -53,10 +67,11 @@ window.FrameClock = (function () {
     booted = true;
 
     const hit = cached();
-    if (hit) { start(hit.timezone, hit.region); return; }
+    if (hit) { start(hit.timezone, hit.region); publish(hit); return; }
 
     // show the fallback immediately so the clock ticks right away…
     start(FALLBACK.timezone, FALLBACK.region);
+    publish(FALLBACK);
 
     // …then upgrade to the real location when it resolves
     const ctrl = ('AbortController' in window) ? new AbortController() : null;
@@ -67,8 +82,16 @@ window.FrameClock = (function () {
       .then((d) => {
         clearTimeout(to);
         if (d && d.region && d.timezone) {
-          remember({ region: d.region, timezone: d.timezone });
-          start(d.timezone, d.region);
+          // ipapi returns far more than the two fields this used to read
+          const g = {
+            region: d.region, timezone: d.timezone,
+            city: d.city || d.region, country: d.country_name || '',
+            cc: d.country_code || '', lat: +d.latitude, lon: +d.longitude,
+            offset: d.utc_offset || '',
+          };
+          remember(g);
+          start(g.timezone, g.region);
+          publish(g);
         }
       })
       .catch(() => { clearTimeout(to); /* keep the fallback */ });
@@ -83,5 +106,5 @@ window.FrameClock = (function () {
     init();
   }
 
-  return { init: init };
+  return { init: init, geo: () => geo };
 })();
