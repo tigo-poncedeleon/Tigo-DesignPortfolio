@@ -1,10 +1,9 @@
 /* ============================================================
    Next Level Drone Cleaning case study — the site's chapter
-   system (pantry.css lineage) retold as a seven-slide brand
-   story: sidebar menu + cool gliding chip beside the self-drawing
-   hairline and its blue reading thread, chapters stacked
-   VERTICALLY to the right. Content centres on the CONTENT AXIS
-   --ax = midline of [247px … right edge].
+   system (pantry.css lineage) retold as a seven-slide brand story:
+   seven chapters stacked VERTICALLY, one per card. The chapter rail
+   and its reading thread moved into the shell's sidebar, so content
+   centres on the CONTENT AXIS --ax = the card's own midline.
    ============================================================ */
 
 /* inside the case study the accents speak NEXT LEVEL, not the site
@@ -37,113 +36,7 @@
 }
 .case-stage.revealed { opacity: 1; }
 
-/* ---- the sidebar: hairline at 247 that draws itself top-down,
-   menu aligned to the house chip, one cool chip gliding ---- */
-.case-divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 247px;
-  width: 1px;
-  background: #d9d9d9;
-  z-index: 4;
-  pointer-events: none;
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.9s var(--ease-draw) 0.1s;
-}
-.case-stage.revealed .case-divider { transform: none; }
 
-/* the reading thread — js/nextlevel.js maps the scroller onto --p */
-.case-thread {
-  position: absolute;
-  top: 0;
-  left: 246px;
-  width: 3px;
-  height: calc(56px + (100% - 56px) * var(--p, 0));
-  border-radius: 1.5px;
-  background: linear-gradient(180deg,
-    var(--nl-sky), var(--nl-azure) 55%, var(--nl-navy));
-  z-index: 4;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.9s;
-}
-.case-stage.revealed .case-thread { opacity: 1; }
-
-.case-menu {
-  position: absolute;
-  top: 133px;
-  left: 31px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 5;
-}
-/* the one chip — sized/placed by nextlevel.js, painted BEHIND the words */
-.menu-glass {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--gw, 0px);
-  height: var(--gh, 44px);
-  translate: 0 var(--gt, 0px);
-  border-radius: 20px;
-  background: var(--nl-wash);
-  border: 1px solid var(--nl-line);
-  opacity: 0;
-  pointer-events: none;
-}
-.menu-glass.is-ready {
-  transition: translate var(--t-glide) var(--ease-glide),
-              width var(--t-glide) var(--ease-glide),
-              height var(--t-glide) var(--ease-glide),
-              opacity 0.45s ease 0.4s;
-}
-.case-stage.revealed .menu-glass.is-ready { opacity: 1; }
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 16px 8px 17.5px;
-  border-radius: 20px;
-  font-size: 24px;                 /* seven chapters — a notch under about's 28 */
-  color: #5e5e5e;
-  text-decoration: none;
-  --d: 0.3s;
-  transition: color var(--t-micro) ease,
-              opacity var(--t-fade) ease var(--d),
-              translate var(--t-rise) var(--ease-rise) var(--d);
-}
-.case-stage:not(.revealed) .menu-item {
-  opacity: 0;
-  translate: -14px 0;
-}
-.case-menu a:nth-of-type(2) { --d: 0.37s; }
-.case-menu a:nth-of-type(3) { --d: 0.44s; }
-.case-menu a:nth-of-type(4) { --d: 0.51s; }
-.case-menu a:nth-of-type(5) { --d: 0.58s; }
-.case-menu a:nth-of-type(6) { --d: 0.65s; }
-.case-menu a:nth-of-type(7) { --d: 0.72s; }
-.menu-item svg { flex: none; }
-.menu-item:hover,
-.menu-item:focus-visible,
-.menu-item.is-current,
-.menu-item[aria-current='page'] { color: var(--nl-azure); }
-.case-menu:hover .menu-item.is-current:not(:hover) { color: var(--ink); }
-
-/* menu icons redraw on hover — the site's pen, same recipe */
-.menu-item:hover svg :is(path, rect, circle),
-.menu-item:focus-visible svg :is(path, rect, circle) {
-  stroke-dasharray: 1;
-  animation: case-redraw 0.7s var(--ease-draw) both;
-}
-.menu-item:hover svg g > :nth-child(2),
-.menu-item:focus-visible svg g > :nth-child(2) { animation-delay: 0.1s; }
-.menu-item:hover svg g > :nth-child(3),
-.menu-item:focus-visible svg g > :nth-child(3) { animation-delay: 0.2s; }
-.menu-item:hover svg g > :nth-child(4),
-.menu-item:focus-visible svg g > :nth-child(4) { animation-delay: 0.3s; }
 @keyframes case-redraw {
   from { stroke-dashoffset: 1; }
   to   { stroke-dashoffset: 0; }
@@ -166,7 +59,7 @@
   flex: none;
   width: 100%;
   height: 100%;
-  --ax: calc(50% + 123.5px);
+  --ax: 50%;
 }
 
 /* ---- per-slide title pair (the site standard) ---- */
@@ -1214,14 +1107,7 @@
   .board-cap { transition: opacity 0.25s ease; translate: -50% 0; }
   .look-veil, .look-piece { transition: opacity 0.25s ease; }
   .look-caption { transition: opacity 0.25s ease; translate: none; }
-  .case-divider { transition: none; transform: none; }
-  .case-thread { transition: opacity 0.25s ease; }
-  .menu-item { transition: color var(--t-micro) ease; }
-  .case-stage:not(.revealed) .menu-item { opacity: 1; translate: none; }
-  .menu-glass.is-ready { transition: opacity 0.25s ease; }
   .flow-glass.is-ready { transition: none; }
-  .menu-item:hover svg :is(path, rect, circle),
-  .menu-item:focus-visible svg :is(path, rect, circle) { animation: none; }
   .scroll-hint { transition: opacity 0.25s ease; }
   .scroll-hint svg { animation: none; }
   .case-pitch strong, .story-copy strong, .mark-copy strong,
@@ -1255,7 +1141,6 @@
     min-height: 100dvh;
     overflow: visible;
   }
-  .case-divider, .case-thread, .case-menu { display: none; }
   .case-scroll {
     position: static;
     inset: auto;
@@ -1265,7 +1150,6 @@
   .case-slide {
     height: auto;
     padding: 30px 20px 42px;
-    --ax: 50%;
   }
   .case-slide:first-of-type { padding-top: 54px; }  /* no top nav on mobile now (bar is at the foot) */
   /* nextlevel.js appends this: a slim reading-progress line at the very top,

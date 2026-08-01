@@ -80,7 +80,6 @@
 
   const scroller = document.getElementById('case-scroll');
   const slides = Array.from(document.querySelectorAll('.case-slide'));
-  const dots = Array.from(document.querySelectorAll('.menu-item'));
 
   // ?reveal=1 — screenshot-harness hook: skip the entrances everywhere
   if (new URLSearchParams(location.search).has('reveal')) {
@@ -120,13 +119,6 @@
   // viewport observer instead
   const MOBILE = window.matchMedia('(max-width: 700px)').matches;
 
-  let menuGlide = null;
-  const menu = document.querySelector('.case-menu');
-  if (!MOBILE && menu && menu.querySelector('.menu-glass')) {
-    menuGlide = makeGlide(menu, menu.querySelector('.menu-glass'), '.menu-item',
-      () => dots.find((d) => d.classList.contains('is-current')));
-  }
-
   if (MOBILE && slides.length) {
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => {
@@ -155,19 +147,12 @@
       }, { passive: true });
       trackRP();
     }
-  } else if (scroller && slides.length && dots.length === slides.length) {
+  } else if (scroller && slides.length) {
     const setCurrent = (id) => {
       // the sidebar hears where the page is. Emitted BEFORE the
       // __hashReady gate below, so the rail never lags the scroll.
       window.dispatchEvent(new CustomEvent('shell:section', { detail: { id: id } }));
-      dots.forEach((dot) => {
-        const on = dot.getAttribute('href') === '#' + id;
-        if (on) dot.setAttribute('aria-current', 'page');
-        else dot.removeAttribute('aria-current');
-        dot.classList.toggle('is-current', on);
-      });
-      if (menuGlide) menuGlide.settle();
-    
+
       // mirror the chapter into the URL (replace, never push) so refresh
       // and back/forward land where the reader actually was
       if (window.__hashReady && location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {
@@ -195,18 +180,14 @@
     setTimeout(() => { window.__hashReady = true; }, 600);
 
 
-    // the reading thread + the scroll hint's exit
-    const thread = document.querySelector('.case-thread');
+    // how deep we have read + the scroll hint's exit. The stitch used to
+    // ride this page's own hairline; the shell's sidebar owns that drawing
+    // now, so this only reports the fraction.
     let threadRaf = 0;
     const trackScroll = () => {
       threadRaf = 0;
       const max = scroller.scrollHeight - scroller.clientHeight;
-      if (thread) {
-        thread.style.setProperty('--p', max ? scroller.scrollTop / max : 0);
-      }
       if (stage) stage.classList.toggle('is-scrolled', scroller.scrollTop > 40);
-      // the same fraction the reading thread used to pour down the
-      // hairline now feeds the sidebar's chapter rail
       window.dispatchEvent(new CustomEvent('shell:progress',
         { detail: { p: max ? scroller.scrollTop / max : 0 } }));
     };

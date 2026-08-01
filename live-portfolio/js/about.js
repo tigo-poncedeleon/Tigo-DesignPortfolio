@@ -15,7 +15,6 @@
   // .revealed class per slide for the entrance ----
   const scroller = document.getElementById('about-scroll');
   const slides = Array.from(document.querySelectorAll('.about-slide'));
-  const dots = Array.from(document.querySelectorAll('.menu-item'));
 
   // ?reveal=1 — screenshot-harness hook: skip the entrances everywhere
   if (new URLSearchParams(location.search).has('reveal')) {
@@ -36,53 +35,16 @@
       { threshold: 0.12 }
     );
     slides.forEach((s) => io.observe(s));
-  } else if (scroller && slides.length && dots.length === slides.length) {
-    // ---- the sidebar chip: ONE flat pill that glides between the menu
-    // words — following the cursor while it's in the menu, resting on the
-    // current chapter otherwise (the home pill's manner, turned vertical) ----
-    const menu = document.querySelector('.about-menu');
-    const glass = menu ? menu.querySelector('.menu-glass') : null;
-    let hovered = null;
-    const place = (item) => {
-      if (!glass || !item) return;
-      glass.style.setProperty('--gt', item.offsetTop + 'px');
-      glass.style.setProperty('--gw', item.offsetWidth + 'px');
-      glass.style.setProperty('--gh', item.offsetHeight + 'px');
-    };
-    const settle = () =>
-      place(hovered || dots.find((d) => d.classList.contains('is-current')));
-    if (glass) {
-      settle();
-      // transitions switch on one frame AFTER the first placement, so the
-      // chip materialises in place instead of flying in from the corner
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => glass.classList.add('is-ready')));
-      menu.addEventListener('pointerover', (e) => {
-        const item = e.target.closest('.menu-item');
-        if (item) { hovered = item; place(item); }
-      });
-      menu.addEventListener('pointerleave', () => { hovered = null; settle(); });
-      menu.addEventListener('focusin', (e) => {
-        const item = e.target.closest('.menu-item');
-        if (item) place(item);
-      });
-      menu.addEventListener('focusout', settle);
-    }
-
+  } else if (scroller && slides.length) {
     // ---- the reading thread: map how far down the chapters we are onto
-    // --p (the orange stitch on the hairline), and let the bio's scroll
-    // hint bow out once the visitor has moved ----
-    const thread = document.querySelector('.about-thread');
+    // --p. The stitch used to ride this page's own hairline; the shell's
+    // sidebar owns that drawing now, so this only reports the fraction
+    // (and still lets the bio's scroll hint bow out once you've moved) ----
     let threadRaf = 0;
     const trackScroll = () => {
       threadRaf = 0;
       const max = scroller.scrollHeight - scroller.clientHeight;
-      if (thread) {
-        thread.style.setProperty('--p', max ? scroller.scrollTop / max : 0);
-      }
       if (stage) stage.classList.toggle('is-scrolled', scroller.scrollTop > 40);
-      // the same fraction the reading thread used to pour down the
-      // hairline now feeds the sidebar's chapter rail
       window.dispatchEvent(new CustomEvent('shell:progress',
         { detail: { p: max ? scroller.scrollTop / max : 0 } }));
     };
@@ -95,14 +57,7 @@
       // the sidebar hears where the page is. Emitted BEFORE the
       // __hashReady gate below, so the rail never lags the scroll.
       window.dispatchEvent(new CustomEvent('shell:section', { detail: { id: id } }));
-      dots.forEach((dot) => {
-        const on = dot.getAttribute('href') === '#' + id;
-        if (on) dot.setAttribute('aria-current', 'page');
-        else dot.removeAttribute('aria-current');
-        dot.classList.toggle('is-current', on);
-      });
-      if (!hovered) settle();           // the chip drifts to the new chapter
-    
+
       // mirror the chapter into the URL (replace, never push) so refresh
       // and back/forward land where the reader actually was
       if (window.__hashReady && location.hash.slice(1) !== id && (location.hash || id !== slides[0].id)) {

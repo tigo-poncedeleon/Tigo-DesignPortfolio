@@ -1,9 +1,9 @@
 /* ============================================================
-   About — Figma 1436:260: a fixed sidebar menu (bio · skills ·
-   resume · contact, current section orange) beside a full-height
-   hairline, with the chapters stacked VERTICALLY to its right —
-   scroll down to move, the menu tracks. Content centres on the
-   CONTENT AXIS --ax = midline of [247px … right edge], width-proof.
+   About — four chapters stacked VERTICALLY, one per card, scroll
+   down to move. The chapter menu used to live in a rail at left 31
+   beside a hairline at 247; the shell's sidebar owns that now, so the
+   chapters have the whole card and content centres on the CONTENT
+   AXIS --ax = the card's own midline.
    ============================================================ */
 
 /* the stage fills the shell's content card, pinned to an exact
@@ -19,126 +19,7 @@
 }
 .about-stage.revealed { opacity: 1; }
 
-/* ---- the sidebar (Figma 1436:260): a full-height hairline at 247 that
-   DRAWS itself on arrival (the line-art system's habit), icon+word menu
-   below the house chip. ONE flat chip — the home pill's family, turned
-   vertical — glides between the words, resting on the current chapter;
-   an orange stitch rides the hairline showing how deep you've read ---- */
-.about-divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 247px;
-  width: 1px;
-  background: #d9d9d9;
-  z-index: 4;
-  pointer-events: none;
-  transform: scaleY(0);                 /* pen at the top, waiting */
-  transform-origin: top;
-  transition: transform 0.9s var(--ease-draw) 0.1s;
-}
-.about-stage.revealed .about-divider { transform: none; }
 
-/* the reading thread — about.js maps the chapter scroller onto --p, and
-   this orange ink POURS down the hairline from the top: a 56px stitch on
-   arrival, the full line inked by the time the last chapter is reached */
-.about-thread {
-  position: absolute;
-  top: 0;
-  left: 246px;
-  width: 3px;
-  height: calc(56px + (100% - 56px) * var(--p, 0));
-  border-radius: 1.5px;
-  background: var(--orange);
-  z-index: 4;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.9s;   /* appears once the line is drawn */
-}
-.about-stage.revealed .about-thread { opacity: 1; }
-
-/* left edge sits on the house chip's 31px, and 17.5px item padding puts
-   the 26px icons' centres on the house glyph's axis (x 61.5) */
-.about-menu {
-  position: absolute;
-  top: 133px;
-  left: 31px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 5;
-}
-/* the one chip: sized and placed by about.js to whichever word it's
-   under. First child, no z-index — it paints BEHIND the words, so the
-   grey never touches the glyphs and the orange stays vivid */
-.menu-glass {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--gw, 0px);
-  height: var(--gh, 44px);
-  translate: 0 var(--gt, 0px);
-  border-radius: 20px;
-  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
-  border: 1px solid rgba(253, 143, 59, 0.35);
-  opacity: 0;
-  pointer-events: none;
-}
-/* transitions arrive one frame AFTER the first placement, so the chip
-   materialises on the current word instead of flying in from 0,0 */
-.menu-glass.is-ready {
-  transition: translate var(--t-glide) var(--ease-glide),
-              width var(--t-glide) var(--ease-glide),
-              height var(--t-glide) var(--ease-glide),
-              background-color var(--t-micro) ease, border-color var(--t-micro) ease,
-              opacity 0.45s ease 0.4s;
-}
-.about-stage.revealed .menu-glass.is-ready { opacity: 1; }
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 16px 8px 17.5px;
-  border-radius: 20px;
-  font-size: 28px;
-  color: #5e5e5e;
-  text-decoration: none;
-  /* entrance stagger only — color still snaps at 0.18s on hover */
-  --d: 0.3s;
-  transition: color var(--t-micro) ease,
-              opacity var(--t-fade) ease var(--d),
-              translate var(--t-rise) var(--ease-rise) var(--d);
-}
-.about-stage:not(.revealed) .menu-item {
-  opacity: 0;
-  translate: -14px 0;
-}
-.about-menu a:nth-of-type(2) { --d: 0.37s; }
-.about-menu a:nth-of-type(3) { --d: 0.44s; }
-.about-menu a:nth-of-type(4) { --d: 0.51s; }
-.menu-item svg { flex: none; }
-.menu-item:hover,
-.menu-item:focus-visible,
-.menu-item.is-current,
-.menu-item[aria-current='page'] { color: var(--orange); }
-/* while the cursor is on some other word, the resting current chapter
-   steps aside so only one word is lit (the site-nav's manner) */
-.about-menu:hover .menu-item.is-current:not(:hover) { color: var(--ink); }
-
-/* on hover the little icon REDRAWS itself — the craft cards' pen,
-   miniaturised (every shape carries pathLength="1"); later shapes wait
-   their turn like the cards' s2/s3 strokes */
-.menu-item:hover svg :is(path, rect),
-.menu-item:focus-visible svg :is(path, rect) {
-  stroke-dasharray: 1;
-  animation: craft-redraw 0.7s var(--ease-draw) both;
-}
-.menu-item:hover svg g > :nth-child(2),
-.menu-item:focus-visible svg g > :nth-child(2) { animation-delay: 0.1s; }
-.menu-item:hover svg g > :nth-child(3),
-.menu-item:focus-visible svg g > :nth-child(3) { animation-delay: 0.2s; }
-.menu-item:hover svg g > :nth-child(4),
-.menu-item:focus-visible svg g > :nth-child(4) { animation-delay: 0.3s; }
 
 /* ---- the chapter stack: one screen per section, free scrolling ---- */
 .about-scroll {
@@ -158,7 +39,7 @@
   width: 100%;
   height: 100%;
   /* midline of the content area right of the 247px divider */
-  --ax: calc(50% + 123.5px);
+  --ax: 50%;
 }
 
 /* ---- per-slide title pair (the site standard) ---- */
@@ -856,7 +737,6 @@
   }
   /* the desktop section sidebar retires on mobile; the shared site-nav
      bottom bar (styles.css) is the mobile nav now */
-  .about-divider, .about-thread, .about-menu { display: none; }
   .about-scroll {
     position: static;
     inset: auto;
@@ -866,7 +746,6 @@
   .about-slide {
     height: auto;
     padding: 30px 20px 42px;
-    --ax: 50%;
   }
   .about-slide:first-of-type { padding-top: 54px; }
   /* the last chapter clears the shared site-nav bottom bar (styles.css) */
@@ -1036,13 +915,6 @@
   .stroke { transition: none; stroke-dashoffset: 0; }
   .guide, .dot { transition: none; opacity: 1; }
   .craft-card:hover .craft-illo :is(.stroke, .guide, .dot) { animation: none; }
-  .about-divider { transition: none; transform: none; }
-  .about-thread { transition: opacity 0.25s ease; }
-  .menu-item { transition: color var(--t-micro) ease; }
-  .about-stage:not(.revealed) .menu-item { opacity: 1; translate: none; }
-  .menu-glass.is-ready { transition: opacity 0.25s ease; }
-  .menu-item:hover svg :is(path, rect),
-  .menu-item:focus-visible svg :is(path, rect) { animation: none; }
   .scroll-hint { transition: opacity 0.25s ease; }
   .scroll-hint svg { animation: none; }
 }
