@@ -272,6 +272,60 @@ html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
 }
 .side-group:first-child .side-label { margin-top: 6px; }
 
+/* ---- NOW: the live group. Reads as status, not navigation — no icons,
+   a small dot instead, and the right-hand value carries the weight. ---- */
+.now-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding: 0 10px 0 8px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1;
+  color: #5e5e5e;
+  text-decoration: none;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
+}
+.now-row.is-link:hover {
+  color: var(--orange);
+  background: rgba(253, 143, 59, 0.13);
+}
+.now-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: #cdcdcd;
+}
+/* the one thing that is happening right now gets the accent, and breathes */
+.now-dot.is-live {
+  background: var(--orange);
+  animation: now-pulse 2.4s var(--ease-lift) infinite;
+}
+@keyframes now-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(253, 143, 59, 0.45); }
+  55%      { box-shadow: 0 0 0 4px rgba(253, 143, 59, 0); }
+}
+.now-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.now-meta {
+  flex: none;
+  font-size: 11.5px;
+  color: var(--shell-dim);
+  font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .now-dot.is-live { animation: none; }
+}
+
 /* ---- a row. Identical at every depth: the indent comes from the
    nested .side-kids margins, so pages, their sections, and the case
    studies' chapters are all the same markup. ---- */

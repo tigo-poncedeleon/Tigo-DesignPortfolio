@@ -105,6 +105,7 @@
   //   mark  — a real brand image instead of a line glyph
   // ============================================================
   const TREE = [
+    { label: 'now', now: true, rows: [] },
     { label: 'pages', rows: [
       { id: 'home', href: 'index.html#home', text: 'Home', icon: 'home' },
       { id: 'about', href: 'about.html', text: 'About', icon: 'about', kids: [
@@ -270,13 +271,50 @@
     return h + '</div>';
   };
 
+  // ---- NOW: the live line. Where he is and what time it is there
+  // (js/frame-clock.js finds these by attribute), what he is doing, and —
+  // only if the scoreboard has already been fetched this session by
+  // play.html — the site records. Eight pages have no scoreboard and are
+  // not going to ask for one.
+  const RECORD_LABEL = { pong: 'longest rally', snake: 'longest snake', flappy: 'longest run' };
+  const readRecords = () => {
+    try { return JSON.parse(sessionStorage.getItem('shell.records') || 'null'); }
+    catch (err) { return null; }
+  };
+
+  const nowHTML = () => {
+    let h =
+      '<div class="now-row">' +
+        '<span class="now-dot" aria-hidden="true"></span>' +
+        '<span class="now-text" data-clock="state">Oregon</span>' +
+        '<span class="now-meta" data-clock="time">--:--:-- --</span>' +
+      '</div>' +
+      '<a class="now-row is-link" href="vicino.html">' +
+        '<span class="now-dot is-live" aria-hidden="true"></span>' +
+        '<span class="now-text">Vicino AI</span>' +
+        '<span class="now-meta">intern</span>' +
+      '</a>' +
+      '<div class="now-scores" id="now-scores">' + scoreRows(readRecords()) + '</div>';
+    return h;
+  };
+
+  const scoreRows = (rec) => {
+    if (!rec) return '';
+    return Object.keys(RECORD_LABEL).filter((g) => rec[g]).map((g) =>
+      '<a class="now-row is-link" href="play.html#' + g + '">' +
+        '<span class="now-dot" aria-hidden="true"></span>' +
+        '<span class="now-text">' + RECORD_LABEL[g] + '</span>' +
+        '<span class="now-meta">' + esc(rec[g].score) + ' · ' + esc(rec[g].initials) + '</span>' +
+      '</a>').join('');
+  };
+
   const buildSide = () => {
     if (!side) return;
     let n = 0;
     const groups = TREE.map((g) =>
       '<section class="side-group" style="--n:' + (n++) + '">' +
         '<h2 class="side-label">' + esc(g.label) + '</h2>' +
-        g.rows.map(rowHTML).join('') +
+        (g.now ? nowHTML() : g.rows.map(rowHTML).join('')) +
       '</section>').join('');
 
     side.innerHTML =
@@ -410,6 +448,13 @@
     // pages keep working with shell.js absent, the same posture as
     // nav-touch.js. Duplicating five IntersectionObservers here would
     // mean two sources of truth that disagree at threshold boundaries.
+    // play.html has the live scoreboard; when it lands, the rail catches up
+    // without waiting for the next page load
+    window.addEventListener('shell:records', (e) => {
+      const box = document.getElementById('now-scores');
+      if (box) box.innerHTML = scoreRows(e.detail.records);
+    });
+
     window.addEventListener('shell:section', (e) => markCurrent(e.detail.id));
     window.addEventListener('shell:progress', (e) => {
       const kids = side.querySelector('.side-row.is-current')
