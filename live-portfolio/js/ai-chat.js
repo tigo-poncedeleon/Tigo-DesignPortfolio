@@ -54,6 +54,7 @@
     // one move — which on play.html means the games stop hearing the
     // keyboard the moment the sheet is up
     if (card) card.setAttribute('inert', '');
+    document.documentElement.classList.add('ai-open');
     stage.classList.remove('revealed');
     stage.offsetHeight;                       // commit before re-adding
     requestAnimationFrame(() => {
@@ -75,6 +76,7 @@
     if (sc) sc.classList.remove('is-lit');
     document.removeEventListener('keydown', onKey, true);
     if (card) card.removeAttribute('inert');
+    document.documentElement.classList.remove('ai-open');
     setTimeout(() => { if (!isOpen) overlay.hidden = true; }, 500);  // --t-stage
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }

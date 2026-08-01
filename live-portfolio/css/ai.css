@@ -487,8 +487,16 @@
     transform: translateX(-50%);
   }
   .ai-sheet-head { position: relative; padding-top: 8px; height: 52px; }
-  /* the input dock clears the bottom tab bar and the home indicator */
+  /* the input dock clears the home indicator */
   .ai-inputbar { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+
+  /* the sheet is modal — the card is inert behind it — so the bottom tab
+     bar stands down rather than sitting on top of the composer */
+  html.ai-open .site-nav {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t-micro) ease;
+  }
 }
 
 /* Short screens: the chip stack and input dock take a fixed bite out of

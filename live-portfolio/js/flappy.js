@@ -209,10 +209,17 @@ window.Flappy = (function () {
     requestAnimationFrame(loop);
   }
 
+  // Which board owns the keyboard. This used to compare against the
+  // viewport centre, which was the same thing when the page WAS the
+  // viewport. Inside the shell the card sits right of centre, so the
+  // question is asked of the card instead — literally what it always
+  // meant: does this board straddle the middle of what you are looking at?
   function inView() {
     var r = board.getBoundingClientRect();
-    var mid = window.innerWidth / 2;   // slides travel horizontally
-    return r.left < mid && r.right > mid;
+    var host = document.getElementById('shell-card');
+    var hr = host ? host.getBoundingClientRect() : null;
+    var mid = hr ? hr.left + hr.width / 2 : window.innerWidth / 2;
+    return r.left < mid && r.right > mid;   // slides travel horizontally
   }
 
   // W flaps alongside space and the up arrow; the rest of WASD is swallowed
