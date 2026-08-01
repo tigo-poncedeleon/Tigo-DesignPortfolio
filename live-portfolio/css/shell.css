@@ -1,0 +1,370 @@
+/* ============================================================
+   The shell — a mini browser drawn around the whole site.
+
+   Chrome strip (traffic lights · back/forward · one tab) above a
+   flush left sidebar and a floating content card. The card holds
+   each page's untouched 1280×832 stage at 1:1; js/stage-fit.js
+   scales the WHOLE shell as one unit, so every script that
+   measures in layout px keeps working exactly as before.
+
+   Frame math (border-box throughout):
+     W = 2·bd + rail + gap + card-w + gap  = 1558   (collapsed 1350)
+     H = 2·bd + chrome  + gap + card-h + gap  =  894
+   Change a token and stage-fit.js follows — it reads these, it
+   does not duplicate them.
+   ============================================================ */
+
+:root {
+  --shell-bd:       1px;
+  --shell-chrome-h: 44px;
+  --shell-rail:     260px;
+  --shell-rail-min: 52px;
+  --shell-gap:      8px;
+  --card-w:         1280px;
+  --card-h:         832px;
+
+  /* the chrome/sidebar surface: the .site-nav recipe (styles.css) —
+     an opaque #fbfbfb so nothing sliding under it ever shows through */
+  --shell-surface: #fbfbfb;
+  --shell-line:    #d9d9d9;
+  --shell-dim:     #9a9a9a;               /* group labels, right-hand meta */
+}
+
+/* ---- the window ----
+   Absolutely placed so stage-fit can translate it without fighting
+   any flow; sized here too, so the very first paint is already the
+   right shape (the contents arrive a frame later — see js/shell.js). */
+.shell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width:  calc(2 * var(--shell-bd) + var(--shell-rail) + var(--shell-gap)
+               + var(--card-w) + var(--shell-gap));
+  height: calc(2 * var(--shell-bd) + var(--shell-chrome-h) + var(--shell-gap)
+               + var(--card-h) + var(--shell-gap));
+  display: flex;
+  flex-direction: column;
+  background: var(--shell-surface);
+  border: var(--shell-bd) solid var(--shell-line);
+  border-radius: 12px;
+  /* a real window sits ON the desktop — one soft drop, nothing more */
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+html.rail-collapsed .shell {
+  width: calc(2 * var(--shell-bd) + var(--shell-rail-min) + var(--shell-gap)
+              + var(--card-w) + var(--shell-gap));
+}
+
+/* nothing inside the shell may scroll the shell itself: a programmatic
+   scrollIntoView or an input.focus() deep in a page must never shove
+   the window off its own centre */
+.shell,
+.shell-body,
+.shell-card {
+  overflow: hidden;
+  scroll-behavior: auto;
+}
+
+/* ============================================================
+   Chrome strip
+   ============================================================ */
+.shell-chrome {
+  flex: none;
+  height: var(--shell-chrome-h);
+  display: flex;
+  align-items: center;
+  border-bottom: 0.648px solid var(--shell-line);
+  opacity: 0;
+  transition: opacity var(--t-micro) ease;
+}
+.shell-chrome.is-lit { opacity: 1; }
+
+/* the left cluster occupies exactly the sidebar's column, so the tab
+   below starts flush with the card's left edge — as in the reference.
+   The floor is the run of buttons' own width (14 + 52 + 24+26 + 24+26 +
+   6+26 = 198): a collapsed rail must not slide the tab onto them. */
+.chrome-left {
+  width: max(var(--shell-rail), 198px);
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  transition: width var(--t-glide) var(--ease-glide);
+}
+html.rail-collapsed .chrome-left { width: max(var(--shell-rail-min), 198px); }
+
+/* ---- traffic lights: quiet until you look at the window ---- */
+.chrome-lights {
+  display: flex;
+  gap: 8px;
+  flex: none;
+  opacity: 0.55;
+  transition: opacity var(--t-micro) ease;
+}
+.shell-chrome:hover .chrome-lights { opacity: 1; }
+.chrome-lights i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.chrome-lights i:nth-child(1) { background: #ff5f57; }
+.chrome-lights i:nth-child(2) { background: #febc2e; }
+.chrome-lights i:nth-child(3) { background: #28c840; }
+
+/* ---- chrome buttons (rail toggle · back · forward · new tab) ---- */
+.chrome-btn {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 7px;
+  color: #8a8a8a;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
+}
+.chrome-btn:hover,
+.chrome-btn:focus-visible {
+  color: var(--orange);
+  background: rgba(253, 143, 59, 0.13);
+}
+.chrome-btn[disabled] {
+  color: #cfcfcf;
+  cursor: default;
+  background: none;
+}
+.chrome-btn svg { display: block; }
+/* the rail toggle leads the button run; back/forward pair up tighter */
+.chrome-btn[data-act='rail'] { margin-left: 24px; }
+.chrome-btn[data-act='back'] { margin-left: 24px; }
+.chrome-btn[data-act='fwd']  { margin-left: 6px; }
+
+/* ---- the tab ---- */
+.chrome-tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: var(--shell-gap);
+  padding-right: var(--shell-gap);
+}
+.chrome-tab {
+  flex: none;
+  max-width: 320px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 7px;
+  background: var(--bg);
+  border: 1px solid var(--shell-line);
+}
+.chrome-tab img {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 50%;
+}
+.tab-label {
+  font-size: 13px;
+  line-height: 1;
+  color: #5e5e5e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the section the page is currently on, trailing the page's own name */
+.tab-label .tab-sec { color: var(--shell-dim); }
+
+/* ============================================================
+   Sidebar
+   ============================================================ */
+.shell-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.shell-side {
+  width: var(--shell-rail);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 8px 8px;
+  opacity: 0;
+  transition: width var(--t-glide) var(--ease-glide),
+              opacity var(--t-fade) ease;
+}
+.shell-side.is-lit { opacity: 1; }
+html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
+
+/* ---- identity ---- */
+.side-id {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 46px;
+  padding: 0 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color var(--t-micro) ease;
+}
+.side-id:hover { background: rgba(0, 0, 0, 0.035); }
+.side-avatar {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.side-id-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+.side-name,
+.side-role {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-name { font-size: 13px; line-height: 16px; color: var(--ink); }
+.side-role { font-size: 11px; line-height: 13px; color: var(--shell-dim); }
+
+/* ---- the scrolling middle (groups land here, built by shell.js) ---- */
+.side-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e2e2 transparent;
+}
+.side-scroll::-webkit-scrollbar { width: 6px; }
+.side-scroll::-webkit-scrollbar-thumb {
+  background: #e2e2e2;
+  border-radius: 3px;
+}
+.side-scroll::-webkit-scrollbar-track { background: none; }
+
+/* ---- the ask pill (the reference's "New chat") ---- */
+.side-foot {
+  flex: none;
+  padding-top: 8px;
+}
+.ask-pill {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 13px;
+  color: #5e5e5e;
+  text-decoration: none;
+  background: var(--bg);
+  border: 1px solid var(--shell-line);
+  border-radius: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
+              border-color var(--t-micro) ease,
+              transform var(--t-snap) var(--ease-spring);
+}
+.ask-pill:hover,
+.ask-pill:focus-visible {
+  color: var(--orange);
+  background: rgba(253, 143, 59, 0.13);
+  border-color: rgba(253, 143, 59, 0.35);
+}
+.ask-pill:active { transform: scale(0.985); }
+.ask-pill svg { flex: none; }
+.ask-pill .ask-label {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ask-kbd {
+  flex: none;
+  font-size: 11px;
+  color: var(--shell-dim);
+  letter-spacing: 0.02em;
+}
+/* collapsed: every row keeps only its glyph, centred on the strip */
+html.rail-collapsed :is(.ask-pill, .side-id) { padding: 0; justify-content: center; }
+html.rail-collapsed :is(.ask-label, .ask-kbd, .side-id-text) { display: none; }
+
+/* ============================================================
+   Content card — the page's own 1280×832 stage, untouched
+   ============================================================ */
+.shell-card {
+  flex: 1;
+  min-width: 0;
+  margin: var(--shell-gap);
+  background: var(--bg);
+  border-radius: 10px;
+  /* the hairline is DRAWN, not a border: under the global border-box
+     sizing a real border would eat 2px out of the card and the stage
+     inside would land at 1278×830 instead of the pinned 1280×832 */
+  box-shadow: 0 0 0 1px var(--shell-line), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+/* a positioned, exactly-card-sized containing block: this is what
+   keeps a page's absolutely-placed chrome (and nextlevel's lightbox)
+   inside the card instead of loose in the window */
+.shell-card > main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* ============================================================
+   MOBILE (≤700px) — the shell is a desktop conceit. A fake browser
+   inside a real one is nonsense, so it dissolves entirely and the
+   page goes back to being a plain document under the bottom tab bar.
+   The `!important` is belt-and-braces: it guarantees no position:fixed
+   descendant is ever containing-block'd to a transformed .shell.
+   ============================================================ */
+@media (max-width: 700px) {
+  .shell {
+    position: static;
+    transform: none !important;
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    background: var(--bg);
+  }
+  .shell-chrome,
+  .shell-side { display: none; }
+  .shell-body { display: block; overflow: visible; }
+  .shell-card {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .shell-card > main {
+    height: auto;
+    overflow: visible;
+    border-radius: 0;
+  }
+}

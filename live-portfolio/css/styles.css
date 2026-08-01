@@ -75,10 +75,12 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* the stage now fills the shell's content card, which is pinned to an
+   exact 1280×832 — so every Figma-pinned offset lands where it was drawn
+   instead of stretching with the viewport (js/stage-fit.js) */
 .stage {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   opacity: 0;
