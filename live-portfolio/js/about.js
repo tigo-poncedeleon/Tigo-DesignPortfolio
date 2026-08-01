@@ -158,151 +158,33 @@
     });
   }
 
+  // ---- the portrait. The engine lives in js/portrait.js so the rail's 26px
+  // head and this 330px one are the same renderer at two sizes; the knobs
+  // below are still line-portrait.js's, passed through unchanged. ----
   const view = document.getElementById('about-face');
   const fallback = document.querySelector('.about-portrait img');
-  if (!view || !view.getContext) return;
-  const vctx = view.getContext('2d');
+  if (!view || !view.getContext || !window.Portrait) return;
 
-  // ---- line-portrait.js knobs, verbatim (light-mode path) ------------------
-  const SRC = 'Media/face_cutout.webp';
-  const SRC_W = 930, SRC_H = 1185;
-  const SAMPLE_W = 320;
-  const TEX_W = 1024;
-  const TEX_H = Math.round(TEX_W * (SRC_H / SRC_W));
-  const N_LINES = 150;
-  const STEP = 2;
-  const MIN_THICK = 0.7;
-  const MAX_THICK_FRAC = 0.92;
-  const WAVE_AMP = 0.8;
-  const WAVE_LEN = 26;
-  const ALPHA_CUTOFF = 0.35;
-  const TONE_GAMMA = 1.15;
-  const TONE_LOW_PCT = 0.04;
-  const TONE_HIGH_PCT = 0.97;
-  const INK = '#141414';
-  // full-screen look range: the far edge of the screen turns the head to
-  // a near-profile (83° / 46°) — hard-capped below 90°, where a flat
-  // plane would mirror-invert (the "flip" this replaces)
-  const MAX_Y = 1.45;         // rad ≈ 83°
-  const MAX_X = 0.8;          // rad ≈ 46°
-  const LERP = 0.06;
-  const IDLE_DELAY = 400;
-  const IDLE_AMP_Y = 0.06;
-  const IDLE_AMP_X = 0.03;
-  const IDLE_SPEED_Y = 0.5;
-  const IDLE_SPEED_X = 0.4;
-
-  // ---- source sampling (verbatim) ------------------------------------------
-  let S = null;
-  let srcImg = null;
-
-  function buildSamples(img) {
-    const w = SAMPLE_W;
-    const h = Math.round(w * (SRC_H / SRC_W));
-    const off = document.createElement('canvas');
-    off.width = w; off.height = h;
-    const octx = off.getContext('2d');
-    octx.drawImage(img, 0, 0, w, h);
-    const data = octx.getImageData(0, 0, w, h).data;
-
-    const raw = new Float32Array(w * h);
-    const inside = new Uint8Array(w * h);
-    const insideVals = [];
-    for (let i = 0, p = 0; i < w * h; i++, p += 4) {
-      const a = data[p + 3] / 255;
-      const lum = (0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2]) / 255;
-      const d = 1 - lum;
-      raw[i] = d;
-      if (a > ALPHA_CUTOFF) { inside[i] = 1; insideVals.push(d); }
-    }
-    insideVals.sort((a, b) => a - b);
-    const lo = insideVals[Math.floor(insideVals.length * TONE_LOW_PCT)] || 0;
-    const hi = insideVals[Math.floor(insideVals.length * TONE_HIGH_PCT)] || 1;
-    S = { w, h, raw, inside, lo, hi: Math.max(hi, lo + 1e-3) };
-  }
-
-  function toneAt(u, v) {
-    let x = (u * S.w) | 0, y = (v * S.h) | 0;
-    if (x < 0) x = 0; else if (x >= S.w) x = S.w - 1;
-    if (y < 0) y = 0; else if (y >= S.h) y = S.h - 1;
-    const idx = y * S.w + x;
-    if (!S.inside[idx]) return -1;
-    let t = (S.raw[idx] - S.lo) / (S.hi - S.lo);
-    if (t < 0) t = 0; else if (t > 1) t = 1;
-    return Math.pow(t, TONE_GAMMA);
-  }
-
-  // ---- hedcut baker (verbatim, minus the dark-mode branch) -----------------
-  const off = document.createElement('canvas');
-  off.width = TEX_W; off.height = TEX_H;
-  const octx = off.getContext('2d');
-
-  function bakeTexture() {
-    octx.clearRect(0, 0, TEX_W, TEX_H);
-    if (!S) return off;
-
-    // opaque page-coloured silhouette base (identical on the page; kept
-    // from the original so the ribbons sit on solid ground)
-    if (srcImg) {
-      const bg = getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fdfdfd';
-      octx.save();
-      octx.drawImage(srcImg, 0, 0, TEX_W, TEX_H);
-      octx.globalCompositeOperation = 'source-in';
-      octx.fillStyle = bg;
-      octx.fillRect(0, 0, TEX_W, TEX_H);
-      octx.restore();
-    }
-
-    octx.fillStyle = INK;
-    const spacing = TEX_H / N_LINES;
-    const maxThick = spacing * MAX_THICK_FRAC;
-    const k = (2 * Math.PI) / WAVE_LEN;
-
-    for (let li = 0; li < N_LINES; li++) {
-      const baseY = (li + 0.5) * spacing;
-      const v = (li + 0.5) / N_LINES;
-      const phase = li * 0.9;
-      let top = null, bot = null;
-
-      const flush = () => {
-        if (!top || top.length < 2) { top = bot = null; return; }
-        octx.beginPath();
-        octx.moveTo(top[0][0], top[0][1]);
-        for (let i = 1; i < top.length; i++) octx.lineTo(top[i][0], top[i][1]);
-        for (let i = bot.length - 1; i >= 0; i--) octx.lineTo(bot[i][0], bot[i][1]);
-        octx.closePath();
-        octx.fill();
-        top = bot = null;
-      };
-
-      for (let x = 0; x <= TEX_W; x += STEP) {
-        const t = toneAt(x / TEX_W, v);
-        if (t < 0) { flush(); continue; }
-        const cy = baseY + WAVE_AMP * Math.sin(x * k + phase);
-        const half = (MIN_THICK + t * (maxThick - MIN_THICK)) / 2;
-        if (!top) { top = []; bot = []; }
-        top.push([x, cy - half]);
-        bot.push([x, cy + half]);
-      }
-      flush();
-    }
-    return off;
-  }
-
-  function paint() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = view.clientWidth, h = view.clientHeight;
-    view.width = Math.round(w * dpr);
-    view.height = Math.round(h * dpr);
-    vctx.clearRect(0, 0, view.width, view.height);
-    vctx.drawImage(off, 0, 0, TEX_W, TEX_H, 0, 0, view.width, view.height);
-  }
-
-  // ---- look-at-cursor (line-portrait.js motion, CSS-rendered) --------------
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.Portrait.render(view, {
+    sampleW: 320,
+    texW: 1024,
+    nLines: 150,
+    step: 2,
+    minThick: 0.7,
+    maxThickFrac: 0.92,
+    waveAmp: 0.8,
+    waveLen: 26,
+  }).then(() => {
+    if (fallback) fallback.style.display = 'none';
+  }).catch(() => {
+    // a tainted canvas (file://) or a missing source: the pre-baked webp
+    // underneath is already showing, so there is nothing to undo
+    window.Portrait.kill();
+  });
 
   // click the face and it takes a full spin — one revolution, then back
   // to quietly watching the cursor
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const figEl = document.querySelector('.about-portrait');
   if (figEl && !reduceMotion) {
     figEl.addEventListener('click', () => {
@@ -312,52 +194,20 @@
         () => figEl.classList.remove('is-spun'), { once: true });
     });
   }
-  let targetRotX = 0, targetRotY = 0;
-  let rotX = 0, rotY = 0;
-  let lastMoveTime = -Infinity;
 
-  if (!reduceMotion) {
-    window.addEventListener('mousemove', (e) => {
-      const r = view.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      // normalise the cursor's offset by the room available on ITS side of
-      // the face, so either screen edge = the full (sub-90°) turn
-      const runX = e.clientX < cx ? cx : Math.max(1, window.innerWidth - cx);
-      const runY = e.clientY < cy ? cy : Math.max(1, window.innerHeight - cy);
-      const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / runX));
-      const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / runY));
-      targetRotY = nx * MAX_Y;
-      targetRotX = ny * MAX_X;
-      lastMoveTime = performance.now();
-    });
+  // full-screen look range: the far edge of the screen turns the head to a
+  // near-profile (83° / 46°) — hard-capped below 90°, where a flat plane
+  // would mirror-invert (the "flip" this replaces)
+  window.Portrait.look(view, {
+    maxY: 1.45,          // rad ~ 83 deg
+    maxX: 0.8,           // rad ~ 46 deg
+    perspective: 900,
+    lerp: 0.06,
+    idleDelay: 400,
+    idleAmpY: 0.06,
+    idleAmpX: 0.03,
+    idleSpeedY: 0.5,
+    idleSpeedX: 0.4,
+  });
 
-    (function loop() {
-      const now = performance.now();
-      if (now - lastMoveTime > IDLE_DELAY) {
-        const t = now / 1000;
-        targetRotY = Math.sin(t * IDLE_SPEED_Y) * IDLE_AMP_Y;
-        targetRotX = Math.sin(t * IDLE_SPEED_X) * IDLE_AMP_X;
-      }
-      rotY += (targetRotY - rotY) * LERP;
-      rotX += (targetRotX - rotX) * LERP;
-      // CSS rotateX runs opposite to the three.js convention — flip it
-      view.style.transform =
-        'perspective(900px) rotateY(' + rotY + 'rad) rotateX(' + -rotX + 'rad)';
-      requestAnimationFrame(loop);
-    })();
-  } else {
-    view.style.transform = 'perspective(900px) rotateY(0.12rad)';
-  }
-
-  // ---- boot ----------------------------------------------------------------
-  const img = new Image();
-  img.onload = () => {
-    srcImg = img;
-    buildSamples(img);
-    bakeTexture();
-    paint();
-    if (fallback) fallback.style.display = 'none';
-  };
-  img.src = SRC;
 })();
