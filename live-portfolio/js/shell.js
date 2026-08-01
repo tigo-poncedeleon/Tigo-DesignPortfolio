@@ -163,7 +163,6 @@
         { sec: 'snake', href: 'play.html#snake', text: 'Snake', icon: 'snake' },
         { sec: 'flappy', href: 'play.html#flappy', text: 'Flappy Bird', icon: 'flappy' },
       ] },
-      { id: 'ai', href: 'ai.html', text: 'AI', icon: 'ai' },
     ] },
     { label: 'elsewhere', rows: [
       { href: 'PoncedeLeon-Resume.pdf', text: 'Resume', icon: 'resume', ext: true },
@@ -222,6 +221,14 @@
       '<div class="chrome-left">' +
         '<button class="chrome-btn" type="button" data-act="rail" ' +
           'aria-label="Toggle sidebar">' + svg(G.rail) + '</button>' +
+        // where the visitor is, and the time there — a button, because it
+        // opens the globe (js/globe.js)
+        '<button class="chrome-place" type="button" data-globe ' +
+          'aria-label="Where you are">' +
+          '<span class="now-dot" aria-hidden="true"></span>' +
+          '<span class="chrome-place-city" data-clock="state">Oregon</span>' +
+          '<span class="chrome-place-time" data-clock="time">--:--:-- --</span>' +
+        '</button>' +
       '</div>' +
       '<div class="chrome-tabs" id="chrome-tabs">' +
         '<button class="chrome-btn" type="button" data-act="back" ' +
@@ -254,17 +261,58 @@
     });
   };
 
-  // ---- the rail collapses to an icon strip; stage-fit re-reads the frame
+  // ---- the rail: closed means CLOSED, and its width belongs to the visitor
   const RAIL_KEY = 'shell.rail';
+  const WIDTH_KEY = 'shell.railw';
+  const MIN = 180, MAX = 420;
+
   const toggleRail = () => {
-    const next = !root.classList.contains('rail-collapsed');
-    root.classList.toggle('rail-collapsed', next);
+    const next = !root.classList.contains('rail-closed');
+    root.classList.toggle('rail-closed', next);
     try { localStorage.setItem(RAIL_KEY, next ? '1' : '0'); } catch (err) { /* private mode */ }
     if (window.__shellFit) window.__shellFit();
   };
   try {
-    if (localStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-collapsed');
-  } catch (err) { /* private mode — the rail just starts open */ }
+    if (localStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-closed');
+    const w = parseFloat(localStorage.getItem(WIDTH_KEY));
+    if (w >= MIN && w <= MAX) root.style.setProperty('--shell-rail', w + 'px');
+  } catch (err) { /* private mode — the rail just starts at its default */ }
+
+  // Dragging the seam resizes the rail, and the card reflows underneath in
+  // the same frame — stage-fit is watching the card with a ResizeObserver,
+  // so the stage rescales continuously rather than snapping when you let go.
+  const wireGrip = (grip) => {
+    let id = null;
+    grip.addEventListener('pointerdown', (e) => {
+      id = e.pointerId;
+      grip.setPointerCapture(id);
+      root.classList.add('rail-dragging');
+      e.preventDefault();
+    });
+    grip.addEventListener('pointermove', (e) => {
+      if (id === null) return;
+      const w = Math.max(MIN, Math.min(MAX,
+        e.clientX - grip.parentNode.getBoundingClientRect().left));
+      root.style.setProperty('--shell-rail', w + 'px');
+    });
+    const end = () => {
+      if (id === null) return;
+      try { grip.releasePointerCapture(id); } catch (err) { /* already gone */ }
+      id = null;
+      root.classList.remove('rail-dragging');
+      try {
+        localStorage.setItem(WIDTH_KEY,
+          parseFloat(getComputedStyle(root).getPropertyValue('--shell-rail')));
+      } catch (err) { /* private mode — the width just forgets */ }
+    };
+    grip.addEventListener('pointerup', end);
+    grip.addEventListener('pointercancel', end);
+    // double-click the seam to put it back where it started
+    grip.addEventListener('dblclick', () => {
+      root.style.removeProperty('--shell-rail');
+      try { localStorage.removeItem(WIDTH_KEY); } catch (err) { /* fine */ }
+    });
+  };
 
   // ============================================================
   // Sidebar
@@ -307,39 +355,14 @@
   // only if the scoreboard has already been fetched this session by
   // play.html — the site records. Eight pages have no scoreboard and are
   // not going to ask for one.
-  const RECORD_LABEL = { pong: 'longest rally', snake: 'longest snake', flappy: 'longest run' };
-  const readRecords = () => {
-    try { return JSON.parse(sessionStorage.getItem('shell.records') || 'null'); }
-    catch (err) { return null; }
-  };
-
-  const nowHTML = () => {
-    let h =
-      // a button, not a link — it opens a panel (js/globe.js)
-      '<button class="now-row is-globe" type="button" data-globe ' +
-        'aria-label="Where you are">' +
-        '<span class="now-dot" aria-hidden="true"></span>' +
-        '<span class="now-text" data-clock="state">Oregon</span>' +
-        '<span class="now-meta" data-clock="time">--:--:-- --</span>' +
-      '</button>' +
-      '<a class="now-row is-link" href="vicino.html">' +
-        '<span class="now-dot is-live" aria-hidden="true"></span>' +
-        '<span class="now-text">Vicino AI</span>' +
-        '<span class="now-meta">intern</span>' +
-      '</a>' +
-      '<div class="now-scores" id="now-scores">' + scoreRows(readRecords()) + '</div>';
-    return h;
-  };
-
-  const scoreRows = (rec) => {
-    if (!rec) return '';
-    return Object.keys(RECORD_LABEL).filter((g) => rec[g]).map((g) =>
-      '<a class="now-row is-link" href="play.html#' + g + '">' +
-        '<span class="now-dot" aria-hidden="true"></span>' +
-        '<span class="now-text">' + RECORD_LABEL[g] + '</span>' +
-        '<span class="now-meta">' + esc(rec[g].score) + ' · ' + esc(rec[g].initials) + '</span>' +
-      '</a>').join('');
-  };
+  // NOW is what is happening now. The location moved up into the chrome, and
+  // the high scores went entirely — a leaderboard is trivia, not status.
+  const nowHTML = () =>
+    '<a class="now-row is-link" href="vicino.html">' +
+      '<span class="now-dot is-live" aria-hidden="true"></span>' +
+      '<span class="now-text">Vicino AI</span>' +
+      '<span class="now-meta">intern</span>' +
+    '</a>';
 
   const buildSide = () => {
     if (!side) return;
@@ -383,6 +406,8 @@
       const link = side.querySelector('.side-link[data-page="' + id + '"]');
       if (link && link !== cur) link.closest('.side-row').classList.add('is-trail');
     });
+    // a page that has no sections keeps the accent on itself; one that does
+    // will hand it down as soon as its scroll-spy reports a section
 
     // twisties toggle without navigating; everything else is a real link
     side.addEventListener('click', (e) => {
@@ -563,13 +588,6 @@
     // pages keep working with shell.js absent, the same posture as
     // nav-touch.js. Duplicating five IntersectionObservers here would
     // mean two sources of truth that disagree at threshold boundaries.
-    // play.html has the live scoreboard; when it lands, the rail catches up
-    // without waiting for the next page load
-    window.addEventListener('shell:records', (e) => {
-      const box = document.getElementById('now-scores');
-      if (box) box.innerHTML = scoreRows(e.detail.records);
-    });
-
     window.addEventListener('shell:section', (e) => markCurrent(e.detail.id));
     window.addEventListener('shell:progress', (e) => {
       const kids = side.querySelector('.side-row.is-current')
@@ -606,6 +624,14 @@
   buildChrome();
   buildSide();
   buildAI();
+
+  const grip = document.createElement('div');
+  grip.className = 'side-grip';
+  grip.setAttribute('role', 'separator');
+  grip.setAttribute('aria-orientation', 'vertical');
+  grip.title = 'Drag to resize · double-click to reset';
+  if (side && side.parentNode) side.parentNode.insertBefore(grip, side.nextSibling);
+  wireGrip(grip);
 
   // the rail's head watches the cursor, the about page's manner at 1/13
   // the size (js/portrait.js explains why the numbers differ)

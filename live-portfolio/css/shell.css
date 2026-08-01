@@ -15,8 +15,9 @@
 
 :root {
   --shell-chrome-h: 40px;
-  --shell-rail:     260px;
-  --shell-rail-min: 52px;
+  --shell-rail:     260px;       /* the visitor owns this — drag the seam */
+  --shell-rail-min: 180px;
+  --shell-rail-max: 420px;
   --card-w:         1280px;
   --card-h:         832px;
   --card-pad:       0px;         /* breathing room inside the card */
@@ -87,15 +88,18 @@ html.intro-pending :is(.shell-chrome, .shell-side) { transition: none; }
    traffic lights are gone: a full-bleed app has no window to close, and
    three dots that do nothing are a lie about what this is. */
 .chrome-left {
-  width: var(--shell-rail);
+  width: calc(var(--shell-rail) + 1px);   /* +1 for the grip's hairline */
   flex: none;
   display: flex;
   align-items: center;
+  gap: 6px;
   height: 100%;
-  padding-left: 12px;
+  padding-left: 10px;
+  padding-right: 8px;
   transition: width var(--t-glide) var(--ease-glide);
 }
-html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
+/* closed: the toggle and the location keep only the room they need */
+html.rail-closed .chrome-left { width: auto; }
 
 /* ---- chrome buttons (rail toggle · back · forward · new tab) ---- */
 .chrome-btn {
@@ -132,6 +136,40 @@ html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
 .chrome-btn[data-act='fwd'] { align-self: center; margin-bottom: 3px; }
 .chrome-btn[data-act='back'] { margin-left: 4px; }
 .chrome-btn[data-act='fwd']  { margin-left: 2px; margin-right: 6px; }
+
+/* ---- where you are, in the top bar. Opens the globe (js/globe.js). ---- */
+.chrome-place {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  color: #5e5e5e;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
+}
+.chrome-place:hover,
+.chrome-place:focus-visible {
+  color: var(--orange);
+  background: rgba(253, 143, 59, 0.13);
+}
+.chrome-place-city { overflow: hidden; text-overflow: ellipsis; }
+.chrome-place-time {
+  color: var(--shell-dim);
+  font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
+}
+/* the chip is the first thing to give ground when the rail is narrow */
+@media (max-width: 1100px) { .chrome-place-time { display: none; } }
 
 /* ---- the tab strip ----
    The active tab is the PAGE colour and merges into the card below it.
@@ -240,15 +278,16 @@ html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
 .tab-label .tab-sec { color: var(--shell-dim); }
 /* the label fades UNDER the close button rather than fighting it */
 .chrome-tab:hover .tab-label {
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent);
-          mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
+          mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
 }
 
+/* the same box and the same glyph weight as the + it sits opposite */
 .tab-close {
   position: absolute;
-  right: 5px;
-  width: 17px;
-  height: 17px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -261,6 +300,7 @@ html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
   transition: opacity var(--t-micro) ease, background-color var(--t-micro) ease,
               color var(--t-micro) ease;
 }
+.tab-close svg { width: 20px; height: 20px; }
 .chrome-tab:hover .tab-close,
 .tab-close:focus-visible { opacity: 1; }
 .tab-close:hover { background: rgba(0, 0, 0, 0.07); color: var(--ink); }
@@ -301,7 +341,35 @@ html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
               opacity var(--t-fade) ease;
 }
 .shell-side.is-lit { opacity: 1; }
-html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
+/* while dragging, the width must track the pointer exactly — a transition
+   here would make the handle feel like it is on elastic */
+html.rail-dragging .shell-side,
+html.rail-dragging .chrome-left { transition: none; }
+
+/* Closed means CLOSED — the rail is gone and the page has the whole
+   screen, rather than shrinking to a strip of icons that still costs 52px. */
+html.rail-closed .shell-side,
+html.rail-closed .side-grip { display: none; }
+
+/* ---- the seam, and the handle that is also the seam ----
+   A 1px line the visitor can grab. The hit area is 9px wide and centred on
+   it, because a 1px target is not a target; the line itself stays 1px so
+   nothing about the resting design gets heavier to accommodate the grab. */
+.side-grip {
+  position: relative;
+  flex: none;
+  width: 1px;
+  background: var(--shell-line);
+  cursor: col-resize;
+  transition: background-color var(--t-micro) ease;
+}
+.side-grip::before {
+  content: '';
+  position: absolute;
+  inset: 0 -4px;
+}
+.side-grip:hover,
+html.rail-dragging .side-grip { background: var(--orange); }
 
 /* ---- identity ---- */
 .side-id {
@@ -433,9 +501,7 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
    Flies out to the RIGHT of the rail, over the card.
    ============================================================ */
 .globe-card {
-  position: absolute;
-  left: calc(100% - 10px);
-  top: 84px;
+  position: fixed;              /* js/globe.js pins it under its trigger */
   z-index: 70;
   width: 208px;
   padding: 14px 16px 13px;
@@ -602,46 +668,27 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   text-decoration: none;
   border-radius: inherit;
 }
-/* hover keeps the sitewide warm wash but drops its ring — in a list this
-   dense a bordered chip on every pass reads as noise */
+/* Hover is the ONLY thing that fills. Being on a page colours its text —
+   it does not put a chip under it, because a chip you cannot dismiss reads
+   as a stuck hover state rather than as "you are here". */
 .side-row:hover,
 .side-row:has(.side-link:focus-visible) {
   color: var(--orange);
   background: rgba(253, 143, 59, 0.13);
 }
-/* you-are-here: the full chip, ring and all. The trail is the ancestor
-   chain — lit, but never mistaken for the destination. */
-.side-row.is-current {
-  color: var(--orange);
-  background: rgba(253, 143, 59, 0.13);
-  box-shadow: inset 0 0 0 1px rgba(253, 143, 59, 0.35);
-}
+
+/* you are here: the accent, and nothing else */
+.side-row.is-current,
+.side-row.is-here { color: var(--orange); }
+
+/* The trail is the chain of parents you are inside — Work above PantryPal,
+   Play above Pong. It stays INK: only the deepest thing you are actually
+   looking at earns the accent, or "Play / Pong" would light two rows for
+   one destination. */
 .side-row.is-trail { color: var(--ink); }
+/* the page row hands the accent down the moment a section claims it */
+.side-scroll.has-here .side-row.is-current { color: var(--ink); }
 
-/* the section the page is scrolled to. ONE chip at a time — the site's
-   rule everywhere — so when a section is lit the page row above it steps
-   back to plain accent text and hands the chip down. */
-.side-row.is-here {
-  color: var(--orange);
-  background: rgba(253, 143, 59, 0.13);
-  box-shadow: inset 0 0 0 1px rgba(253, 143, 59, 0.35);
-}
-.side-scroll.has-here .side-row.is-current {
-  background: none;
-  box-shadow: none;
-}
-
-/* while the cursor is on some other row the resting chip steps aside,
-   so only one row is ever lit (the site-nav's manner) */
-.side-scroll:hover :is(.side-row.is-current, .side-row.is-here):not(:hover) {
-  color: var(--ink);
-  background: none;
-  box-shadow: none;
-}
-
-/* ONE box, and everything is measured by it — line glyphs, filled brand
-   marks and the case studies' <img> logos alike. The svg() helper stops
-   emitting width/height entirely, so a glyph cannot be the wrong size. */
 .side-ico {
   flex: none;
   width: 18px;
@@ -663,9 +710,7 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
 /* the Letterboxd discs are cut with the row's ACTUAL background, so the
    mark stays correct on the furniture and on the warm hover chip alike */
 .side-row { --ico-gap: var(--shell-surface); }
-.side-row:hover,
-.side-row.is-current,
-.side-row.is-here { --ico-gap: var(--wash-solid); }
+.side-row:hover { --ico-gap: var(--wash-solid); }
 
 /* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which
    retired with the rails, now serving the tree that replaced them. The
@@ -777,7 +822,7 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   text-decoration: none;
   background: var(--bg);
   border: 1px solid var(--shell-line);
-  border-radius: 20px;
+  border-radius: 9px;           /* the tab's corner, not a lozenge */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
@@ -804,9 +849,6 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   color: var(--shell-dim);
   letter-spacing: 0.02em;
 }
-/* collapsed: every row keeps only its glyph, centred on the strip */
-html.rail-collapsed :is(.ask-pill, .side-id) { padding: 0; justify-content: center; }
-html.rail-collapsed :is(.ask-label, .ask-kbd, .side-id-text) { display: none; }
 
 /* ============================================================
    Content card — the page's own 1280×832 stage, untouched

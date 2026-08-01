@@ -35,7 +35,9 @@ window.ShellTabs = (() => {
   const here = (seed) => ({
     page: seed.page,
     title: seed.title,
-    href: location.pathname.split('/').pop() + location.search + location.hash,
+    // '/' has no last segment, and an empty href navigates nowhere
+    href: (location.pathname.split('/').pop() || 'index.html') +
+      location.search + location.hash,
   });
 
   const load = () => {
@@ -85,10 +87,23 @@ window.ShellTabs = (() => {
     save();
   };
 
-  /* ---- go: mutate, remember what we asked for, then navigate ---- */
+  /* ---- go: mutate, then navigate — unless we are already there.
+     location.assign() to the current URL is a silent no-op, which is what
+     made switching between two tabs on the same page look broken. A real
+     browser does not reload in that case either; it just changes which tab
+     is lit. So: same URL, no navigation, just repaint. ---- */
+  const sameAsHere = (href) => {
+    const a = document.createElement('a'); a.href = href;
+    return a.pathname === location.pathname && a.search === location.search
+      && a.hash === location.hash;
+  };
   const go = (href) => {
+    if (sameAsHere(href)) { delete rec.want; save(); render(); return; }
     rec.want = href;
     save();
+    // paint the new active tab BEFORE the load starts, so the click reads as
+    // instant rather than waiting on the network
+    render();
     location.assign(href);
   };
 
@@ -144,9 +159,11 @@ window.ShellTabs = (() => {
         '<span class="tab-label">' + esc(t.title) + '</span>' +
         '<button class="tab-close" type="button" tabindex="-1" ' +
           'aria-label="Close ' + esc(t.title) + '">' +
-          '<svg width="11" height="11" viewBox="0 0 26 26" fill="none" ' +
-          'stroke="currentColor" stroke-width="2.6" stroke-linecap="round" ' +
-          'aria-hidden="true"><path d="M7 7 L19 19"/><path d="M19 7 L7 19"/></svg>' +
+          // the same 20px box and 2.2 weight the + wears, so the two read as
+          // one pair rather than two unrelated glyphs
+          '<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" ' +
+          'stroke-width="2.2" stroke-linecap="round" aria-hidden="true">' +
+          '<path d="M7.5 7.5 L18.5 18.5"/><path d="M18.5 7.5 L7.5 18.5"/></svg>' +
         '</button>' +
       '</span>';
     }).join('') +
@@ -192,11 +209,15 @@ window.ShellTabs = (() => {
       const el = document.activeElement;
       if (el && /^(INPUT|TEXTAREA)$/.test(el.tagName)) return;
 
-      const k = e.key.toLowerCase();
-      if (k === 't') { e.preventDefault(); open(); return; }
-      if (k === 'w') { e.preventDefault(); close(rec.active); return; }
-      if (/^[1-9]$/.test(k)) {
-        const n = +k;
+      // e.code, NOT e.key: macOS turns Option+T into a dead character, so
+      // e.key is '†' and every comparison here quietly missed. e.code is the
+      // physical key and is immune to the modifier's remapping.
+      const c = e.code;
+      if (c === 'KeyT') { e.preventDefault(); open(); return; }
+      if (c === 'KeyW') { e.preventDefault(); close(rec.active); return; }
+      const digit = /^Digit([1-9])$/.exec(c);
+      if (digit) {
+        const n = +digit[1];
         const t = n === 9 ? rec.tabs[rec.tabs.length - 1] : rec.tabs[n - 1];
         if (t) { e.preventDefault(); activate(t.id); }
       }

@@ -48,16 +48,14 @@ window.PlayRecords = (function () {
     publish();
   }
 
-  /* ---- the shell's sidebar shows these on every page, but only play.html
-     ever loads this file. So the records are cached for the session and the
-     sidebar renders whatever it finds — no scoreboard fetch on eight pages
-     that have no scoreboard. Live pages also get an event. ---- */
+  /* ---- cached for the session so a second visit to play.html paints its
+     chips before the network answers. The rail used to mirror these; it no
+     longer does — a leaderboard is trivia, not status. ---- */
   var CACHE_KEY = 'shell.records';
   function publish() {
     if (!loaded) return;
     try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(records)); }
-    catch (err) { /* private mode — the sidebar simply shows nothing */ }
-    window.dispatchEvent(new CustomEvent('shell:records', { detail: { records: records } }));
+    catch (err) { /* private mode — the chips just wait for the fetch */ }
   }
 
   function refresh() {

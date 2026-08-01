@@ -12,8 +12,9 @@
 // the arc between them: Tigo, the visitor, and the distance. A relationship
 // needs no coastlines.
 (() => {
-  const side = document.getElementById('shell-side');
-  if (!side) return;
+  // the trigger lives in the top bar now, so the card hangs off the shell
+  const shell = document.getElementById('shell');
+  if (!shell) return;
 
   // The one place Tigo's own position is written down.
   const TIGO = { city: 'Chicago', lat: 41.8781, lon: -87.6298 };
@@ -122,7 +123,7 @@
       '<p class="globe-where" id="globe-where"></p>' +
       '<p class="globe-far" id="globe-far"></p>' +
       '<p class="globe-when" id="globe-when"></p>';
-    side.appendChild(card);
+    shell.appendChild(card);
     svgEl = card.querySelector('.globe');
   };
 
@@ -201,8 +202,16 @@
 
   /* ---- wiring: hover intent, click to pin, Escape and outside to close ---- */
   const wire = () => {
-    const row = side.querySelector('.now-row[data-globe]');
+    const row = document.querySelector('[data-globe]');
     if (!row) return;
+    // pin the card under whatever opened it
+    const place = () => {
+      const r = row.getBoundingClientRect();
+      card.style.left = Math.round(r.left) + 'px';
+      card.style.top = Math.round(r.bottom + 8) + 'px';
+    };
+    row.addEventListener('pointerenter', place);
+    row.addEventListener('click', place);
     let pinned = false;
     row.addEventListener('pointerenter', () => {
       clearTimeout(closeT);
