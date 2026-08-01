@@ -121,6 +121,67 @@
         'C8.5 22, 7.1 21.1, 6.5 19.7" />',
   };
 
+  // ---- The face, drawn rather than rendered.
+  //
+  // Same pen as the craft-card illustrations on about.html: one weight,
+  // round caps, no fill, every shape carrying pathLength so it draws
+  // itself in. Built on a 120x152 box laid out to the usual head
+  // proportions — hairline at 52, brow 66, eyes 78, nose base 98, mouth
+  // 112, chin 132 — and then pushed toward the photograph: the hair is the
+  // biggest shape on the page because it is the biggest shape on him, the
+  // brows are heavy and nearly straight, and the smile is open.
+  //
+  // One dashed guide survives from the construction, the way it does in
+  // every other illustration on the site: the vertical axis the face is
+  // built around.
+  const FACE_SVG =
+    '<svg class="face-art" viewBox="0 0 120 152" aria-hidden="true">' +
+      // the construction axis, stopped at the nose so it never cuts the smile
+      '<line class="face-guide" x1="60" y1="18" x2="60" y2="96" />' +
+
+      // The hair is the whole likeness, so it is drawn first and biggest.
+      // Its outer edge is deliberately LUMPY — a smooth arc there reads as a
+      // bald skull, which is exactly what the first attempt looked like.
+      // Each bulge is a curl catching the light.
+      '<path class="face-ink s1" pathLength="1" d="M25 70 C19 60, 17 48, 23 39 ' +
+        'C27 32, 33 34, 36 28 C40 21, 49 19, 55 23 C61 27, 66 19, 74 20 ' +
+        'C82 21, 86 29, 91 33 C98 38, 101 48, 99 58 C98 64, 97 67, 95 70" />' +
+      // where it breaks against the forehead — low, because his is low
+      '<path class="face-ink s2" pathLength="1" d="M27 63 C33 55, 39 60, 45 53 ' +
+        'C51 48, 57 56, 64 52 C71 48, 77 56, 84 54 C89 53, 93 58, 94 63" />' +
+      // curls, kept UP in the mass; any lower and they read as brow lines
+      '<path class="face-ink s3" pathLength="1" d="M32 45 C36 38, 43 40, 46 45" />' +
+      '<path class="face-ink s3" pathLength="1" d="M50 34 C55 28, 62 30, 65 35" />' +
+      '<path class="face-ink s3" pathLength="1" d="M70 43 C75 37, 82 39, 85 44" />' +
+      '<path class="face-ink s3" pathLength="1" d="M41 27 C46 22, 53 23, 56 28" />' +
+      '<path class="face-ink s3" pathLength="1" d="M73 27 C78 23, 85 26, 87 31" />' +
+
+      // jaw — round and broad, not the long oval a default head wants to be
+      '<path class="face-ink s1" pathLength="1" d="M28 64 C26 81, 31 98, 40 108 ' +
+        'C47 116, 53 120, 60 120 C67 120, 73 116, 80 108 C89 98, 94 81, 92 64" />' +
+      '<path class="face-ink s2" pathLength="1" d="M28 72 C21 72, 20 85, 28 87" />' +
+      '<path class="face-ink s2" pathLength="1" d="M92 72 C99 72, 100 85, 92 87" />' +
+
+      // brows: the heaviest strokes on the face, because they are on him too
+      '<path class="face-ink s2 is-brow" pathLength="1" d="M34 69 C40 64, 50 64, 56 68" />' +
+      '<path class="face-ink s2 is-brow" pathLength="1" d="M64 68 C70 64, 80 64, 86 69" />' +
+
+      '<path class="face-ink s3" pathLength="1" d="M39 79 C43 75, 50 75, 54 79" />' +
+      '<path class="face-ink s3" pathLength="1" d="M39 79 C43 82, 50 82, 54 79" />' +
+      '<path class="face-ink s3" pathLength="1" d="M66 79 C70 75, 77 75, 81 79" />' +
+      '<path class="face-ink s3" pathLength="1" d="M66 79 C70 82, 77 82, 81 79" />' +
+      '<circle class="face-dot" cx="46.5" cy="79" r="1.8" />' +
+      '<circle class="face-dot" cx="73.5" cy="79" r="1.8" />' +
+
+      '<path class="face-ink s3" pathLength="1" d="M58 86 C57 93, 55 97, 57 99 ' +
+        'C59 101, 62 101, 64 99" />' +
+
+      // an OPEN smile: a flat upper lip over a deep lower curve, so the two
+      // read as a gap rather than as one closed line
+      '<path class="face-ink s3" pathLength="1" d="M47 108 C54 105, 66 105, 73 108" />' +
+      '<path class="face-ink s3" pathLength="1" d="M47 108 C53 117, 67 117, 73 108" />' +
+    '</svg>';
+
   // ============================================================
   // The site, as a tree. This is the ONLY place that knows its shape.
   //   id    — matches a page's data-page, so the current row and its
@@ -380,13 +441,7 @@
 
     side.innerHTML =
       '<a class="side-id" href="index.html#home">' +
-        // the head, live. The <img> underneath is not a placeholder to be
-        // swapped out — it is the permanent floor this stands on, and it
-        // shows through on every failure path.
-        '<span class="side-avatar" id="side-avatar">' +
-          '<img src="Media/darkcircle.png" alt="" width="26" height="26" />' +
-          '<canvas class="side-face" aria-hidden="true"></canvas>' +
-        '</span>' +
+        '<span class="side-avatar" id="side-avatar">' + FACE_SVG + '</span>' +
         '<span class="side-id-text">' +
           '<span class="side-name">Tigo Ponce de León</span>' +
           '<span class="side-role">product design engineer</span>' +
@@ -638,14 +693,11 @@
   shell.appendChild(grip);
   wireGrip(grip);
 
-  // the rail's head watches the cursor, the about page's manner at 1/13
-  // the size (js/portrait.js explains why the numbers differ)
-  const avatar = document.getElementById('side-avatar');
-  const face = avatar && avatar.querySelector('.side-face');
-  if (face && window.Portrait) {
-    window.Portrait.mini(face, () => avatar.classList.add('is-baked'));
-    window.Portrait.look(face, window.Portrait.MINI_LOOK);
-  }
+  // the drawn head watches the cursor exactly as the rendered one on
+  // about.html does — same constants, same loop, applied to an <svg>
+  // instead of a <canvas>
+  const face = document.querySelector('#side-avatar .face-art');
+  if (face && window.Portrait) window.Portrait.look(face, window.Portrait.MINI_LOOK);
   wireNav();
   wireAI();
 

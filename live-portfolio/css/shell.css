@@ -442,27 +442,63 @@ html.rail-dragging .side-grip { background: var(--orange); }
   transition: background-color var(--t-micro) ease;
 }
 .side-id:hover { background: rgba(0, 0, 0, 0.035); }
-/* The face is the about page's face, painted smaller — and it needs room
-   to be that. Below about 56px the ribbons collapse and the eyes
-   disappear into the brow band; no resampling fixes that, because the
-   information is not representable in the pixels. 56 is the floor where
-   the eyes still survive the shrink, so that is where it sits — small,
-   but not so small that it stops being a face. */
+/* ---- The face, drawn.
+   The site's own pen: one weight, round caps, no fill, and a dashed
+   construction line left showing — the same hand as the craft-card
+   illustrations on about.html. Those classes live in about.css, which
+   only loads on one page, so the rail carries its own copy under its own
+   names rather than reaching for something that is not there. ---- */
 .side-avatar {
   position: relative;
   width: 56px;
-  height: 71px;                 /* 56 / 0.785, the source's own aspect */
+  height: 71px;                 /* 56 / 0.785, the head's own aspect */
   flex: none;
 }
-.side-avatar > * { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-.side-avatar > img { border-radius: 50%; opacity: 0.5; }
-.side-face {
-  opacity: 0;
-  transition: opacity 0.22s ease;
+.face-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   will-change: transform;
 }
-.side-avatar.is-baked .side-face { opacity: 1; }
-.side-avatar.is-baked > img { opacity: 0; }
+.face-ink {
+  fill: none;
+  stroke: #5e5e5e;
+  stroke-width: 2.4;            /* 1.2 at the craft cards' 160 box, scaled
+                                   to this 120 one and to a 56px render */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.1s var(--ease-draw) var(--d, 0s);
+}
+/* the brows are the heaviest thing on his face, so they are here too */
+.face-ink.is-brow { stroke-width: 3.4; }
+.face-ink.s2 { --d: 0.22s; }
+.face-ink.s3 { --d: 0.44s; }
+.face-guide {
+  fill: none;
+  stroke: #d9d9d9;
+  stroke-width: 1.6;
+  stroke-dasharray: 3 6;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.9s;
+}
+.face-dot {
+  fill: #5e5e5e;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.95s;
+}
+/* it draws itself once the rail arrives */
+.shell-side.is-lit .face-ink { stroke-dashoffset: 0; }
+.shell-side.is-lit .face-guide,
+.shell-side.is-lit .face-dot { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .face-ink { transition: none; stroke-dashoffset: 0; }
+  .face-guide, .face-dot { transition: none; opacity: 1; }
+}
 
 .side-id-text {
   min-width: 0;

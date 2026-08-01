@@ -234,99 +234,11 @@ window.Portrait = (() => {
   const render = (canvas, opts) =>
     load().then(() => paint(canvas, bake(opts)));
 
-  /* ============================================================
-     The rail's 26px head.
-
-     It is the SAME BAKE as the about page — same texture, same 150
-     ribbons, same wobble — painted into a smaller canvas. Nothing is
-     re-tuned for the size, because every attempt to re-tune it produced
-     something that was recognisably not the about face: coarse ribbons
-     read as stripes, fine ones as mud.
-
-     What makes it work is how it is shrunk, not how it is drawn. See
-     shrink() above: 1024 to 120 in one drawImage discards most of the
-     samples between output pixels, while halving repeatedly averages all
-     of them in.
-
-     And it is CACHED. Without this a 10-35ms blocking bake would run on
-     nine pages instead of one; with it, eight of nine loads in a session
-     are a ~1ms drawImage that never even fetches the source. The one
-     write happens in idle time, never on a critical frame.
-     ============================================================ */
-  // About's constants, verbatim — waveAmp and all. The rail face is not a
-  // different portrait tuned for a small box; it is THE portrait, painted
-  // smaller. Every attempt to re-tune it for 40px made it look like
-  // something else: coarse ribbons read as stripes, fine ones as mud. The
-  // only version that looks like the about page is the one that IS the
-  // about page, resampled by shrink() above.
-  const MINI = {
-    sampleW: 320,
-    texW: 1024,
-    nLines: 150,
-    step: 2,
-    minThick: 0.7,
-    maxThickFrac: 0.92,
-    waveAmp: 0.8,
-    waveLen: 26,
-  };
-
-  const CACHE_KEY = 'shell.avatar';
-  const CACHE_V = 4;
-  const MINI_DPR = 3;
-
-  // What is cached is the PAINTED 52x66 canvas, not the 312x398 texture —
-  // ~2KB instead of ~40KB, and the warm path is then a single drawImage of
-  // exactly the pixels the slot needs.
-  const readCache = () => {
-    try {
-      const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-      return (c && c.v === CACHE_V && c.png) ? c : null;
-    } catch (err) { return null; }
-  };
-
-  const idle = (fn) => (window.requestIdleCallback
-    ? window.requestIdleCallback(fn, { timeout: 1200 })
-    : setTimeout(fn, 1));
-
-  const mini = (canvas, onDone) => {
-    if (dead || !canvas || !canvas.getContext) return;
-    const done = () => { if (onDone) onDone(); };
-
-    const hit = readCache();
-    if (hit) {
-      const el = new Image();
-      el.onload = () => {                 // the warm path: one drawImage, and
-        canvas.width = Math.round(canvas.clientWidth * MINI_DPR);
-        canvas.height = Math.round(canvas.clientHeight * MINI_DPR);
-        canvas.getContext('2d').drawImage(el, 0, 0, canvas.width, canvas.height);
-        done();                           // the 89KB source is never fetched
-      };
-      el.onerror = () => { try { sessionStorage.removeItem(CACHE_KEY); } catch (e) {} };
-      el.src = hit.png;
-      return;
-    }
-
-    load().then(() => idle(() => {
-      try {
-        paint(canvas, bake(MINI), MINI_DPR);   // getImageData throws on a tainted
-      } catch (err) {                     // canvas (file://) — kill the module
-        dead = true;                      // so eight more pages don't retry
-        return;
-      }
-      done();
-      try {
-        const png = canvas.toDataURL('image/png');
-        if (png.length < 60000) {
-          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ v: CACHE_V, png: png }));
-        }
-      } catch (err) { /* quota or private mode — we just bake again next page */ }
-    })).catch(() => { dead = true; });
-  };
-
-  // The rail face is the about page's face, resized and pinned — the SAME
-  // look constants, so it turns as far and as freely as the big one does.
-  // Only the perspective scales with the box: 900px is tuned for a 330px
-  // face, and at 44px it would flatten the turn to nothing.
+  // The rail's face is DRAWN now, not rendered (see FACE_SVG in
+  // js/shell.js) — but it watches the cursor on these, the about page's
+  // own look constants, so the two heads move identically. Only the
+  // perspective scales with the box: 900px is tuned for a 330px face and
+  // would flatten the turn to nothing at 56.
   const MINI_LOOK = {
     maxY: 1.45,            // rad ~ 83 deg, about's full range
     maxX: 0.8,             // rad ~ 46 deg
@@ -342,7 +254,7 @@ window.Portrait = (() => {
   return {
     isDead: () => dead,
     kill: () => { dead = true; },
-    load, sample, bake, paint, render, look, mini,
+    load, sample, bake, paint, render, look,
     MINI_LOOK: MINI_LOOK,
   };
 })();
