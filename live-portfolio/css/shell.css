@@ -124,7 +124,7 @@ html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
   cursor: default;
   background: none;
 }
-.chrome-btn svg { display: block; }
+.chrome-btn svg { display: block; width: 20px; height: 20px; }
 /* back/forward live in the TAB strip, against the first tab, as in the
    reference — not off in the rail's column. They sit on the strip's
    floor with the tabs, so they need lifting to optical centre. */
@@ -432,6 +432,8 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .now-dot.is-live { animation: none; }
+  .side-row:hover .side-ico *,
+  .side-row:hover .side-mark { animation: none; }
   /* the rail appears; it does not perform */
   html.intro-run .side-group {
     translate: none;
@@ -506,22 +508,62 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   box-shadow: none;
 }
 
+/* ONE box, and everything is measured by it — line glyphs, filled brand
+   marks and the case studies' <img> logos alike. The svg() helper stops
+   emitting width/height entirely, so a glyph cannot be the wrong size. */
 .side-ico {
   flex: none;
-  width: 17px;
-  height: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
 }
-.side-ico svg { display: block; }
-/* case studies wear their real mark, the way a Notion page wears its icon */
+.side-ico > svg,
+.side-ico > img { display: block; width: 100%; height: 100%; }
+/* case studies wear their real mark, the way a Notion page wears its icon.
+   Raster logos are the densest ink of all, so they sit a notch smaller. */
 .side-mark {
-  width: 17px;
-  height: 17px;
+  width: 15px !important;
+  height: 15px !important;
   border-radius: 4px;
   object-fit: contain;
 }
+
+/* the Letterboxd discs are cut with the row's ACTUAL background, so the
+   mark stays correct on the furniture and on the warm hover chip alike */
+.side-row { --ico-gap: var(--shell-surface); }
+.side-row:hover,
+.side-row.is-current,
+.side-row.is-here { --ico-gap: var(--wash-solid); }
+
+/* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which
+   retired with the rails, now serving the tree that replaced them. The
+   cascade is tighter than the rails' .1/.2/.3 because a 30px row wants a
+   quicker beat than a 160px illustration did. ---- */
+@keyframes side-redraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+.side-row:hover .side-ico svg :is(path, circle, rect, line, ellipse, polyline) {
+  stroke-dasharray: 1;
+  animation: side-redraw 0.62s var(--ease-draw) both;
+}
+.side-row:hover .side-ico svg > :nth-child(2) { animation-delay: 0.08s; }
+.side-row:hover .side-ico svg > :nth-child(3) { animation-delay: 0.16s; }
+.side-row:hover .side-ico svg > :nth-child(4) { animation-delay: 0.24s; }
+
+/* Filled marks have no stroke to draw and raster logos have no geometry at
+   all, so they take a beat of the same LENGTH instead — the rail feels
+   uniform even though the mechanism underneath differs. */
+@keyframes side-nudge {
+  0%   { scale: 1; }
+  35%  { scale: 0.86; }
+  70%  { scale: 1.07; }
+  100% { scale: 1; }
+}
+.side-row:hover .side-ico > svg[viewBox='0 0 24 24'],
+.side-row:hover .side-mark { animation: side-nudge 0.5s var(--ease-pop); }
+
 .side-text {
   flex: 1;
   min-width: 0;
@@ -555,7 +597,7 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
 .side-tw[aria-expanded='true'] { rotate: 90deg; }
 .side-tw:hover { color: var(--orange); }
 .side-tw.is-empty { cursor: default; }
-.side-tw svg { display: block; }
+.side-tw svg { display: block; width: 13px; height: 13px; }
 
 /* the children hang off a hairline, the way the chapter rails hung off
    the .about-divider. Nesting compounds, so depth is emergent rather
@@ -618,7 +660,7 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   border-color: rgba(253, 143, 59, 0.35);
 }
 .ask-pill:active { transform: scale(0.985); }
-.ask-pill svg { flex: none; }
+.ask-pill svg { flex: none; width: 18px; height: 18px; }
 .ask-pill .ask-label {
   flex: 1;
   text-align: left;

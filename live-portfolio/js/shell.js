@@ -27,11 +27,24 @@
   // ---- the icon vocabulary: the site's own 26-box line glyphs, lifted
   // from js/nav-touch.js, about.html and the two case studies so the rail
   // speaks in shapes the visitor has already seen.
-  const svg = (paths, size, weight) =>
-    '<svg width="' + size + '" height="' + size + '" viewBox="0 0 26 26" ' +
-    'aria-hidden="true" fill="none" stroke="currentColor" stroke-width="' +
-    (weight || 2.2) + '" stroke-linecap="round" stroke-linejoin="round">' +
-    paths + '</svg>';
+  // No width/height: CSS owns the box, so a glyph can never be the wrong
+  // size again. pathLength is injected rather than hand-written into thirty
+  // path strings — with it, the site's existing self-draw idiom (dasharray 1
+  // + dashoffset 1 → 0) applies to every glyph in the rail at once.
+  const svg = (paths, weight) =>
+    '<svg viewBox="0 0 26 26" aria-hidden="true" fill="none" ' +
+    'stroke="currentColor" stroke-width="' + (weight || 2.2) + '" ' +
+    'stroke-linecap="round" stroke-linejoin="round">' +
+    paths.replace(/<(path|circle|rect|line|ellipse|polyline)(?=[\s/>])/g,
+                  '<$1 pathLength="1"') + '</svg>';
+
+  // Filled marks read HEAVIER than strokes at the same box, because ink area
+  // drives perceived weight, not stroke length. Inset them to 86% so they sit
+  // at the line glyphs' apparent weight — done in the SVG so the box stays
+  // honest and CSS never has to know.
+  const brand = (inner) =>
+    '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<g transform="translate(1.7 1.7) scale(0.858)">' + inner + '</g></svg>';
 
   const G = {
     // chrome
@@ -89,12 +102,20 @@
     link: '<path d="M4.5 16.5 L16.5 4.5" /><path d="M6.5 4.5 H16.5 V14.5" />',
   };
 
-  // brand marks are FILLED, so they get their own 24-box wrapper
   const BRAND = {
-    li: '<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z"/></svg>',
-    gh: '<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3z"/></svg>',
-    lb: '<svg width="17" height="11" viewBox="0 0 36 22" aria-hidden="true"><g fill="currentColor"><circle cx="7" cy="11" r="6.5"/><circle cx="18" cy="11" r="6.5" stroke="#fbfbfb" stroke-width="1.6"/><circle cx="29" cy="11" r="6.5" stroke="#fbfbfb" stroke-width="1.6"/></g></svg>',
-    gr: '<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="19" text-anchor="middle" font-family="Georgia, \'Times New Roman\', serif" font-size="25" font-weight="bold" fill="currentColor">g</text></svg>',
+    li: brand('<path fill="currentColor" d="M22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z"/>'),
+    gh: brand('<path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3z"/>'),
+    // rebuilt SQUARE (it was 17x11 in a 36x22 box) and the disc gaps track
+    // the row's real background via --ico-gap, instead of the hardcoded
+    // surface colour that was already wrong on the orange hover chip
+    lb: brand('<g fill="currentColor">' +
+      '<circle cx="5.6" cy="12" r="5.6"/>' +
+      '<circle cx="12" cy="12" r="5.6" stroke="var(--ico-gap)" stroke-width="1.5"/>' +
+      '<circle cx="18.4" cy="12" r="5.6" stroke="var(--ico-gap)" stroke-width="1.5"/>' +
+      '</g>'),
+    gr: brand('<text x="12" y="19" text-anchor="middle" ' +
+      'font-family="Georgia, \'Times New Roman\', serif" font-size="25" ' +
+      'font-weight="bold" fill="currentColor">g</text>'),
   };
 
   // ============================================================
@@ -168,7 +189,7 @@
     if (!ROWS) ROWS = TREE.reduce((acc, g) => acc.concat(flatten(g.rows || [])), []);
     const r = ROWS.find((x) => x.id === id);
     if (r && r.mark) return '<img src="' + r.mark + '" alt="" />';
-    return svg(G[(r && r.icon) || 'link'], 15, 2.1);
+    return svg(G[(r && r.icon) || 'link'], 2.1);
   };
 
   // the chain of ids that must be open for the current page to be visible
@@ -200,20 +221,20 @@
     chrome.innerHTML =
       '<div class="chrome-left">' +
         '<button class="chrome-btn" type="button" data-act="rail" ' +
-          'aria-label="Toggle sidebar">' + svg(G.rail, 20) + '</button>' +
+          'aria-label="Toggle sidebar">' + svg(G.rail) + '</button>' +
       '</div>' +
       '<div class="chrome-tabs" id="chrome-tabs">' +
         '<button class="chrome-btn" type="button" data-act="back" ' +
-          'aria-label="Back">' + svg(G.back, 20) + '</button>' +
+          'aria-label="Back">' + svg(G.back) + '</button>' +
         '<button class="chrome-btn" type="button" data-act="fwd" ' +
-          'aria-label="Forward">' + svg(G.fwd, 20) + '</button>' +
+          'aria-label="Forward">' + svg(G.fwd) + '</button>' +
         '<span class="tab-list" id="tab-list"></span>' +
       '</div>';
 
     // the strip's own contents belong to js/tabs.js
     if (window.ShellTabs) {
       window.ShellTabs.mount(document.getElementById('tab-list'),
-        { page: page, title: title, icon: faviconFor, plus: svg(G.plus, 20) });
+        { page: page, title: title, icon: faviconFor, plus: svg(G.plus) });
     }
 
     // back is honest about whether there is anywhere to go; forward has no
@@ -254,7 +275,7 @@
     const isOpen = kids && opened.has(key);
     const icon = row.brand ? BRAND[row.brand]
       : row.mark ? '<img class="side-mark" src="' + row.mark + '" alt="" width="17" height="17" />'
-      : svg(G[row.icon] || G.link, 17, 1.9);
+      : svg(G[row.icon] || G.link, 1.9);
 
     // the twisty is a SIBLING of the link, never inside it — a button
     // nested in an anchor is invalid and gets re-parented by the parser
@@ -262,7 +283,7 @@
       '<div class="side-row">' +
         (kids
           ? '<button class="side-tw" type="button" aria-expanded="' + (isOpen ? 'true' : 'false') +
-            '" aria-label="Toggle ' + esc(row.text) + ' sections">' + svg(G.twist, 13, 2.4) + '</button>'
+            '" aria-label="Toggle ' + esc(row.text) + ' sections">' + svg(G.twist, 2.4) + '</button>'
           : '<span class="side-tw is-empty" aria-hidden="true"></span>') +
         '<a class="side-link" href="' + esc(row.href) + '"' +
           (row.id ? ' data-page="' + esc(row.id) + '"' : '') +
@@ -339,7 +360,7 @@
       '<nav class="side-scroll" id="side-scroll" aria-label="Site">' + groups + '</nav>' +
       '<div class="side-foot">' +
         '<a class="ask-pill" id="ask-pill" href="ai.html">' +
-          svg(G.ai, 18, 2) +
+          svg(G.ai, 2) +
           '<span class="ask-label">ask my ai</span>' +
           '<span class="ask-kbd" aria-hidden="true">⌘K</span>' +
         '</a>' +
@@ -437,11 +458,11 @@
       '<div class="ai-stage is-overlay" id="ai-stage" role="dialog" aria-modal="true" ' +
         'aria-label="Ask my AI">' +
         '<header class="ai-sheet-head">' +
-          svg(G.ai, 16, 2) +
+          svg(G.ai, 2) +
           '<span class="ai-sheet-title">ask my ai</span>' +
           '<p id="ai-sub">powered by Claude Haiku 4.5</p>' +
           '<button class="ai-x" type="button" aria-label="Close">' +
-            svg('<path d="M7 7 L19 19" /><path d="M19 7 L7 19" />', 17, 2) +
+            svg('<path d="M7 7 L19 19" /><path d="M19 7 L7 19" />', 2) +
           '</button>' +
         '</header>' +
         AI_PANEL +

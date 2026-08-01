@@ -90,7 +90,7 @@
   border-bottom: 0.648px solid #d9d9d9;
   color: #5e5e5e;
 }
-.ai-sheet-head svg { flex: none; }
+.ai-sheet-head svg { flex: none; width: 16px; height: 16px; }
 .ai-sheet-title { font-size: 13.5px; }
 .ai-sheet-head #ai-sub {
   flex: 1;
@@ -116,6 +116,7 @@
   cursor: pointer;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
 }
+.ai-x svg { width: 17px; height: 17px; }
 .ai-x:hover,
 .ai-x:focus-visible { color: var(--orange); background: rgba(253, 143, 59, 0.13); }
 
