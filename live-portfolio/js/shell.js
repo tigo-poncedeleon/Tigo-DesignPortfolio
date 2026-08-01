@@ -273,6 +273,8 @@
     const next = !root.classList.contains('rail-closed');
     root.classList.toggle('rail-closed', next);
     try { localStorage.setItem(RAIL_KEY, next ? '1' : '0'); } catch (err) { /* private mode */ }
+    // the ResizeObserver on the card drives the rescale through the slide;
+    // this is just a backstop for the frame it lands on
     if (window.__shellFit) window.__shellFit();
   };
   try {
@@ -295,7 +297,7 @@
     grip.addEventListener('pointermove', (e) => {
       if (id === null) return;
       const w = Math.max(MIN, Math.min(MAX,
-        e.clientX - grip.parentNode.getBoundingClientRect().left));
+        e.clientX - shell.getBoundingClientRect().left));
       root.style.setProperty('--shell-rail', w + 'px');
     });
     const end = () => {
@@ -633,7 +635,7 @@
   grip.setAttribute('role', 'separator');
   grip.setAttribute('aria-orientation', 'vertical');
   grip.title = 'Drag to resize · double-click to reset';
-  if (side && side.parentNode) side.parentNode.insertBefore(grip, side.nextSibling);
+  shell.appendChild(grip);
   wireGrip(grip);
 
   // the rail's head watches the cursor, the about page's manner at 1/13

@@ -98,7 +98,8 @@ html.intro-pending :is(.shell-chrome, .shell-side) { transition: none; }
   padding-right: 8px;
   transition: width var(--t-glide) var(--ease-glide);
 }
-/* closed: the toggle and the location keep only the room they need */
+/* closed: the toggle and the location keep only the room they need, and
+   they get there on the same curve the panel leaves on */
 html.rail-closed .chrome-left { width: auto; }
 
 /* ---- chrome buttons (rail toggle · back · forward · new tab) ---- */
@@ -338,7 +339,8 @@ html.rail-closed .chrome-left { width: auto; }
   padding: 0 8px 8px;
   opacity: 0;
   transition: width var(--t-glide) var(--ease-glide),
-              opacity var(--t-fade) ease;
+              margin-left var(--t-glide) var(--ease-glide),
+              opacity var(--t-glide) ease;
 }
 .shell-side.is-lit { opacity: 1; }
 /* while dragging, the width must track the pointer exactly — a transition
@@ -346,22 +348,45 @@ html.rail-closed .chrome-left { width: auto; }
 html.rail-dragging .shell-side,
 html.rail-dragging .chrome-left { transition: none; }
 
-/* Closed means CLOSED — the rail is gone and the page has the whole
-   screen, rather than shrinking to a strip of icons that still costs 52px. */
-html.rail-closed .shell-side,
-html.rail-closed .side-grip { display: none; }
+/* Closed means CLOSED — the page gets the whole screen. It SLIDES out
+   rather than vanishing: a negative margin equal to its own width, so the
+   panel travels left under the card's edge while the card grows into the
+   space in the same frame. display:none would have been instant, and an
+   instant 260px jump reads as a glitch rather than as a panel closing.
+
+   The card follows for free — stage-fit watches it with a ResizeObserver,
+   so the stage rescales continuously through the whole 0.3s rather than
+   snapping when it lands. */
+html.rail-closed .shell-side {
+  margin-left: calc(-1 * var(--shell-rail));
+  opacity: 0;
+  pointer-events: none;
+}
+html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
+/* the rail's contents hold their layout width while the panel travels, so
+   nothing reflows on the way out */
+.shell-side > * { flex-shrink: 0; }
 
 /* ---- the seam, and the handle that is also the seam ----
-   A 1px line the visitor can grab. The hit area is 9px wide and centred on
-   it, because a 1px target is not a target; the line itself stays 1px so
-   nothing about the resting design gets heavier to accommodate the grab. */
+   It spans the FULL height of the window — past the chrome, to the very
+   top — so it reads as one edge of the app rather than a line that starts
+   halfway down. That also means you can grab it anywhere along it.
+
+   A 1px line the visitor can grab: the hit area is 9px and centred on it,
+   because a 1px target is not a target, while the line itself stays 1px
+   so nothing in the resting design gets heavier to accommodate the grab. */
 .side-grip {
-  position: relative;
-  flex: none;
+  position: absolute;
+  left: var(--shell-rail);
+  top: 0;
+  bottom: 0;
+  z-index: 30;
   width: 1px;
   background: var(--shell-line);
   cursor: col-resize;
-  transition: background-color var(--t-micro) ease;
+  transition: background-color var(--t-micro) ease,
+              left var(--t-glide) var(--ease-glide),
+              opacity var(--t-glide) ease;
 }
 .side-grip::before {
   content: '';

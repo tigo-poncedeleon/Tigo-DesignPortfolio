@@ -133,8 +133,8 @@ window.Portrait = (() => {
     return off;
   };
 
-  const paint = (canvas, tex) => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const paint = (canvas, tex, ratio) => {
+    const dpr = ratio || Math.min(window.devicePixelRatio || 1, 2);
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
     canvas.width = Math.round(w * dpr);
@@ -214,13 +214,21 @@ window.Portrait = (() => {
   /* ============================================================
      The rail's 26px head.
 
-     The rail face is the about face at 1/8 the size, and getting it to
-     LOOK like the same engraving is a question of one ratio: lines per
-     displayed pixel. About draws 150 ribbons into 842 device px — 0.18 of
-     a line per pixel — and that is what makes its ribbons read as ribbons.
-     Match the ratio and the small one reads the same way; miss it and the
-     ribbons collapse into grey mud, which is exactly what 168 lines over
-     102px did.
+     At 40px the ribbons cannot be both visible AND fine enough to describe
+     a face: matching about's lines-per-pixel gave stripes you read before
+     you read the person. The way out is to stop trying to resolve
+     individual ribbons and OVERSAMPLE instead — draw all 150 of about's
+     lines, render into a 3x backing store, and let the downsample turn
+     them into continuous tone. The stripes become shading, and the eyes,
+     brows and hair come back.
+
+     3x specifically, not more: at 4x the ribbon pitch re-aligns with the
+     pixel grid and the banding returns. Tested 150/190/240 lines at 4x —
+     all worse than 150 at 3x.
+
+     The near-full thickness range (0.12 to 0.94 of the spacing) is what
+     gives the tone its contrast. It would be far too harsh if the ribbons
+     were resolvable; at sub-pixel width it is simply the dynamic range.
 
      WAVE_AMP stays zero: the 26px wavelength falls below the Nyquist limit
      of a 1px step at this texture width, so the hand-engraved wobble
@@ -232,22 +240,18 @@ window.Portrait = (() => {
      write happens in idle time, never on a critical frame.
      ============================================================ */
   const MINI = {
-    sampleW: 260,
-    texW: 380,
-    // 48 lines, not 150. The about face draws 150 ribbons over 842 device
-    // px — 0.18 lines per pixel. Matching that RATIO is what makes the two
-    // look like the same engraving: at 102px tall the rail face wants ~48,
-    // and the 168 it started with was nine times too dense, which is why
-    // it read as mud rather than as line art.
-    nLines: 48,
+    sampleW: 300,
+    texW: 520,
+    nLines: 150,           // about's own line count, oversampled into tone
     step: 1,
-    minThick: 0.35,
-    maxThickFrac: 0.70,
+    minThick: 0.12,
+    maxThickFrac: 0.94,
     waveAmp: 0,
     waveLen: 26,
   };
   const CACHE_KEY = 'shell.avatar';
-  const CACHE_V = 2;
+  const CACHE_V = 3;
+  const MINI_DPR = 3;
 
   // What is cached is the PAINTED 52x66 canvas, not the 312x398 texture —
   // ~2KB instead of ~40KB, and the warm path is then a single drawImage of
@@ -271,9 +275,8 @@ window.Portrait = (() => {
     if (hit) {
       const el = new Image();
       el.onload = () => {                 // the warm path: one drawImage, and
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.round(canvas.clientWidth * dpr);
-        canvas.height = Math.round(canvas.clientHeight * dpr);
+        canvas.width = Math.round(canvas.clientWidth * MINI_DPR);
+        canvas.height = Math.round(canvas.clientHeight * MINI_DPR);
         canvas.getContext('2d').drawImage(el, 0, 0, canvas.width, canvas.height);
         done();                           // the 89KB source is never fetched
       };
@@ -284,7 +287,7 @@ window.Portrait = (() => {
 
     load().then(() => idle(() => {
       try {
-        paint(canvas, bake(MINI));        // getImageData throws on a tainted
+        paint(canvas, bake(MINI), MINI_DPR);   // getImageData throws on a tainted
       } catch (err) {                     // canvas (file://) — kill the module
         dead = true;                      // so eight more pages don't retry
         return;
@@ -292,7 +295,7 @@ window.Portrait = (() => {
       done();
       try {
         const png = canvas.toDataURL('image/png');
-        if (png.length < 40000) {
+        if (png.length < 60000) {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify({ v: CACHE_V, png: png }));
         }
       } catch (err) { /* quota or private mode — we just bake again next page */ }
