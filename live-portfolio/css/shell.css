@@ -376,39 +376,35 @@ html.rail-dragging .side-grip { background: var(--orange); }
   flex: none;
   display: flex;
   align-items: center;
-  gap: 9px;
-  height: 46px;
+  gap: 10px;
+  height: 52px;
   padding: 0 8px;
   border-radius: 8px;
   text-decoration: none;
   transition: background-color var(--t-micro) ease;
 }
 .side-id:hover { background: rgba(0, 0, 0, 0.035); }
-/* A 0.785-aspect head in a round 26px slot. object-fit:cover would crop a
-   square out of the middle and take the top of the head and the chin off,
-   so the portrait keeps its natural aspect inside the mask and is nudged
-   by ONE tunable number — the framing can be eyeballed without rebaking. */
+/* The face is the about page's face, resized — no round mask, because a
+   head that turns 83 degrees inside a circle clips against its own frame
+   and shows background on one side. It sits in its natural rectangle and
+   is simply allowed to move. */
 .side-avatar {
   position: relative;
-  width: 26px;
-  height: 26px;
+  width: 40px;
+  height: 51px;                 /* 40 / 0.785, the source's own aspect */
   flex: none;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #eceae7;
+  margin: -6px 0;               /* the taller box does not push the row open */
 }
-.side-avatar > * { position: absolute; left: 0; display: block; }
-.side-avatar > img { top: 0; width: 26px; height: 26px; }
+.side-avatar > * { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.side-avatar > img { border-radius: 50%; opacity: 0.55; }
 .side-face {
-  top: var(--face-y, -4px);
-  width: 26px;
-  height: 33px;               /* 26 / 0.785, the source's own aspect */
   opacity: 0;
   transition: opacity 0.22s ease;
   will-change: transform;
 }
 .side-avatar.is-baked .side-face { opacity: 1; }
 .side-avatar.is-baked > img { opacity: 0; }
+
 .side-id-text {
   min-width: 0;
   display: flex;
@@ -707,11 +703,6 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   object-fit: contain;
 }
 
-/* the Letterboxd discs are cut with the row's ACTUAL background, so the
-   mark stays correct on the furniture and on the warm hover chip alike */
-.side-row { --ico-gap: var(--shell-surface); }
-.side-row:hover { --ico-gap: var(--wash-solid); }
-
 /* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which
    retired with the rails, now serving the tree that replaced them. The
    cascade is tighter than the rails' .1/.2/.3 because a 30px row wants a
@@ -737,7 +728,9 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   70%  { scale: 1.07; }
   100% { scale: 1; }
 }
-.side-row:hover .side-ico > svg[viewBox='0 0 24 24'],
+/* the case studies' raster logos have no geometry to draw, so they take a
+   beat of the same length instead — every OTHER icon in the rail, socials
+   included, now redraws itself properly */
 .side-row:hover .side-mark { animation: side-nudge 0.5s var(--ease-pop); }
 
 .side-text {

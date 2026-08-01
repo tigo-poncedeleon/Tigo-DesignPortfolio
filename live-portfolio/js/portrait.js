@@ -214,18 +214,17 @@ window.Portrait = (() => {
   /* ============================================================
      The rail's 26px head.
 
-     Its own bake, and the lesson of tuning it was that a 26px head cannot
-     show line ART — 13 pixels of hair will not hold ribbons — so it has to
-     read as continuous TONE instead. That means baking LARGE and letting
-     the downscale average the ribbons into grey, rather than baking small
-     and hoping they resolve. A 104px texture at 44 lines put 11% of the
-     face into near-black bands and buried the eyes; 312 at 150 lines with
-     the ribbons capped at 0.68 of their spacing puts that at 3%, and the
-     eyes, nose and hairline all come back.
+     The rail face is the about face at 1/8 the size, and getting it to
+     LOOK like the same engraving is a question of one ratio: lines per
+     displayed pixel. About draws 150 ribbons into 842 device px — 0.18 of
+     a line per pixel — and that is what makes its ribbons read as ribbons.
+     Match the ratio and the small one reads the same way; miss it and the
+     ribbons collapse into grey mud, which is exactly what 168 lines over
+     102px did.
 
-     WAVE_AMP is still zero: at any of these widths the 26px wavelength
-     falls below the Nyquist limit of a 1px step, so the hand-engraved
-     wobble cannot be drawn, only aliased.
+     WAVE_AMP stays zero: the 26px wavelength falls below the Nyquist limit
+     of a 1px step at this texture width, so the hand-engraved wobble
+     cannot be drawn, only aliased.
 
      And it is CACHED. Without this a 10-35ms blocking bake would run on
      nine pages instead of one; with it, eight of nine loads in a session
@@ -233,12 +232,17 @@ window.Portrait = (() => {
      write happens in idle time, never on a critical frame.
      ============================================================ */
   const MINI = {
-    sampleW: 220,
-    texW: 312,
-    nLines: 150,
+    sampleW: 260,
+    texW: 380,
+    // 48 lines, not 150. The about face draws 150 ribbons over 842 device
+    // px — 0.18 lines per pixel. Matching that RATIO is what makes the two
+    // look like the same engraving: at 102px tall the rail face wants ~48,
+    // and the 168 it started with was nine times too dense, which is why
+    // it read as mud rather than as line art.
+    nLines: 48,
     step: 1,
-    minThick: 0.25,
-    maxThickFrac: 0.68,    // the number that decides whether it reads
+    minThick: 0.35,
+    maxThickFrac: 0.70,
     waveAmp: 0,
     waveLen: 26,
   };
@@ -295,27 +299,20 @@ window.Portrait = (() => {
     })).catch(() => { dead = true; });
   };
 
-  // The rail head needs its own numbers, and the reasons matter. About's
-  // 1.45 rad foreshortens the face to cos(83 deg) = 0.12 — a 26px head
-  // becomes a 3px sliver, which reads as a rendering bug rather than a
-  // turn. And past ~0.55 rad the plane's edge sweeps inside the round mask
-  // and the background shows through on one side.
-  //
-  // For the turn to READ, a feature has to move at least a device pixel.
-  // The nose sits ~4px off the rotation axis at this size, so 0.34 rad
-  // gives 4*sin(0.34) = 1.33 CSS px — 2.7 device px at dpr 2, clearly
-  // visible — while costing only 1.5px of the 26px width.
+  // The rail face is the about page's face, resized and pinned — the SAME
+  // look constants, so it turns as far and as freely as the big one does.
+  // Only the perspective scales with the box: 900px is tuned for a 330px
+  // face, and at 44px it would flatten the turn to nothing.
   const MINI_LOOK = {
-    maxY: 0.34,            // rad ~ 19.5 deg
-    maxX: 0.20,            // rad ~ 11.5 deg; pitch is the weaker cue
-    perspective: 160,      // 900 scaled by 26/330 is 71 and warps; 160 reads
-    lerp: 0.09,            // 0.06 reads as lag at this size
+    maxY: 1.45,            // rad ~ 83 deg, about's full range
+    maxX: 0.8,             // rad ~ 46 deg
+    perspective: 260,
+    lerp: 0.06,            // about's damping exactly
     idleDelay: 400,
-    idleAmpY: 0.03,        // about's sway, halved...
-    idleAmpX: 0.015,
-    idleSpeedY: 0.5,       // ...but at the same speeds. The rhythm is the
-    idleSpeedX: 0.4,       // character, and it should not change with size.
-    normalise: 'viewport',
+    idleAmpY: 0.06,
+    idleAmpX: 0.03,
+    idleSpeedY: 0.5,
+    idleSpeedX: 0.4,
   };
 
   return {

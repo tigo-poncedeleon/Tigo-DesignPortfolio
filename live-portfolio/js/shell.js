@@ -38,14 +38,6 @@
     paths.replace(/<(path|circle|rect|line|ellipse|polyline)(?=[\s/>])/g,
                   '<$1 pathLength="1"') + '</svg>';
 
-  // Filled marks read HEAVIER than strokes at the same box, because ink area
-  // drives perceived weight, not stroke length. Inset them to 86% so they sit
-  // at the line glyphs' apparent weight — done in the SVG so the box stays
-  // honest and CSS never has to know.
-  const brand = (inner) =>
-    '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-    '<g transform="translate(1.7 1.7) scale(0.858)">' + inner + '</g></svg>';
-
   const G = {
     // chrome
     rail: '<rect x="3.5" y="4.5" width="19" height="17" rx="3.5" />' +
@@ -102,20 +94,31 @@
     link: '<path d="M4.5 16.5 L16.5 4.5" /><path d="M6.5 4.5 H16.5 V14.5" />',
   };
 
-  const BRAND = {
-    li: brand('<path fill="currentColor" d="M22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z"/>'),
-    gh: brand('<path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3z"/>'),
-    // rebuilt SQUARE (it was 17x11 in a 36x22 box) and the disc gaps track
-    // the row's real background via --ico-gap, instead of the hardcoded
-    // surface colour that was already wrong on the orange hover chip
-    lb: brand('<g fill="currentColor">' +
-      '<circle cx="5.6" cy="12" r="5.6"/>' +
-      '<circle cx="12" cy="12" r="5.6" stroke="var(--ico-gap)" stroke-width="1.5"/>' +
-      '<circle cx="18.4" cy="12" r="5.6" stroke="var(--ico-gap)" stroke-width="1.5"/>' +
-      '</g>'),
-    gr: brand('<text x="12" y="19" text-anchor="middle" ' +
-      'font-family="Georgia, \'Times New Roman\', serif" font-size="25" ' +
-      'font-weight="bold" fill="currentColor">g</text>'),
+  // The social marks are STROKED, not filled — same 26 box, same weight,
+  // same pathLength, so they draw themselves on hover like every other
+  // glyph in the rail. Each keeps the one feature that makes it
+  // recognisable and drops everything else: LinkedIn is the square with
+  // the in, GitHub the cat silhouette reduced to its head and tail,
+  // Letterboxd its three overlapping discs, Goodreads its serif g.
+  const SOCIAL = {
+    li: '<rect x="3.5" y="3.5" width="19" height="19" rx="3.5" />' +
+        '<path d="M8 11 V18" /><circle cx="8" cy="7.6" r="1.2" />' +
+        '<path d="M12.5 18 V11" />' +
+        '<path d="M12.5 14 C12.5 11.8, 18 11.2, 18 14.6 V18" />',
+    gh: '<path d="M16.2 22 V18.6 C16.2 17.5, 15.8 16.7, 15.3 16.3 ' +
+        'C18.4 16 21.2 14.9, 21.2 10.4 C21.2 9.1, 20.7 8, 19.9 7.2 ' +
+        'C20 6.9, 20.4 5.7, 19.8 4.1 C19.8 4.1, 18.8 3.8, 16.6 5.3 ' +
+        'C15.6 5, 14.3 4.9, 13 4.9 C11.7 4.9, 10.4 5, 9.4 5.3 ' +
+        'C7.2 3.8, 6.2 4.1, 6.2 4.1 C5.6 5.7, 6 6.9, 6.1 7.2 ' +
+        'C5.3 8, 4.8 9.1, 4.8 10.4 C4.8 14.9, 7.6 16, 10.7 16.3 ' +
+        'C10.3 16.7, 9.9 17.3, 9.8 18.2" />' +
+        '<path d="M9.8 18.2 C7.8 19.1, 6.4 18.2, 5.6 16.9" />',
+    lb: '<circle cx="7" cy="13" r="5.2" /><circle cx="13" cy="13" r="5.2" />' +
+        '<circle cx="19" cy="13" r="5.2" />',
+    // a lowercase g: the bowl, and the stem that hooks under it
+    gr: '<circle cx="11" cy="10.5" r="5" />' +
+        '<path d="M16 6 V16.6 C16 20.1, 13.6 22, 10.6 22 ' +
+        'C8.5 22, 7.1 21.1, 6.5 19.7" />',
   };
 
   // ============================================================
@@ -321,7 +324,7 @@
     const kids = row.kids && row.kids.length;
     const key = row.id || row.text;
     const isOpen = kids && opened.has(key);
-    const icon = row.brand ? BRAND[row.brand]
+    const icon = row.brand ? svg(SOCIAL[row.brand], 1.7)
       : row.mark ? '<img class="side-mark" src="' + row.mark + '" alt="" width="17" height="17" />'
       : svg(G[row.icon] || G.link, 1.9);
 
