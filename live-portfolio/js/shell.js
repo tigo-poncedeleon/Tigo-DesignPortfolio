@@ -350,8 +350,13 @@
 
     side.innerHTML =
       '<a class="side-id" href="index.html#home">' +
-        '<img class="side-avatar" src="Media/darkcircle.png" alt="" ' +
-          'width="26" height="26" />' +
+        // the head, live. The <img> underneath is not a placeholder to be
+        // swapped out — it is the permanent floor this stands on, and it
+        // shows through on every failure path.
+        '<span class="side-avatar" id="side-avatar">' +
+          '<img src="Media/darkcircle.png" alt="" width="26" height="26" />' +
+          '<canvas class="side-face" aria-hidden="true"></canvas>' +
+        '</span>' +
         '<span class="side-id-text">' +
           '<span class="side-name">Tigo Ponce de León</span>' +
           '<span class="side-role">product design engineer</span>' +
@@ -599,6 +604,15 @@
   buildChrome();
   buildSide();
   buildAI();
+
+  // the rail's head watches the cursor, the about page's manner at 1/13
+  // the size (js/portrait.js explains why the numbers differ)
+  const avatar = document.getElementById('side-avatar');
+  const face = avatar && avatar.querySelector('.side-face');
+  if (face && window.Portrait) {
+    window.Portrait.mini(face, () => avatar.classList.add('is-baked'));
+    window.Portrait.look(face, window.Portrait.MINI_LOOK);
+  }
   wireNav();
   wireAI();
 

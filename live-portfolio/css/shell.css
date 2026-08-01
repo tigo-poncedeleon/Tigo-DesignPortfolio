@@ -315,13 +315,31 @@ html.rail-collapsed .shell-side { width: var(--shell-rail-min); }
   transition: background-color var(--t-micro) ease;
 }
 .side-id:hover { background: rgba(0, 0, 0, 0.035); }
+/* A 0.785-aspect head in a round 26px slot. object-fit:cover would crop a
+   square out of the middle and take the top of the head and the chin off,
+   so the portrait keeps its natural aspect inside the mask and is nudged
+   by ONE tunable number — the framing can be eyeballed without rebaking. */
 .side-avatar {
+  position: relative;
   width: 26px;
   height: 26px;
   flex: none;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
+  background: #eceae7;
 }
+.side-avatar > * { position: absolute; left: 0; display: block; }
+.side-avatar > img { top: 0; width: 26px; height: 26px; }
+.side-face {
+  top: var(--face-y, -4px);
+  width: 26px;
+  height: 33px;               /* 26 / 0.785, the source's own aspect */
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  will-change: transform;
+}
+.side-avatar.is-baked .side-face { opacity: 1; }
+.side-avatar.is-baked > img { opacity: 0; }
 .side-id-text {
   min-width: 0;
   display: flex;
