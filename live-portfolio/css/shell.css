@@ -24,9 +24,15 @@
                                     without it a 2560px monitor leaves a
                                     1280px island floating in the middle */
 
-  /* the chrome/sidebar surface: the .site-nav recipe (styles.css) —
-     an opaque #fbfbfb so nothing sliding under it ever shows through */
-  --shell-surface: #fbfbfb;
+  /* The furniture: chrome + rail, one continuous L. It has to differ
+     from --bg by enough that the join needs no line — the old #fbfbfb
+     was two units off #fdfdfd, which is exactly why this design used to
+     need a border under the chrome and a ring around the card. */
+  --shell-surface: #f4f3f1;
+  /* the sitewide rgba(253,143,59,.13) hover chip, flattened over the
+     furniture. Computed, not eyeballed; the Letterboxd mark needs it
+     as a real opaque colour. */
+  --wash-solid:    #f5e6d9;
   --shell-line:    #d9d9d9;
   --shell-dim:     #9a9a9a;               /* group labels, right-hand meta */
 }
@@ -68,8 +74,7 @@
   flex: none;
   height: var(--shell-chrome-h);
   display: flex;
-  align-items: center;
-  border-bottom: 0.648px solid var(--shell-line);
+  align-items: flex-end;        /* the tabs stand on the strip's floor */
   opacity: 0;
   transition: opacity var(--t-micro) ease;
 }
@@ -78,37 +83,19 @@
    furniture is already invisible when it is built — no flash to hide */
 html.intro-pending :is(.shell-chrome, .shell-side) { transition: none; }
 
-/* the left cluster occupies exactly the sidebar's column, so the tab
-   below starts flush with the card's left edge — as in the reference.
-   The floor is the run of buttons' own width (14 + 52 + 24+26 + 24+26 +
-   6+26 = 198): a collapsed rail must not slide the tab onto them. */
+/* The left cluster spans the rail's column and holds ONE button. The
+   traffic lights are gone: a full-bleed app has no window to close, and
+   three dots that do nothing are a lie about what this is. */
 .chrome-left {
-  width: max(var(--shell-rail), 198px);
+  width: var(--shell-rail);
   flex: none;
   display: flex;
   align-items: center;
-  padding-left: 14px;
+  height: 100%;
+  padding-left: 12px;
   transition: width var(--t-glide) var(--ease-glide);
 }
-html.rail-collapsed .chrome-left { width: max(var(--shell-rail-min), 198px); }
-
-/* ---- traffic lights: quiet until you look at the window ---- */
-.chrome-lights {
-  display: flex;
-  gap: 8px;
-  flex: none;
-  opacity: 0.55;
-  transition: opacity var(--t-micro) ease;
-}
-.shell-chrome:hover .chrome-lights { opacity: 1; }
-.chrome-lights i {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-.chrome-lights i:nth-child(1) { background: #ff5f57; }
-.chrome-lights i:nth-child(2) { background: #febc2e; }
-.chrome-lights i:nth-child(3) { background: #28c840; }
+html.rail-collapsed .chrome-left { width: var(--shell-rail-min); }
 
 /* ---- chrome buttons (rail toggle · back · forward · new tab) ---- */
 .chrome-btn {
@@ -138,48 +125,159 @@ html.rail-collapsed .chrome-left { width: max(var(--shell-rail-min), 198px); }
   background: none;
 }
 .chrome-btn svg { display: block; }
-/* the rail toggle leads the button run; back/forward pair up tighter */
-.chrome-btn[data-act='rail'] { margin-left: 24px; }
-.chrome-btn[data-act='back'] { margin-left: 24px; }
-.chrome-btn[data-act='fwd']  { margin-left: 6px; }
+/* back/forward live in the TAB strip, against the first tab, as in the
+   reference — not off in the rail's column. They sit on the strip's
+   floor with the tabs, so they need lifting to optical centre. */
+.chrome-btn[data-act='back'],
+.chrome-btn[data-act='fwd'] { align-self: center; margin-bottom: 3px; }
+.chrome-btn[data-act='back'] { margin-left: 4px; }
+.chrome-btn[data-act='fwd']  { margin-left: 2px; margin-right: 6px; }
 
-/* ---- the tab ---- */
+/* ---- the tab strip ----
+   The active tab is the PAGE colour and merges into the card below it.
+   No border anywhere, on any tab, ever: a line between the tab and the
+   page it opens is the seam this whole section exists to not have. ---- */
 .chrome-tabs {
   flex: 1;
   min-width: 0;
+  height: 100%;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-end;
   padding-right: 8px;
 }
+
+/* the list fills the strip; the tabs take their 200 from the left and the
+   + rides along as the last flex item, so it is always immediately after
+   the final tab rather than flung to the far edge */
+.tab-list {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
 .chrome-tab {
-  flex: none;
-  max-width: 320px;
-  height: 30px;
+  position: relative;
+  /* each tab wants 200 and gives ground evenly as they multiply, so
+     there is no width arithmetic in JS at all */
+  flex: 0 1 200px;
+  min-width: 0;
+  height: 32px;
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 0 12px;
-  border-radius: 7px;
+  padding: 0 10px 0 11px;
+  border: 0;
+  border-radius: 9px 9px 0 0;
+  background: none;
+  font: inherit;
+  color: var(--shell-dim);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
+}
+.chrome-tab:hover { background: rgba(0, 0, 0, 0.04); color: #5e5e5e; }
+
+.chrome-tab.is-active {
   background: var(--bg);
-  border: 1px solid var(--shell-line);
-}
-.chrome-tab img {
-  width: 16px;
-  height: 16px;
-  flex: none;
-  border-radius: 50%;
-}
-.tab-label {
-  font-size: 13px;
-  line-height: 1;
   color: #5e5e5e;
+  /* the top-edge highlight real chrome has, so the tab reads as raised
+     rather than as a hole cut in the strip */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.chrome-tab.is-active:hover { background: var(--bg); }
+
+/* the flare: two concave fillets carrying the active tab's fill down into
+   the card, so the join has no edge anywhere along it. A MASKED quarter
+   disc rather than the box-shadow corner trick — the shadow version needs
+   the fillet filled with the furniture colour and shadowed with the tab
+   colour, and breaks the moment either one moves. This fills with --bg
+   and subtracts, so it stays correct under any palette change. */
+.chrome-tab.is-active::before,
+.chrome-tab.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 9px;
+  height: 9px;
+  background: var(--bg);
+  pointer-events: none;
+}
+.chrome-tab.is-active::before {
+  left: -9px;
+  -webkit-mask: radial-gradient(circle 9px at 0 0, transparent 99%, #000 100%);
+          mask: radial-gradient(circle 9px at 0 0, transparent 99%, #000 100%);
+}
+.chrome-tab.is-active::after {
+  right: -9px;
+  -webkit-mask: radial-gradient(circle 9px at 100% 0, transparent 99%, #000 100%);
+          mask: radial-gradient(circle 9px at 100% 0, transparent 99%, #000 100%);
+}
+
+.tab-ico {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+}
+.tab-ico > svg,
+.tab-ico > img { display: block; width: 100%; height: 100%; }
+.tab-ico > img { border-radius: 3px; object-fit: contain; }
+
+.tab-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 /* the section the page is currently on, trailing the page's own name */
 .tab-label .tab-sec { color: var(--shell-dim); }
+/* the label fades UNDER the close button rather than fighting it */
+.chrome-tab:hover .tab-label {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent);
+          mask-image: linear-gradient(90deg, #000 calc(100% - 22px), transparent);
+}
+
+.tab-close {
+  position: absolute;
+  right: 5px;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 5px;
+  color: #8a8a8a;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--t-micro) ease, background-color var(--t-micro) ease,
+              color var(--t-micro) ease;
+}
+.chrome-tab:hover .tab-close,
+.tab-close:focus-visible { opacity: 1; }
+.tab-close:hover { background: rgba(0, 0, 0, 0.07); color: var(--ink); }
+/* you cannot close the window from inside it */
+.tab-list.is-single .tab-close { display: none; }
+/* at the cap the labels stand down and the favicons speak for themselves */
+.tab-list.is-icon-only .tab-label { display: none; }
+.tab-list.is-icon-only .chrome-tab { flex: 0 0 44px; justify-content: center; padding: 0; }
+
+/* the cap is legible: the + shakes rather than doing nothing */
+@keyframes tab-cap-shake {
+  0%, 100% { translate: 0; }
+  25%      { translate: -3px; }
+  75%      { translate: 3px; }
+}
+.tab-list .chrome-new { align-self: center; margin: 0 0 3px 4px; }
+.chrome-new.is-capped { animation: tab-cap-shake 0.18s var(--ease-glide) 2; }
 
 /* ============================================================
    Sidebar

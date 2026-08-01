@@ -145,8 +145,7 @@
       { id: 'ai', href: 'ai.html', text: 'AI', icon: 'ai' },
     ] },
     { label: 'elsewhere', rows: [
-      { href: 'PoncedeLeon-Resume.pdf', text: 'Resume', icon: 'resume',
-        meta: 'pdf ↓', ext: true },
+      { href: 'PoncedeLeon-Resume.pdf', text: 'Resume', icon: 'resume', ext: true },
       { href: 'mailto:tigoponcedeleon@gmail.com', text: 'Email', icon: 'contact' },
       { href: 'https://www.linkedin.com/in/tigoponcedeleon/', text: 'LinkedIn',
         brand: 'li', ext: true },
@@ -158,6 +157,19 @@
         brand: 'gr', ext: true },
     ] },
   ];
+
+  // A page's tab favicon is the glyph it already wears in the rail. Derived
+  // from TREE rather than hand-listed, so a new page cannot end up with a
+  // sidebar icon and a different tab icon.
+  const flatten = (rows) => rows.reduce((acc, r) =>
+    acc.concat([r], r.kids ? flatten(r.kids) : []), []);
+  let ROWS = null;
+  const faviconFor = (id) => {
+    if (!ROWS) ROWS = TREE.reduce((acc, g) => acc.concat(flatten(g.rows || [])), []);
+    const r = ROWS.find((x) => x.id === id);
+    if (r && r.mark) return '<img src="' + r.mark + '" alt="" />';
+    return svg(G[(r && r.icon) || 'link'], 15, 2.1);
+  };
 
   // the chain of ids that must be open for the current page to be visible
   const ANCESTORS = { vicino: ['work'], pantrypal: ['work'], nextlevel: ['work'] };
@@ -187,23 +199,22 @@
     if (!chrome) return;
     chrome.innerHTML =
       '<div class="chrome-left">' +
-        '<span class="chrome-lights" aria-hidden="true"><i></i><i></i><i></i></span>' +
         '<button class="chrome-btn" type="button" data-act="rail" ' +
           'aria-label="Toggle sidebar">' + svg(G.rail, 20) + '</button>' +
+      '</div>' +
+      '<div class="chrome-tabs" id="chrome-tabs">' +
         '<button class="chrome-btn" type="button" data-act="back" ' +
           'aria-label="Back">' + svg(G.back, 20) + '</button>' +
         '<button class="chrome-btn" type="button" data-act="fwd" ' +
           'aria-label="Forward">' + svg(G.fwd, 20) + '</button>' +
-      '</div>' +
-      '<div class="chrome-tabs">' +
-        '<span class="chrome-tab">' +
-          '<img src="Media/darkcircle.png" alt="" width="16" height="16" />' +
-          '<span class="tab-label" id="tab-label">' + esc(title) + '</span>' +
-        '</span>' +
-        '<button class="chrome-btn chrome-new" type="button" ' +
-          'aria-label="Open this page in a new browser tab">' +
-          svg(G.plus, 20) + '</button>' +
+        '<span class="tab-list" id="tab-list"></span>' +
       '</div>';
+
+    // the strip's own contents belong to js/tabs.js
+    if (window.ShellTabs) {
+      window.ShellTabs.mount(document.getElementById('tab-list'),
+        { page: page, title: title, icon: faviconFor, plus: svg(G.plus, 20) });
+    }
 
     // back is honest about whether there is anywhere to go; forward has no
     // API to ask, so it stays live and simply does nothing at the end
@@ -216,9 +227,8 @@
       if (btn.dataset.act === 'back') history.back();
       else if (btn.dataset.act === 'fwd') history.forward();
       else if (btn.dataset.act === 'rail') toggleRail();
-      // the "+" means what it says: this page, in a REAL new tab
-      else if (btn.classList.contains('chrome-new')) {
-        window.open(location.href, '_blank', 'noopener');
+      else if (btn.classList.contains('chrome-new') && window.ShellTabs) {
+        window.ShellTabs.open();
       }
     });
   };
@@ -463,7 +473,7 @@
     // lit the page row steps back to plain accent text
     const scroll = document.getElementById('side-scroll');
     if (scroll) scroll.classList.toggle('has-here', !!link);
-    const label = document.getElementById('tab-label');
+    const label = document.querySelector('.chrome-tab.is-active .tab-label');
     if (label) {
       label.innerHTML = esc(title) +
         (link ? ' <span class="tab-sec">/ ' + esc(link.querySelector('.side-text').textContent) +
