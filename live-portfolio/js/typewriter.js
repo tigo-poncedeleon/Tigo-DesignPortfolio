@@ -32,8 +32,10 @@
   };
 
   const settle = () => {                      // every skip path ends here
-    lines.forEach((el) => { el.textContent = el.dataset.text || ''; });
-    if (caret) caret.remove();
+    if (caret) caret.remove();                // BEFORE the writes below, so
+    lines.forEach((el) => {                   // "same finished state" is
+      el.textContent = el.dataset.text || ''; // literally true and not just
+    });                                       // incidentally true
     done();
   };
 
@@ -49,10 +51,16 @@
 
   const type = async (el) => {
     const text = el.dataset.text || '';
-    if (caret) el.parentNode.appendChild(caret);   // the caret drops to this line
-    if (caret) caret.classList.add('is-typing');   // real terminals hold while typing
+    // a text node the loop mutates, with the caret as its SIBLING inside
+    // .tw — el.textContent would detach the caret on the first character
+    const t = document.createTextNode('');
+    el.replaceChildren(t);
+    if (caret) {
+      el.appendChild(caret);                       // the caret drops to this line
+      caret.classList.add('is-typing');            // real terminals hold while typing
+    }
     for (let i = 0; i < text.length; i++) {
-      el.textContent = text.slice(0, i + 1);
+      t.nodeValue = text.slice(0, i + 1);
       await wait(CHAR + (Math.random() * JITTER - JITTER / 2) +
         (text[i] === ' ' ? SPACE : 0));
     }

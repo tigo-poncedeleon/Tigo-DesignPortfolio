@@ -124,13 +124,24 @@ html, body {
 .tw-line > .tw { grid-area: 1 / 1; }
 .tw-ghost { visibility: hidden; }
 
+/* The caret rides the LAST TYPED GLYPH: left:100% of the growing span.
+   Absolute, not inline, on purpose — .tw is a grid item that re-centres
+   against the ghost as it grows, so an inline caret would add its own
+   5px to the line's width and shift the whole thing by 2.5px the instant
+   it appeared, then again when it dropped to line two. Absolute keeps it
+   out of the width calculation entirely, so the only motion on screen is
+   the typing itself. top/translateY replaces vertical-align, which only
+   ever meant anything in inline flow. */
+.tw { position: relative; }
 .tw-caret {
-  display: inline-block;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 3px;
   width: 2px;
   height: 1em;
   background: var(--orange);
-  vertical-align: -0.14em;
-  margin-left: 3px;
   animation: tw-blink 1.06s steps(1) infinite;
 }
 .tw-caret.is-typing { animation: none; opacity: 1; }  /* real terminals hold */
