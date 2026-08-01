@@ -522,6 +522,17 @@ html.intro-run .shell-side.is-lit .side-group { translate: 0 0; }
   stroke-linecap: round;
 }
 .globe-orbit { animation: spark-march 24s linear infinite; }
+/* the coastlines are the ink the eye actually reads; the grid stays a
+   dotted construction line behind them */
+.globe-land {
+  fill: none;
+  stroke: #5e5e5e;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.72;
+}
+
 /* the limb and the equator are INK, so there is one unambiguous reference
    line to read the dotted grid against */
 .globe-limb,
