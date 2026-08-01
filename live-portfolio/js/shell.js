@@ -363,6 +363,83 @@
   };
 
   // ============================================================
+  // The AI overlay
+  //
+  // The chat used to be a page you had to leave the site to reach. It is
+  // a sheet now, rising from the ask pill, reachable from anywhere. The
+  // panel markup below is verbatim what ai.html used to hold — and the
+  // sheet deliberately keeps id="ai-stage" and class="ai-stage", because
+  // every .ai-stage.revealed selector in ai.css (the entrance, the
+  // spark's draw-in) and the lookup in ai-chat.js then keep working
+  // untouched. One decision, forty edits saved.
+  // ============================================================
+  const AI_PANEL =
+    '<div class="ai-panel" id="ai-panel">' +
+      '<div class="ai-scroll" id="ai-scroll"></div>' +
+      // answers are announced here once complete — the word-by-word visual
+      // reveal stays quiet for screen readers
+      '<p class="sr-only" id="ai-live" aria-live="polite"></p>' +
+      // empty-state spark: a hand-drawn asterisk in a dotted orbit that
+      // draws itself in, and bows out on the first question
+      '<div class="ai-empty" id="ai-empty" aria-hidden="true">' +
+        '<svg class="ai-spark" width="120" height="120" viewBox="0 0 120 120">' +
+          '<circle class="guide" cx="60" cy="60" r="52" />' +
+          '<g fill="none" stroke="#5e5e5e" stroke-width="2.2" stroke-linecap="round">' +
+            '<path class="ray s1" pathLength="1" d="M60 22 L60 46" />' +
+            '<path class="ray s1" pathLength="1" d="M60 98 L60 74" />' +
+            '<path class="ray s2" pathLength="1" d="M92.9 41 L72.1 53" />' +
+            '<path class="ray s2" pathLength="1" d="M27.1 79 L47.9 67" />' +
+            '<path class="ray s3" pathLength="1" d="M27.1 41 L47.9 53" />' +
+            '<path class="ray s3" pathLength="1" d="M92.9 79 L72.1 67" />' +
+          '</g>' +
+          '<circle class="spark-dot" cx="60" cy="60" r="5.5" />' +
+        '</svg>' +
+        '<p>ask me anything about Tigo &mdash; or start with a chip</p>' +
+      '</div>' +
+      '<div class="ai-dock" aria-hidden="true"></div>' +
+      '<div class="ai-prompts" id="ai-prompts">' +
+        '<button class="prompt-chip" type="button">Hobbies?</button>' +
+        '<button class="prompt-chip" type="button">Your toolset?</button>' +
+        '<button class="prompt-chip" type="button">Tell me your background!</button>' +
+        '<button class="prompt-chip" type="button">What is your design philosophy?</button>' +
+      '</div>' +
+      '<form class="ai-inputbar" id="ai-inputbar">' +
+        '<button class="ai-send" type="submit" aria-label="Send">' +
+          '<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">' +
+            '<g fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round">' +
+              '<path d="M17 29 V8" />' +
+              '<path d="M7.5 16.5 L17 7 L26.5 16.5" />' +
+            '</g>' +
+          '</svg>' +
+        '</button>' +
+        '<input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo" ' +
+          'placeholder="ask me anything!" autocomplete="off" />' +
+      '</form>' +
+    '</div>';
+
+  const buildAI = () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-overlay';
+    wrap.id = 'ai-overlay';
+    wrap.hidden = true;
+    wrap.innerHTML =
+      '<div class="ai-scrim" id="ai-scrim"></div>' +
+      '<div class="ai-stage is-overlay" id="ai-stage" role="dialog" aria-modal="true" ' +
+        'aria-label="Ask my AI">' +
+        '<header class="ai-sheet-head">' +
+          svg(G.ai, 16, 2) +
+          '<span class="ai-sheet-title">ask my ai</span>' +
+          '<p id="ai-sub">powered by Claude Haiku 4.5</p>' +
+          '<button class="ai-x" type="button" aria-label="Close">' +
+            svg('<path d="M7 7 L19 19" /><path d="M19 7 L7 19" />', 17, 2) +
+          '</button>' +
+        '</header>' +
+        AI_PANEL +
+      '</div>';
+    shell.appendChild(wrap);
+  };
+
+  // ============================================================
   // Section navigation
   //
   // Sidebar links are always FULL hrefs (pantrypal.html#craft, never a
@@ -464,9 +541,35 @@
     });
   };
 
+  // ---- the ask pill and the AI row are real links to ai.html; when the
+  // overlay is available they open it instead. Progressive enhancement,
+  // the same posture as the section links.
+  const wireAI = () => {
+    const openIt = (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      if (!window.AIChat) return;
+      e.preventDefault();
+      window.AIChat.open();
+    };
+    const pill = document.getElementById('ask-pill');
+    if (pill) pill.addEventListener('click', openIt);
+    const row = side && side.querySelector('.side-link[data-page="ai"]');
+    if (row) row.addEventListener('click', openIt);
+
+    document.addEventListener('keydown', (e) => {
+      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'k') return;
+      if (!window.AIChat) return;
+      e.preventDefault();
+      if (window.AIChat.isOpen()) window.AIChat.close();
+      else window.AIChat.open();
+    });
+  };
+
   buildChrome();
   buildSide();
+  buildAI();
   wireNav();
+  wireAI();
 
   // ---- light up. The home page hands this to the typewriter so the name
   // types before the furniture arrives; every other page just appears.

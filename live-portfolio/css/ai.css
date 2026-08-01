@@ -1,90 +1,165 @@
 /* ============================================================
-   AI — Tigo AI chat
-   Geometry is a 1:1 copy of Figma frames 1373:326 (empty) and
-   1328:118 (answered) at 1280×832: fixed px, desktop only, same
-   conventions as styles.css/play.css. The panel centres on the
-   640px axis (mock x=336 read as axis drift, like the pill).
+   AI — the ask sheet
+   The chat used to be a page: a 605×664 panel pinned to Figma
+   1395:168 inside a full 1280×832 stage. It is a popup now, rising
+   from the sidebar's ask pill and floating over whatever page you
+   were on — so the geometry below belongs to the panel, and the
+   stage is just the sheet that holds it.
+
+   The sheet keeps the .ai-stage class deliberately: every
+   .ai-stage.revealed rule here (the entrance, the spark's draw-in)
+   goes on working untouched, and ai-chat.js finds the same element.
+
+   The chat-scale type and the chip-stack custom properties below
+   were written for the phone; a 520px sheet has exactly the same
+   problem, so they are the base now rather than an override.
    ============================================================ */
 
-/* the stage fills the shell's content card, pinned to an exact
-   1280x832 — so every Figma offset lands where it was drawn instead
-   of stretching with the viewport (js/stage-fit.js) */
-.ai-stage {
+/* ---- ai.html's card: the invitation, while the sheet opens over it ---- */
+.ai-hero {
   position: relative;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-hero-title { text-align: center; white-space: nowrap; }
+.ai-hero-title h1 {
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 38px;
+  color: #5e5e5e;
+}
+.ai-hero-title p {
+  font-size: 28px;
+  line-height: 38px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.ai-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+}
+.ai-overlay[hidden] { display: none; }
+
+/* the page frosts behind the sheet — the .nav-frost recipe (styles.css) */
+.ai-scrim {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(253, 253, 253, 0.45);
   opacity: 0;
   transition: opacity var(--t-stage) ease;
 }
-.ai-stage.revealed { opacity: 1; }
+.ai-scrim.is-lit { opacity: 1; }
 
-/* ---- entrance: title, panel, chips rise in turn — the site's
-   case-study choreography ---- */
-.ai-title {
-  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
+/* the sheet, anchored over the ask pill it rises from */
+.ai-stage {
+  opacity: 0;
+  translate: 0 18px;
+  transition: opacity var(--t-stage) ease,
+              translate var(--t-rise) var(--ease-rise);
 }
+.ai-stage.revealed { opacity: 1; translate: 0 0; }
+.ai-stage.is-overlay {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  width: 520px;
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* ---- the sheet's head: what it is, whether the line is up, and out ---- */
+.ai-sheet-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 10px 0 16px;
+  border-bottom: 0.648px solid #d9d9d9;
+  color: #5e5e5e;
+}
+.ai-sheet-head svg { flex: none; }
+.ai-sheet-title { font-size: 13.5px; }
+.ai-sheet-head #ai-sub {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  color: #9a9a9a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ai-x {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 7px;
+  color: #8a8a8a;
+  cursor: pointer;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
+}
+.ai-x:hover,
+.ai-x:focus-visible { color: var(--orange); background: rgba(253, 143, 59, 0.13); }
+
+/* the chips still rise a beat after the sheet */
 .ai-prompts {
   transition: opacity var(--t-fade) ease 0.2s,
               translate var(--t-rise) var(--ease-rise) 0.2s;
 }
-.ai-stage:not(.revealed) :is(.ai-title, .ai-panel, .ai-prompts) {
-  opacity: 0;
-  translate: 0 16px;
-}
+.ai-stage:not(.revealed) .ai-prompts { opacity: 0; translate: 0 16px; }
 
-/* ---- title (Figma 1395:197 rev 2: plain 24px text again — the capsule
-   was removed from the frame; pair centres on the frame axis at top 48) ---- */
-.ai-title {
-  position: absolute;
-  top: 48px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  white-space: nowrap;
-}
-.ai-title h1 {
-  font-size: 28px;                    /* user's 28px header unification */
-  font-weight: 400;
-  color: #5e5e5e;
-}
-.ai-title p {
-  font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
-}
-
-/* ---- the chat panel (Figma 1395:168: 605×664 @ 336,123) ---- */
+/* ---- the panel: the sheet's body, filling whatever the head leaves ---- */
 .ai-panel {
-  position: absolute;
-  top: 123px;
-  left: 50%;
-  margin-left: -302.5px;
-  width: 605px;
-  height: 664px;
-  border-radius: 20px;
-  background: rgba(241, 239, 239, 0.17);
-  border: 1px solid #d9d9d9;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  transition: opacity var(--t-fade) ease 0.08s,
-              translate var(--t-rise) var(--ease-rise) 0.08s,
-              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease;
-}
-/* the panel wakes a touch under the cursor — the site card hover */
-.ai-panel:hover {
-  border-color: rgba(0, 0, 0, 0.22);
-  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.1),
-              0 1px 2px rgba(0, 0, 0, 0.06);
+  position: relative;
+  flex: 1;
+  min-height: 0;
+
+  /* One source of truth for the chip stack's footprint: the empty-state
+     spark reserves room off THESE numbers rather than a fixed top, so the
+     two can never overlap however short the sheet gets. The 4 is the chip
+     count in shell.js's AI_PANEL; keep them in step. */
+  --chip-h: 44px;
+  --chip-gap: 5px;
+  --chips-bottom: 94px;
+  --chips-h: calc(4 * var(--chip-h) + 3 * var(--chip-gap));
 }
 
 /* ---- the empty-state spark: rays draw in, the orange heart pops,
    the dotted orbit slowly marches; it bows out on the first question ---- */
+/* the spark + invitation own the room ABOVE the chip stack and centre
+   themselves in it, so the two can never overlap however short the sheet.
+   Insets do the centring, not translateX — .is-gone still animates
+   `translate`, and the two must not fight. */
 .ai-empty {
   position: absolute;
-  top: 78px;                       /* well clear of the prompt chips below */
-  left: 50%;
-  transform: translateX(-50%);
+  top: 10px;
+  bottom: calc(var(--chips-bottom) + var(--chips-h) + 12px);
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
   text-align: center;
   pointer-events: none;
   transition: opacity 0.4s ease, translate 0.45s var(--ease-rise);
@@ -92,12 +167,27 @@
 .ai-empty.is-gone {
   opacity: 0;
   translate: 0 -10px;
+  visibility: hidden;                /* a dismissed spark takes no focus */
+  transition: opacity 0.4s ease, translate 0.45s var(--ease-rise),
+              visibility 0s linear 0.45s;
 }
+.ai-empty.is-instant { transition: none; }
 .ai-empty p {
-  margin-top: 14px;
-  font-size: 16px;
+  margin: 0;
+  flex: none;
+  font-size: 14px;
+  max-width: 230px;
   color: rgba(0, 0, 0, 0.42);
-  white-space: nowrap;
+}
+/* a viewBox'd SVG, so letting flex shrink it keeps the whole empty state
+   fitting in tall and short sheets alike — no size breakpoints needed */
+.ai-spark {
+  flex: 0 1 auto;
+  width: auto;
+  height: 96px;
+  max-height: 100%;
+  min-height: 0;
+  aspect-ratio: 1;
 }
 .ai-spark .guide {
   fill: none;
@@ -136,11 +226,11 @@
 .ai-scroll {
   position: absolute;
   top: 0;
-  left: 25px;
-  right: 25px;
-  bottom: 95px;                       /* flush against the dock's hairline
-                                         (94px dock + 1px border-top) */
-  padding-top: 21px;
+  left: 14px;
+  right: 14px;
+  bottom: 79px;                       /* flush against the dock's hairline
+                                         (78px dock + 1px border-top) */
+  padding-top: 16px;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -152,31 +242,33 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 94px;
+  height: 78px;
   border-top: 1px solid #d9d9d9;
 }
 .ai-scroll::-webkit-scrollbar { display: none; }
 
 /* ---- chat bubbles: user messages hug the right edge, AI replies the left,
-   IDENTICAL styling both sides (the suggestion-chip recipe: 24px text + 17px
-   vertical padding = the chips' 63px single-line height, so the chip→chat
-   fly animation is seamless). margin-bottom lives INSIDE the scroll content,
+   IDENTICAL styling both sides (the suggestion-chip recipe: the bubble's
+   min-height matches the chip's height, so the chip→chat fly animation is
+   seamless — ai-chat.js reads that min-height rather than hardcoding it).
+   margin-bottom lives INSIDE the scroll content,
    so mid-scroll the thread still passes flush under the dock hairline; only
    the resting end has the gap. overflow-wrap catches unbroken strings
    ("helloooo…") that word-wrap alone would let overflow. ---- */
 .ai-msg {
   width: fit-content;
-  max-width: 75%;
-  padding: 17px 18px;
+  max-width: 85%;
+  padding: 12px 14px;
   background: rgba(233, 233, 233, 0.48);
   border: 1px solid #d9d9d9;
-  border-radius: 20px;
-  font-size: 24px;
+  border-radius: 16px;
+  font-size: 17px;
+  line-height: 24px;
   color: #5e5e5e;                     /* matches the chips the bubbles echo */
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  min-height: 63px;                   /* one text line + padding + border */
-  margin-bottom: 14px;
+  min-height: 48px;                   /* == --chip-h: the fly animation lands */
+  margin-bottom: 10px;
 }
 .ai-msg-user { margin-left: auto; }
 .ai-msg-ai   { margin-right: auto; }
@@ -247,21 +339,21 @@
    stacked 6px apart just above it) ---- */
 .ai-prompts {
   position: absolute;
-  right: 29px;
-  bottom: 111px;                       /* chips end 17px above the dock */
+  right: 16px;
+  bottom: var(--chips-bottom);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: var(--chip-gap);
 }
 .prompt-chip {
-  height: 63px;
-  padding: 0 18px;
-  border-radius: 20px;
+  height: var(--chip-h);
+  padding: 0 14px;
+  border-radius: 15px;
   background: rgba(233, 233, 233, 0.48);
   border: 1px solid #d9d9d9;
   font: inherit;
-  font-size: 24px;
+  font-size: 16px;
   color: #5e5e5e;
   white-space: nowrap;
   cursor: pointer;
@@ -303,10 +395,10 @@
    → 85px from the bar's left edge) ---- */
 .ai-inputbar {
   position: absolute;
-  left: 23px;
-  top: 584px;
-  width: 553px;
-  height: 57px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  height: 52px;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.17);
   border-radius: 20px;
@@ -318,18 +410,21 @@
   position: absolute;
   left: -1px;                          /* sit on the bar's border */
   top: -1px;
-  width: 70px;
-  height: 57px;
+  width: 58px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #cbcbcb;
   border: 0;
-  border-radius: 20px;
+  border-radius: 17px;                 /* follows the bar's own corner */
   cursor: pointer;
   color: #5e5e5e;                      /* the arrow strokes currentColor */
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
 }
+/* the glyph is drawn at 34 for the old full-page panel; at sheet scale it
+   needs to come down with everything else */
+.ai-send svg { width: 26px; height: 26px; }
 .ai-send:hover:not([disabled]),
 .ai-send:focus-visible:not([disabled]) {
   background: #bfbfbf;
@@ -342,14 +437,14 @@
 }
 .ai-input {
   position: absolute;
-  left: 85px;
-  right: 16px;
+  left: 72px;
+  right: 12px;
   top: 0;
   height: 100%;
   border: 0;
   background: none;
   font: inherit;
-  font-size: 24px;
+  font-size: 16px;              /* ≥16 so iOS never zooms on focus */
   color: #101112;
   caret-color: var(--orange);
 }
@@ -361,136 +456,57 @@
 #ai-sub.is-swapping { opacity: 0; }
 
 /* ============================================================
-   MOBILE (≤700px) — the panel fills the phone, the type steps
-   down to chat scale, the spark shrinks. Desktop untouched.
+   MOBILE (≤700px) — the shell dissolves here (css/shell.css), so the
+   sheet stops floating and becomes a proper bottom sheet: full width,
+   clearing the site-nav tab bar at the foot. The chat-scale type it
+   used to gain at this width is the base now, so only geometry moves.
    ============================================================ */
 @media (max-width: 700px) {
-  .ai-title {
-    top: 74px;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
-  .ai-title h1 { font-size: 22px; }
-  .ai-title p { font-size: 14px; }
-  .ai-panel {
-    top: 136px;
-    left: 14px;
-    right: 14px;
-    bottom: 96px;                      /* clears the site-nav bottom bar */
-    margin-left: 0;
+  .ai-overlay { position: fixed; z-index: 60; }
+  .ai-stage.is-overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 56px;
     width: auto;
     height: auto;
-
-    /* One source of truth for the chip stack's footprint. On a phone the
-       panel is only as tall as the screen allows, so the empty-state spark
-       has to reserve room off THESE numbers instead of a fixed top — at
-       fixed offsets it slid under the pills on short screens. The 4 is the
-       chip count in ai.html; keep them in step. */
-    --chip-h: 44px;
-    --chip-gap: 5px;
-    --chips-bottom: 94px;
-    --chips-h: calc(4 * var(--chip-h) + 3 * var(--chip-gap));
+    border-radius: 16px 16px 0 0;
+    border-bottom: 0;
   }
-  .ai-scroll {
-    left: 14px;
-    right: 14px;
-    bottom: 79px;
-    padding-top: 16px;
+  /* the grab handle a sheet is expected to have */
+  .ai-sheet-head::before {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #dedede;
+    transform: translateX(-50%);
   }
-  .ai-dock { height: 78px; }
-  .ai-msg {
-    font-size: 17px;
-    line-height: 24px;
-    padding: 12px 14px;
-    border-radius: 16px;
-    min-height: 48px;
-    max-width: 85%;
-    margin-bottom: 10px;
-  }
-  /* the spark + invitation own the room ABOVE the chip stack and centre
-     themselves in it, so the two can never overlap however short the phone */
-  .ai-empty {
-    top: 10px;
-    bottom: calc(var(--chips-bottom) + var(--chips-h) + 12px);
-    left: 14px;
-    right: 14px;
-    width: auto;
-    transform: none;                   /* insets centre it now, not translateX
-                                          — .is-gone still animates `translate` */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    overflow: hidden;
-  }
-  /* the spark is a viewBox'd SVG, so letting flex shrink it keeps the whole
-     empty state fitting on tall and short screens alike — no size breakpoints */
-  .ai-spark {
-    flex: 0 1 auto;
-    width: auto;
-    height: 96px;
-    max-height: 100%;
-    min-height: 0;
-    aspect-ratio: 1;
-  }
-  .ai-empty p {
-    white-space: normal;
-    font-size: 14px;
-    max-width: 230px;
-    margin: 0;
-    flex: none;
-  }
-  .ai-prompts { right: 16px; bottom: var(--chips-bottom); gap: var(--chip-gap); }
-  .prompt-chip {
-    height: var(--chip-h);
-    padding: 0 14px;
-    border-radius: 15px;
-    font-size: 16px;
-  }
-  .ai-inputbar {
-    top: auto;
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    width: auto;
-    height: 52px;
-    border-radius: 17px;
-  }
-  .ai-send {
-    width: 58px;
-    height: 52px;
-    border-radius: 17px;
-  }
-  .ai-send svg { width: 26px; height: 26px; }
-  .ai-input {
-    left: 72px;
-    right: 12px;
-    font-size: 16px;            /* ≥16 so iOS doesn't zoom on focus */
-  }
-  .fu-chip { font-size: 14px; padding: 6px 11px; }
-  .flow-cap p { font-size: 15px; }
+  .ai-sheet-head { position: relative; padding-top: 8px; height: 52px; }
+  /* the input dock clears the bottom tab bar and the home indicator */
+  .ai-inputbar { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
 }
 
-/* Short phones: the panel is only as tall as the screen leaves it, and the
-   chip stack + input dock take a fixed bite out of it. Rather than let the
-   empty state crowd the pills, it gives ground in two steps — first the
-   decorative spark, then the invitation line (by then the chips ARE the
-   invitation). Thresholds are where each piece stops fitting cleanly above
-   the stack; see the --chips-* numbers on .ai-panel. */
-@media (max-width: 700px) and (max-height: 640px) {
+/* Short screens: the chip stack and input dock take a fixed bite out of
+   the sheet. Rather than let the empty state crowd the pills, it gives
+   ground in two steps — first the spark, then the whole invitation. */
+@media (max-height: 640px) {
   .ai-spark { display: none; }
 }
-@media (max-width: 700px) and (max-height: 580px) {
+@media (max-height: 560px) {
   .ai-empty { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-title, .ai-panel, .ai-prompts, .ai-empty {
+  .ai-stage, .ai-prompts, .ai-empty {
     transition: opacity 0.25s ease;
     translate: none;
   }
+  .ai-empty.is-gone { transition: none; }
   .ai-spark .guide { animation: none; transition: none; opacity: 1; }
   .ai-spark .ray { transition: none; stroke-dashoffset: 0; }
   .ai-spark .spark-dot { transition: none; transform: scale(1); }

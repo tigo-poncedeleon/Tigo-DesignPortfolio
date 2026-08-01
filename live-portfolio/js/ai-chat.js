@@ -29,10 +29,77 @@
   const subEl    = document.getElementById('ai-sub');
   const liveEl   = document.getElementById('ai-live');
   const sendBtn  = inputBar ? inputBar.querySelector('.ai-send') : null;
+  const overlay  = document.getElementById('ai-overlay');
+  const card     = document.getElementById('shell-card');
   if (!scroll) return;
 
-  // gentle fade-in, same as the other pages
-  requestAnimationFrame(() => stage && stage.classList.add('revealed'));
+  /* ============================================================
+     Open / close
+     The chat is a sheet now, not a page, so .revealed has to fire on
+     every OPEN rather than once on load — otherwise the spark only ever
+     draws itself the first time. The reflow flush between remove and add
+     is load-bearing: without it the class toggle coalesces into nothing.
+     ============================================================ */
+  let isOpen = false;
+  let lastFocus = null;
+  let inflight = null;
+
+  function open(seed) {
+    if (!overlay || isOpen) return;
+    isOpen = true;
+    lastFocus = document.activeElement;
+    overlay.hidden = false;
+    restoreEmpty();
+    // inert kills focus, clicks and key bleed into the page underneath in
+    // one move — which on play.html means the games stop hearing the
+    // keyboard the moment the sheet is up
+    if (card) card.setAttribute('inert', '');
+    stage.classList.remove('revealed');
+    stage.offsetHeight;                       // commit before re-adding
+    requestAnimationFrame(() => {
+      stage.classList.add('revealed');
+      const sc = document.getElementById('ai-scrim');
+      if (sc) sc.classList.add('is-lit');
+    });
+    document.addEventListener('keydown', onKey, true);
+    if (input) input.focus({ preventScroll: true });
+    if (seed) submitQuestion(seed);
+  }
+
+  function close() {
+    if (!overlay || !isOpen) return;
+    isOpen = false;
+    if (inflight) inflight.abort();
+    stage.classList.remove('revealed');
+    const sc = document.getElementById('ai-scrim');
+    if (sc) sc.classList.remove('is-lit');
+    document.removeEventListener('keydown', onKey, true);
+    if (card) card.removeAttribute('inert');
+    setTimeout(() => { if (!isOpen) overlay.hidden = true; }, 500);  // --t-stage
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  }
+
+  // capture phase, so Escape closes the sheet before any game sees it
+  function onKey(e) {
+    if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const f = stage.querySelectorAll(
+      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  if (overlay) {
+    const scrim = document.getElementById('ai-scrim');
+    if (scrim) scrim.addEventListener('click', close);
+    const x = overlay.querySelector('.ai-x');
+    if (x) x.addEventListener('click', close);
+  } else {
+    // no shell (or an older page): behave exactly as before
+    requestAnimationFrame(() => stage && stage.classList.add('revealed'));
+  }
 
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   const prefersReduced = () => motionQuery.matches;
@@ -95,12 +162,21 @@
     return history.some((m) => m.role === 'user' && m.content.toLowerCase() === t);
   }
 
-  /* ---- the empty-state spark bows out on the first question ---- */
+  /* ---- the empty-state spark bows out on the first question. It used to
+     be REMOVED, which was fine for a page you only saw once; a sheet can
+     be closed and reopened, so it hides instead and comes back when the
+     transcript is empty. The visibility step also stops a dismissed spark
+     taking pointer or focus — an a11y win the .remove() got by accident. ---- */
   function dismissEmpty(instant) {
-    if (!emptyEl || !emptyEl.parentNode) return;
-    if (instant || prefersReduced()) { emptyEl.remove(); return; }
+    if (!emptyEl) return;
+    emptyEl.classList.toggle('is-instant', !!instant || prefersReduced());
     emptyEl.classList.add('is-gone');
-    setTimeout(() => emptyEl.remove(), 450);
+  }
+
+  function restoreEmpty() {
+    if (emptyEl && !history.length) {
+      emptyEl.classList.remove('is-gone', 'is-instant');
+    }
   }
 
   /* ---- exchange rendering: two chat bubbles per exchange — the question
@@ -166,7 +242,10 @@
       // already in place beneath, so nothing shifts as the curtain lifts
       const fullH = el.scrollHeight;
       el.style.overflow = 'hidden';
-      el.style.maxHeight = '63px';
+      // start at ONE bubble's height — read from the stylesheet rather than
+      // hardcoded, because the sheet sizes its bubbles smaller than the page did
+      const startH = parseFloat(getComputedStyle(el).minHeight) || 63;
+      el.style.maxHeight = startH + 'px';
       el.offsetHeight;                       // commit the start height
       el.style.transition = 'max-height ' + total + 'ms linear';
       el.style.maxHeight = (fullH + 60) + 'px';
@@ -294,13 +373,24 @@
     submitQuestion(text, answerEl);
   }
 
-  /* ---- ask the proxy ---- */
+  /* ---- ask the proxy. A sheet can be closed mid-question, so the request
+     is abortable — without it `responding` would stay true and the send
+     arrow would still be disabled on reopen. ---- */
   async function fetchReply() {
-    const res = await fetch(AI_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: history.slice(-20) }),
-    });
+    if (inflight) inflight.abort();
+    inflight = new AbortController();
+    const to = setTimeout(() => inflight && inflight.abort(), 20000);
+    let res;
+    try {
+      res = await fetch(AI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history.slice(-20) }),
+        signal: inflight.signal,
+      });
+    } finally {
+      clearTimeout(to);
+    }
     if (!res.ok) throw new Error('proxy responded ' + res.status);
     const data = await res.json();
     const reply =
@@ -328,6 +418,13 @@
       offline = false;
       setSubtitle(SUB_LIVE);
     } catch (err) {
+      // a request the visitor cancelled by closing the sheet must not print
+      // an offline apology into a panel nobody is looking at
+      if (err.name === 'AbortError' && !isOpen) {
+        responding = false;
+        if (sendBtn) sendBtn.disabled = false;
+        return;
+      }
       full = OFFLINE_ANSWERS[text.toLowerCase()] || OFFLINE_ANSWERS._default;
       offline = true;
       setSubtitle(SUB_OFFLINE);
@@ -395,4 +492,16 @@
   }
 
   restore();
+
+  window.AIChat = { open, close, isOpen: () => isOpen };
+
+  // ai.html is still a real page — every OG card, the nav-touch icon map and
+  // any external link point at it. Landing there opens the sheet straight
+  // away, and ?q=… seeds the first question.
+  if (overlay && document.getElementById('shell') &&
+      document.getElementById('shell').dataset.page === 'ai') {
+    // no rAF here — open() already waits a frame for its own entrance, and
+    // gating the OPEN on a frame means a page that never paints never opens
+    open(new URLSearchParams(location.search).get('q') || undefined);
+  }
 })();
