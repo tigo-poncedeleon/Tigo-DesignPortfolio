@@ -157,7 +157,8 @@
       mode = m; id = e.pointerId;
       box = liveBox();
       start = { x: e.clientX, y: e.clientY };
-      (m === 'move' ? head : grip).setPointerCapture(id);
+      try { (m === 'move' ? head : grip).setPointerCapture(id); }
+      catch (err) { /* no live pointer */ }
       document.documentElement.classList.add('ai-dragging');
       e.preventDefault();
     };

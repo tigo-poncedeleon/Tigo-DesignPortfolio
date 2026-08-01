@@ -290,7 +290,8 @@
     let id = null;
     grip.addEventListener('pointerdown', (e) => {
       id = e.pointerId;
-      grip.setPointerCapture(id);
+      // capture keeps the drag alive if the pointer outruns the 1px line
+      try { grip.setPointerCapture(id); } catch (err) { /* no live pointer */ }
       root.classList.add('rail-dragging');
       e.preventDefault();
     });
