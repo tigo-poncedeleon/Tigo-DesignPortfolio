@@ -90,6 +90,26 @@
     snake: '<path d="M5 8 H14.5 A3.2 3.2 0 0 1 14.5 14.4 H11.5 A3.2 3.2 0 0 0 11.5 20.8 H21" />',
     flappy: '<path d="M4.5 15.5 C 8 9.5, 13.5 9.5, 16.5 13.5" />' +
             '<path d="M16.5 13.5 L21.5 10.5 L20.5 17 Z" />',
+    // the work. Each is the brand reduced to the one shape that carries
+    // it: Vicino's diagonal band with a triangle at either end, a tomato
+    // for the cooking app, a quadcopter for the drone company.
+    vicino: '<path d="M4.5 20.5 V13.5 L11 17 Z" />' +
+            '<path d="M21.5 5.5 V12.5 L15 9 Z" />' +
+            '<path d="M4.5 13.5 L21.5 5.5" />' +
+            '<path d="M4.5 20.5 L21.5 12.5" />',
+    // a bigger body and a wide-spread calyx: two curled leaves closed into
+    // a loop read as a ring, and a single stem reads as an apple. Four
+    // prongs is what makes it a tomato.
+    tomato: '<circle cx="13" cy="15.4" r="7.6" />' +
+            '<path d="M13 7.8 L8 5.4" /><path d="M13 7.8 L18 5.4" />' +
+            '<path d="M13 7.8 L10.4 3.5" /><path d="M13 7.8 L15.6 3.5" />',
+    // rotors as rings, not filled ellipses — at 18px a flattened ellipse
+    // merges with the arm holding it and the whole thing becomes a blob
+    drone:  '<circle cx="13" cy="13" r="2.9" />' +
+            '<path d="M11 11 L8.8 8.8" /><path d="M15 11 L17.2 8.8" />' +
+            '<path d="M11 15 L8.8 17.2" /><path d="M15 15 L17.2 17.2" />' +
+            '<circle cx="6.7" cy="6.7" r="2.8" /><circle cx="19.3" cy="6.7" r="2.8" />' +
+            '<circle cx="6.7" cy="19.3" r="2.8" /><circle cx="19.3" cy="19.3" r="2.8" />',
     // elsewhere
     link: '<path d="M4.5 16.5 L16.5 4.5" /><path d="M6.5 4.5 H16.5 V14.5" />',
   };
@@ -121,67 +141,6 @@
         'C8.5 22, 7.1 21.1, 6.5 19.7" />',
   };
 
-  // ---- The face, drawn rather than rendered.
-  //
-  // Same pen as the craft-card illustrations on about.html: one weight,
-  // round caps, no fill, every shape carrying pathLength so it draws
-  // itself in. Built on a 120x152 box laid out to the usual head
-  // proportions — hairline at 52, brow 66, eyes 78, nose base 98, mouth
-  // 112, chin 132 — and then pushed toward the photograph: the hair is the
-  // biggest shape on the page because it is the biggest shape on him, the
-  // brows are heavy and nearly straight, and the smile is open.
-  //
-  // One dashed guide survives from the construction, the way it does in
-  // every other illustration on the site: the vertical axis the face is
-  // built around.
-  const FACE_SVG =
-    '<svg class="face-art" viewBox="0 0 120 152" aria-hidden="true">' +
-      // the construction axis, stopped at the nose so it never cuts the smile
-      '<line class="face-guide" x1="60" y1="18" x2="60" y2="96" />' +
-
-      // The hair is the whole likeness, so it is drawn first and biggest.
-      // Its outer edge is deliberately LUMPY — a smooth arc there reads as a
-      // bald skull, which is exactly what the first attempt looked like.
-      // Each bulge is a curl catching the light.
-      '<path class="face-ink s1" pathLength="1" d="M25 70 C19 60, 17 48, 23 39 ' +
-        'C27 32, 33 34, 36 28 C40 21, 49 19, 55 23 C61 27, 66 19, 74 20 ' +
-        'C82 21, 86 29, 91 33 C98 38, 101 48, 99 58 C98 64, 97 67, 95 70" />' +
-      // where it breaks against the forehead — low, because his is low
-      '<path class="face-ink s2" pathLength="1" d="M27 63 C33 55, 39 60, 45 53 ' +
-        'C51 48, 57 56, 64 52 C71 48, 77 56, 84 54 C89 53, 93 58, 94 63" />' +
-      // curls, kept UP in the mass; any lower and they read as brow lines
-      '<path class="face-ink s3" pathLength="1" d="M32 45 C36 38, 43 40, 46 45" />' +
-      '<path class="face-ink s3" pathLength="1" d="M50 34 C55 28, 62 30, 65 35" />' +
-      '<path class="face-ink s3" pathLength="1" d="M70 43 C75 37, 82 39, 85 44" />' +
-      '<path class="face-ink s3" pathLength="1" d="M41 27 C46 22, 53 23, 56 28" />' +
-      '<path class="face-ink s3" pathLength="1" d="M73 27 C78 23, 85 26, 87 31" />' +
-
-      // jaw — round and broad, not the long oval a default head wants to be
-      '<path class="face-ink s1" pathLength="1" d="M28 64 C26 81, 31 98, 40 108 ' +
-        'C47 116, 53 120, 60 120 C67 120, 73 116, 80 108 C89 98, 94 81, 92 64" />' +
-      '<path class="face-ink s2" pathLength="1" d="M28 72 C21 72, 20 85, 28 87" />' +
-      '<path class="face-ink s2" pathLength="1" d="M92 72 C99 72, 100 85, 92 87" />' +
-
-      // brows: the heaviest strokes on the face, because they are on him too
-      '<path class="face-ink s2 is-brow" pathLength="1" d="M34 69 C40 64, 50 64, 56 68" />' +
-      '<path class="face-ink s2 is-brow" pathLength="1" d="M64 68 C70 64, 80 64, 86 69" />' +
-
-      '<path class="face-ink s3" pathLength="1" d="M39 79 C43 75, 50 75, 54 79" />' +
-      '<path class="face-ink s3" pathLength="1" d="M39 79 C43 82, 50 82, 54 79" />' +
-      '<path class="face-ink s3" pathLength="1" d="M66 79 C70 75, 77 75, 81 79" />' +
-      '<path class="face-ink s3" pathLength="1" d="M66 79 C70 82, 77 82, 81 79" />' +
-      '<circle class="face-dot" cx="46.5" cy="79" r="1.8" />' +
-      '<circle class="face-dot" cx="73.5" cy="79" r="1.8" />' +
-
-      '<path class="face-ink s3" pathLength="1" d="M58 86 C57 93, 55 97, 57 99 ' +
-        'C59 101, 62 101, 64 99" />' +
-
-      // an OPEN smile: a flat upper lip over a deep lower curve, so the two
-      // read as a gap rather than as one closed line
-      '<path class="face-ink s3" pathLength="1" d="M47 108 C54 105, 66 105, 73 108" />' +
-      '<path class="face-ink s3" pathLength="1" d="M47 108 C53 117, 67 117, 73 108" />' +
-    '</svg>';
-
   // ============================================================
   // The site, as a tree. This is the ONLY place that knows its shape.
   //   id    — matches a page's data-page, so the current row and its
@@ -201,9 +160,9 @@
       ] },
       { id: 'work', href: 'work.html', text: 'Work', icon: 'work', kids: [
         { id: 'vicino', sec: 'vicino', href: 'vicino.html', text: 'Vicino AI',
-          meta: '2026', mark: 'Media/vicino-logo.webp' },
+          meta: '2026', icon: 'vicino' },
         { id: 'pantrypal', sec: 'pantrypal', href: 'pantrypal.html', text: 'PantryPal',
-          meta: '2026', mark: 'Media/pantrypal-logo.webp', kids: [
+          meta: '2026', icon: 'tomato', kids: [
           { sec: 'overview', href: 'pantrypal.html#overview', text: 'overview', icon: 'overview' },
           { sec: 'problem', href: 'pantrypal.html#problem', text: 'problem', icon: 'problem' },
           { sec: 'solution', href: 'pantrypal.html#solution', text: 'solution', icon: 'solution' },
@@ -212,7 +171,7 @@
           { sec: 'results', href: 'pantrypal.html#results', text: 'results', icon: 'results' },
         ] },
         { id: 'nextlevel', sec: 'drone', href: 'nextlevel.html', text: 'Next Level',
-          meta: '2025', mark: 'Media/NextLevelIcon.webp', kids: [
+          meta: '2025', icon: 'drone', kids: [
           { sec: 'overview', href: 'nextlevel.html#overview', text: 'overview', icon: 'overview' },
           { sec: 'story', href: 'nextlevel.html#story', text: 'story', icon: 'story' },
           { sec: 'discovery', href: 'nextlevel.html#discovery', text: 'discovery', icon: 'discovery' },
@@ -256,9 +215,7 @@
   const faviconFor = (id) => {
     if (FAVICON[id]) return FAVICON[id];
     const r = rows().find((x) => x.id === id);
-    FAVICON[id] = (r && r.mark)
-      ? '<img src="' + r.mark + '" alt="" />'
-      : svg(G[(r && r.icon) || 'link'], 2.1);
+    FAVICON[id] = svg(G[(r && r.icon) || 'link'], 2.1);
     return FAVICON[id];
   };
 
@@ -401,9 +358,8 @@
     const kids = row.kids && row.kids.length;
     const key = row.id || row.text;
     const isOpen = kids && opened.has(key);
-    const icon = row.brand ? svg(SOCIAL[row.brand], 1.7)
-      : row.mark ? '<img class="side-mark" src="' + row.mark + '" alt="" width="17" height="17" />'
-      : svg(G[row.icon] || G.link, 1.9);
+    const icon = svg(row.brand ? SOCIAL[row.brand] : (G[row.icon] || G.link),
+      row.brand ? 1.7 : 1.9);
 
     // the twisty is a SIBLING of the link, never inside it — a button
     // nested in an anchor is invalid and gets re-parented by the parser
@@ -455,7 +411,6 @@
 
     side.innerHTML =
       '<a class="side-id" href="index.html#home">' +
-        '<span class="side-avatar" id="side-avatar">' + FACE_SVG + '</span>' +
         '<span class="side-id-text">' +
           '<span class="side-name">Tigo Ponce de León</span>' +
           '<span class="side-role">product design engineer</span>' +
@@ -706,12 +661,6 @@
   grip.title = 'Drag to resize · double-click to reset';
   shell.appendChild(grip);
   wireGrip(grip);
-
-  // the drawn head watches the cursor exactly as the rendered one on
-  // about.html does — same constants, same loop, applied to an <svg>
-  // instead of a <canvas>
-  const face = document.querySelector('#side-avatar .face-art');
-  if (face && window.Portrait) window.Portrait.look(face, window.Portrait.MINI_LOOK);
   wireNav();
   wireAI();
 

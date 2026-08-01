@@ -434,8 +434,12 @@ html.rail-closed .chrome-left { width: auto; }
 .shell-side.is-lit { opacity: 1; }
 /* while dragging, the width must track the pointer exactly — a transition
    here would make the handle feel like it is on elastic */
+/* The grip belongs in here too. Without it the seam eases toward the new
+   width over 0.3s while the panel snaps to the pointer instantly, so the
+   orange line visibly lags the edge it is supposed to BE. */
 html.rail-dragging .shell-side,
-html.rail-dragging .chrome-left { transition: none; }
+html.rail-dragging .chrome-left,
+html.rail-dragging .side-grip { transition: none; }
 
 /* Closed means CLOSED — the page gets the whole screen. It SLIDES out
    rather than vanishing: a negative margin equal to its own width, so the
@@ -492,72 +496,30 @@ html.rail-dragging .side-grip { background: var(--orange); }
   flex: none;
   display: flex;
   align-items: center;
-  gap: 11px;
-  height: auto;
-  padding: 8px 8px 10px;
+  gap: 0;
+  height: 52px;
+  padding: 0 10px;
   border-radius: 8px;
   text-decoration: none;
-  transition: background-color var(--t-micro) ease;
-}
-.side-id:hover { background: rgba(0, 0, 0, 0.035); }
-/* ---- The face, drawn.
-   The site's own pen: one weight, round caps, no fill, and a dashed
-   construction line left showing — the same hand as the craft-card
-   illustrations on about.html. Those classes live in about.css, which
-   only loads on one page, so the rail carries its own copy under its own
-   names rather than reaching for something that is not there. ---- */
-.side-avatar {
-  position: relative;
-  width: 56px;
-  height: 71px;                 /* 56 / 0.785, the head's own aspect */
-  flex: none;
-}
-.face-art {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  will-change: transform;
-}
-.face-ink {
-  fill: none;
-  stroke: #5e5e5e;
-  stroke-width: 2.4;            /* 1.2 at the craft cards' 160 box, scaled
-                                   to this 120 one and to a 56px render */
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.1s var(--ease-draw) var(--d, 0s);
-}
-/* the brows are the heaviest thing on his face, so they are here too */
-.face-ink.is-brow { stroke-width: 3.4; }
-.face-ink.s2 { --d: 0.22s; }
-.face-ink.s3 { --d: 0.44s; }
-.face-guide {
-  fill: none;
-  stroke: #d9d9d9;
-  stroke-width: 1.6;
-  stroke-dasharray: 3 6;
-  stroke-linecap: round;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.9s;
-}
-.face-dot {
-  fill: #5e5e5e;
-  opacity: 0;
-  transition: opacity 0.4s ease 0.95s;
-}
-/* it draws itself once the rail arrives */
-.shell-side.is-lit .face-ink { stroke-dashoffset: 0; }
-.shell-side.is-lit .face-guide,
-.shell-side.is-lit .face-dot { opacity: 1; }
-
-@media (prefers-reduced-motion: reduce) {
-  .face-ink { transition: none; stroke-dashoffset: 0; }
-  .face-guide, .face-dot { transition: none; opacity: 1; }
 }
 
+/* Hovering the name runs the highlighter under it — the same orange
+   sweep, the same easing, the same 0.58em band about.html draws behind
+   the key phrases in the bio. Left to right, in reading order, like a
+   pen. The role underneath follows a beat later so the two read as one
+   gesture rather than a race. */
+.side-name {
+  background: linear-gradient(rgba(253, 143, 59, 0.3), rgba(253, 143, 59, 0.3))
+              no-repeat left 78% / 0% 0.58em;
+  transition: background-size 0.45s var(--ease-draw);
+}
+.side-role {
+  background: linear-gradient(rgba(253, 143, 59, 0.18), rgba(253, 143, 59, 0.18))
+              no-repeat left 76% / 0% 0.62em;
+  transition: background-size 0.45s var(--ease-draw) 0.09s;
+}
+.side-id:hover .side-name { background-size: 100% 0.58em; }
+.side-id:hover .side-role { background-size: 100% 0.62em; }
 .side-id-text {
   min-width: 0;
   display: flex;
@@ -801,8 +763,8 @@ html.intro-run .shell-card {
 
 @media (prefers-reduced-motion: reduce) {
   .now-dot.is-live { animation: none; }
-  .side-row:hover .side-ico *,
-  .side-row:hover .side-mark { animation: none; }
+  .side-row:hover .side-ico * { animation: none; }
+  .side-name, .side-role { transition: none; }
   /* the rail appears; it does not perform */
   html.intro-run .side-group {
     translate: none;
@@ -870,15 +832,6 @@ html.intro-run .shell-card {
 }
 .side-ico > svg,
 .side-ico > img { display: block; width: 100%; height: 100%; }
-/* case studies wear their real mark, the way a Notion page wears its icon.
-   Raster logos are the densest ink of all, so they sit a notch smaller. */
-.side-mark {
-  width: 15px !important;
-  height: 15px !important;
-  border-radius: 4px;
-  object-fit: contain;
-}
-
 /* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which
    retired with the rails, now serving the tree that replaced them. The
    cascade is tighter than the rails' .1/.2/.3 because a 30px row wants a
@@ -894,20 +847,6 @@ html.intro-run .shell-card {
 .side-row:hover .side-ico svg > :nth-child(2) { animation-delay: 0.08s; }
 .side-row:hover .side-ico svg > :nth-child(3) { animation-delay: 0.16s; }
 .side-row:hover .side-ico svg > :nth-child(4) { animation-delay: 0.24s; }
-
-/* Filled marks have no stroke to draw and raster logos have no geometry at
-   all, so they take a beat of the same LENGTH instead — the rail feels
-   uniform even though the mechanism underneath differs. */
-@keyframes side-nudge {
-  0%   { scale: 1; }
-  35%  { scale: 0.86; }
-  70%  { scale: 1.07; }
-  100% { scale: 1; }
-}
-/* the case studies' raster logos have no geometry to draw, so they take a
-   beat of the same length instead — every OTHER icon in the rail, socials
-   included, now redraws itself properly */
-.side-row:hover .side-mark { animation: side-nudge 0.5s var(--ease-pop); }
 
 .side-text {
   flex: 1;
