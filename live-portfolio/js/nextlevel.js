@@ -311,13 +311,14 @@
     const towardBoard = () => {
       const from = surfaceOf(pieces[cur]).getBoundingClientRect();
       const to = surfaceOf(lookPiece).getBoundingClientRect();
-      // both rects are VISUAL px inside the scaled shell; the transform we
-      // return is applied in the shell's own (layout) space, so divide the
-      // translate back out. The scale is a ratio of two same-space widths
-      // and so is already correct.
-      const fs = window.__stageFitScale || 1;
-      const dx = (from.left + from.width / 2 - (to.left + to.width / 2)) / fs;
-      const dy = (from.top + from.height / 2 - (to.top + to.height / 2)) / fs;
+      // both rects are VISUAL px; the transform we return is applied in the
+      // element's own layout space, so convert. ShellFit answers for the box
+      // THIS node lives in — the board is inside the scaled card, so this
+      // gets the card's scale. The scale factor below is a ratio of two
+      // same-space widths and so is already correct either way.
+      const F = window.ShellFit || { toLayout: (p) => p };
+      const dx = F.toLayout(from.left + from.width / 2 - (to.left + to.width / 2), lookPiece);
+      const dy = F.toLayout(from.top + from.height / 2 - (to.top + to.height / 2), lookPiece);
       const rot = getComputedStyle(pieces[cur]).rotate;
       return 'translate(' + dx + 'px, ' + dy + 'px)' +
         ' scale(' + from.width / to.width + ')' +

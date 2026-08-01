@@ -337,10 +337,14 @@
       return;
     }
 
-    // fly the picked chip to where the question lands in the new bubble
-    // (rect deltas are visual px; ÷ the stage-fit scale converts them to
-    // the layout px the scaled panel expects)
-    const fs = window.__stageFitScale || 1;
+    // fly the picked chip to where the question lands in the new bubble.
+    // Rect deltas are visual px; ShellFit converts them to the layout px the
+    // panel expects, answering for the box THIS node lives in. The sheet sits
+    // outside the scaled card, so the answer is 1 and the division vanishes —
+    // which is exactly right, and neither this file nor nextlevel.js has to
+    // know that about itself.
+    const F = window.ShellFit || { toLayout: (p) => p };
+    const px = (v) => F.toLayout(v, panel);
     const startRect = chip.getBoundingClientRect();
     chip.style.opacity = '0';
     hidePrompts(others, () => {});
@@ -357,16 +361,16 @@
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: '10',
-      left: ((startRect.left - panelRect.left) / fs - 1) + 'px',   /* −1: panel border */
-      top: ((startRect.top - panelRect.top) / fs - 1) + 'px',
+      left: (px(startRect.left - panelRect.left) - 1) + 'px',   /* −1: panel border */
+      top: (px(startRect.top - panelRect.top) - 1) + 'px',
       transition: 'none',
     });
     panel.appendChild(clone);
     clone.offsetHeight;
     clone.style.transition = 'transform var(--t-lift) var(--ease-lift)';
     clone.style.transform =
-      'translate(' + (endRect.left - startRect.left) / fs + 'px, ' +
-                     (endRect.top - startRect.top) / fs + 'px)';
+      'translate(' + px(endRect.left - startRect.left) + 'px, ' +
+                     px(endRect.top - startRect.top) + 'px)';
     clone.addEventListener('transitionend', () => {
       questionEl.style.opacity = '1';
       clone.remove();
