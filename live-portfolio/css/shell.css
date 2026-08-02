@@ -863,39 +863,41 @@ html.intro-run .shell-card {
   flex: none;
   padding-top: 8px;
 }
+/* The rail's one warm object, and the only thing in it that DOES something
+   rather than navigating somewhere — so it wears the site's warm chip as a
+   RESTING state rather than a hover one. Not a new idea: it is the exact
+   recipe .glass, .site-nav-word::before and .menu-glass already use, and
+   the same wash the rows above light up with. Promoted, not invented.
+
+   No fill of its own, no shadow. Nothing else in this rail has either, and
+   a white card on cream furniture fights the two-surface rule the whole
+   shell is built on. */
 .ask-pill {
   width: 100%;
   height: 42px;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 10px 0 12px;
+  padding: 0 12px;
   font: inherit;
   font-size: 13px;
-  color: #5e5e5e;
+  color: var(--orange);
   text-decoration: none;
-  background: var(--bg);
-  border: 1px solid var(--shell-line);
+  background: rgba(253, 143, 59, 0.13);
+  border: 1px solid rgba(253, 143, 59, 0.35);
   border-radius: 10px;
-  /* one hairline of lift, so it reads as a control sitting ON the rail
-     rather than a shape cut out of it */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color var(--t-micro) ease, border-color var(--t-micro) ease,
-              box-shadow var(--t-lift) var(--ease-lift),
+  transition: background-color var(--t-micro) ease, border-color var(--t-micro) ease,
               transform var(--t-snap) var(--ease-spring);
 }
-/* Hover warms the INK and the edge and lifts it a little; it does not
-   flood the surface. A control that fills with colour on approach reads
-   as pressed, and this one has not been pressed yet. */
+/* already warm at rest, so hover has nothing to announce except pressure */
 .ask-pill:hover,
 .ask-pill:focus-visible {
-  color: var(--orange);
-  border-color: rgba(253, 143, 59, 0.45);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  background: rgba(253, 143, 59, 0.2);
+  border-color: rgba(253, 143, 59, 0.5);
 }
-.ask-pill:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+.ask-pill:active { transform: translateY(1px); }
 
 .ask-mark {
   flex: none;
@@ -903,12 +905,11 @@ html.intro-run .shell-card {
   height: 17px;
   display: grid;
   place-items: center;
-  color: var(--orange);         /* the one thing that is always warm */
   transition: rotate var(--t-lift) var(--ease-spring);
 }
 .ask-mark > svg { display: block; width: 100%; height: 100%; }
-/* the asterisk has six rays, so an eighth-turn lands it exactly between
-   them — the mark reads as having moved without looking crooked */
+/* the asterisk has six rays, so an eighth-turn lands exactly between them —
+   the mark reads as having moved without ever looking crooked */
 .ask-pill:hover .ask-mark { rotate: 45deg; }
 
 .ask-label {
@@ -917,37 +918,19 @@ html.intro-run .shell-card {
   white-space: nowrap;
   overflow: hidden;
 }
-
-/* real keycaps, not a text label pretending to be one */
-.ask-keys {
+/* meta at the right edge of a row, like the years beside the case studies
+   and the time beside the location */
+.ask-kbd {
   flex: none;
-  display: flex;
-  gap: 3px;
-}
-.ask-keys kbd {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  display: grid;
-  place-items: center;
-  font: inherit;
-  font-size: 10.5px;
-  line-height: 1;
+  font-size: 11px;
   color: var(--shell-dim);
-  background: var(--shell-surface);
-  border: 1px solid #e6e4e1;
-  border-radius: 5px;
-  transition: color var(--t-micro) ease, border-color var(--t-micro) ease;
-}
-.ask-pill:hover .ask-keys kbd {
-  color: var(--orange);
-  border-color: rgba(253, 143, 59, 0.35);
+  letter-spacing: 0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ask-pill { transition: color var(--t-micro) ease, border-color var(--t-micro) ease; }
   .ask-pill:hover .ask-mark { rotate: none; }
   .ask-pill:active { transform: none; }
+}
 }
 
 /* ============================================================

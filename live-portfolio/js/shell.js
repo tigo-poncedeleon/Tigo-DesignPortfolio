@@ -434,9 +434,7 @@
         '<a class="ask-pill" id="ask-pill" href="ai.html">' +
           '<span class="ask-mark">' + svg(G.ai, 2) + '</span>' +
           '<span class="ask-label">ask my ai</span>' +
-          '<span class="ask-keys" aria-hidden="true">' +
-            '<kbd>&#8984;</kbd><kbd>K</kbd>' +
-          '</span>' +
+          '<span class="ask-kbd" aria-hidden="true">&#8984;K</span>' +
         '</a>' +
       '</div>';
 
