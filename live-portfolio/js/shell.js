@@ -432,9 +432,9 @@
       '<nav class="side-scroll" id="side-scroll" aria-label="Site">' + groups + '</nav>' +
       '<div class="side-foot">' +
         '<a class="ask-pill" id="ask-pill" href="ai.html">' +
-          '<span class="ask-mark">' + svg(G.ai, 2) + '</span>' +
+          svg(G.ai, 2) +
           '<span class="ask-label">ask my ai</span>' +
-          '<span class="ask-kbd" aria-hidden="true">&#8984;K</span>' +
+          '<span class="ask-kbd" aria-hidden="true">⌘K</span>' +
         '</a>' +
       '</div>';
 
