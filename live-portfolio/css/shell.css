@@ -450,11 +450,10 @@ html.rail-dragging .side-grip { background: var(--orange); }
   text-decoration: none;
 }
 
-/* the name decodes on hover (js/shell.js) — the characters do the work,
-   so nothing here animates; the tabular figures just stop the random
-   digits from changing the line's width mid-scramble */
-.side-name,
-.side-role { font-variant-numeric: tabular-nums; }
+/* it is a link home, so it answers the cursor the way every other row in
+   the rail does — the accent, and nothing more */
+.side-id:hover .side-name { color: var(--orange); }
+.side-name { transition: color var(--t-micro) ease; }
 .side-id-text {
   min-width: 0;
   display: flex;
@@ -866,43 +865,89 @@ html.intro-run .shell-card {
 }
 .ask-pill {
   width: 100%;
-  height: 40px;
+  height: 42px;
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 0 12px;
+  gap: 10px;
+  padding: 0 10px 0 12px;
   font: inherit;
   font-size: 13px;
   color: #5e5e5e;
   text-decoration: none;
   background: var(--bg);
   border: 1px solid var(--shell-line);
-  border-radius: 9px;           /* the tab's corner, not a lozenge */
+  border-radius: 10px;
+  /* one hairline of lift, so it reads as a control sitting ON the rail
+     rather than a shape cut out of it */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
-              border-color var(--t-micro) ease,
+  transition: color var(--t-micro) ease, border-color var(--t-micro) ease,
+              box-shadow var(--t-lift) var(--ease-lift),
               transform var(--t-snap) var(--ease-spring);
 }
+/* Hover warms the INK and the edge and lifts it a little; it does not
+   flood the surface. A control that fills with colour on approach reads
+   as pressed, and this one has not been pressed yet. */
 .ask-pill:hover,
 .ask-pill:focus-visible {
   color: var(--orange);
-  background: rgba(253, 143, 59, 0.13);
-  border-color: rgba(253, 143, 59, 0.35);
+  border-color: rgba(253, 143, 59, 0.45);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-.ask-pill:active { transform: scale(0.985); }
-.ask-pill svg { flex: none; width: 18px; height: 18px; }
-.ask-pill .ask-label {
+.ask-pill:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+
+.ask-mark {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  color: var(--orange);         /* the one thing that is always warm */
+  transition: rotate var(--t-lift) var(--ease-spring);
+}
+.ask-mark > svg { display: block; width: 100%; height: 100%; }
+/* the asterisk has six rays, so an eighth-turn lands it exactly between
+   them — the mark reads as having moved without looking crooked */
+.ask-pill:hover .ask-mark { rotate: 45deg; }
+
+.ask-label {
   flex: 1;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
 }
-.ask-kbd {
+
+/* real keycaps, not a text label pretending to be one */
+.ask-keys {
   flex: none;
-  font-size: 11px;
+  display: flex;
+  gap: 3px;
+}
+.ask-keys kbd {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  font: inherit;
+  font-size: 10.5px;
+  line-height: 1;
   color: var(--shell-dim);
-  letter-spacing: 0.02em;
+  background: var(--shell-surface);
+  border: 1px solid #e6e4e1;
+  border-radius: 5px;
+  transition: color var(--t-micro) ease, border-color var(--t-micro) ease;
+}
+.ask-pill:hover .ask-keys kbd {
+  color: var(--orange);
+  border-color: rgba(253, 143, 59, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-pill { transition: color var(--t-micro) ease, border-color var(--t-micro) ease; }
+  .ask-pill:hover .ask-mark { rotate: none; }
+  .ask-pill:active { transform: none; }
 }
 
 /* ============================================================

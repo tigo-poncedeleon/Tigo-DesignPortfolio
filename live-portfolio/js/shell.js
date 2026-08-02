@@ -288,58 +288,6 @@
     });
   };
 
-  /* ---- Hovering the name decodes it: every letter starts as a random
-     character and locks into place left to right, the way the site's
-     other text draws itself in rather than simply appearing.
-
-     Two details keep it from being annoying. Spaces never scramble, so
-     the word shape holds and you can still read the LENGTH of the name
-     while it resolves. And the width is locked before the first frame —
-     random glyphs are not the same width as real ones, and without that
-     the whole line would jitter for the duration. ---- */
-  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/\\<>+*#';
-  const scramble = (el, dur) => {
-    if (el.dataset.busy) return;
-    const text = el.dataset.text || el.textContent;
-    el.dataset.text = text;
-    el.dataset.busy = '1';
-    el.style.width = el.getBoundingClientRect().width + 'px';
-    const t0 = performance.now();
-    const lockAt = text.split('').map((_, i) => (i / text.length) * dur * 0.72);
-    const finish = () => {
-      if (!el.dataset.busy) return;
-      clearTimeout(el._scrambleT);
-      el.textContent = text;
-      el.style.width = '';
-      delete el.dataset.busy;
-    };
-    // A hard stop on a timer, not just on the rAF loop. Background the tab
-    // mid-hover and rAF stops being called at all — without this the name
-    // would still be a row of random glyphs when you came back to it.
-    el._scrambleT = setTimeout(finish, dur + 120);
-    (function step(now) {
-      if (!el.dataset.busy) return;
-      const t = (now || performance.now()) - t0;
-      if (t >= dur) { finish(); return; }
-      el.textContent = text.split('').map((ch, i) =>
-        (ch === ' ' || t > lockAt[i]) ? ch
-          : GLYPHS[(Math.random() * GLYPHS.length) | 0]).join('');
-      requestAnimationFrame(step);
-    })(t0);
-  };
-
-  const wireName = () => {
-    const id = side && side.querySelector('.side-id');
-    if (!id) return;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const name = id.querySelector('.side-name');
-    const role = id.querySelector('.side-role');
-    id.addEventListener('pointerenter', () => {
-      if (name) scramble(name, 620);
-      if (role) scramble(role, 520);
-    });
-  };
-
   // ---- the rail: closed means CLOSED, and its width belongs to the visitor
   const RAIL_KEY = 'shell.rail';
   const WIDTH_KEY = 'shell.railw';
@@ -484,9 +432,11 @@
       '<nav class="side-scroll" id="side-scroll" aria-label="Site">' + groups + '</nav>' +
       '<div class="side-foot">' +
         '<a class="ask-pill" id="ask-pill" href="ai.html">' +
-          svg(G.ai, 2) +
+          '<span class="ask-mark">' + svg(G.ai, 2) + '</span>' +
           '<span class="ask-label">ask my ai</span>' +
-          '<span class="ask-kbd" aria-hidden="true">⌘K</span>' +
+          '<span class="ask-keys" aria-hidden="true">' +
+            '<kbd>&#8984;</kbd><kbd>K</kbd>' +
+          '</span>' +
         '</a>' +
       '</div>';
 
@@ -718,7 +668,6 @@
   buildChrome();
   buildSide();
   buildAI();
-  wireName();
 
   const grip = document.createElement('div');
   grip.className = 'side-grip';
