@@ -650,6 +650,18 @@ html.rail-dragging .side-grip { transition: none; }
    every IO-gated loop parks itself; the remembered intrinsic size keeps
    the document's height (and the scroll position under the overlay)
    exactly where it was for the return. */
+/* While a case study is up, the page under it must also stop COMPOSITING,
+   not merely stop being visible. Two full-viewport layers survived the
+   freeze above and kept claiming tiles for pixels the overlay covers:
+   the card's own surface, and .shell-seam — a fixed, viewport-sized SVG
+   carrying one hairline. Dropping both cut Chrome's "tile memory limits
+   exceeded" warnings during a browser-zoom step by about two thirds,
+   which is the moment the budget is tightest (raster scale = dpr x zoom,
+   so zooming IN costs more memory, not less). The seam's hairline is not
+   missed here — the case frame has its own edge. */
+html.case-open .shell-seam { display: none; }
+html.case-open .shell-card { visibility: hidden; }
+
 html.case-open .shell-card > main {
   content-visibility: hidden;
   /* NOT `auto <size>`. The auto keyword remembers the last rendered height

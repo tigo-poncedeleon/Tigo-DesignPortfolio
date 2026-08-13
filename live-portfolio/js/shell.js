@@ -474,11 +474,43 @@
   // gone from shell.css for the same reason.)
   const toggleRail = () => {
     const next = !root.classList.contains('rail-closed');
+    const side = document.querySelector('.shell-side');
+    const eased = side && !reduced() && window.innerWidth > 700;
+    const from = eased ? side.getBoundingClientRect().left : 0;
+
     root.classList.toggle('rail-closed', next);
     try { localStorage.setItem(RAIL_KEY, next ? '1' : '0'); } catch (err) { /* private mode */ }
     window.dispatchEvent(new Event('shell:rail'));
     // this document's stage: new scale + the reading-line hold, now
     if (window.__shellFit) window.__shellFit();
+
+    // …and now the ONE thing that eases: the rail itself, sliding between
+    // where it was and where it now is. A plain FLIP on a single element —
+    // no zoom, no reflow, no second document, nothing to fall out of step
+    // with. That is the whole difference from the version that had to be
+    // deleted: the layout is already final and correct when this starts,
+    // so the glide is pure compositor work and cannot desync from anything.
+    // The page keeps its size the instant you click; the panel takes 0.3s
+    // to get out of (or into) the way, which is the part the eye wanted.
+    if (eased) {
+      const dx = from - side.getBoundingClientRect().left;
+      if (dx) {
+        side.getAnimations().forEach((a) => {
+          if (a.transitionProperty === 'transform') a.cancel();
+        });
+        side.style.transition = 'none';
+        side.style.transform = 'translateX(' + dx + 'px)';
+        void side.offsetWidth;                     // commit the start pose
+        side.style.transition =
+          'transform var(--t-glide) var(--ease-glide), opacity var(--t-glide) ease';
+        side.style.transform = '';
+        const clear = () => { side.style.transition = side.style.transform = ''; };
+        side.addEventListener('transitionend', (e) => {
+          if (e.target === side && e.propertyName === 'transform') clear();
+        }, { once: true });
+        setTimeout(clear, 450);       // transitionend has no delivery guarantee
+      }
+    }
     // and a case study open in the overlay, in the same frame — same
     // origin, so it re-fits itself here rather than a beat later off its
     // own ResizeObserver (that beat was the "adjusts, then jumps")
