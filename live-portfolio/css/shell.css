@@ -627,8 +627,9 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
      re-layout and re-raster of the whole document on every frame of the
      ride, and four things (rail, card, zoom, overlay edge) that had to
      stay in step and never did. The toggle is one frame now: the rail is
-     simply the other width. Only the fade is still timed, and opacity is
-     free. (js/shell.js toggleRail, js/stage-fit.js.) */
+     simply the other width. The toggle's glide is a transform written
+     inline by js/shell.js; this transition covers only the rail's arrival
+     fade on first paint (.is-lit). */
   transition: opacity var(--t-glide) ease;
 }
 .shell-side.is-lit { opacity: 1; }
@@ -691,7 +692,12 @@ html.case-open .shell-card > main {
    snapping when it lands. */
 html.rail-closed .shell-side {
   margin-left: calc(-1 * var(--shell-rail));
-  opacity: 0;
+  /* NO opacity fade. The rail travels its own width to get off screen, so
+     it is already gone when it lands — the fade added nothing but a
+     non-opaque layer, and text on a non-opaque layer loses subpixel
+     antialiasing in every browser: the whole rail went thin and grainy for
+     the length of the slide. Opaque background + pure translate = crisp
+     type the entire way. (js/shell.js toggleRail does the translate.) */
   pointer-events: none;
 }
 html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }

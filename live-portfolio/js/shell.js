@@ -501,8 +501,16 @@
         side.style.transition = 'none';
         side.style.transform = 'translateX(' + dx + 'px)';
         void side.offsetWidth;                     // commit the start pose
-        side.style.transition =
-          'transform var(--t-glide) var(--ease-glide), opacity var(--t-glide) ease';
+        // TRANSFORM ONLY — no opacity in this transition. Animating opacity
+        // makes the layer non-opaque, and both Chrome and Firefox drop
+        // subpixel (LCD) text antialiasing on a non-opaque layer: every
+        // label in the rail goes thin and grainy for the length of the
+        // slide and then snaps crisp, which is exactly the "scratchy, not
+        // crisp" this reads as — in BOTH browsers, which is how we know it
+        // was never the tile-memory story. The rail's background is opaque,
+        // so a pure translate keeps the text rendering at full quality the
+        // whole way across.
+        side.style.transition = 'transform var(--t-glide) var(--ease-glide)';
         side.style.transform = '';
         const clear = () => { side.style.transition = side.style.transform = ''; };
         side.addEventListener('transitionend', (e) => {
