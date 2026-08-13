@@ -1,0 +1,268 @@
+/* ============================================================
+   Colour lab — a try-on rig for the two surfaces.
+
+   The site is two surfaces and nothing else: the content card (--bg) and
+   the furniture L of chrome + rail (--shell-surface). This panel lets you
+   drive both from a 12-step ramp and watch the real page change under it.
+
+   Everything here is hardcoded — its own greys, its own type — so the
+   panel stays legible no matter what the site is wearing. It only exists
+   when js/color-lab.js decides it should (?lab in the URL, or ⌃⇧L).
+   ============================================================ */
+
+.lab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483000;
+  width: 306px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #2a2a2a;
+  background: #ffffff;
+  border: 1px solid #cdcdc9;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .08);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* dragged by its header, so it can get out of the way of whatever you are
+   actually looking at */
+.lab-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 8px 0 10px;
+  background: #f2f1ed;
+  border-bottom: 1px solid #e6e5e0;
+  cursor: grab;
+}
+.lab.is-dragging .lab-head { cursor: grabbing; }
+.lab-title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 590;
+  letter-spacing: .01em;
+}
+.lab-x {
+  flex: none;
+  width: 20px; height: 20px;
+  display: grid; place-items: center;
+  font-size: 13px;
+  color: #84847e;
+  background: none;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.lab-x:hover { background: #e6e5e0; color: #2a2a2a; }
+
+.lab-body { padding: 10px; }
+.lab.is-min .lab-body { display: none; }
+
+/* ---- one target: a label line, then its 12-swatch ramp ---- */
+.lab-group + .lab-group { margin-top: 12px; }
+.lab-label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.lab-label b { font-weight: 590; }
+.lab-label i {
+  margin-left: auto;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+  color: #84847e;
+}
+
+.lab-ramp {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+}
+.lab-sw {
+  position: relative;
+  height: 26px;
+  padding: 0;
+  background: none;
+  border: 1px solid rgba(0, 0, 0, .13);
+  border-radius: 3px;
+  cursor: pointer;
+  overflow: hidden;
+}
+.lab-sw::after {
+  content: attr(data-n);
+  position: absolute;
+  inset: auto 0 1px 0;
+  font-size: 8px;
+  line-height: 1;
+  color: rgba(0, 0, 0, .34);
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+.lab-sw:hover::after { opacity: 1; }
+.lab-sw.is-dark::after { color: rgba(255, 255, 255, .6); }
+.lab-sw:hover { border-color: rgba(0, 0, 0, .35); }
+.lab-sw.is-on {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 3.5px #f54e00;
+  border-color: rgba(0, 0, 0, .2);
+}
+
+/* ---- the readout: how far apart the two surfaces actually are ---- */
+.lab-gap {
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 1px solid #e6e5e0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #6a6a6a;
+}
+.lab-gap b {
+  font-weight: 590;
+  font-variant-numeric: tabular-nums;
+  color: #2a2a2a;
+}
+.lab-gap .lab-verdict { margin-left: auto; }
+.lab-gap .lab-verdict[data-tone="low"]  { color: #cf2d56; }
+.lab-gap .lab-verdict[data-tone="ok"]   { color: #6a6a6a; }
+.lab-gap .lab-verdict[data-tone="high"] { color: #b07a1e; }
+
+/* the join, drawn at true scale: the two colours meeting with no line
+   between them, which is the thing the pair has to survive */
+.lab-join {
+  flex: none;
+  width: 54px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, .13);
+  overflow: hidden;
+  display: flex;
+}
+.lab-join span { display: block; height: 100%; }
+.lab-join .lab-join-f { width: 40%; }
+.lab-join .lab-join-c { width: 60%; }
+
+/* ---- controls ---- */
+.lab-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+.lab-btn {
+  flex: 1;
+  height: 24px;
+  font: inherit;
+  font-size: 10.5px;
+  color: #2a2a2a;
+  background: #f2f1ed;
+  border: 1px solid #e6e5e0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.lab-btn:hover { background: #e6e5e0; }
+.lab-btn.is-on { background: #2a2a2a; border-color: #2a2a2a; color: #fff; }
+
+.lab-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 9px;
+  font-size: 10.5px;
+  color: #4a4a4a;
+  cursor: pointer;
+}
+.lab-check input { margin: 0; accent-color: #f54e00; }
+
+/* ---- the values drawer: paste the real ramp in ---- */
+.lab-vals { margin-top: 9px; }
+.lab-vals[hidden] { display: none; }
+.lab-vals textarea {
+  width: 100%;
+  height: 92px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #2a2a2a;
+  background: #fafafa;
+  border: 1px solid #e6e5e0;
+  border-radius: 5px;
+  padding: 6px 7px;
+  resize: vertical;
+  user-select: text;
+}
+.lab-vals p {
+  margin: 5px 0 0;
+  font-size: 9.5px;
+  color: #84847e;
+}
+
+.lab-note {
+  margin-top: 9px;
+  font-size: 9.5px;
+  line-height: 1.45;
+  color: #a1a19f;
+}
+
+/* ============================================================
+   Dark furniture
+
+   The rail and chrome were drawn for a light L, so a good half of their
+   text is hardcoded greys rather than tokens. When the furniture drops
+   below mid-luminance the lab flips those to the light side so the ramp's
+   bottom half is actually testable. Approximate by design — this is a
+   try-on mirror, not a dark theme.
+   ============================================================ */
+html.lab-dark-furn .shell-chrome,
+html.lab-dark-furn .shell-side { color: var(--lab-furn-ink); }
+
+html.lab-dark-furn .side-name,
+html.lab-dark-furn .jump-row,
+html.lab-dark-furn .side-row,
+html.lab-dark-furn .side-link,
+html.lab-dark-furn .side-text,
+html.lab-dark-furn .side-label,
+html.lab-dark-furn .st-lead,
+html.lab-dark-furn .chrome-tab,
+html.lab-dark-furn .chrome-btn,
+html.lab-dark-furn .chrome-place-city,
+html.lab-dark-furn .tab-close,
+html.lab-dark-furn .ask-label,
+html.lab-dark-furn .side-foot a { color: var(--lab-furn-ink); }
+
+html.lab-dark-furn .side-role,
+html.lab-dark-furn .st-sub,
+html.lab-dark-furn .jump-ico,
+html.lab-dark-furn .side-ico,
+html.lab-dark-furn .side-meta,
+html.lab-dark-furn .chrome-place-time,
+html.lab-dark-furn .tab-label .tab-sec,
+html.lab-dark-furn .side-tw,
+html.lab-dark-furn .globe-where,
+html.lab-dark-furn .side-group,
+html.lab-dark-furn .ask-kbd { color: var(--lab-furn-dim); }
+
+html.lab-dark-furn .chrome-tab:hover,
+html.lab-dark-furn .side-row.is-trail,
+html.lab-dark-furn .side-scroll.has-here .side-row.is-current { color: var(--lab-furn-ink); }
+
+html.lab-dark-furn .chrome-tab:not(.is-active):hover,
+html.lab-dark-furn .tab-close:hover { background: rgba(255, 255, 255, .1); }
+
+/* …but the ACTIVE tab is a hole cut in the furniture, and its label rides on
+   a pill of --bg. Flipping that one to light ink would put light text on the
+   page's own colour. It stays dark, because it is standing on the card. */
+html.lab-dark-furn .chrome-tab.is-active,
+html.lab-dark-furn .chrome-tab.is-active .tab-label,
+html.lab-dark-furn .chrome-tab.is-active .tab-ico,
+html.lab-dark-furn .chrome-tab.is-active .tab-close { color: #5b5a53; }
+html.lab-dark-furn .chrome-tab.is-active .tab-label .tab-sec { color: var(--shell-dim); }
+
+/* the rail's own scrollbar, and any furniture SVG that inherits */
+html.lab-dark-furn .side-scroll { scrollbar-color: rgba(255, 255, 255, .22) transparent; }

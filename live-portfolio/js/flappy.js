@@ -202,24 +202,81 @@ window.Flappy = (function () {
     place(birdEl, BIRD_X, bird.y);
   }
 
+  /* ---- the tile demo: while the court idles in its preview card the bird
+     flies ITSELF — pipes scroll by and an autopilot flaps whenever it sinks
+     under the next gap. Reuses the real pipe pool; no collisions, no score,
+     just motion (the snake-attract idiom). ---- */
+  var DEMO_OK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var demoOn = false;
+
+  function demoTick(dt) {
+    if (!demoOn) {
+      demoOn = true;
+      hideMovers();                 // clears the static idle pair
+      bird.y = (H - BIRD) / 2;
+      bird.vy = 0;
+      sinceSpawn = PIPE_EVERY * 0.6;
+      birdEl.hidden = false;
+    }
+    sinceSpawn += PIPE_SPEED * dt;
+    if (sinceSpawn >= PIPE_EVERY) {
+      sinceSpawn = 0;
+      spawnPipe();
+    }
+    for (var i = pipes.length - 1; i >= 0; i--) {
+      var p = pipes[i];
+      p.x -= PIPE_SPEED * dt;
+      if (p.x + PIPE_W < 0) { releasePipe(p); pipes.splice(i, 1); continue; }
+      placePipe(p);
+    }
+    // autopilot: aim for the next gap's centre, flap on the way down
+    var next = null;
+    for (var j = 0; j < pipes.length; j++) {
+      if (pipes[j].x + PIPE_W > BIRD_X) { next = pipes[j]; break; }
+    }
+    var target = next ? next.gapY : H / 2;
+    bird.vy += GRAVITY * dt;
+    if (bird.vy > 0 && bird.y + BIRD / 2 > target + 14) bird.vy = FLAP_VY * 0.85;
+    bird.y = Math.max(0, Math.min(H - BIRD, bird.y + bird.vy * dt));
+    place(birdEl, BIRD_X, bird.y);
+  }
+
+  function demoStop() {
+    if (!demoOn) return;
+    demoOn = false;
+    if (state === 'idle' || state === 'ended') {
+      hideMovers();
+      if (state === 'idle') showIdleScene();
+    }
+  }
+
+  function inDemo() {
+    return DEMO_OK && (state === 'idle' || state === 'ended') &&
+      !!board.closest('.play-card');
+  }
+
   function loop(t) {
     var dt = Math.min((t - lastT) / 1000, 0.1);
     lastT = t;
     if (state === 'playing') step(dt);
+    else if (inDemo()) demoTick(dt);
+    else demoStop();
     requestAnimationFrame(loop);
   }
 
-  // Which board owns the keyboard. This used to compare against the
-  // viewport centre, which was the same thing when the page WAS the
-  // viewport. Inside the shell the card sits right of centre, so the
-  // question is asked of the card instead — literally what it always
-  // meant: does this board straddle the middle of what you are looking at?
+  // Which board owns the keyboard. The decks stack VERTICALLY now: the
+  // board that straddles the middle of the screen answers. Unless the
+  // theater (js/theater.js) has one — then it owns the keys outright — or
+  // an overlay is up, in which case every game stays quiet (inert does not
+  // silence document-level keydown listeners; this check is the real guard).
   function inView() {
+    var html = document.documentElement;
+    if (html.classList.contains('theater-open')) return !!board.closest('#theater-stage');
+    if (html.classList.contains('ai-open') || html.classList.contains('case-open')) return false;
+    if (board.closest('.play-card')) return false;   // parked in its preview tile
     var r = board.getBoundingClientRect();
-    var host = document.getElementById('shell-card');
-    var hr = host ? host.getBoundingClientRect() : null;
-    var mid = hr ? hr.left + hr.width / 2 : window.innerWidth / 2;
-    return r.left < mid && r.right > mid;   // slides travel horizontally
+    var mid = window.innerHeight / 2;
+    return r.top < mid && r.bottom > mid;
   }
 
   // W flaps alongside space and the up arrow; the rest of WASD is swallowed
@@ -280,12 +337,11 @@ window.Flappy = (function () {
         flap();
       }
     });
-    var scroller = document.getElementById('play-scroll');
-    if (scroller) {
-      scroller.addEventListener('scroll', function () {
-        if (state === 'playing' && !inView()) state = 'paused';
-      }, { passive: true });
-    }
+    // the DOCUMENT scrolls now (the deck's own scroller is plain flow) —
+    // a board scrolled away mid-game pauses rather than playing on unseen
+    window.addEventListener('scroll', function () {
+      if (state === 'playing' && !inView()) state = 'paused';
+    }, { passive: true });
 
     requestAnimationFrame(function (t) {
       lastT = t;
@@ -299,5 +355,26 @@ window.Flappy = (function () {
     init();
   }
 
-  return { init: init };
+  // the theater (js/theater.js) is moving the board. Entering mid-run
+  // pauses; LEAVING ends the run outright — back in its tile the court is
+  // inert, so the tile returns to the idle scene and the demo flight.
+  function setTheater(on) {
+    if (on) {
+      if (state === 'playing') state = 'paused';
+      return;
+    }
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+    state = 'idle';
+    hideMovers();
+    scoreboard.hidden = true;
+    countdownEl.hidden = true;
+    replayEl.hidden = true;
+    playBtnEl.hidden = false;
+    showIdleScene();
+  }
+
+  return { init: init, setTheater: setTheater };
 })();

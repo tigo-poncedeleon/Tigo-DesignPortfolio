@@ -1,0 +1,263 @@
+/* GeoChart — world choropleth for audience-by-region (owner decision
+   2026-07-07). Regions are shaded by the ONE-HUE sequential cyan ramp
+   (--chart-seq-*), class-binned (≥40%, 20–39%, 10–19%, <10%) — never a
+   multi-hue or rank palette; no-data landmass stays a quiet neutral. A scale
+   legend names the bins, and a ranked region list carries the exact values
+   (the map alone is never the only way to read them). Region shapes are
+   Robinson-projected Natural Earth 110m (public domain), grouped into Pulse
+   audience regions. Hover/focus a region or its row for the read-out.
+   Visual source: tokens.css. */
+
+.geo {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 980px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.geo__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.geo__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.geo__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Body: map + ranked region list. */
+.geo__body {
+  display: flex;
+  gap: 28px;
+  align-items: stretch;
+}
+.geo__map {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  align-self: center;
+}
+.geo__map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Region fills — sequential bins; no-data stays neutral surface. */
+.geo__region {
+  stroke: var(--canvas);
+  stroke-width: 0.75;
+  stroke-linejoin: round;
+  transition: filter var(--dur-2) var(--ease-out);
+  outline: none;
+}
+.geo__region--other {
+  fill: var(--surface-2);
+  pointer-events: none;
+}
+.geo__region--sea {
+  fill: var(--chart-seq-600);
+}
+.geo__region--eastasia {
+  fill: var(--chart-seq-400);
+}
+.geo__region--anz {
+  fill: var(--chart-seq-200);
+}
+.geo__region--northamerica {
+  fill: var(--chart-seq-200);
+}
+.geo__region--europe {
+  fill: var(--chart-seq-200);
+}
+.geo__region:hover,
+.geo__region.is-hot,
+.geo__region:focus-visible {
+  filter: brightness(0.95) saturate(1.2);
+  cursor: pointer;
+}
+.geo__region--other:hover,
+.geo__region--other.is-hot {
+  filter: none;
+  cursor: default;
+}
+
+/* Scale legend — bins of one hue, labels in text tokens. */
+.geo__scale {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.geo__scale-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2);
+  color: var(--text-3);
+}
+.geo__scale-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: none;
+}
+.geo__scale-swatch--4 {
+  background: var(--chart-seq-600);
+}
+.geo__scale-swatch--3 {
+  background: var(--chart-seq-400);
+}
+.geo__scale-swatch--2 {
+  background: var(--chart-seq-200);
+}
+.geo__scale-swatch--1 {
+  background: var(--chart-seq-100);
+}
+.geo__scale-swatch--none {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-sizing: border-box;
+}
+
+/* Ranked region list — the exact values; rows link to the map. */
+.geo__list {
+  flex: none;
+  width: 236px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.geo__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-2) var(--ease-out);
+}
+.geo__row:hover,
+.geo__row.is-hot {
+  background: var(--surface);
+}
+.geo__row:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.geo__row-name {
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.geo__row-markets {
+  display: block;
+  margin-top: 1px;
+  font-size: 10px;
+  font-weight: var(--fw-regular);
+  color: var(--text-4);
+} /* token candidate: below --fs-1 */
+.geo__row-value {
+  font-size: var(--fs-3);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+}
+.geo__row-delta {
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+  min-width: 34px;
+  text-align: right;
+}
+.geo__row-delta--up {
+  color: var(--success-600);
+}
+.geo__row-delta--down {
+  color: var(--red-600);
+}
+.geo__row-delta--flat {
+  color: var(--text-4);
+}
+
+/* Pinned chip on the leading region — the one static read-out the card leads
+   with (reference-style); everything else stays on hover/focus. */
+.geo__chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 3px 9px;
+  border-radius: var(--r-full);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  box-shadow: var(--shadow-1);
+  z-index: 1;
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 820px) {
+  .geo__body {
+    flex-direction: column;
+  }
+  .geo__list {
+    width: 100%;
+  }
+}

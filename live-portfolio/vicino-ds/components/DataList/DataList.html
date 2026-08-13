@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DataList - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../StatusPill/StatusPill.css" />
+    <link rel="stylesheet" href="DataList.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1080px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 70ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 18px;
+        align-items: start;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>DataList</h1>
+        <p>
+          Lightweight data display source for operational rows, metadata pairs, and responsive
+          table/list hybrids.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Data row and list slices">
+        <div class="section-title">
+          <span>DataRow / DataList</span>
+        </div>
+        <div class="grid">
+          <div class="data-list data-list--panel data-list--divided">
+            <button
+              class="data-row data-row--interactive data-row--selected"
+              type="button"
+              aria-pressed="true"
+            >
+              <span class="data-row__mark data-row__mark--building">01</span>
+              <span class="data-row__body">
+                <strong class="data-row__title">Texture try-on credibility</strong>
+                <span class="data-row__meta">
+                  <span class="data-row__meta-item">
+                    <span class="data-row__meta-dot data-row__meta-dot--building"></span>
+                    Rendering
+                  </span>
+                  <span class="data-row__meta-item">Campaign post</span>
+                  <span class="data-row__meta-item">ETA 18m</span>
+                </span>
+              </span>
+              <span class="data-row__side">
+                <span>
+                  <span class="data-row__value">62%</span>
+                  <span class="data-row__subvalue">Creative render</span>
+                </span>
+                <span class="data-row__action" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 3l4 4-4 4" />
+                  </svg>
+                </span>
+              </span>
+            </button>
+
+            <button class="data-row data-row--interactive" type="button">
+              <span class="data-row__mark data-row__mark--success">02</span>
+              <span class="data-row__body">
+                <strong class="data-row__title">Quiet outfits: 5 days</strong>
+                <span class="data-row__meta">
+                  <span class="data-row__meta-item">
+                    <span class="data-row__meta-dot data-row__meta-dot--success"></span>
+                    Approved
+                  </span>
+                  <span class="data-row__meta-item">Instagram</span>
+                </span>
+              </span>
+              <span class="data-row__side">
+                <span class="status-pill status-pill--compact status-pill--published">Live</span>
+              </span>
+            </button>
+
+            <button class="data-row data-row--interactive" type="button">
+              <span class="data-row__mark data-row__mark--warning">03</span>
+              <span class="data-row__body">
+                <strong class="data-row__title">Caption variants</strong>
+                <span class="data-row__meta">
+                  <span class="data-row__meta-item">
+                    <span class="data-row__meta-dot data-row__meta-dot--scheduled"></span>
+                    Scheduled
+                  </span>
+                  <span class="data-row__meta-item">Needs review</span>
+                </span>
+              </span>
+              <span class="data-row__side">
+                <span class="status-pill status-pill--compact status-pill--scheduled"
+                  >Scheduled</span
+                >
+              </span>
+            </button>
+          </div>
+
+          <div class="data-list data-list--panel data-list--compact data-list--divided">
+            <div class="data-row">
+              <span class="data-row__mark">01</span>
+              <span class="data-row__body">
+                <strong class="data-row__title">Instagram audience</strong>
+                <span class="data-row__description">Fit-proof saves are above target.</span>
+              </span>
+              <span class="data-row__side">
+                <span>
+                  <span class="data-row__value">31%</span>
+                  <span class="data-row__subvalue">Save rate</span>
+                </span>
+              </span>
+            </div>
+            <div class="data-row">
+              <span class="data-row__mark">02</span>
+              <span class="data-row__body">
+                <strong class="data-row__title">TikTok watch path</strong>
+                <span class="data-row__description">Try-on hook needs a shorter opening.</span>
+              </span>
+              <span class="data-row__side">
+                <span>
+                  <span class="data-row__value">18s</span>
+                  <span class="data-row__subvalue">Median watch</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Description list slices">
+        <div class="section-title">
+          <span>DescriptionList</span>
+        </div>
+        <dl class="description-list">
+          <div class="description-list__item">
+            <dt class="description-list__term">Schedule</dt>
+            <dd class="description-list__value">Jun 12, 2026, 11:00 AM - 12:30 PM</dd>
+          </div>
+          <div class="description-list__item">
+            <dt class="description-list__term">Campaign</dt>
+            <dd class="description-list__value">Quiet Confidence Uniform</dd>
+          </div>
+          <div class="description-list__item">
+            <dt class="description-list__term">Format</dt>
+            <dd class="description-list__value">Carousel - 4 cards</dd>
+          </div>
+          <div class="description-list__item">
+            <dt class="description-list__term">Owner</dt>
+            <dd class="description-list__value">Studio</dd>
+          </div>
+          <div class="description-list__item">
+            <dt class="description-list__term">Brief</dt>
+            <dd class="description-list__value description-list__value--muted">
+              Ready carousel explains how the pieces fit so the edit feels wearable.
+            </dd>
+          </div>
+          <div class="description-list__item">
+            <dt class="description-list__term">Post context</dt>
+            <dd class="description-list__value description-list__value--muted">
+              Final pass should check size-language clarity and calm CTA tone.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="section" aria-label="Table lite slices">
+        <div class="section-title">
+          <span>TableLite</span>
+        </div>
+        <div class="table-lite" role="table" aria-label="Campaign source performance">
+          <div class="table-lite__row table-lite__head" role="row">
+            <span role="columnheader">Source</span>
+            <span role="columnheader">Signal</span>
+            <span role="columnheader">Action</span>
+          </div>
+          <div class="table-lite__row" role="row">
+            <span class="table-lite__cell table-lite__cell--primary" role="cell">
+              <span class="table-lite__mobile-label">Source</span>
+              Delivery-time comments
+            </span>
+            <span class="table-lite__cell" role="cell">
+              <span class="table-lite__mobile-label">Signal</span>
+              47 comments in ~5m
+            </span>
+            <span class="table-lite__cell" role="cell">
+              <span class="table-lite__mobile-label">Action</span>
+              Reply in Studio
+            </span>
+          </div>
+          <div class="table-lite__row" role="row">
+            <span class="table-lite__cell table-lite__cell--primary" role="cell">
+              <span class="table-lite__mobile-label">Source</span>
+              Fit-proof saves
+            </span>
+            <span class="table-lite__cell table-lite__cell--num" role="cell">
+              <span class="table-lite__mobile-label">Signal</span>
+              +18%
+            </span>
+            <span class="table-lite__cell" role="cell">
+              <span class="table-lite__mobile-label">Action</span>
+              Keep proof card
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

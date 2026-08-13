@@ -1,0 +1,154 @@
+/* ===================================================================
+   Icon handoff — LAYOUT ONLY.
+   The React Icon component (src/components/Icon/Icon.jsx) has no CSS file:
+   each icon is a pure inline <svg> that takes its size from a `size` prop
+   and its color from `stroke="currentColor"`. Nothing here styles the SVGs
+   themselves — every rule is scoped to the page-level `.icon-handoff-grid`
+   wrapper so it is clear this is presentation chrome for the handoff page,
+   not component styling.
+   =================================================================== */
+
+.icon-handoff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  max-width: 760px;
+}
+
+.icon-handoff-grid .icon-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 12px 16px;
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    var(--shadow-1);
+  color: var(--text);
+}
+
+.icon-handoff-grid .icon-name {
+  color: var(--text-4);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-ui);
+  text-align: center;
+}
+
+.icon-handoff-grid .icon-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 12px 16px;
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    var(--shadow-1);
+
+  /* Set a clean baseline transition across color and hardware-accelerated movement */
+  color: var(--text-3);
+  transition:
+    color var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+/* Hover effect: lift the element up, drop a deeper ambient shadow, and pop the color */
+.icon-handoff-grid .icon-cell:hover {
+  color: var(--text);
+  background: var(--card-bg-strong);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge-strong),
+    var(--shadow-2);
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+/* Ensure the label name brightens up inside the active cell block */
+.icon-handoff-grid .icon-name {
+  transition: color var(--dur-2) var(--ease-out);
+}
+
+.icon-handoff-grid .icon-cell:hover .icon-name {
+  color: var(--text-2);
+}
+
+/* Special Case: Add a gentle spinning rotation signature to the sync loader icon */
+.icon-handoff-grid .icon-cell:hover svg.className-sync {
+  transform: rotate(180deg);
+  transition: transform var(--dur-3) var(--ease);
+}
+
+.icon-state-section {
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+  margin-top: 32px;
+}
+
+.icon-state-section .specimen-label {
+  color: var(--text-4);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.icon-state-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.icon-state-card {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  align-content: start;
+  min-height: 96px;
+  padding: 16px;
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    var(--shadow-1);
+  color: var(--text-3);
+}
+
+.icon-state-card small {
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.icon-state-card.is-emphasis {
+  color: var(--cyan-700);
+}
+
+.icon-state-card.is-danger {
+  color: var(--red-600);
+}
+
+.icon-state-card.is-disabled {
+  color: var(--text-4);
+  opacity: 0.42;
+}
+
+.icon-button-sample {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    var(--shadow-1);
+  color: var(--text-2);
+}

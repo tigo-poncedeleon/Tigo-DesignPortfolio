@@ -74,7 +74,14 @@
         };
         requestAnimationFrame(tick);
       });
-    }), { threshold: 0.6 });
+    }), {
+        // NOT threshold 0.6. A chapter is often taller than the window now
+        // that the document scrolls, and a section that can never be 60%
+        // visible never fires — it would sit at opacity 0 forever. Firing on
+        // the section that straddles the middle of the screen is the same
+        // intent and holds at any height.
+        rootMargin: '-45% 0px -45% 0px', threshold: 0,
+      });
     countGroups.forEach((_, slide) => io.observe(slide));
   }
 
@@ -168,7 +175,14 @@
           }
         });
       },
-      { root: scroller, threshold: 0.6 }
+      {
+        // NOT threshold 0.6. A chapter is often taller than the window now
+        // that the document scrolls, and a section that can never be 60%
+        // visible never fires — it would sit at opacity 0 forever. Firing on
+        // the section that straddles the middle of the screen is the same
+        // intent and holds at any height.
+        rootMargin: '-45% 0px -45% 0px', threshold: 0,
+      }
     );
     slides.forEach((s) => observer.observe(s));
 
@@ -186,12 +200,12 @@
     let threadRaf = 0;
     const trackScroll = () => {
       threadRaf = 0;
-      const max = scroller.scrollHeight - scroller.clientHeight;
-      if (stage) stage.classList.toggle('is-scrolled', scroller.scrollTop > 40);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (stage) stage.classList.toggle('is-scrolled', window.scrollY > 40);
       window.dispatchEvent(new CustomEvent('shell:progress',
-        { detail: { p: max ? scroller.scrollTop / max : 0 } }));
+        { detail: { p: max ? window.scrollY / max : 0 } }));
     };
-    scroller.addEventListener('scroll', () => {
+    window.addEventListener('scroll', () => {
       if (!threadRaf) threadRaf = requestAnimationFrame(trackScroll);
     }, { passive: true });
     trackScroll();
@@ -247,7 +261,14 @@
       new IntersectionObserver(
         (entries) => entries.forEach((e) =>
           e.isIntersecting ? startAuto() : stopAuto()),
-        { threshold: 0.6 }
+        {
+        // NOT threshold 0.6. A chapter is often taller than the window now
+        // that the document scrolls, and a section that can never be 60%
+        // visible never fires — it would sit at opacity 0 forever. Firing on
+        // the section that straddles the middle of the screen is the same
+        // intent and holds at any height.
+        rootMargin: '-45% 0px -45% 0px', threshold: 0,
+      }
       ).observe(qaSlide);
     }
 
@@ -263,7 +284,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
       if (!qaSlide || !scroller) return;
-      const i = Math.round(scroller.scrollTop / scroller.clientHeight);
+      const i = Math.round(window.scrollY / scroller.clientHeight);
       if (slides[i] !== qaSlide) return;
       e.preventDefault();
       takeWheel();

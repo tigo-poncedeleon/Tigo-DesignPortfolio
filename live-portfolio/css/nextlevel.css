@@ -11,6 +11,11 @@
    is the ink, navy anchors the thread. Declared on the .look overlay
    too — it lives OUTSIDE .case-stage in the DOM, so it doesn't inherit
    the stage's scope. */
+/* The reading rail is appended to BODY, outside .case-stage, so it cannot
+   inherit the palette below — the case hands its ink up to the root for
+   it. Same azure as --nl-azure; keep the two in step. */
+:root { --case-accent: #2b7cc4; }
+
 .case-stage, .look {
   --nl-sky: #b8edf8;
   --nl-azure: #2b7cc4;
@@ -28,9 +33,7 @@
    of stretching with the viewport (js/stage-fit.js) */
 .case-stage {
   position: relative;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   opacity: 0;
   transition: opacity var(--t-stage) ease;
 }
@@ -43,22 +46,18 @@
 }
 
 /* ---- the chapter stack ---- */
+/* the DOCUMENT is the scroller now, so the chapters are just card-height
+   blocks in normal flow */
 .case-scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
 }
-.case-scroll::-webkit-scrollbar { display: none; }
 .case-slide {
   position: relative;
   flex: none;
   width: 100%;
-  height: 100%;
+  height: var(--card-h, 832px);
   --ax: 50%;
 }
 
@@ -76,15 +75,17 @@
 .case-title :is(h1, h2) {
   font-size: 28px;
   font-weight: 400;
-  color: #5e5e5e;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 .case-title p {
   font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.015em;
+  color: rgba(38, 37, 30, 0.34);
 }
 .case-num {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.35);
+  color: rgba(38, 37, 30, 0.4);
   font-variant-numeric: tabular-nums;
   margin-right: 2px;
 }
@@ -120,7 +121,7 @@
   width: 440px;
   font-size: 20px;
   line-height: 30px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .case-pitch p + p { margin-top: 22px; }
 /* the key phrases get a sky-blue HIGHLIGHTER sweep — a real marker,
@@ -131,7 +132,7 @@
 .learned strong,
 .hmw strong {
   font-weight: 400;                 /* emphasis by INK, not weight */
-  color: #404040;
+  color: #26251e;
   background: linear-gradient(var(--nl-mark), var(--nl-mark))
               no-repeat left 78% / 0% 0.58em;
   box-decoration-break: clone;
@@ -157,26 +158,26 @@
   gap: 12px 24px;
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid #e6e5e0;
 }
 .spec-cell dt {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .spec-cell dd {
   margin-top: 2px;
   font-size: 15px;
   line-height: 21px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 /* the suggestion-chip recipe */
 .case-chip {
   padding: 5px 12px;
   font-size: 14px;
   line-height: 1.35;
-  color: #5e5e5e;
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid #d9d9d9;
+  color: #5b5a53;
+  background: rgba(230, 229, 224, 0.48);
+  border: 1px solid #cdcdc9;
   border-radius: 20px;
   white-space: nowrap;
 }
@@ -201,7 +202,7 @@
   gap: 8px;
   margin-top: 16px;
   font-size: 16px;
-  color: #5e5e5e;
+  color: #5b5a53;
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
@@ -261,7 +262,7 @@
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -288,14 +289,14 @@
   width: 400px;
   font-size: 20px;
   line-height: 30px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .story-copy p + p { margin-top: 22px; }
 .photo-card {
   position: absolute;
   padding: 10px 10px 12px;
   background: #fff;
-  border: 2px solid #eeeded;
+  border: 2px solid #e9e8e3;
   border-radius: 14px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   rotate: var(--tilt, 0deg);
@@ -335,7 +336,7 @@
   padding-top: 9px;
   font-size: 12.5px;
   text-align: center;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .story-photos .photo-card:nth-of-type(1) {
   top: 150px;
@@ -364,7 +365,7 @@
 .map-frame {
   position: relative;
   border-radius: 16px;
-  border: 2px solid #eeeded;
+  border: 2px solid #e9e8e3;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   transition: box-shadow var(--t-micro) ease,
@@ -395,7 +396,7 @@
   padding-top: 9px;
   font-size: 12.5px;
   text-align: center;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .map-attr {
   display: block;
@@ -446,7 +447,7 @@
   background: none;
   font: inherit;
   font-size: 19px;
-  color: #5e5e5e;
+  color: #5b5a53;
   text-align: left;
   cursor: pointer;
   transition: color var(--t-micro) ease;
@@ -457,7 +458,7 @@
 .flow-steps:hover .step-item.is-current:not(:hover) { color: var(--ink); }
 .step-n {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   font-variant-numeric: tabular-nums;
   transition: color var(--t-micro) ease;
 }
@@ -468,7 +469,7 @@
   width: 260px;
   font-size: 13.25px;
   line-height: 19px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .qa-credit em { font-style: italic; }
 
@@ -480,8 +481,8 @@
   width: 590px;
   height: 358px;
   padding: 30px 30px 26px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
@@ -519,7 +520,7 @@
 .flow-cap p {
   font-size: 16.5px;
   line-height: 26px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .qa-person {
   position: absolute;
@@ -536,14 +537,14 @@
 .qa-person figcaption {
   margin-top: 6px;
   font-size: 12.5px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .flow-hint {
   position: absolute;
   bottom: 14px;
   left: 30px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 
 /* the distilled DNA — one chip per brand pillar */
@@ -559,7 +560,7 @@
 }
 .built-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   margin-right: 4px;
 }
 .built-for .case-chip:nth-of-type(1) {
@@ -586,12 +587,12 @@
 }
 .hmw-label {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .hmw-q {
   margin-top: 6px;
   font-size: 24px;
-  color: #404040;
+  color: #26251e;
 }
 
 /* ============================================================
@@ -619,7 +620,7 @@
   font-size: 17px;
   line-height: 26px;
   text-align: center;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .colorway-row {
   position: absolute;
@@ -672,8 +673,8 @@
   width: 238px;
   height: 460px;
   padding: 18px 20px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: transform var(--t-lift) var(--ease-lift),
@@ -718,9 +719,9 @@
 .verdict {
   padding: 3px 10px;
   font-size: 13.25px;
-  color: #5e5e5e;
+  color: #5b5a53;
   background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid #d9d9d9;
+  border: 0.663px solid #cdcdc9;
   border-radius: 6.625px;
   white-space: nowrap;
 }
@@ -728,7 +729,7 @@
 .wire-verdict .verdict::before,
 .colorway .verdict:not(.is-yes)::before {
   content: '\2715\2002';
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .verdict.is-yes::before {
   content: '\2713\2002';
@@ -741,14 +742,14 @@
 }
 .wire-name {
   font-size: 15px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   white-space: nowrap;
 }
 .wire-copy {
   margin-top: 10px;
   font-size: 14px;
   line-height: 21px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 
 /* ============================================================
@@ -831,7 +832,7 @@
 .apparel-card {
   border-radius: 14px;
   overflow: hidden;
-  border: 2px solid #eeeded;
+  border: 2px solid #e9e8e3;
   background: #fff;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
@@ -841,8 +842,8 @@
 .browser {
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #e3e3e3;
-  background: #fff;
+  border: 1px solid #e6e5e0;
+  background: #fdfdfb;
 }
 .browser-bar {
   display: flex;
@@ -850,19 +851,19 @@
   gap: 10px;
   height: 30px;
   padding: 0 12px;
-  background: #f2f2f2;
-  border-bottom: 1px solid #e6e6e6;
+  background: #edece8;
+  border-bottom: 1px solid #e6e5e0;
 }
 .browser-dots { display: flex; gap: 5px; flex: none; }
-.browser-dots i { width: 8px; height: 8px; border-radius: 50%; background: #d2d2d2; }
+.browser-dots i { width: 8px; height: 8px; border-radius: 50%; background: #cdcdc9; }
 .browser-url {
   flex: 1;
   min-width: 0;
   text-align: left;
   font-size: 11px;
-  color: #8a8a8a;
-  background: #fff;
-  border: 1px solid #e6e6e6;
+  color: #84847e;
+  background: #fdfdfb;
+  border: 1px solid #e6e5e0;
   border-radius: 6px;
   padding: 3px 10px;
   white-space: nowrap;
@@ -894,7 +895,7 @@
   left: var(--ax);
   transform: translateX(-50%);
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   white-space: nowrap;
 }
 
@@ -967,7 +968,7 @@
   align-items: baseline;
   gap: 12px;
   font-size: 15px;
-  color: #5e5e5e;
+  color: #5b5a53;
   white-space: nowrap;
   opacity: 0;
   translate: 0 6px;
@@ -982,7 +983,7 @@
   color: var(--nl-azure);
 }
 .look-index {
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1000,7 +1001,7 @@
   border: 0;
   border-radius: 50%;
   background: none;
-  color: #9a9a9a;
+  color: #a1a19f;
   cursor: pointer;
   opacity: 0;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
@@ -1031,8 +1032,8 @@
   width: 250px;
   height: 170px;
   padding: 24px 24px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: transform var(--t-lift) var(--ease-lift),
@@ -1048,7 +1049,7 @@
   margin-top: 10px;
   font-size: 14px;
   line-height: 20px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .learned {
   position: absolute;
@@ -1058,17 +1059,17 @@
   width: 660px;
   font-size: 17px;
   line-height: 26px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .learned p + p { margin-top: 10px; }
 .learned-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   margin-bottom: 12px;
 }
 .learned strong {
   font-weight: 400;
-  color: #404040;
+  color: #26251e;
 }
 .case-outro {
   position: absolute;
@@ -1081,7 +1082,7 @@
 }
 .case-link {
   font-size: 16px;
-  color: #5e5e5e;
+  color: #5b5a53;
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
@@ -1360,7 +1361,7 @@
     opacity: 1;
     margin-top: 8px;
     text-align: center;
-    color: rgba(0, 0, 0, 0.42);
+    color: rgba(38, 37, 30, 0.48);
   }
   /* the look overlay slims for the phone */
   .look-arrow.is-prev { left: 6px; }

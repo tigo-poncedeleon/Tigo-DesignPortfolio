@@ -21,9 +21,11 @@ window.Pong = (function () {
   var STORE_C = 'pong.computerWins';
   var STORE_P = 'pong.playerWins';
 
-  var board, ballEl, padLEl, padREl, scoreboard, countdownEl, scoreCEl, scorePEl, replayEl, playBtnEl;
+  var board, ballEl, padLEl, padREl, wallEl, scoreboard, countdownEl, scoreCEl, scorePEl, replayEl, playBtnEl;
   var W, H;                     // playfield size — the inner rail's content box
   var ox, oy;                   // playfield origin within the board
+  var FULL_W = 1094;            // the classic court's playfield width, the
+                                // yardstick the demo's speeds are quoted in
   var state = 'idle';           // idle | countdown | playing | paused | ended
   var ball = { x: 0, y: 0, vx: 0, vy: 0 };
   var padL, padR;               // y of each paddle
@@ -55,6 +57,28 @@ window.Pong = (function () {
     var px = Math.round((ox + x) * DPR) / DPR;
     var py = Math.round((oy + y) * DPR) / DPR;
     el.style.transform = 'translate3d(' + px + 'px,' + py + 'px,0)';
+  }
+
+  // The playfield is the inside of the inner rail — the ball treats its
+  // border as the wall. Read rather than assumed, because the rail is two
+  // different rectangles depending on where the board is parked.
+  function measure() {
+    ox = wallEl.offsetLeft + wallEl.clientLeft;
+    oy = wallEl.offsetTop + wallEl.clientTop;
+    W = wallEl.clientWidth;
+    H = wallEl.clientHeight;
+  }
+
+  // A court that just changed shape has movers standing in the old one:
+  // recentre the paddles and let the demo re-serve into the new box.
+  function reseat() {
+    demoOn = false;
+    if (state === 'playing' || state === 'countdown' || state === 'paused') {
+      ball.x = (W - BALL) / 2;
+      ball.y = (H - BALL) / 2;
+      place(ballEl, ball.x, ball.y);
+    }
+    centerPaddles();
   }
 
   function centerPaddles() {
@@ -177,6 +201,81 @@ window.Pong = (function () {
     place(padREl, W - PADDLE_INSET - PADDLE_W, padR);
   }
 
+  /* ---- the tile demo: while the court idles in its preview card the game
+     plays ITSELF — a lazy two-computer rally, the snake-attract idiom.
+     Own ball state so a real game's serve maths never tangle with it;
+     the shared paddles are fine (every real start recentres them). ---- */
+  var DEMO_OK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var demoOn = false;
+  var demo = { x: 0, y: 0, vx: 0, vy: 0 };
+
+  // Speeds are quoted for the full-width court and scaled to whatever court
+  // the board is currently in, so the square tile rally crosses its table in
+  // the same handful of seconds — and at the same speed ON SCREEN, since the
+  // narrower court is shown at a proportionally larger zoom.
+  function demoSpeed(v) { return v * (W / FULL_W); }
+
+  function demoServe(dirX) {
+    var a = (Math.random() * 36 - 18) * Math.PI / 180;
+    var s = demoSpeed(330);
+    demo.x = (W - BALL) / 2;
+    demo.y = (H - BALL) / 2;
+    demo.vx = Math.cos(a) * s * dirX;
+    demo.vy = Math.sin(a) * s;
+  }
+
+  function demoTick(dt) {
+    if (!demoOn) {
+      demoOn = true;
+      ballEl.hidden = false;
+      demoServe(Math.random() < 0.5 ? -1 : 1);
+    }
+    demo.x += demo.vx * dt;
+    demo.y += demo.vy * dt;
+    if (demo.y < 0) { demo.y = -demo.y; demo.vy = Math.abs(demo.vy); }
+    else if (demo.y + BALL > H) { demo.y = 2 * (H - BALL) - demo.y; demo.vy = -Math.abs(demo.vy); }
+    var faceL = PADDLE_INSET + PADDLE_W;
+    var faceR = W - PADDLE_INSET - PADDLE_W - BALL;
+    if (demo.vx < 0 && demo.x <= faceL && demo.y + BALL > padL && demo.y < padL + PADDLE_H) {
+      demo.x = faceL;
+      demo.vx = Math.abs(demo.vx);
+      demo.vy += ((demo.y + BALL / 2) - (padL + PADDLE_H / 2)) * demoSpeed(3);
+    } else if (demo.vx > 0 && demo.x >= faceR && demo.y + BALL > padR && demo.y < padR + PADDLE_H) {
+      demo.x = faceR;
+      demo.vx = -Math.abs(demo.vx);
+      demo.vy += ((demo.y + BALL / 2) - (padR + PADDLE_H / 2)) * demoSpeed(3);
+    }
+    // a miss just re-serves the other way — nobody keeps score in a lobby
+    if (demo.x < -BALL * 2) demoServe(1);
+    else if (demo.x > W + BALL) demoServe(-1);
+    // both paddles chase with a deliberately easy hand, so the rally
+    // wanders instead of playing perfect
+    var tL = demo.vx < 0 ? demo.y + BALL / 2 - PADDLE_H / 2 : (H - PADDLE_H) / 2;
+    var tR = demo.vx > 0 ? demo.y + BALL / 2 - PADDLE_H / 2 : (H - PADDLE_H) / 2;
+    var cap = demoSpeed(250);
+    padL = Math.max(0, Math.min(H - PADDLE_H,
+      padL + Math.max(-cap, Math.min(cap, (tL - padL) * 5)) * dt));
+    padR = Math.max(0, Math.min(H - PADDLE_H,
+      padR + Math.max(-cap, Math.min(cap, (tR - padR) * 5)) * dt));
+    place(ballEl, demo.x, demo.y);
+    place(padLEl, PADDLE_INSET, padL);
+    place(padREl, W - PADDLE_INSET - PADDLE_W, padR);
+  }
+
+  function demoStop() {
+    if (!demoOn) return;
+    demoOn = false;
+    if (state === 'idle' || state === 'ended') {
+      ballEl.hidden = true;
+      centerPaddles();
+    }
+  }
+
+  function inDemo() {
+    return DEMO_OK && (state === 'idle' || state === 'ended') &&
+      !!board.closest('.play-card');
+  }
+
   function loop(t) {
     // Integrate with the real frame delta so the ball keeps a constant
     // real-time speed even when a frame runs long — clamping at ~2 frames
@@ -185,23 +284,27 @@ window.Pong = (function () {
     var dt = Math.min((t - lastT) / 1000, 0.1);
     lastT = t;
     if (state === 'playing') step(dt);
+    else if (inDemo()) demoTick(dt);
+    else demoStop();
     requestAnimationFrame(loop);
   }
 
   // With Snake sharing the page, only the game whose board straddles the
   // viewport centre owns the keyboard (and a game scrolled off mid-rally
   // pauses itself rather than playing on unseen).
-  // Which board owns the keyboard. This used to compare against the
-  // viewport centre, which was the same thing when the page WAS the
-  // viewport. Inside the shell the card sits right of centre, so the
-  // question is asked of the card instead — literally what it always
-  // meant: does this board straddle the middle of what you are looking at?
+  // Which board owns the keyboard. The decks stack VERTICALLY now: the
+  // board that straddles the middle of the screen answers. Unless the
+  // theater (js/theater.js) has one — then it owns the keys outright — or
+  // an overlay is up, in which case every game stays quiet (inert does not
+  // silence document-level keydown listeners; this check is the real guard).
   function inView() {
+    var html = document.documentElement;
+    if (html.classList.contains('theater-open')) return !!board.closest('#theater-stage');
+    if (html.classList.contains('ai-open') || html.classList.contains('case-open')) return false;
+    if (board.closest('.play-card')) return false;   // parked in its preview tile
     var r = board.getBoundingClientRect();
-    var host = document.getElementById('shell-card');
-    var hr = host ? host.getBoundingClientRect() : null;
-    var mid = hr ? hr.left + hr.width / 2 : window.innerWidth / 2;
-    return r.left < mid && r.right > mid;   // slides travel horizontally
+    var mid = window.innerHeight / 2;
+    return r.top < mid && r.bottom > mid;
   }
 
   // WASD sits alongside the arrows — same paddle, left hand or right.
@@ -245,14 +348,22 @@ window.Pong = (function () {
     playBtnEl = document.getElementById('play-btn');
     if (!board || !ballEl) return;
 
-    // the playfield is the inside of the inner rail — the ball treats its
-    // border as the wall
-    var wall = document.getElementById('board-wall');
-    ox = wall.offsetLeft + wall.clientLeft;
-    oy = wall.offsetTop + wall.clientTop;
-    W = wall.clientWidth;
-    H = wall.clientHeight;
+    wallEl = document.getElementById('board-wall');
     DPR = window.devicePixelRatio || 1;
+    measure();
+    // The court changes SHAPE between its two homes — a square table in the
+    // preview tile, the classic 2.7:1 strip in the theater (css/play.css).
+    // The move happens in js/theater.js at times this file cannot see (the
+    // trip home lands a beat after setTheater(false), at the end of the fly),
+    // so the rail itself is what is watched: whenever it resizes, the
+    // playfield is re-read and the movers are put back where they belong.
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () {
+        if (wallEl.clientWidth === W && wallEl.clientHeight === H) return;
+        measure();
+        reseat();
+      }).observe(wallEl);
+    }
 
     renderTallies();
     // clean idle board like snake/flappy — the tallies only show on the
@@ -281,12 +392,11 @@ window.Pong = (function () {
     // NB: no auto-pause on window blur — it froze the game with no visual
     // cue whenever focus flickered, which read as stutter or a dead ball.
     // Scrolling AWAY does pause, though: an unseen rally just loses points.
-    var scroller = document.getElementById('play-scroll');
-    if (scroller) {
-      scroller.addEventListener('scroll', function () {
-        if (state === 'playing' && !inView()) state = 'paused';
-      }, { passive: true });
-    }
+    // the DOCUMENT scrolls now (the deck's own scroller is plain flow) —
+    // a board scrolled away mid-game pauses rather than playing on unseen
+    window.addEventListener('scroll', function () {
+      if (state === 'playing' && !inView()) state = 'paused';
+    }, { passive: true });
 
     requestAnimationFrame(function (t) {
       lastT = t;
@@ -303,5 +413,27 @@ window.Pong = (function () {
     init();
   }
 
-  return { init: init };
+  // the theater (js/theater.js) is moving the board. Entering mid-rally
+  // pauses; LEAVING ends the run outright — back in its tile the court is
+  // inert, so a frozen half-game would just sit there. The tile gets the
+  // idle board back and the demo rally takes over.
+  function setTheater(on) {
+    if (on) {
+      if (state === 'playing') state = 'paused';
+      return;
+    }
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+    state = 'idle';
+    ballEl.hidden = true;
+    scoreboard.hidden = true;
+    countdownEl.hidden = true;
+    replayEl.hidden = true;
+    playBtnEl.hidden = false;
+    centerPaddles();
+  }
+
+  return { init: init, setTheater: setTheater };
 })();

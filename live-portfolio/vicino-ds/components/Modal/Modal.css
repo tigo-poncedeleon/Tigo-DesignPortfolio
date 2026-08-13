@@ -1,0 +1,127 @@
+/* Modal — overlay shell: a dimmed backdrop that centers a white dialog with a
+   header (eyebrow / title + close), a scrollable body, and a footer for actions.
+   Toggle `.is-open` (or `.open`) on the backdrop to show it. The dialog's body /
+   footer content is consumer-specific. Promoted from the signal page's Monitoring
+   Plan + Signal Detail modals. Tokens from ../tokens.css. */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(12, 27, 58, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-2) var(--ease);
+}
+
+.modal-backdrop.is-open,
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow: hidden;
+  background: var(--canvas);
+  border: 1px solid var(--card-border);
+  border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-3);
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition:
+    transform var(--dur-2) var(--ease),
+    opacity var(--dur-2) var(--ease);
+}
+
+.modal-backdrop.is-open .modal-dialog,
+.modal-backdrop.open .modal-dialog {
+  transform: none;
+  opacity: 1;
+}
+
+/* Wider dialog — for dense / multi-column modals (e.g. a plan builder). */
+.modal-dialog--wide {
+  max-width: 780px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+  padding: 24px;
+}
+
+/* Divided header — a hairline rule under the header (e.g. a detail modal). */
+.modal-header--divided {
+  border-bottom: 1px solid var(--card-border);
+}
+
+.modal-eyebrow {
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-4);
+}
+
+.modal-title {
+  font-size: var(--type-card-title);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-title);
+  color: var(--text);
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--card-border);
+  background: var(--canvas);
+  color: var(--text-3);
+  cursor: pointer;
+  transition:
+    background var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease);
+}
+
+.modal-close:hover,
+.modal-close.is-hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.modal-close:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 16px 24px;
+  border-top: 1px solid var(--card-border);
+  background: var(--canvas);
+}

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Field - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="Field.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: clamp(28px, 3vw, 48px);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 1040px;
+      }
+
+      .intro {
+        display: grid;
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      .eyebrow,
+      .specimen-label,
+      .state-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h2 {
+        font-size: var(--fs-5);
+        font-weight: var(--fw-semibold);
+      }
+
+      p {
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+
+      .component-set {
+        display: grid;
+        gap: 18px;
+        padding-top: 4px;
+      }
+
+      .component-set + .component-set {
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+      }
+
+      .state-card {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: inset 0 0 0 1px var(--surface-edge);
+      }
+
+      .inline-demo {
+        display: grid;
+        gap: 10px;
+        max-width: 520px;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: inset 0 0 0 1px var(--surface-edge);
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="intro">
+        <span class="eyebrow">Component source</span>
+        <h1>Field</h1>
+        <p>
+          Labelled native form controls for Pulse. Use the field wrapper for label, help, error,
+          density, and accessibility state; keep business-specific layout on the consuming surface.
+        </p>
+      </header>
+
+      <section class="component-set" aria-label="Field controls">
+        <div>
+          <span class="specimen-label">Core controls</span>
+          <h2>Input, select, textarea</h2>
+        </div>
+        <div class="state-grid">
+          <div class="state-card">
+            <small>Input</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Campaign</span>
+              <input class="ds-input" value="Quiet Confidence Uniform" />
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Select</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Status</span>
+              <select class="ds-select">
+                <option>Scheduled</option>
+                <option>Rendering</option>
+                <option>Ready</option>
+              </select>
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Textarea</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Brief</span>
+              <textarea class="ds-textarea">
+Texture proof should feel wearable, not staged.</textarea>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Field states">
+        <div>
+          <span class="specimen-label">States</span>
+          <h2>Focus, help, error, disabled, readonly</h2>
+        </div>
+        <div class="state-grid">
+          <div class="state-card">
+            <small>Focus</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Start time</span>
+              <input class="ds-input is-focus" value="11:00 AM" />
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Help text</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Guests</span>
+              <input class="ds-input" placeholder="Add guests" />
+              <span class="ds-field__help">Optional; guests receive a calendar invite.</span>
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Error</small>
+            <label class="ds-field">
+              <span class="ds-field__label">End time</span>
+              <input class="ds-input is-invalid" value="10:00 AM" aria-invalid="true" />
+              <span class="ds-field__error">End time must be after start time.</span>
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Disabled</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Location</span>
+              <input class="ds-input" value="Studio" disabled />
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Readonly</small>
+            <label class="ds-field">
+              <span class="ds-field__label">Owner</span>
+              <input class="ds-input" value="Studio" readonly />
+            </label>
+          </div>
+          <div class="state-card">
+            <small>Checkbox</small>
+            <label class="ds-field ds-field--check">
+              <input class="ds-checkbox" type="checkbox" checked />
+              <span class="ds-field__label">All day</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Inline field layout">
+        <div>
+          <span class="specimen-label">Layout contract</span>
+          <h2>Inline labels stay consumer-owned</h2>
+        </div>
+        <div class="inline-demo">
+          <label class="ds-field ds-field--inline">
+            <span class="ds-field__label">Repeat</span>
+            <select class="ds-select">
+              <option>Does not repeat</option>
+              <option>Weekly</option>
+            </select>
+          </label>
+          <label class="ds-field ds-field--inline">
+            <span class="ds-field__label">Description</span>
+            <textarea class="ds-textarea ds-textarea--compact">
+Fits the edit without turning the post into a product spec.</textarea>
+          </label>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

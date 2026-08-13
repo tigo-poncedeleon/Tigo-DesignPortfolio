@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SignalCard - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="SignalCard.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: clamp(28px, 3vw, 48px);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        max-width: 72ch;
+        margin: 0 0 34px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .signal-card-specimen {
+        display: grid;
+        gap: 16px;
+        max-width: 760px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">SignalCard</h1>
+    <p class="handoff-sub">
+      Rich signal-feed card: a severity tag + timestamp, title and description, a primary action and
+      a sources link, plus a right column with the headline stat, a trend badge, and a sparkline.
+      Severity is set by the tag/badge variant (<code>risk</code> / <code>action</code> /
+      <code>highlight</code>); the whole card is clickable when <code>data-category="risk"</code>.
+      Composes the DS Button for its action.
+    </p>
+
+    <div class="signal-card-specimen">
+      <div class="sig-card-v2" data-category="risk">
+        <div class="sig-v2-inner">
+          <div class="sig-v2-left">
+            <div class="sig-v2-meta-row">
+              <span class="sig-v2-tag risk">Risk</span>
+              <span class="sig-v2-time">4h ago</span>
+            </div>
+            <div class="sig-v2-content">
+              <div class="sig-v2-title">
+                Delivery-time complaints trending on r/femalefashionadvice
+              </div>
+              <div class="sig-v2-desc">
+                Competitor brands named in 8 threads in the last 4 hours. Sentiment skewing negative
+                around shipping windows.
+              </div>
+            </div>
+            <div class="sig-v2-footer">
+              <button class="btn btn--primary" type="button">Take Action</button>
+              <button class="sig-v2-sources" type="button">8 sources</button>
+            </div>
+          </div>
+          <div class="sig-v2-right">
+            <div class="sig-v2-stat">
+              <div class="sig-v2-num">78%</div>
+              <span class="sig-v2-badge amber">↑ 8 posts / 4h</span>
+            </div>
+            <div class="sig-v2-chart">
+              <svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
+                <polyline
+                  points="0,32 20,28 40,30 60,20 80,22 100,10 120,6"
+                  fill="none"
+                  stroke="var(--data-status-risk)"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sig-card-v2" data-category="action">
+        <div class="sig-v2-inner">
+          <div class="sig-v2-left">
+            <div class="sig-v2-meta-row">
+              <span class="sig-v2-tag action">Suggested action</span>
+              <span class="sig-v2-time">1h ago</span>
+            </div>
+            <div class="sig-v2-content">
+              <div class="sig-v2-title">UGC unboxing clip outperforming paid by 3x</div>
+              <div class="sig-v2-desc">
+                A creator reel is driving saves at 3x your paid average — worth boosting while it is
+                live.
+              </div>
+            </div>
+            <div class="sig-v2-footer">
+              <button class="btn btn--primary" type="button">Take Action</button>
+              <button class="sig-v2-sources" type="button">3 sources</button>
+            </div>
+          </div>
+          <div class="sig-v2-right">
+            <div class="sig-v2-stat">
+              <div class="sig-v2-num">3.1x</div>
+              <span class="sig-v2-badge blue">vs paid avg</span>
+            </div>
+            <div class="sig-v2-chart">
+              <svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
+                <polyline
+                  points="0,30 20,26 40,18 60,16 80,12 100,8 120,4"
+                  fill="none"
+                  stroke="var(--data-status-action)"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sig-card-v2" data-category="highlight">
+        <div class="sig-v2-inner">
+          <div class="sig-v2-left">
+            <div class="sig-v2-meta-row">
+              <span class="sig-v2-tag highlight">Active</span>
+              <span class="sig-v2-time">12m ago</span>
+            </div>
+            <div class="sig-v2-content">
+              <div class="sig-v2-title">Spring drop hashtag passed 1M impressions</div>
+              <div class="sig-v2-desc">
+                Organic reach holding above forecast on day two. Save-rate steady at 6.4%.
+              </div>
+            </div>
+            <div class="sig-v2-footer">
+              <button class="btn btn--primary" type="button">Take Action</button>
+              <button class="sig-v2-sources" type="button">5 sources</button>
+            </div>
+          </div>
+          <div class="sig-v2-right">
+            <div class="sig-v2-stat">
+              <div class="sig-v2-num">1.0M</div>
+              <span class="sig-v2-badge green">+12% vs forecast</span>
+            </div>
+            <div class="sig-v2-chart">
+              <svg viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
+                <polyline
+                  points="0,34 20,30 40,24 60,22 80,16 100,12 120,8"
+                  fill="none"
+                  stroke="var(--data-status-highlight)"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

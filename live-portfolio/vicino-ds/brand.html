@@ -1,0 +1,2254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pulse / Post Design System</title>
+    <script>
+      if (window.self !== window.top) document.documentElement.classList.add('is-embedded');
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Newsreader:ital,opsz,wght@0,18..72,400..500;1,18..72,400..500&display=swap');
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      * {
+        margin: 0;
+      }
+
+      :root {
+        --stage: #eef3f3;
+        --canvas: #f7f9f9;
+        --surface: #ffffff;
+        --surface-soft: rgba(255, 255, 255, 0.74);
+        --surface-strong: rgba(255, 255, 255, 0.96);
+        --ink-900: #141416;
+        --ink-800: #1d1d1f;
+        --ink-700: #2f3135;
+        --ink-600: #44464a;
+        --text-3: #5f6369;
+        --text-4: #8a8e95;
+        --line: rgba(15, 23, 42, 0.12);
+        --line-soft: rgba(15, 23, 42, 0.075);
+        --cyan-50: #f0fdff;
+        --cyan-100: #e5fbff;
+        --cyan-200: #b8f3fb;
+        --cyan-500: #49e0f5;
+        --cyan-600: #0ea5b8;
+        --cyan-700: #0d7685;
+        --green: #43ba51;
+        --blue: #3987f3;
+        --amber: #f19a08;
+        --red: #ef4444;
+        --purple: #6366f1;
+        --gold: var(--amber);
+        --indigo: #6366f1;
+        --font: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        --mono: var(--font); /* Manrope-only platform */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 10px;
+        --radius-xl: 12px;
+        --radius-2xl: 16px;
+        --radius-3xl: 24px;
+        --radius-full: 9999px;
+        --shadow-rest:
+          inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(15, 23, 42, 0.04),
+          0 4px 10px rgba(15, 23, 42, 0.035);
+        --shadow-hover:
+          inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 1px 3px rgba(15, 23, 42, 0.05),
+          0 10px 24px rgba(15, 23, 42, 0.055);
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      html {
+        min-height: 100%;
+        background: var(--stage);
+        color: var(--ink-800);
+        font-family: var(--font);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      body {
+        min-height: 100vh;
+        color: var(--ink-800);
+        letter-spacing: 0;
+      }
+
+      a {
+        color: inherit;
+      }
+      code {
+        font-family: var(--mono);
+      }
+
+      .brand-frame {
+        width: min(100%, 1520px);
+        margin: 0 auto;
+        padding: 28px 24px 72px;
+      }
+
+      .brand-hero,
+      .brand-section {
+        border: 1px solid var(--line-soft);
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: var(--shadow-rest);
+      }
+
+      .brand-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+        gap: 28px;
+        align-items: start;
+        min-height: 0;
+        padding: 32px;
+        border-radius: var(--radius-3xl);
+        background: rgba(255, 255, 255, 0.94);
+      }
+
+      .eyebrow,
+      .brand-nav a,
+      .page-index span,
+      .rule-label {
+        color: var(--text-4);
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .brand-hero h1 {
+        max-width: 780px;
+        color: var(--ink-800);
+        font-size: clamp(42px, 5vw, 72px);
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: -0.032em;
+      }
+
+      .hero-copy {
+        max-width: 680px;
+        margin-top: 16px;
+        color: var(--ink-600);
+        font-size: 15px;
+        line-height: 1.56;
+      }
+
+      .doc-meta {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        max-width: 760px;
+        margin-top: 24px;
+        background: transparent;
+      }
+
+      .doc-meta span {
+        display: grid;
+        gap: 6px;
+        min-height: 76px;
+        padding: 14px;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+      }
+
+      .doc-meta small {
+        color: var(--text-4);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .doc-meta b {
+        color: var(--ink-800);
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.25;
+      }
+
+      .hero-principles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        max-width: 760px;
+        margin-top: 24px;
+        background: transparent;
+      }
+
+      .hero-principles span {
+        display: grid;
+        gap: 5px;
+        min-height: 78px;
+        padding: 14px;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+      }
+
+      .hero-principles b {
+        color: var(--ink-800);
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.2;
+      }
+
+      .hero-principles small {
+        color: var(--text-3);
+        font-size: 12px;
+        line-height: 1.36;
+      }
+
+      .brand-mark {
+        position: relative;
+        display: grid;
+        align-self: start;
+        gap: 14px;
+        width: min(420px, 100%);
+        min-width: 260px;
+        min-height: 300px;
+        padding: 24px;
+        border-radius: var(--radius-2xl);
+        border: 1px solid var(--line);
+        background: var(--canvas);
+        color: var(--ink-800);
+        overflow: hidden;
+      }
+
+      .brand-mark::after {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 3px;
+        background: var(--cyan-500);
+      }
+
+      .brand-mark b {
+        font-size: 42px;
+        font-weight: 500;
+        line-height: 0.95;
+        letter-spacing: -0.035em;
+      }
+
+      .brand-mark span {
+        position: relative;
+        max-width: 32ch;
+        color: var(--text-3);
+        font-size: 12px;
+        line-height: 1.46;
+      }
+
+      .brand-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line-soft);
+      }
+
+      .brand-nav a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0 14px;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.72);
+        text-decoration: none;
+        transition:
+          transform 0.16s var(--ease-out),
+          background 0.16s var(--ease-out);
+      }
+
+      .brand-nav a:hover {
+        transform: translateY(-1px);
+        background: var(--surface);
+      }
+
+      .brand-shell {
+        display: grid;
+        gap: 14px;
+        margin-top: 24px;
+        padding: 0;
+      }
+
+      .brand-section {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 22px;
+        padding: 28px;
+        border-radius: var(--radius-2xl);
+        box-shadow: none;
+      }
+
+      .section-title {
+        position: sticky;
+        top: 24px;
+        align-self: start;
+        display: grid;
+        gap: 12px;
+      }
+
+      .section-title h2 {
+        color: var(--ink-800);
+        font-size: 28px;
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.026em;
+      }
+
+      .section-title p,
+      .brand-card p,
+      .specimen-card p,
+      .voice-line span,
+      .figma-page p {
+        color: var(--text-3);
+        font-size: 13.5px;
+        line-height: 1.52;
+      }
+
+      .section-body {
+        display: grid;
+        gap: 14px;
+      }
+
+      .brand-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        background: transparent;
+      }
+
+      .brand-grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .brand-grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .brand-grid.four {
+        grid-template-columns: 1.08fr 1fr 1fr 1fr;
+      }
+
+      .brand-card,
+      .specimen-card {
+        min-width: 0;
+        padding: 20px;
+        border: 0;
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+        box-shadow: none;
+      }
+
+      .brand-card h3,
+      .specimen-card h3 {
+        margin-bottom: 10px;
+        color: var(--ink-800);
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.16;
+        letter-spacing: -0.018em;
+      }
+
+      .brand-card.dark {
+        background: var(--ink-900);
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      .brand-card.dark h3 {
+        color: rgba(255, 255, 255, 0.94);
+      }
+      .brand-card.dark p {
+        color: rgba(255, 255, 255, 0.62);
+      }
+
+      .brand-card.cyan {
+        border-color: rgba(14, 165, 184, 0.2);
+        background: var(--cyan-100);
+      }
+
+      .source-model {
+        display: grid;
+        gap: 10px;
+      }
+
+      .source-row {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+        padding: 14px 16px;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+      }
+
+      .source-row b {
+        color: var(--ink-800);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .source-row span {
+        color: var(--text-3);
+        font-size: 13px;
+        line-height: 1.52;
+      }
+
+      .source-row code {
+        color: var(--ink-700);
+        font-size: 11.5px;
+      }
+
+      .expression-band {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        background: transparent;
+      }
+
+      .expression-item {
+        display: grid;
+        gap: 14px;
+        min-height: 190px;
+        padding: 20px;
+        border-radius: var(--radius-2xl);
+        background: var(--canvas);
+      }
+
+      .expression-item b {
+        color: var(--ink-800);
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.018em;
+      }
+
+      .expression-item p {
+        color: var(--text-3);
+        font-size: 13.5px;
+        line-height: 1.52;
+      }
+
+      .expression-meter {
+        position: relative;
+        height: 8px;
+        margin-top: auto;
+        overflow: hidden;
+        border-radius: var(--radius-full);
+        background: rgba(29, 29, 31, 0.07);
+      }
+
+      .expression-meter::after {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--level);
+        border-radius: inherit;
+        background: var(--cyan-600);
+      }
+
+      .page-index {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        background: transparent;
+      }
+
+      .figma-page {
+        display: grid;
+        gap: 10px;
+        min-height: 150px;
+        padding: 16px;
+        border: 0;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+        box-shadow: none;
+      }
+
+      .figma-page span {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-md);
+        background: rgba(29, 29, 31, 0.055);
+      }
+
+      .figma-page b,
+      .token-card b,
+      .voice-line b {
+        color: var(--ink-800);
+        font-size: 14px;
+        font-weight: 650;
+        line-height: 1.2;
+      }
+
+      .token-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        background: transparent;
+      }
+
+      .token-card {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 8px 14px;
+        min-height: 118px;
+        padding: 14px;
+        border: 0;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+        box-shadow: none;
+      }
+
+      .swatch {
+        grid-row: 1 / span 3;
+        height: 100%;
+        min-height: 68px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: var(--radius-md);
+        background: var(--swatch);
+      }
+
+      .ramp-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .ramp {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+        padding: 14px 16px;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+      }
+
+      .ramp > b {
+        color: var(--ink-800);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .ramp > b small {
+        display: block;
+        margin-top: 3px;
+        color: var(--text-3);
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.35;
+      }
+
+      .ramp-stops {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+      }
+
+      .ramp-stop {
+        display: grid;
+        gap: 6px;
+      }
+
+      .ramp-stop i {
+        height: 42px;
+        border-radius: var(--radius-md);
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+      }
+
+      .ramp-stop span {
+        color: var(--text-4);
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 650;
+        text-align: center;
+      }
+
+      .text-levels {
+        display: grid;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .text-level {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        gap: 16px;
+        align-items: baseline;
+        padding: 14px 16px;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+      }
+
+      .text-level b {
+        font-weight: 600;
+      }
+      .text-level-1 b {
+        color: var(--ink-800);
+        font-size: 19px;
+      }
+      .text-level-2 b {
+        color: var(--ink-600);
+        font-size: 16px;
+      }
+      .text-level-3 b {
+        color: #5f6369;
+        font-size: 14px;
+      }
+      .text-level-4 b {
+        color: #8a8e95;
+        font-size: 12.5px;
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .text-level-5 b {
+        color: #b1b5bb;
+        font-size: 14px;
+      }
+
+      .text-level code {
+        justify-self: end;
+        color: var(--text-4);
+        font-size: 11px;
+        text-align: right;
+      }
+
+      .token-card code,
+      .rule-chip,
+      .voice-line code {
+        color: var(--ink-700);
+        font-size: 11.5px;
+      }
+
+      .token-card code {
+        align-self: end;
+        color: var(--text-4);
+      }
+
+      .type-specimen {
+        display: grid;
+        gap: 12px;
+      }
+
+      .type-row {
+        display: grid;
+        grid-template-columns: 210px minmax(0, 1fr) 170px;
+        gap: 16px;
+        align-items: baseline;
+        padding: 16px;
+        border: 0;
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+        box-shadow: none;
+      }
+
+      .type-row b {
+        color: var(--ink-800);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .type-row span {
+        color: var(--ink-800);
+      }
+
+      .type-row code {
+        justify-self: end;
+        color: var(--text-4);
+        font-size: 11.5px;
+        text-align: right;
+      }
+
+      .type-report {
+        font-family: 'Newsreader', Georgia, serif;
+        font-size: 88px;
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+      .type-page-display {
+        font-size: 64px;
+        font-weight: 500;
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+      .type-h1 {
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+      .type-h2 {
+        font-size: 28px;
+        font-weight: 500;
+        line-height: 1.16;
+        letter-spacing: 0;
+      }
+      .type-h3 {
+        font-size: 21px;
+        font-weight: 500;
+        line-height: 1.22;
+        letter-spacing: 0;
+      }
+      .type-h4 {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.24;
+        letter-spacing: 0;
+      }
+      .type-caption {
+        font-size: 13px;
+        line-height: 1.42;
+        color: var(--text-3);
+      }
+      .type-body {
+        font-size: 14px;
+        line-height: 1.52;
+        color: var(--ink-600) !important;
+      }
+      .type-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .type-number {
+        font-family: var(--mono);
+        font-size: 28px;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .layout-spec {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid-diagram {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 8px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+      }
+
+      .grid-diagram span {
+        display: grid;
+        min-height: 96px;
+        place-items: end center;
+        padding: 8px 0;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-sm);
+        background: rgba(255, 255, 255, 0.62);
+        color: var(--text-4);
+        font-size: 10px;
+        font-weight: 650;
+      }
+
+      .layout-visual-grid,
+      .surface-visual-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 10px;
+      }
+
+      .visual-panel {
+        display: grid;
+        gap: 14px;
+        min-width: 0;
+        min-height: 230px;
+        padding: 18px;
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+      }
+
+      .visual-panel > b,
+      .shadow-sample b,
+      .surface-window b {
+        color: var(--ink-800);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .visual-panel > small,
+      .shadow-sample small,
+      .surface-window small {
+        color: var(--text-4);
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .section-map {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 14px;
+        align-items: stretch;
+        min-height: 150px;
+        padding: 14px;
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+
+      .section-map .rail,
+      .section-map .content {
+        border-radius: var(--radius-md);
+        background: var(--canvas);
+      }
+
+      .section-map .rail {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .section-map .rail i,
+      .content-stack i,
+      .preview-row i,
+      .surface-window i {
+        display: block;
+        border-radius: var(--radius-sm);
+        background: rgba(29, 29, 31, 0.1);
+      }
+
+      .section-map .rail i:nth-child(1) {
+        width: 54px;
+        height: 8px;
+      }
+      .section-map .rail i:nth-child(2) {
+        width: 34px;
+        height: 8px;
+      }
+      .section-map .rail i:nth-child(3) {
+        width: 64px;
+        height: 30px;
+        margin-top: 10px;
+        background: rgba(13, 118, 133, 0.18);
+      }
+
+      .content-stack {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .preview-row {
+        display: grid;
+        grid-template-columns: 1fr 0.72fr;
+        gap: 10px;
+      }
+
+      .content-stack i,
+      .preview-row i {
+        min-height: 44px;
+        background: #fff;
+      }
+
+      .content-stack i:nth-child(2) {
+        background: var(--cyan-100);
+      }
+
+      .spacing-ladder {
+        display: grid;
+        gap: 10px;
+      }
+
+      .space-step {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr) 84px;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .space-step b,
+      .radius-step b {
+        color: var(--ink-700);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .space-track {
+        height: 20px;
+        border-radius: var(--radius-full);
+        background: rgba(29, 29, 31, 0.055);
+        overflow: hidden;
+      }
+
+      .space-track i {
+        display: block;
+        width: var(--w);
+        height: 100%;
+        border-radius: inherit;
+        background: var(--cyan-600);
+      }
+
+      .space-step small,
+      .radius-step small {
+        color: var(--text-4);
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .radius-board {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .radius-step {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+
+      .radius-block {
+        height: 54px;
+        border-radius: var(--r);
+        background: var(--canvas);
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+      }
+
+      .spec-table {
+        display: grid;
+        gap: 0;
+        overflow: hidden;
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+      }
+
+      .spec-row {
+        display: grid;
+        grid-template-columns: 160px minmax(0, 1fr) 220px;
+        gap: 16px;
+        align-items: start;
+        padding: 14px 18px;
+        background: transparent;
+      }
+
+      .spec-row b {
+        color: var(--ink-800);
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .spec-row span {
+        color: var(--text-3);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .spec-row code {
+        justify-self: end;
+        color: var(--text-4);
+        font-size: 11.5px;
+        text-align: right;
+      }
+
+      .surface-stage {
+        position: relative;
+        min-height: 260px;
+        overflow: hidden;
+        border-radius: var(--radius-xl);
+        background:
+          radial-gradient(circle at 12% 18%, rgba(73, 224, 245, 0.28), transparent 30%),
+          var(--stage);
+      }
+
+      .surface-window {
+        position: absolute;
+        display: grid;
+        gap: 8px;
+        min-width: 150px;
+        padding: 14px;
+        border-radius: var(--radius-xl);
+        background: var(--surface);
+      }
+
+      .surface-window.stage-card {
+        left: 18px;
+        top: 18px;
+        width: 45%;
+        height: 76%;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .surface-window.panel-card {
+        right: 22px;
+        top: 46px;
+        width: 47%;
+        height: 58%;
+        background: var(--surface-strong);
+        box-shadow: var(--shadow-rest);
+      }
+
+      .surface-window.ink-card {
+        right: 46px;
+        bottom: 20px;
+        width: 32%;
+        min-width: 120px;
+        background: var(--ink-900);
+        color: rgba(255, 255, 255, 0.94);
+      }
+
+      .surface-window.ink-card b {
+        color: rgba(255, 255, 255, 0.94);
+      }
+      .surface-window.ink-card small {
+        color: rgba(255, 255, 255, 0.56);
+      }
+
+      .surface-window i {
+        height: 10px;
+        background: rgba(29, 29, 31, 0.1);
+      }
+
+      .surface-window i:nth-of-type(2) {
+        width: 68%;
+      }
+      .surface-window.ink-card i {
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .shadow-board {
+        display: grid;
+        gap: 10px;
+      }
+
+      .shadow-sample {
+        display: grid;
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+        padding: 14px;
+        border-radius: var(--radius-lg);
+        background: var(--canvas);
+      }
+
+      .shadow-box {
+        width: 76px;
+        height: 62px;
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+
+      .shadow-sample.rest .shadow-box {
+        box-shadow: var(--shadow-rest);
+      }
+      .shadow-sample.hover .shadow-box {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px);
+      }
+      .shadow-sample.overlay .shadow-box {
+        box-shadow:
+          0 18px 48px rgba(15, 23, 42, 0.18),
+          0 2px 8px rgba(15, 23, 42, 0.1);
+      }
+
+      .shadow-sample div:last-child {
+        display: grid;
+        gap: 4px;
+      }
+
+      .image-rules {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 14px;
+      }
+
+      .image-stage {
+        min-height: 290px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-2xl);
+        background: var(--canvas);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+      }
+
+      .image-stage::before {
+        content: '';
+        display: block;
+        width: min(70%, 360px);
+        height: 72%;
+        margin: 40px auto 0;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        box-shadow: none;
+      }
+
+      .voice-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .voice-line {
+        display: grid;
+        grid-template-columns: 170px minmax(0, 1fr) minmax(180px, 0.7fr);
+        gap: 14px;
+        align-items: start;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+        box-shadow: none;
+      }
+
+      .rule-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .rule-chip {
+        display: inline-flex;
+        width: max-content;
+        max-width: 100%;
+        min-height: 30px;
+        align-items: center;
+        padding: 0 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-md);
+        background: rgba(29, 29, 31, 0.035);
+      }
+
+      .link-card {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background: var(--canvas);
+        box-shadow: none;
+        text-decoration: none;
+      }
+
+      .link-card b {
+        color: var(--ink-800);
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .link-card span {
+        color: var(--text-3);
+        font-size: 12.5px;
+      }
+
+      .link-card::after {
+        content: 'Open';
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        background: var(--ink-900);
+        color: rgba(255, 255, 255, 0.94);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .is-embedded body {
+        background: transparent;
+      }
+      .is-embedded .brand-frame {
+        width: 100%;
+        padding: 0;
+      }
+      .is-embedded .brand-hero {
+        display: none;
+      }
+      .is-embedded .brand-shell {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      @media (max-width: 1180px) {
+        .brand-hero,
+        .brand-section,
+        .image-rules {
+          grid-template-columns: 1fr;
+        }
+
+        .section-title {
+          position: static;
+        }
+
+        .brand-grid,
+        .brand-grid.two,
+        .brand-grid.three,
+        .brand-grid.four,
+        .page-index,
+        .token-grid,
+        .doc-meta,
+        .layout-visual-grid,
+        .surface-visual-grid,
+        .expression-band {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hero-principles {
+          grid-template-columns: 1fr;
+        }
+
+        .spec-row {
+          grid-template-columns: 150px minmax(0, 1fr);
+        }
+
+        .spec-row code {
+          grid-column: 2;
+          justify-self: start;
+          text-align: left;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .brand-frame {
+          padding: 16px 12px 54px;
+        }
+        .brand-hero,
+        .brand-shell {
+          padding: 18px;
+          border-radius: 18px;
+        }
+
+        .brand-hero h1 {
+          font-size: clamp(38px, 11vw, 48px);
+          line-height: 1;
+        }
+
+        .brand-mark {
+          min-width: 0;
+        }
+
+        .hero-principles span {
+          min-height: 0;
+          padding: 12px;
+        }
+
+        .brand-mark {
+          padding: 22px;
+        }
+
+        .brand-grid,
+        .brand-grid.two,
+        .brand-grid.three,
+        .brand-grid.four,
+        .page-index,
+        .token-grid,
+        .doc-meta,
+        .layout-visual-grid,
+        .surface-visual-grid,
+        .expression-band,
+        .type-row,
+        .voice-line,
+        .source-row,
+        .spec-row {
+          grid-template-columns: 1fr;
+        }
+
+        .grid-diagram {
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          gap: 6px;
+          padding: 12px;
+        }
+
+        .grid-diagram span {
+          min-height: 54px;
+        }
+
+        .hero-principles {
+          grid-template-columns: 1fr;
+        }
+
+        .type-row code,
+        .spec-row code {
+          grid-column: auto;
+          justify-self: start;
+          text-align: left;
+        }
+
+        .spec-table .spec-row {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .radius-board {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .section-map,
+        .shadow-sample {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="brand-frame">
+      <header class="brand-hero">
+        <div>
+          <div class="eyebrow">Design documentation / Foundations</div>
+          <h1>Pulse / Post Design System</h1>
+          <p class="hero-copy">
+            Brand-facing foundations for Figma handoff and product alignment. This document defines
+            positioning, identity, color, typography, surface rules, imagery, and voice. Component
+            source now lives in the standalone HTML/CSS component library.
+          </p>
+          <div class="doc-meta" aria-label="Document metadata">
+            <span><small>Status</small><b>Working spec</b></span>
+            <span><small>Scope</small><b>Brand foundations only</b></span>
+            <span><small>Accent</small><b>Cyan replaces green</b></span>
+            <span><small>Export</small><b>Figma foundations</b></span>
+          </div>
+          <div class="hero-principles" aria-label="Brand principles">
+            <span
+              ><b>Calm shell</b
+              ><small>Neutral surfaces hold dense work without theatrical chrome.</small></span
+            >
+            <span
+              ><b>Clear signal</b
+              ><small
+                >Cyan appears for ready states and neutral diagrams, not generic emphasis.</small
+              ></span
+            >
+            <span
+              ><b>Decisive copy</b
+              ><small>Language points to the next useful action, not the feature.</small></span
+            >
+          </div>
+          <nav class="brand-nav" aria-label="Brand system sections">
+            <a href="#core">01 Core</a>
+            <a href="#identity">02 Identity</a>
+            <a href="#color">03 Color</a>
+            <a href="#type">04 Type</a>
+            <a href="#layout">05 Layout</a>
+            <a href="#material">06 Material</a>
+            <a href="#imagery">07 Imagery</a>
+            <a href="#voice">08 Voice</a>
+            <a href="#figma">09 Figma</a>
+            <a href="./library.html">Figma components</a>
+          </nav>
+        </div>
+        <aside class="brand-mark" aria-label="Document scope note">
+          <span class="eyebrow">Scope note</span>
+          <b>Post</b>
+          <span
+            >Pulse is the operating system. Post is the focused brand-work surface for daily
+            decisions, content movement, and signal response. This page documents the brand layer,
+            not the component library.</span
+          >
+        </aside>
+      </header>
+
+      <div class="brand-shell">
+        <section id="core" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">01 Core</span>
+            <h2>Brand idea</h2>
+            <p>
+              The product should feel calm, capable, and precise. It is not a marketing splash page;
+              it is a working surface for brand teams.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="source-model" aria-label="Current design system source model">
+              <div class="source-row">
+                <b>Visual foundations</b
+                ><span
+                  >This page is the discussion and QA surface for brand foundations, tonal
+                  hierarchy, layout rhythm, material, imagery, and voice.</span
+                >
+              </div>
+              <div class="source-row">
+                <b>Component source</b
+                ><span
+                  >Canonical component implementation lives in
+                  <code>components/&lt;Name&gt;/&lt;Name&gt;.html</code> plus its local
+                  <code>.css</code>, with shared tokens in <code>components/tokens.css</code>.</span
+                >
+              </div>
+              <div class="source-row">
+                <b>Preview and Figma</b
+                ><span
+                  ><code>components/html-component-preview.html</code> is the live HTML component
+                  preview. <code>figma-component-library.html</code> is the specimen board for Figma
+                  iteration, states, contracts, and handoff notes.</span
+                >
+              </div>
+              <div class="source-row">
+                <b>React status</b
+                ><span
+                  >The React demo is paused as an implementation target. Treat older React
+                  references as legacy context, not the current source of truth.</span
+                >
+              </div>
+            </div>
+            <div class="brand-grid four">
+              <article class="brand-card">
+                <h3>Command, not clutter</h3>
+                <p>
+                  Every frame should help the operator choose the next action. Reduce decorative
+                  marks that do not change the decision.
+                </p>
+              </article>
+              <article class="brand-card cyan">
+                <h3>Cyan earns attention</h3>
+                <p>
+                  Cyan marks readiness and neutral diagram paths. It is not a generic highlight,
+                  progress, or positive-status color.
+                </p>
+              </article>
+              <article class="brand-card">
+                <h3>Readable at speed</h3>
+                <p>
+                  Use restrained type, tabular numbers, and clear section rhythm so dense brand work
+                  can be scanned quickly.
+                </p>
+              </article>
+              <article class="brand-card dark">
+                <h3>One strong anchor</h3>
+                <p>
+                  Ink surfaces are rare. Use them for the top brief, a decisive KPI, or a focused
+                  state that reframes the page.
+                </p>
+              </article>
+            </div>
+            <div class="brand-grid two">
+              <article class="brand-card">
+                <h3>Looks like</h3>
+                <p>
+                  Neutral shell, white reading surfaces, controlled cyan accents, hairline edges,
+                  compact metadata, medium type, no noisy badges.
+                </p>
+              </article>
+              <article class="brand-card">
+                <h3>Does not look like</h3>
+                <p>
+                  Neon AI dashboard, green decorative chrome, stock-photo landing page, heavy card
+                  stack, oversized hero marketing layout.
+                </p>
+              </article>
+            </div>
+            <div class="expression-band" aria-label="Brand expression scale">
+              <article class="expression-item">
+                <span class="eyebrow">Expression</span>
+                <b>Calm</b>
+                <p>Default mode. Most frames should feel quiet, readable, and stable.</p>
+                <i class="expression-meter" style="--level: 82%"></i>
+              </article>
+              <article class="expression-item">
+                <span class="eyebrow">Expression</span>
+                <b>Precise</b>
+                <p>
+                  Use data, timestamps, labels, and tabular numbers to make decisions scan fast.
+                </p>
+                <i class="expression-meter" style="--level: 68%"></i>
+              </article>
+              <article class="expression-item">
+                <span class="eyebrow">Expression</span>
+                <b>Energetic</b>
+                <p>
+                  Reserve motion for state change; reserve cyan for ready and diagram-neutral
+                  meaning.
+                </p>
+                <i class="expression-meter" style="--level: 34%"></i>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="identity" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">02 Identity</span>
+            <h2>Naming and lockup</h2>
+            <p>
+              Keep the product naming plain. Pulse is the system context; Post is the focused
+              interface surface.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="brand-grid three">
+              <article class="specimen-card">
+                <div class="eyebrow">Primary wordmark</div>
+                <h3 style="font-size: 54px; letter-spacing: -0.045em; line-height: 0.95">Post</h3>
+                <p>Use when the screen is specifically the Post product experience.</p>
+              </article>
+              <article class="specimen-card">
+                <div class="eyebrow">System label</div>
+                <h3>Pulse / Post</h3>
+                <p>Use in docs, Figma page titles, and cross-product handoff material.</p>
+              </article>
+              <article class="specimen-card">
+                <div class="eyebrow">Clearspace</div>
+                <h3>1x cap height</h3>
+                <p>
+                  Keep at least one cap-height around text lockups. Do not box the wordmark in a
+                  badge unless it is navigation chrome.
+                </p>
+              </article>
+            </div>
+            <a class="link-card" href="./library.html">
+              <span
+                ><b>Figma component library is separate</b><br />Use this design-system page for
+                foundations; implementation source lives in standalone HTML/CSS components and their
+                preview browser.</span
+              >
+            </a>
+          </div>
+        </section>
+
+        <section id="color" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">03 Color</span>
+            <h2>Neutral first, color with meaning</h2>
+            <p>
+              The palette is not a cyan UI theme. Hierarchy comes from tone, surface, and text
+              level; color carries meaning. Green carries positive/active/approved states, blue
+              carries suggested action and scheduled states, amber carries risk/on-hold states, cyan
+              is ready and diagram-neutral, purple is in progress, and red is only for declining
+              data.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="token-grid">
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #eef3f3"></span><b>Stage</b>
+                <p>Page background and ambient field.</p>
+                <code>Color/Stage #eef3f3</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #ffffff"></span><b>Surface</b>
+                <p>Default reading and content surface.</p>
+                <code>Color/Surface #ffffff</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #1d1d1f"></span><b>Ink</b>
+                <p>Primary text, anchors, and rare focus surfaces.</p>
+                <code>Color/Ink/800 #1d1d1f</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #49e0f5"></span><b>Primary cyan</b>
+                <p>Ready-state family and neutral diagram lines; use #0D7685 for ready text.</p>
+                <code>Color/Cyan/500 #49e0f5</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #43ba51"></span><b>Green</b>
+                <p>Positive status, active/live, approved, upward data trend, best performance.</p>
+                <code>Color/Green #43BA51</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #3987f3"></span><b>Blue</b>
+                <p>Suggested action, scheduled, and stable data trend.</p>
+                <code>Color/Blue #3987F3</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #f19a08"></span><b>Amber</b>
+                <p>Risk, negative status, on hold, and worst performance in diagrams.</p>
+                <code>Color/Amber #F19A08</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #ef4444"></span><b>Decline red</b>
+                <p>Data is down: negative delta, drop-off, loss, or metric decline only.</p>
+                <code>Data/Decline #EF4444</code>
+              </article>
+              <article class="token-card">
+                <span class="swatch" style="--swatch: #6366f1"></span><b>Purple</b>
+                <p>In progress, rendering, and active machine work.</p>
+                <code>Color/Purple #6366F1</code>
+              </article>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 14px;
+                align-items: center;
+                margin-top: 24px;
+              "
+              aria-label="Status tag examples"
+            >
+              <span
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  min-height: 26px;
+                  padding: 0 11px;
+                  border: 1px solid #f7dca8;
+                  border-radius: 9999px;
+                  background: #fffaf2;
+                  color: #f19a08;
+                  font-size: 11px;
+                  font-weight: 650;
+                "
+                >On hold</span
+              >
+              <span
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  min-height: 26px;
+                  padding: 0 11px;
+                  border: 1px solid #b0cdfa;
+                  border-radius: 9999px;
+                  background: #eff5fe;
+                  color: #3987f3;
+                  font-size: 11px;
+                  font-weight: 650;
+                "
+                >Scheduled</span
+              >
+              <span
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  min-height: 26px;
+                  padding: 0 11px;
+                  border: 1px solid #abe2b3;
+                  border-radius: 9999px;
+                  background: #eff9f1;
+                  color: #43ba51;
+                  font-size: 11px;
+                  font-weight: 650;
+                "
+                >Approved</span
+              >
+              <span
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  min-height: 26px;
+                  padding: 0 11px;
+                  border: 1px solid #b8f3fb;
+                  border-radius: 9999px;
+                  background: #f0fdff;
+                  color: #0d7685;
+                  font-size: 11px;
+                  font-weight: 650;
+                "
+                >Ready</span
+              >
+              <span
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  min-height: 26px;
+                  padding: 0 11px;
+                  border: 1px solid #c7c9f8;
+                  border-radius: 9999px;
+                  background: #f1f1fe;
+                  color: #6366f1;
+                  font-size: 11px;
+                  font-weight: 650;
+                "
+                >In progress</span
+              >
+            </div>
+
+            <p style="margin-top: 22px; color: var(--text-3); font-size: 13px; line-height: 1.5">
+              Status tags use one compact scale: green for positive, active/live, and approved; blue
+              for suggested action and scheduled; amber for risk, negative, and on hold; cyan ready
+              tags use a light cyan background with #0D7685 text; purple means in progress. Red is
+              not a status tag color.
+            </p>
+
+            <p style="margin-top: 12px; color: var(--text-3); font-size: 13px; line-height: 1.5">
+              Data trends are separate from status: green means upward, red means downward, and blue
+              means stable. Diagrams use primary cyan for neutral paths, green for best performance,
+              and amber for worst performance.
+            </p>
+
+            <p style="margin-top: 12px; color: var(--text-3); font-size: 13px; line-height: 1.5">
+              Generation status is its own process ladder: queued is neutral gray; scheduled is
+              blue; in progress, generating, rendering, and building are purple; ready uses light
+              cyan with #0D7685 text; approved, live, published, and completed are green; on hold,
+              blocked, failed, and needs attention are amber. Red never appears in generation
+              status.
+            </p>
+
+            <p style="margin-top: 22px; color: var(--text-3); font-size: 13px; line-height: 1.5">
+              Lightness ramp — every family shares six stops:
+              <b style="color: var(--ink-800)">50 / 100</b> soft fills,
+              <b style="color: var(--ink-800)">200</b> borders,
+              <b style="color: var(--ink-800)">500</b> base,
+              <b style="color: var(--ink-800)">600</b> text or dot on light,
+              <b style="color: var(--ink-800)">700</b> deepest emphasis.
+            </p>
+            <div class="ramp-list">
+              <div class="ramp">
+                <b>Cyan<small>Ready family, diagram neutral</small></b>
+                <div class="ramp-stops">
+                  <div class="ramp-stop"><i style="background: #f0fdff"></i><span>50</span></div>
+                  <div class="ramp-stop"><i style="background: #e5fbff"></i><span>100</span></div>
+                  <div class="ramp-stop"><i style="background: #b8f3fb"></i><span>200</span></div>
+                  <div class="ramp-stop"><i style="background: #49e0f5"></i><span>500</span></div>
+                  <div class="ramp-stop"><i style="background: #0ea5b8"></i><span>600</span></div>
+                  <div class="ramp-stop"><i style="background: #0d7685"></i><span>700</span></div>
+                </div>
+              </div>
+              <div class="ramp">
+                <b>Green<small>Positive, live, approved, data up</small></b>
+                <div class="ramp-stops">
+                  <div class="ramp-stop"><i style="background: #eff9f1"></i><span>50</span></div>
+                  <div class="ramp-stop"><i style="background: #d5f0da"></i><span>100</span></div>
+                  <div class="ramp-stop"><i style="background: #abe2b3"></i><span>200</span></div>
+                  <div class="ramp-stop"><i style="background: #43ba51"></i><span>500</span></div>
+                  <div class="ramp-stop"><i style="background: #2e9d40"></i><span>600</span></div>
+                  <div class="ramp-stop"><i style="background: #207d32"></i><span>700</span></div>
+                </div>
+              </div>
+              <div class="ramp">
+                <b>Decline red<small>Data down only · #EF4444</small></b>
+                <div class="ramp-stops">
+                  <div class="ramp-stop"><i style="background: #fef2f2"></i><span>50</span></div>
+                  <div class="ramp-stop"><i style="background: #fde4e4"></i><span>100</span></div>
+                  <div class="ramp-stop"><i style="background: #f9c9c9"></i><span>200</span></div>
+                  <div class="ramp-stop"><i style="background: #ef4444"></i><span>500</span></div>
+                  <div class="ramp-stop"><i style="background: #dc2626"></i><span>600</span></div>
+                  <div class="ramp-stop"><i style="background: #b91c1c"></i><span>700</span></div>
+                </div>
+              </div>
+              <div class="ramp">
+                <b>Amber<small>Risk, negative, on hold, worst</small></b>
+                <div class="ramp-stops">
+                  <div class="ramp-stop"><i style="background: #fef6e7"></i><span>50</span></div>
+                  <div class="ramp-stop"><i style="background: #fce7be"></i><span>100</span></div>
+                  <div class="ramp-stop"><i style="background: #f7ce84"></i><span>200</span></div>
+                  <div class="ramp-stop"><i style="background: #f19a08"></i><span>500</span></div>
+                  <div class="ramp-stop"><i style="background: #cc7f06"></i><span>600</span></div>
+                  <div class="ramp-stop"><i style="background: #a1640b"></i><span>700</span></div>
+                </div>
+              </div>
+              <div class="ramp">
+                <b>Blue<small>Suggested, scheduled, stable data</small></b>
+                <div class="ramp-stops">
+                  <div class="ramp-stop"><i style="background: #eff5fe"></i><span>50</span></div>
+                  <div class="ramp-stop"><i style="background: #d7e6fd"></i><span>100</span></div>
+                  <div class="ramp-stop"><i style="background: #b0cdfa"></i><span>200</span></div>
+                  <div class="ramp-stop"><i style="background: #3987f3"></i><span>500</span></div>
+                  <div class="ramp-stop"><i style="background: #1f6fe0"></i><span>600</span></div>
+                  <div class="ramp-stop"><i style="background: #1a57b0"></i><span>700</span></div>
+                </div>
+              </div>
+              <div class="ramp">
+                <b>Purple<small>In progress, machine work</small></b>
+                <div class="ramp-stops">
+                  <div class="ramp-stop"><i style="background: #f1f1fe"></i><span>50</span></div>
+                  <div class="ramp-stop"><i style="background: #e2e3fc"></i><span>100</span></div>
+                  <div class="ramp-stop"><i style="background: #c7c9f8"></i><span>200</span></div>
+                  <div class="ramp-stop"><i style="background: #6366f1"></i><span>500</span></div>
+                  <div class="ramp-stop"><i style="background: #4f46e5"></i><span>600</span></div>
+                  <div class="ramp-stop"><i style="background: #4338ca"></i><span>700</span></div>
+                </div>
+              </div>
+            </div>
+
+            <p style="margin-top: 22px; color: var(--text-3); font-size: 13px; line-height: 1.5">
+              Text levels — separate reading levels by tone and weight, not by inventing sizes. Lead
+              with level 1, let 2–4 carry the rest.
+            </p>
+            <div class="text-levels">
+              <div class="text-level text-level-1">
+                <b>Primary — titles, key numbers, primary body</b><code>--text-1 #1d1d1f</code>
+              </div>
+              <div class="text-level text-level-2">
+                <b>Secondary — standard body, descriptions</b><code>--text-2 #44464a</code>
+              </div>
+              <div class="text-level text-level-3">
+                <b>Tertiary — supporting copy, meta, captions</b><code>--text-3 #5f6369</code>
+              </div>
+              <div class="text-level text-level-4">
+                <b>Quaternary — labels, eyebrows, quiet meta</b><code>--text-4 #8a8e95</code>
+              </div>
+              <div class="text-level text-level-5">
+                <b>Disabled — faint, non-actionable text</b><code>--text-5 #b1b5bb</code>
+              </div>
+            </div>
+
+            <p style="margin-top: 22px; color: var(--text-3); font-size: 13px; line-height: 1.5">
+              Inclusive use — the 500 base of each status color is a
+              <b style="color: var(--ink-800)">fill / dot</b> value, not a text value. On white,
+              status <b style="color: var(--ink-800)">text and thin icons use deeper stops</b>: red
+              600 for decline data, blue 600, and amber / green
+              <b style="color: var(--ink-800)">700</b> (their 500/600 fall under 4.5:1). Never carry
+              status by hue alone — always pair the color with an icon, label, or position, so
+              red↔green and blue↔cyan stay distinguishable for color-vision deficiency.
+            </p>
+            <div class="brand-grid three" style="margin-top: 22px">
+              <article class="brand-card">
+                <h3>Status vs trend</h3>
+                <p>
+                  Status tags and data trends do not share meaning blindly. Green can mean approved
+                  status or upward data, but red appears only when data declines; risk and on-hold
+                  stay amber.
+                </p>
+              </article>
+              <article class="brand-card">
+                <h3>Do not use color for</h3>
+                <p>
+                  Section numbers, decorative rails, generic badges, whole-card fills, or "important
+                  because it looks nice." Structure is tone and spacing, not color.
+                </p>
+              </article>
+              <article class="brand-card">
+                <h3>Black and gray</h3>
+                <p>
+                  Ink is a scale: 900 anchors, 800 primary text, 700 control chrome, 600 secondary.
+                  Step neutral surfaces (canvas → surface → 2 → 3) for nested grouping before a
+                  divider.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="type" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">04 Type</span>
+            <h2>Product typography</h2>
+            <p>
+              Manrope owns everything: brand, UI, numerics, and token labels. Product workspaces can
+              use a 64px page display title when the title carries the screen without a kicker; give
+              that display title a 20px support gap so the subtitle breathes. Quieter pages use H1
+              48, H2 28, H3 21, H4 18. Hierarchy is built from size, spacing, and position, never
+              from heavier weight. Newsreader remains reserved for report covers and report-hero
+              display.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="type-specimen">
+              <div class="type-row">
+                <b>Report title</b><span class="type-report">Brand Momentum</span
+                ><code>Newsreader / 88 / max medium</code>
+              </div>
+              <div class="type-row">
+                <b>Report italic</b
+                ><span class="type-report" style="font-style: italic; font-weight: 400"
+                  >Brand Momentum</span
+                ><code>Newsreader italic / report only</code>
+              </div>
+              <div class="type-row">
+                <b>Page display</b><span class="type-page-display">Campaign Library</span
+                ><code>Manrope / 64 / gap 20</code>
+              </div>
+              <div class="type-row">
+                <b>H1 Large title</b><span class="type-h1">Good morning, Maya.</span
+                ><code>48 / 1.02 / medium</code>
+              </div>
+              <div class="type-row">
+                <b>H2 Section / sub</b><span class="type-h2">Signal Trends</span
+                ><code>28 / 1.16 / medium</code>
+              </div>
+              <div class="type-row">
+                <b>H3 Mid title</b><span class="type-h3">Priority actions</span
+                ><code>21 / 1.22 / medium</code>
+              </div>
+              <div class="type-row">
+                <b>H4 / card title</b><span class="type-h4">Delivery-time thread</span
+                ><code>18 / 1.24 / 600</code>
+              </div>
+              <div class="type-row">
+                <b>Caption</b
+                ><span class="type-caption">Description under a title — fixed 8px below it.</span
+                ><code>13 / 1.42 / 400</code>
+              </div>
+              <div class="type-row">
+                <b>Body</b
+                ><span class="type-body"
+                  >Clear, single-step work from today's strongest signals.</span
+                ><code>14 / 1.5 / 400</code>
+              </div>
+              <div class="type-row">
+                <b>Label</b><span class="type-label">Actions to clear</span
+                ><code>11 / uppercase</code>
+              </div>
+              <div class="type-row">
+                <b>Data figure</b><span class="type-number">62% ETA 18m</span
+                ><code>--fs-figure 32 · tabular · one size per view</code>
+              </div>
+            </div>
+            <div class="brand-grid two" style="margin-top: 18px">
+              <article class="brand-card">
+                <h3>Weight is not hierarchy</h3>
+                <p>
+                  A large title is not made important by the heaviest Bold. Separate levels with
+                  size, spacing, position, and structure. Headings cap at medium; reserve the
+                  heaviest weight for one key number or action.
+                </p>
+              </article>
+              <article class="brand-card">
+                <h3>Title → caption gap is 8</h3>
+                <p>
+                  The gap between any title/heading and its caption or body is a fixed 8px, set once
+                  in tokens. Pages do not retune it. The supporting line under a large title is the
+                  caption / description.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="layout" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">05 Layout</span>
+            <h2>Grid and spacing</h2>
+            <p>
+              Use a restrained document grid for handoff pages and a stable product grid for React
+              surfaces. The `Grid` source component now packages document, section, split, and
+              content-grid recipes so repeated layouts do not become page-local one-offs. The system
+              should feel ordered and readable, not tiled or tense.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="layout-spec">
+              <div class="grid-diagram" aria-label="Twelve column layout grid">
+                <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span
+                ><span>06</span> <span>07</span><span>08</span><span>09</span><span>10</span
+                ><span>11</span><span>12</span>
+              </div>
+              <div class="layout-visual-grid" aria-label="Visual grid and spacing examples">
+                <div class="visual-panel">
+                  <b>Section grid</b>
+                  <small>260 rail + fluid content / gap 22</small>
+                  <div class="section-map" aria-hidden="true">
+                    <div class="rail"><i></i><i></i><i></i></div>
+                    <div class="content">
+                      <div class="content-stack">
+                        <i></i>
+                        <div class="preview-row"><i></i><i></i></div>
+                        <i></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="visual-panel">
+                  <b>Spacing scale</b>
+                  <small>Use gaps before adding another frame</small>
+                  <div class="spacing-ladder" aria-hidden="true">
+                    <div class="space-step">
+                      <b>8</b><span class="space-track"><i style="--w: 16%"></i></span
+                      ><small>compact</small>
+                    </div>
+                    <div class="space-step">
+                      <b>14</b><span class="space-track"><i style="--w: 28%"></i></span
+                      ><small>content</small>
+                    </div>
+                    <div class="space-step">
+                      <b>22</b><span class="space-track"><i style="--w: 44%"></i></span
+                      ><small>rail gap</small>
+                    </div>
+                    <div class="space-step">
+                      <b>28</b><span class="space-track"><i style="--w: 56%"></i></span
+                      ><small>section</small>
+                    </div>
+                    <div class="space-step">
+                      <b>72</b><span class="space-track"><i style="--w: 100%"></i></span
+                      ><small>document</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="visual-panel">
+                <b>Radius scale</b>
+                <small
+                  >Small controls stay tight; large document shells get the only large curve</small
+                >
+                <div class="radius-board" aria-hidden="true">
+                  <div class="radius-step">
+                    <span class="radius-block" style="--r: 6px"></span><b>6px</b
+                    ><small>micro</small>
+                  </div>
+                  <div class="radius-step">
+                    <span class="radius-block" style="--r: 8px"></span><b>8px</b
+                    ><small>chips</small>
+                  </div>
+                  <div class="radius-step">
+                    <span class="radius-block" style="--r: 10px"></span><b>10px</b
+                    ><small>controls</small>
+                  </div>
+                  <div class="radius-step">
+                    <span class="radius-block" style="--r: 12px"></span><b>12px</b
+                    ><small>groups</small>
+                  </div>
+                  <div class="radius-step">
+                    <span class="radius-block" style="--r: 16px"></span><b>16px</b
+                    ><small>modules</small>
+                  </div>
+                  <div class="radius-step">
+                    <span class="radius-block" style="--r: 24px"></span><b>24px</b
+                    ><small>cover only</small>
+                  </div>
+                </div>
+              </div>
+              <div class="spec-table" aria-label="Grid specifications">
+                <div class="spec-row">
+                  <b>Document frame</b
+                  ><span
+                    >Use one outer frame, then one container per section. Do not nest card surfaces
+                    inside section containers unless the object is an actual specimen.</span
+                  ><code>max 1520 / margin 24-28</code>
+                </div>
+                <div class="spec-row">
+                  <b>Section grid</b
+                  ><span
+                    >Left rail owns section title and rationale. Right rail owns rules, tokens, and
+                    examples. This keeps Figma exports easy to scan.</span
+                  ><code>260 + fluid / gap 22</code>
+                </div>
+                <div class="spec-row">
+                  <b>Content grid</b
+                  ><span
+                    >Group rows on one quiet tonal surface and separate them with spacing, not a
+                    hairline between every row. Tonal tiles with whitespace replace the ruled mesh;
+                    reserve a divider for a real break inside one container.</span
+                  ><code>tonal + gap 10</code>
+                </div>
+                <div class="spec-row">
+                  <b>Reading rhythm</b
+                  ><span
+                    >Avoid rows that ask users to scan across many equal-weight blocks. Use spacing,
+                    grouped copy, and a top-to-bottom sequence unless side-by-side comparison is the
+                    task.</span
+                  ><code>vertical first</code>
+                </div>
+                <div class="spec-row">
+                  <b>Mobile stack</b
+                  ><span
+                    >Collapse every multi-column layout into a single column, except document
+                    metadata which may use two columns when space allows.</span
+                  ><code>&lt;760: 1 column</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="material" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">06 Material</span>
+            <h2>Surfaces and depth</h2>
+            <p>
+              The product should feel light but not decorative. Material rules create hierarchy with
+              color, tone, spacing, and depth before relying on framed edges.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="surface-visual-grid">
+              <div class="visual-panel">
+                <b>Surface layers</b>
+                <small>stage -> panel -> reading surface -> rare ink anchor</small>
+                <div class="surface-stage" aria-hidden="true">
+                  <div class="surface-window stage-card">
+                    <b>Stage</b><small>ambient field</small><i></i><i></i>
+                  </div>
+                  <div class="surface-window panel-card">
+                    <b>Neutral panel</b><small>module shell</small><i></i><i></i>
+                  </div>
+                  <div class="surface-window ink-card"><b>Ink</b><small>anchor</small><i></i></div>
+                </div>
+              </div>
+              <div class="visual-panel">
+                <b>Shadow scale</b>
+                <small>depth follows hierarchy, not card size</small>
+                <div class="shadow-board" aria-hidden="true">
+                  <div class="shadow-sample rest">
+                    <span class="shadow-box"></span>
+                    <div><b>Base layer</b><small>no shadow</small></div>
+                  </div>
+                  <div class="shadow-sample hover">
+                    <span class="shadow-box"></span>
+                    <div><b>Elevated surface</b><small>resting lift</small></div>
+                  </div>
+                  <div class="shadow-sample overlay">
+                    <span class="shadow-box"></span>
+                    <div><b>Overlay</b><small>strong</small></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="spec-table" aria-label="Material rules">
+              <div class="spec-row">
+                <b>Edges</b
+                ><span
+                  >Hairline borders support surfaces, but they do not own hierarchy. If a module
+                  feels unclear, adjust tone, background, type weight, or spacing first.</span
+                ><code>Stroke/Support</code>
+              </div>
+              <div class="spec-row">
+                <b>Dividers</b
+                ><span
+                  >Use light dividers only to group content inside one larger container. Do not wrap
+                  each sub-area in another bordered card unless it is independently
+                  interactive.</span
+                ><code>Divider/Local</code>
+              </div>
+              <div class="spec-row">
+                <b>Shadow</b
+                ><span
+                  >Depth follows information hierarchy, not card size, and stays light. Content
+                  surfaces — cards, summary and data blocks — share one subtle resting lift; the
+                  page stage and inline controls (buttons, segmented tabs, inputs) stay flat;
+                  overlays (panels, menus, toasts) lift strongest but still restrained.</span
+                ><code>Effect/Hierarchy</code>
+              </div>
+              <div class="spec-row">
+                <b>Edge frost</b
+                ><span
+                  >Scroll edges dissolve, they do not hard-cut. A sticky header and the bottom of a
+                  scroll area each carry a masked backdrop-blur scrim — light tone (~50% surface), a
+                  soft 6–7px blur, faded out with a <code>mask-image</code> gradient — so content
+                  melts softly under fixed chrome instead of ending on a hard line. Keep it subtle:
+                  content stays readable through it, and any fixed control (launcher, buttons) sits
+                  crisp above the scrim.</span
+                ><code>Effect/Scrim</code>
+              </div>
+              <div class="spec-row">
+                <b>Status dots</b
+                ><span
+                  >Dots are flat solid markers only. Do not add glow, halo, ping, pulse, or outward
+                  rings; express active or selected states with tone, border, type weight, or the
+                  standard focus ring.</span
+                ><code>Dot/Flat</code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="imagery" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">07 Imagery</span>
+            <h2>Media direction</h2>
+            <p>
+              Imagery should reveal the actual product, post, or creative state. Avoid decorative
+              stock treatment when the user needs to inspect content.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="image-rules">
+              <div class="image-stage" aria-label="Brand image treatment sample"></div>
+              <div class="rule-list">
+                <article class="brand-card">
+                  <h3>Use real content</h3>
+                  <p>Show product, outfit, post preview, creator frame, or chart state directly.</p>
+                </article>
+                <article class="brand-card">
+                  <h3>Crop cleanly</h3>
+                  <p>
+                    Media previews are image-only. Metadata lives below or beside the media frame.
+                  </p>
+                </article>
+                <article class="brand-card">
+                  <h3>No decorative cover</h3>
+                  <p>Do not hide weak imagery behind blur, glow, or vague AI styling.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="voice" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">08 Voice</span>
+            <h2>Clear operator language</h2>
+            <p>
+              Copy should sound like a sharp teammate. Concrete, brief, and tied to the next action.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="voice-list">
+              <div class="voice-line">
+                <b>Command titles</b
+                ><span>Use verbs and deadlines when the work is actionable.</span
+                ><code>Ship competitor response before 3 PM</code>
+              </div>
+              <div class="voice-line">
+                <b>Support copy</b><span>Explain the reason, not the interface.</span
+                ><code>Delivery clarity is the risk window.</code>
+              </div>
+              <div class="voice-line">
+                <b>Metrics</b><span>Use organic, specific numbers. Avoid fake-perfect values.</span
+                ><code>68% ready / ETA 18m</code>
+              </div>
+              <div class="voice-line">
+                <b>Avoid</b><span>No generic AI marketing language.</span
+                ><code>Elevate, unleash, next-gen</code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="figma" class="brand-section">
+          <div class="section-title">
+            <span class="eyebrow">09 Figma</span>
+            <h2>Brand export map</h2>
+            <p>
+              When this page is imported to Figma, split it into brand pages and keep component sets
+              in the separate component library.
+            </p>
+          </div>
+          <div class="section-body">
+            <div class="page-index">
+              <article class="figma-page">
+                <span>00</span><b>Brand Cover</b>
+                <p>Positioning, owner, review date, and product naming.</p>
+              </article>
+              <article class="figma-page">
+                <span>01</span><b>Brand Core</b>
+                <p>Principles, expression, and use/avoid rules.</p>
+              </article>
+              <article class="figma-page">
+                <span>02</span><b>Color</b>
+                <p>Neutral palette, cyan rules, semantic color roles.</p>
+              </article>
+              <article class="figma-page">
+                <span>03</span><b>Typography</b>
+                <p>Manrope roles only; tabular numerals via font features.</p>
+              </article>
+              <article class="figma-page">
+                <span>04</span><b>Layout</b>
+                <p>Document grid, section grid, content rows, responsive collapse.</p>
+              </article>
+              <article class="figma-page">
+                <span>05</span><b>Material</b>
+                <p>Stage, neutral panel, ink, white surface, radius, effects.</p>
+              </article>
+              <article class="figma-page">
+                <span>06</span><b>Imagery and Voice</b>
+                <p>Media direction, chart marks, and product copy rules.</p>
+              </article>
+            </div>
+            <div class="brand-grid two">
+              <a class="link-card" href="./library.html"
+                ><span
+                  ><b>Figma component library</b><br />Open the single-file component specimen
+                  board.</span
+                ></a
+              >
+              <a class="link-card" href="./library.html"
+                ><span
+                  ><b>Component source map</b><br />Open contracts, category coverage, extraction
+                  order, and ownership notes.</span
+                ></a
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

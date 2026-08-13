@@ -12,13 +12,18 @@
    ============================================================ */
 
 :root {
-  --bg:     #fdfdfd;
-  --ink:    #404040;                  /* name, words, state */
-  --muted:  #717171;                  /* role, time */
-  --orange: #fd8f3b;  /* FE7301 @ 75% as FIGMA flattens it (253,143,59) —
-                         pinned solid for pixel-parity with the mocks */
-  --error:  #bf4327;  /* the orange's serious sibling — form errors only,
-                         so failure never reads like the success accent */
+  /* ---- the Cursor palette (2026-08): warm parchment canvas, warm
+     near-black ink, and ONE chromatic accent — ember — that lives on
+     text, links and hover washes, never as a large fill. Every grey in
+     the site is warm-tinted (B sits ~6 under R); pure #000/#fff are
+     banned from surfaces and text. ---- */
+  --bg:     #f7f7f4;                  /* parchment — the page canvas */
+  --ink:    #26251e;                  /* warm ink — name, words, state */
+  --muted:  #7a7974;                  /* ash — role, time */
+  --orange: #f54e00;  /* ember — the single accent; text + washes only,
+                         never a button fill or a surface */
+  --error:  #cf2d56;  /* crimson — form errors only, so failure never
+                         reads like the accent */
 
   /* ---- motion tokens — the site's whole vocabulary of movement.
      Durations: micro feedback → snap → glide → lift → pop → entrance.
@@ -39,9 +44,53 @@
   --ease-pop:    cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-rise:   cubic-bezier(0.22, 1, 0.36, 1);
   --ease-draw:   cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---- the header rhythm. Every stage titles itself the same way: the
+     pair sits at --title-top, and whatever it introduces begins at
+     --content-top — the same 79px of air under the words each time.
+     About's "Hello / nice to meet you" set the measure; Work, Play and
+     Contact follow it rather than centring their content in the panel,
+     which made the gap drift with whatever happened to be below. ---- */
+  --title-top:   40px;
+  --content-top: 152px;
+  /* …and the floor every section stands on: the space under its last line
+     before the next one begins. Each panel is now exactly as tall as what
+     it holds plus this, rather than a flat 832 with whatever was left over
+     falling out the bottom (Work carried 240, Play 277). */
+  --stage-floor: 150px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* The page keeps a scrollbar, but its own: thin, warm, and drawn in the
+   shell's greys rather than the browser's. The default gutter was the last
+   piece of borrowed chrome on the right edge — this says the same thing in
+   the site's voice. The transparent border + background-clip is what makes
+   a 10px track carry a 4px thumb, with air around it. */
+html {
+  scrollbar-width: thin;                        /* Firefox */
+  scrollbar-color: #d9d8d3 transparent;
+}
+html::-webkit-scrollbar { width: 10px; height: 10px; }
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb {
+  background: #d9d8d3;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 5px;
+}
+html::-webkit-scrollbar-thumb:hover { background: #c9c8c2; background-clip: padding-box; }
+/* …except in a case study, standalone or embedded: the reading rail is
+   already saying where you are there, and two indicators on one edge is one
+   too many. The one page keeps its bar — the sidebar's thread says which
+   SECTION you are in, not how far the scrollbar has left to run. */
+html:has(.case-stage),
+html.is-embed {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html:has(.case-stage)::-webkit-scrollbar,
+html.is-embed::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 /* ---- keyboard focus: ONE ring sitewide — the warm accent, floated 3px
    off the element so it never collides with a border or chip. Pointer
@@ -83,7 +132,7 @@ html, body {
    instead of stretching with the viewport (js/stage-fit.js) */
 .stage {
   position: relative;
-  height: 100%;
+  height: var(--card-h, 832px);
   width: 100%;
   overflow: hidden;
   opacity: 0;
@@ -101,17 +150,331 @@ html, body {
   text-align: center;
   white-space: nowrap;
 }
+
+/* ---- the hero, centred in the CONTENT CARD ----
+   Plain 50%/50%, because the stage is exactly the visible card: `main` is
+   centred in the card by margin:auto, and js/main.js measures --hero-h so
+   the stage is one screen of card tall (viewport − chrome). Everything that
+   moves the card — the rail sliding open, a seam drag, a resize — moves the
+   name with it for free, no offsets to keep in sync. */
+#home.stage {
+  height: var(--hero-h, calc(100dvh - var(--shell-chrome-h, 40px)));
+}
+#home .frame-top {
+  top: 50%;
+  left: 50%;
+}
+
+/* ---- "scroll" under the name — the about page's hint, re-homed on the
+   hero so a first-time visitor knows the page goes on. Arms once the
+   typewriter finishes (js/main.js), bows out on the first scroll. ---- */
+#home .scroll-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 13.25px;
+  color: rgba(38, 37, 30, 0.48);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.9s;
+}
+#home.hint-ready:not(.is-scrolled) .scroll-hint { opacity: 1; }
+#home.is-scrolled .scroll-hint { opacity: 0; transition: opacity 0.3s ease; }
+#home .scroll-hint svg { animation: hint-bob 2.2s ease-in-out infinite; }
+@keyframes hint-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #home .scroll-hint svg { animation: none; }
+}
+
+/* ---- hero ink — the hairline of orange the cursor draws behind itself
+   and leaves there (js/hero-ink.js). The pen is ASLEEP until a click wakes
+   it, so this layer is usually empty; it is here for the visitor who tries
+   the door. The layer belongs to the PAGE: absolute at the document's
+   origin, one screen tall, so the drawing rides the hero and scrolls away.
+
+   z-14: above the card's own content (z-auto) but BELOW the chrome strip
+   (20), so the strip's cream covers whatever rises into that band — except
+   at the tab's opening, where ink travels through like everything else the
+   page carries. Below the case overlay (15) and the theater (16), so
+   neither ever wears it.
+
+   The rail is CLIPPED out rather than sized around: the backing store then
+   only ever changes on a window resize, so sliding the rail or dragging the
+   seam cannot erase the drawing. ---- */
+.ink-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;                /* the hero screen: chrome strip + card */
+  z-index: 14;
+  pointer-events: none;
+  clip-path: inset(0 0 0 var(--shell-rail));
+  transition: clip-path var(--t-glide) var(--ease-glide);
+}
+html.rail-closed .ink-field { clip-path: inset(0); }
+html.rail-dragging .ink-field { transition: none; }
+/* explicit, NOT left to the parent's box: a canvas is a replaced element,
+   so `width: auto` resolves to its intrinsic 300x150 and the sheet would
+   sit in the corner instead of filling the layer */
+.ink-sheet { display: block; width: 100%; height: 100%; }
+@media (max-width: 700px) { .ink-field { display: none; } }
+
+/* ============================================================
+   The reading rail — a case study's chapters, stacked in the corner
+   under the × and threaded together by the progress line
+   (js/case-progress.js).
+
+   It sits ON the ×'s axis and carries on down from it: the glyph column
+   is 28px wide, right-aligned so its centre lands where the ×'s does, and
+   the thread runs through those centres. It is only as tall as the story
+   has chapters — a stack, not a gutter.
+
+   Icons are always up; the words wait. The chapter you are in says its
+   name while you are moving, and reaching for the rail deals the whole
+   table of contents out, one row at a time. Each name rides its own
+   frosted chip, because it is spoken over the story rather than beside it.
+
+   The colour is the CASE's own — --case-accent, declared by each case
+   stylesheet (coral for PantryPal, azure for Next Level) — falling back to
+   the site orange. The rail is the one place the shell speaks the story's
+   language instead of its own.
+   ============================================================ */
+.read-rail {
+  --ink: var(--case-accent, var(--orange));
+  --row: 28px;
+  --thread-top: 14px;    /* half a row: the thread starts at the first
+                            glyph's centre and ends at the last one's */
+  --thread-bot: 14px;
+  position: fixed;
+  top: calc(var(--shell-chrome-h, 0px) + 24px);
+  right: 16px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* the glyph discs are exactly a row tall, so this gap IS how much thread
+     shows between them — too tight and the line reads as specks */
+  gap: 9px;
+  pointer-events: none;           /* only the marks take the cursor */
+  opacity: 0;
+  transition: opacity var(--t-glide) ease;
+}
+/* Inside the overlay's iframe the shell is gone but the parent's × is not —
+   fall in under it. The frame reaches up behind the chrome strip now, so
+   this document's origin is the strip's TOP, not its floor: the rail has to
+   carry the strip's height itself or it rides up into the tabs and lands on
+   the × (both live at the top right, 2px apart). */
+html.is-embed .read-rail { top: calc(var(--shell-chrome-h, 40px) + 64px); }
+.read-rail.is-lit { opacity: 1; }
+
+/* ---- the thread, and the read part of it. scaleY, not height: it rides
+   the compositor and never lays out, however long the story is. ---- */
+.read-thread,
+.read-fill {
+  position: absolute;
+  top: var(--thread-top);
+  bottom: var(--thread-bot);
+  right: 13.25px;                 /* dead centre of the 28px glyph column */
+  width: 1.5px;
+  border-radius: 2px;
+}
+.read-thread { background: rgba(38, 37, 30, 0.12); }
+.read-fill {
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: 0 0;          /* it grows down, like the reading */
+}
+
+/* ---- a chapter. The rows deal themselves in when the rail lights, each
+   a beat after the one above it. ---- */
+.read-mark {
+  position: relative;
+  height: var(--row);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  background: none;
+  border: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  color: rgba(38, 37, 30, 0.30);
+  opacity: 0;
+  translate: 0 -7px;
+  transition: color var(--t-micro) ease,
+              opacity var(--t-fade) ease calc(var(--i, 0) * 45ms),
+              translate var(--t-rise) var(--ease-rise) calc(var(--i, 0) * 45ms);
+}
+.read-rail.is-dealt .read-mark { opacity: 1; translate: 0 0; }
+
+/* the glyph sits on a disc of the page's own surface, so the thread passes
+   BEHIND the icons rather than through them */
+.read-glyph {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  transition: transform var(--t-snap) var(--ease-spring);
+}
+.read-glyph svg { width: 15px; height: 15px; }
+
+/* read chapters keep the story's colour, quietly; the one you are in wears
+   it whole, a size larger, inside a ring */
+.read-mark.is-past { color: var(--ink); }
+@supports (color: color-mix(in srgb, red 50%, transparent)) {
+  .read-mark.is-past { color: color-mix(in srgb, var(--ink) 42%, transparent); }
+}
+.read-mark.is-current { color: var(--ink); }
+.read-mark.is-current .read-glyph { transform: scale(1.14); }
+.read-mark.is-current .read-glyph::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  border: 1.4px solid currentColor;
+  opacity: 0.26;
+}
+.read-mark:focus-visible { outline: none; }
+.read-mark:focus-visible .read-glyph {
+  transform: scale(1.14);
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+/* ---- the dock. The row under the cursor comes forward and its neighbours
+   lean toward it, falling off over two rows — the stack breathes around
+   your hand instead of one row switching on. Scale only, never layout: the
+   thread's geometry is measured off the rows, so a row that RESIZED would
+   drag the line with it. These rules sit after .is-current on purpose —
+   equal specificity, and the hovered row has to win. ---- */
+.read-mark:hover { color: var(--ink); }
+.read-mark:hover .read-glyph {
+  transform: scale(1.3);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
+}
+.read-mark:hover + .read-mark .read-glyph,
+.read-mark:has(+ .read-mark:hover) .read-glyph { transform: scale(1.13); }
+.read-mark:hover + .read-mark + .read-mark .read-glyph,
+.read-mark:has(+ .read-mark + .read-mark:hover) .read-glyph { transform: scale(1.05); }
+
+/* ---- the name, on its own chip, held back until wanted.
+
+   The chip is kept NARROW on purpose: the story reaches to about 130px
+   from the right edge at its widest (the process chapters' wire cards),
+   and every px here is measured against that. Name only, tight padding,
+   and a surface solid enough that where it does pass over the story it
+   reads as floating above rather than tangled in. ---- */
+.read-tag {
+  position: absolute;
+  right: 29px;
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+  padding: 4.5px 8px 5.5px;
+  border-radius: 8px;
+  background: rgba(247, 247, 244, 0.94);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  backdrop-filter: blur(12px) saturate(1.3);
+  border: 1px solid rgba(38, 37, 30, 0.09);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.055);
+  font-size: 11.5px;
+  line-height: 1;
+  letter-spacing: 0.012em;
+  color: var(--ink);
+  pointer-events: none;
+  opacity: 0;
+  translate: 7px 0;
+  transition: opacity var(--t-glide) ease,
+              translate var(--t-glide) var(--ease-glide),
+              scale var(--t-snap) var(--ease-spring),
+              box-shadow var(--t-glide) ease,
+              border-color var(--t-glide) ease;
+}
+
+/* ---- OPEN: the rail's box grows to take in the chips, and every row
+   spans it. That is what keeps the names up while the cursor wanders from
+   an icon out to its pill and down the list — the hover is the whole rail's,
+   not one icon's. Closed, the box is the icon column again and the story
+   below it is clickable. ---- */
+.read-rail.is-open {
+  width: 250px;
+  pointer-events: auto;
+}
+.read-rail.is-open .read-mark { width: 100%; }
+.read-rail.is-open .read-tag { pointer-events: auto; }
+
+/* while you are moving, the chapter you are in says its name… */
+.read-rail.is-moving .read-mark.is-current .read-tag,
+.read-mark:focus-visible .read-tag {
+  opacity: 1;
+  translate: 0 0;
+}
+/* …and reaching for the rail deals the whole table of contents out, row by
+   row. The delay lives here and not on the base rule, so they leave
+   together and only arrive in turn. */
+.read-rail.is-open .read-tag {
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: calc(var(--i, 0) * 28ms);
+}
+.read-rail.is-open:has(.read-mark:hover) .read-mark:not(:hover) .read-tag {
+  opacity: 0.48;
+}
+
+/* the chip under the cursor steps out toward the story, a shade larger and
+   lifted — the same coming-forward the glyph does, so the row moves as one */
+.read-rail.is-open .read-mark:hover .read-tag {
+  opacity: 1;
+  translate: -3px 0;             /* the pop steps OUT, so it is measured
+                                    against the story's edge like everything
+                                    else here — small on purpose */
+  scale: 1.02;
+  border-color: rgba(38, 37, 30, 0.11);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+  transition-delay: 0s;                    /* the one you point at never waits */
+}
+/* the neighbours lean out a little too, which is what makes it read as one
+   surface flexing rather than a chip popping */
+.read-rail.is-open .read-mark:hover + .read-mark .read-tag,
+.read-rail.is-open .read-mark:has(+ .read-mark:hover) .read-tag {
+  translate: -1.5px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .read-rail, .read-mark, .read-tag, .read-glyph {
+    transition: none;
+    translate: none;
+  }
+  .read-rail .read-mark { opacity: 1; }
+}
+/* the phone has no room for a rail beside the story */
+@media (max-width: 700px) { .read-rail { display: none; } }
+
 .frame-name {
   font-size: 28px;
   line-height: 38px;
-  font-weight: 400;
-  color: #5e5e5e;                     /* 1401:123 — the subpage-header grey */
+  font-weight: 400;                   /* headlines whisper — never bold */
+  letter-spacing: -0.015em;           /* tracking tightens as type grows */
+  color: var(--ink);                  /* headlines carry full ink */
 }
 .frame-role {
   font-size: 28px;
   line-height: 38px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.015em;
+  color: rgba(38, 37, 30, 0.34);
 }
 
 /* ---- the name types itself (js/typewriter.js) ----
@@ -179,17 +542,17 @@ html:not(.js) .tw-caret { display: none; }
   align-items: center;
   height: 59px;
   border-radius: 21.5px;
-  /* solid #fbfbfb = the mock's rgba(16,17,18,0.01) composited on the page
-     bg — opaque so content sliding under it (work.html's snap scroller)
-     stays hidden behind the chip */
-  background: #fbfbfb;
-  border: 0.648px solid #d9d9d9;
+  /* bone — one step down from the parchment canvas, opaque so content
+     sliding under it (work.html's snap scroller) stays hidden behind
+     the chip */
+  background: #f2f1ed;
+  border: 0.648px solid #cdcdc9;
   transition: background-color 0.25s ease;
 }
-/* solid #f9f9f9 = the mock's rgba(233,233,233,0.2) composited on the page
-   bg — opaque so the title never bleeds through the expanded bar */
+/* a half-step further down, opaque so the title never bleeds through the
+   expanded bar */
 .site-nav:hover,
-.site-nav:focus-within { background: #f9f9f9; }
+.site-nav:focus-within { background: #edece7; }
 /* the home page carries a site-nav too, but ONLY for the mobile bottom bar —
    on desktop its centred hero pill is the nav, so this stays hidden */
 .site-nav.is-mobile-only { display: none; }
@@ -203,7 +566,7 @@ html:not(.js) .tw-caret { display: none; }
   z-index: 9;                 /* over the page, under .site-nav (z 10) */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(253, 253, 253, 0.45);
+  background: rgba(247, 247, 244, 0.45);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -279,7 +642,7 @@ html:not(.js) .tw-caret { display: none; }
   font: inherit;
   font-size: 23.5px;                  /* 1380:150's 26px × the 0.9 shrink */
   line-height: 28px;
-  color: #5e5e5e;
+  color: #5b5a53;
   text-decoration: none;
   white-space: nowrap;
   transition: color var(--t-micro) ease;
@@ -293,14 +656,14 @@ html:not(.js) .tw-caret { display: none; }
   top: 50%;
   height: 44px;
   transform: translateY(-50%);
-  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
-  border: 1px solid rgba(253, 143, 59, 0.35);
+  background: rgba(38, 37, 30, 0.06);   /* the sitewide grey hover wash */
+  border: 1px solid rgba(38, 37, 30, 0.14);
   border-radius: 33px;
   opacity: 0;
   transition: opacity var(--t-micro) ease;
 }
 .site-nav-word:hover,
-.site-nav-word:focus-visible,
+.site-nav-word:focus-visible { color: var(--ink); }
 .site-nav-word.is-current { color: var(--orange); }
 .site-nav-word:hover::before,
 .site-nav-word:focus-visible::before,
@@ -336,6 +699,12 @@ html:not(.js) .tw-caret { display: none; }
   .frame-name { font-size: 23px; line-height: 32px; }
   .frame-role { font-size: 17px; line-height: 26px; }
 
+  /* the shell dissolves at this width — the phone's whole screen is the
+     card, and js/main.js stops measuring --hero-h */
+  #home.stage { height: 100dvh; }
+  /* the floating bottom bar owns that band of the screen */
+  #home .scroll-hint { display: none; }
+
   /* the bar comes back: below 700 it is the nav on EVERY page, home
      included (the shell and its sidebar dissolve at this width) */
   .site-nav,
@@ -357,8 +726,8 @@ html:not(.js) .tw-caret { display: none; }
     max-width: calc(100vw - 24px);
     padding: 6px;
     border-radius: 27px;
-    background: rgba(253, 253, 253, 0.82);
-    border: 1px solid #ececec;
+    background: rgba(247, 247, 244, 0.85);
+    border: 1px solid #e6e5e0;
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
     backdrop-filter: blur(14px) saturate(1.1);
@@ -366,7 +735,7 @@ html:not(.js) .tw-caret { display: none; }
     animation: nav-rise 0.5s var(--ease-rise) both;
   }
   .site-nav:hover,
-  .site-nav:focus-within { background: rgba(253, 253, 253, 0.82); }
+  .site-nav:focus-within { background: rgba(247, 247, 244, 0.85); }
   .site-nav-home { display: none; }        /* the "home" tab is the way home now */
   .nav-frost { display: none; }            /* the expand-menu frost is gone here */
 
@@ -395,7 +764,7 @@ html:not(.js) .tw-caret { display: none; }
     font-size: 11px;
     line-height: 1;
     letter-spacing: 0.01em;
-    color: #8a8a8a;
+    color: #84847e;
   }
   .site-nav-word svg { display: block; width: 23px; height: 23px; }
   .site-nav-word::before {
@@ -408,7 +777,10 @@ html:not(.js) .tw-caret { display: none; }
     border-radius: 21px;
   }
   .site-nav-word.is-home { display: flex; }              /* show the home tab */
-  .site-nav-word[href="play.html"] { display: none; }    /* Play retired on mobile */
+  /* Play retired on mobile. The home page reaches it by anchor now, the
+     standalone pages still link out to play.html — both spellings hide. */
+  .site-nav-word[href="play.html"],
+  .site-nav-word[href="#pong"] { display: none; }
 }
 
 @keyframes nav-rise {

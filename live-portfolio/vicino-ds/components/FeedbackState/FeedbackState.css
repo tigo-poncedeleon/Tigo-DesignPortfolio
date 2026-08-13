@@ -1,0 +1,402 @@
+/* FeedbackState - loading, empty, result, alert, and progress slices.
+   Progress fills use one solid semantic color per segment. Spinner is compact
+   inline work only; page-level waits should show copy plus a preview/skeleton. */
+
+.feedback-state,
+.feedback-state * {
+  box-sizing: border-box;
+}
+
+.feedback-state {
+  --feedback-accent: var(--blue-500);
+  --feedback-accent-soft: var(--blue-50);
+  --feedback-accent-line: var(--blue-200);
+  --feedback-accent-ink: var(--blue-700);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+.feedback-state--info {
+  --feedback-accent: var(--blue-500);
+  --feedback-accent-soft: var(--blue-50);
+  --feedback-accent-line: var(--blue-200);
+  --feedback-accent-ink: var(--blue-700);
+}
+
+.feedback-state--ready {
+  --feedback-accent: var(--cyan-600);
+  --feedback-accent-soft: var(--cyan-50);
+  --feedback-accent-line: var(--cyan-200);
+  --feedback-accent-ink: var(--cyan-700);
+}
+
+.feedback-state--success {
+  --feedback-accent: var(--success-500);
+  --feedback-accent-soft: var(--success-50);
+  --feedback-accent-line: var(--success-200);
+  --feedback-accent-ink: var(--success-700);
+}
+
+.feedback-state--warning {
+  --feedback-accent: var(--amber-500);
+  --feedback-accent-soft: var(--amber-50);
+  --feedback-accent-line: var(--amber-200);
+  --feedback-accent-ink: var(--amber-700);
+}
+
+.feedback-state--error {
+  --feedback-accent: var(--red-500);
+  --feedback-accent-soft: var(--red-50);
+  --feedback-accent-line: var(--red-200);
+  --feedback-accent-ink: var(--red-700);
+}
+
+.feedback-state--building {
+  --feedback-accent: var(--indigo-500);
+  --feedback-accent-soft: var(--indigo-50);
+  --feedback-accent-line: var(--indigo-200);
+  --feedback-accent-ink: var(--indigo-700);
+}
+
+.feedback-state--neutral {
+  --feedback-accent: var(--text-4);
+  --feedback-accent-soft: var(--surface-2);
+  --feedback-accent-line: var(--surface-3);
+  --feedback-accent-ink: var(--text-3);
+}
+
+.inline-alert {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--feedback-accent-line);
+  border-radius: var(--r-lg);
+  background: var(--feedback-accent-soft);
+}
+
+.inline-alert__icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--feedback-accent-ink);
+  box-shadow: inset 0 0 0 1px var(--feedback-accent-line);
+}
+
+.inline-alert__icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.inline-alert__body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.inline-alert__title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.inline-alert__text {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.feedback-progress {
+  --feedback-progress-value: 0.5;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.feedback-progress__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-snug);
+}
+
+.feedback-progress__label {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+
+.feedback-progress__value {
+  color: var(--feedback-accent-ink);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
+.feedback-progress__track {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+}
+
+.feedback-progress__track::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--feedback-progress-value) * 100%);
+  border-radius: inherit;
+  background: var(--feedback-accent);
+}
+
+.feedback-progress--compact {
+  max-width: 240px;
+  gap: 6px;
+}
+
+.feedback-progress--compact .feedback-progress__track {
+  height: 6px;
+}
+
+.feedback-progress--segmented .feedback-progress__track {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  padding: 2px;
+  background: var(--surface);
+}
+
+.feedback-progress--segmented .feedback-progress__segment {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: var(--feedback-accent);
+}
+
+.feedback-progress__segment--scheduled {
+  background: var(--blue-500);
+}
+
+.feedback-progress__segment--building {
+  background: var(--indigo-500);
+}
+
+.feedback-progress__segment--ready {
+  background: var(--cyan-600);
+}
+
+.feedback-progress__segment--success {
+  background: var(--success-500);
+}
+
+.feedback-progress-ring {
+  --feedback-progress-value: 0.62;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--feedback-accent) calc(var(--feedback-progress-value) * 100%),
+    var(--surface-2) 0
+  );
+}
+
+.feedback-progress-ring::before {
+  content: '';
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--canvas);
+}
+
+.feedback-progress-ring__value {
+  position: absolute;
+  color: var(--text);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-bold);
+}
+
+.feedback-spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.feedback-spinner__mark {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border-radius: 50%;
+  background: conic-gradient(from 45deg, transparent 0 24%, var(--feedback-accent) 24% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  animation: feedbackSpin 0.78s linear infinite;
+}
+
+.skeleton {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.skeleton__line,
+.skeleton__block,
+.skeleton__avatar,
+.skeleton__pill {
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.skeleton__line {
+  height: 12px;
+}
+
+.skeleton__line--short {
+  width: 56%;
+}
+
+.skeleton__line--mid {
+  width: 76%;
+}
+
+.skeleton__block {
+  min-height: 120px;
+}
+
+.skeleton__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 84px;
+  gap: 12px;
+  align-items: center;
+}
+
+.skeleton__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-full);
+}
+
+.skeleton__pill {
+  height: 24px;
+  border-radius: var(--r-full);
+}
+
+.empty-state,
+.result-state {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  padding: 24px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-xl);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-2);
+}
+
+.empty-state--compact,
+.result-state--compact {
+  max-width: 360px;
+  padding: 18px;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.empty-state__mark,
+.result-state__mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-lg);
+  background: var(--feedback-accent-soft);
+  color: var(--feedback-accent-ink);
+  box-shadow: inset 0 0 0 1px var(--feedback-accent-line);
+}
+
+.empty-state__mark svg,
+.result-state__mark svg {
+  width: 20px;
+  height: 20px;
+}
+
+.empty-state__body,
+.result-state__body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.empty-state h3,
+.result-state h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-6);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.empty-state p,
+.result-state p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-4);
+  line-height: var(--lh-normal);
+}
+
+.result-state {
+  border-color: var(--feedback-accent-line);
+  background: var(--feedback-accent-soft);
+}
+
+.result-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@keyframes feedbackSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-spinner__mark {
+    animation: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .inline-alert,
+  .empty-state,
+  .result-state {
+    border-radius: var(--r-lg);
+  }
+
+  .skeleton__row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .skeleton__row .skeleton__pill {
+    grid-column: 2;
+    width: 120px;
+  }
+}

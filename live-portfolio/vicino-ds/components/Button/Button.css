@@ -1,0 +1,337 @@
+/* Shared Pulse button system. Visual source: src/tokens.css. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
+  height: var(--control-height-md);
+  padding: 0 var(--control-pad-x-md);
+  border-radius: var(--r-full);
+  font-family: var(--font-sans);
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  letter-spacing: var(--tracking-ui);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  border: 0;
+  transition:
+    background var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+
+.btn svg {
+  transition: transform var(--dur-1) var(--ease);
+}
+
+.btn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
+
+.btn__spinner {
+  display: none;
+  width: 13px;
+  height: 13px;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 13px;
+  border-radius: 50%;
+  background: conic-gradient(from 45deg, transparent 0 24%, currentColor 24% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  opacity: 0.82;
+  animation: btnSpin 0.72s linear infinite;
+}
+
+.btn__check {
+  display: none;
+  width: 14px;
+  height: 14px;
+}
+
+.btn:focus {
+  outline: none;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn[disabled],
+.btn:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.btn.is-loading,
+.btn[aria-busy='true'] {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.btn.is-loading .btn__spinner,
+.btn[aria-busy='true'] .btn__spinner {
+  display: inline-block;
+}
+
+.btn.is-success {
+  background: var(--success-600);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.btn.is-success:hover {
+  background: var(--success-700);
+}
+
+.btn.is-success .btn__spinner {
+  display: none;
+}
+
+.btn.is-success .btn__check {
+  display: inline-block;
+}
+
+.btn--sm {
+  height: var(--control-height-sm);
+  padding: 0 var(--control-pad-x-sm);
+  font-size: var(--fs-3);
+  gap: 6px;
+}
+
+.btn--lg {
+  height: var(--control-height-lg);
+  padding: 0 var(--control-pad-x-lg);
+  font-size: var(--fs-5);
+}
+
+.btn--pill {
+  border-radius: var(--r-full);
+}
+
+.btn--primary,
+.btn--dark {
+  background: var(--button-dark);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.btn--primary:hover,
+.btn--dark:hover,
+.btn--primary.is-hover,
+.btn--dark.is-hover {
+  background: var(--button-dark-hover);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.btn--dark svg {
+  color: currentColor;
+}
+
+.btn--dark:hover svg,
+.btn--ghost:hover svg {
+  transform: translateX(2px);
+}
+
+.btn--secondary {
+  background: var(--button-glass);
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+
+.btn--secondary:hover {
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge-strong),
+    var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.btn--secondary.is-hover {
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge-strong),
+    var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.btn--ghost {
+  color: var(--text-3);
+  background: transparent;
+}
+
+.btn--ghost:hover,
+.btn--ghost.is-hover {
+  color: var(--text);
+  background: var(--ink-soft);
+}
+
+.btn--ghost.btn--muted {
+  color: var(--text-4);
+}
+
+.btn--ghost.btn--muted:hover {
+  color: var(--text);
+  background: var(--ink-soft);
+}
+
+.btn--danger {
+  background: var(--red-500);
+  color: #fff;
+  box-shadow: var(--button-shadow-rest);
+}
+
+.btn--danger:hover,
+.btn--danger.is-hover {
+  background: var(--red-600);
+  color: #fff;
+  box-shadow: var(--button-shadow-danger-hover);
+  transform: translateY(-1px);
+}
+
+/* Warning — outlined amber, for risk / on-hold / caution actions (e.g. signal's
+   "adjust plan"). Soft amber fill + line, amber text. Distinct from --danger
+   (filled red). */
+.btn--warning {
+  background: var(--amber-50);
+  color: var(--amber-600);
+  box-shadow: inset 0 0 0 1px var(--amber-200);
+}
+
+.btn--warning:hover,
+.btn--warning.is-hover {
+  background: var(--amber-100);
+  box-shadow:
+    inset 0 0 0 1px var(--amber-200),
+    var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* Dashed — transparent "add / create" affordance with a dashed hairline, quiet
+   ink. Pairs with a leading + icon. */
+.btn--dashed {
+  background: transparent;
+  color: var(--text-3);
+  border: 1px dashed var(--border-strong);
+  box-shadow: none;
+}
+
+.btn--dashed:hover,
+.btn--dashed.is-hover {
+  color: var(--text);
+  border-color: var(--text-4);
+  background: var(--ink-soft);
+}
+
+.btn--icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text-3);
+  box-shadow: inset 0 0 0 1px var(--surface-edge);
+}
+
+.btn--icon > svg:not(.btn__check) {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.btn--icon.btn--sm {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 11px;
+}
+
+.btn--icon.btn--sm > svg:not(.btn__check) {
+  width: 15px;
+  height: 15px;
+}
+
+.btn--icon:hover,
+.btn--icon.is-hover {
+  background: #fff;
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge-strong),
+    var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* Destructive icon-only actions stay quiet at rest and reveal red only on
+   hover/focus. */
+.btn--icon.btn--danger:hover,
+.btn--icon.btn--danger.is-hover {
+  background: var(--red-50);
+  color: var(--red-600);
+  box-shadow:
+    inset 0 0 0 1px var(--red-200),
+    var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.btn--icon.btn--danger:focus-visible,
+.btn--icon.btn--danger.is-focus {
+  background: var(--red-50);
+  color: var(--red-600);
+  box-shadow:
+    var(--focus-ring),
+    inset 0 0 0 1px var(--red-200);
+}
+
+.btn--chat-selected {
+  height: auto;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  line-height: 18.75px;
+  color: var(--pulse-cyan-dark);
+  background: color-mix(in srgb, var(--pulse-cyan) 16%, transparent);
+  box-shadow: inset 0 0 0 1px var(--surface-2);
+}
+
+.btn.is-focus {
+  box-shadow: var(--focus-ring);
+}
+
+.btn--primary.is-focus,
+.btn--dark.is-focus {
+  box-shadow: var(--focus-ring);
+}
+
+.btn.is-pressed {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(15, 23, 42, 0.18),
+    inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+@keyframes btnSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn__spinner {
+    animation: none;
+  }
+}

@@ -6,6 +6,11 @@
    --ax = the card's own midline.
    ============================================================ */
 
+/* The reading rail is appended to BODY, outside .case-stage, so it cannot
+   inherit the palette below — the case hands its ink up to the root for
+   it. Same coral as --pp-red; keep the two in step. */
+:root { --case-accent: #eb614b; }
+
 .case-stage {
   /* inside the case study, the accents speak PANTRYPAL, not the site
      orange: coral is the ink (deepened for contrast), butter yellow is
@@ -23,9 +28,7 @@
      1280x832 — so every Figma offset lands where it was drawn instead
      of stretching with the viewport (js/stage-fit.js) */
   position: relative;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   opacity: 0;
   transition: opacity var(--t-stage) ease;
 }
@@ -36,22 +39,18 @@
 
 
 /* ---- the chapter stack ---- */
+/* the DOCUMENT is the scroller now, so the chapters are just card-height
+   blocks in normal flow */
 .case-scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
 }
-.case-scroll::-webkit-scrollbar { display: none; }
 .case-slide {
   position: relative;
   flex: none;
   width: 100%;
-  height: 100%;
+  height: var(--card-h, 832px);
   --ax: 50%;
 }
 
@@ -69,16 +68,18 @@
 .case-title :is(h1, h2) {
   font-size: 28px;
   font-weight: 400;
-  color: #5e5e5e;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 .case-title p {
   font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.015em;
+  color: rgba(38, 37, 30, 0.34);
 }
 /* faint chapter numeral — the notebook's page number */
 .case-num {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.35);
+  color: rgba(38, 37, 30, 0.4);
   font-variant-numeric: tabular-nums;
   margin-right: 2px;
 }
@@ -104,7 +105,7 @@
 /* ---- the site's line-art system (about.css, verbatim) ---- */
 .stroke {
   fill: none;
-  stroke: #5e5e5e;
+  stroke: #5b5a53;
   stroke-width: 1.2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -115,7 +116,7 @@
 .stroke.s2 { transition-delay: 0.25s; }
 .guide {
   fill: none;
-  stroke: #d9d9d9;
+  stroke: #cdcdc9;
   stroke-width: 1.2;
   stroke-dasharray: 2 5;
   stroke-linecap: round;
@@ -163,7 +164,7 @@
   width: 460px;
   font-size: 20px;
   line-height: 30px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .case-pitch p + p { margin-top: 22px; }
 .pitch-logo {
@@ -179,7 +180,7 @@
 .craft2-principle strong,
 .hmw strong {
   font-weight: 400;                   /* emphasis by INK, not weight */
-  color: #404040;
+  color: #26251e;
   background: linear-gradient(var(--pp-mark), var(--pp-mark))
               no-repeat left 78% / 0% 0.58em;
   box-decoration-break: clone;
@@ -201,26 +202,26 @@
   gap: 12px 24px;
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid #e6e5e0;
 }
 .spec-cell dt {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .spec-cell dd {
   margin-top: 2px;
   font-size: 15px;
   line-height: 21px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 /* the suggestion-chip recipe (craft-chip family) */
 .case-chip {
   padding: 5px 12px;
   font-size: 14px;
   line-height: 1.35;
-  color: #5e5e5e;
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid #d9d9d9;
+  color: #5b5a53;
+  background: rgba(230, 229, 224, 0.48);
+  border: 1px solid #cdcdc9;
   border-radius: 20px;
   white-space: nowrap;
 }
@@ -268,7 +269,7 @@
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -300,8 +301,8 @@
   width: 420px;
   height: 390px;
   padding: 26px 30px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: transform var(--t-lift) var(--ease-lift),
@@ -345,7 +346,7 @@
   font: inherit;
   font-size: 28px;
   text-anchor: middle;
-  fill: #404040;
+  fill: #26251e;
   opacity: 0;
   transition: opacity 0.5s ease 0.35s;   /* visible early — it counts up */
 }
@@ -353,7 +354,7 @@
   font: inherit;
   font-size: 12px;
   text-anchor: middle;
-  fill: rgba(0, 0, 0, 0.42);
+  fill: rgba(38, 37, 30, 0.48);
   opacity: 0;
   transition: opacity 0.5s ease 1.3s;
 }
@@ -374,7 +375,7 @@
   margin-top: 10px;
   font-size: 20px;
   font-weight: 400;
-  color: #404040;
+  color: #26251e;
 }
 /* a brand dot anchors each card's heading — the palette carrying the
    hierarchy instead of weight */
@@ -395,7 +396,7 @@
   margin-top: 10px;
   font-size: 15px;
   line-height: 23px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .built-for {
   position: absolute;
@@ -409,7 +410,7 @@
 }
 .built-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   margin-right: 4px;
 }
 /* the audience trio wears the brand — one chip per palette color */
@@ -438,12 +439,12 @@
 }
 .hmw-label {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .hmw-q {
   margin-top: 6px;
   font-size: 24px;
-  color: #404040;
+  color: #26251e;
 }
 
 /* ============================================================
@@ -461,8 +462,8 @@
   width: 320px;
   height: 500px;
   padding: 20px 22px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: transform var(--t-lift) var(--ease-lift),
@@ -501,16 +502,16 @@
 .verdict {
   padding: 3px 10px;
   font-size: 13.25px;
-  color: #5e5e5e;
+  color: #5b5a53;
   background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid #d9d9d9;
+  border: 0.663px solid #cdcdc9;
   border-radius: 6.625px;
   white-space: nowrap;
 }
 /* the reviewer's pen: a quiet ✕ on the discards, a ✓ on the keeper */
 .verdict::before {
   content: '\2715\2002';
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .verdict.is-yes::before {
   content: '\2713\2002';
@@ -523,13 +524,13 @@
 }
 .wire-name {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .wire-copy {
   margin-top: 10px;
   font-size: 15px;
   line-height: 23px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 
 /* ============================================================
@@ -573,7 +574,7 @@
   background: none;
   font: inherit;
   font-size: 20px;
-  color: #5e5e5e;
+  color: #5b5a53;
   text-align: left;
   cursor: pointer;
   transition: color var(--t-micro) ease;
@@ -584,7 +585,7 @@
 .flow-steps:hover .step-item.is-current:not(:hover) { color: var(--ink); }
 .step-n {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   font-variant-numeric: tabular-nums;
   transition: color var(--t-micro) ease;
 }
@@ -637,13 +638,13 @@
 .flow-cap h3 {
   font-size: 20px;
   font-weight: 400;
-  color: #404040;
+  color: #26251e;
 }
 .flow-cap p {
   margin-top: 10px;
   font-size: 16px;
   line-height: 24px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .flow-hint {
   position: absolute;
@@ -651,7 +652,7 @@
   left: 0;
   width: 100%;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 
 /* ============================================================
@@ -684,7 +685,7 @@
   height: 64px;
   border-radius: 50%;
   background: transparent;
-  border: 1.5px solid #d9d9d9;
+  border: 1.5px solid #cdcdc9;
   transition: background-color 0.6s ease var(--sd, 0.4s),
               border-color 0.6s ease var(--sd, 0.4s),
               transform var(--t-glide) var(--ease-glide);
@@ -705,7 +706,7 @@
   justify-content: center;
   gap: 10px 26px;
 }
-/* the dishes arrive in full color and gently bob, each on its own beat;
+/* the dishes sit still in full color;
    hovering one whispers its name (the social-row label trick) */
 .food {
   position: relative;
@@ -716,17 +717,6 @@
 .food img {
   height: 74px;
   width: auto;
-  animation: food-bob 3.4s ease-in-out calc(var(--f, 0) * 0.4s) infinite;
-}
-.food:nth-child(1) { --f: 0; }
-.food:nth-child(2) { --f: 1; }
-.food:nth-child(3) { --f: 2; }
-.food:nth-child(4) { --f: 3; }
-.food:nth-child(5) { --f: 4; }
-.food:nth-child(6) { --f: 5; }
-@keyframes food-bob {
-  0%, 100% { translate: 0 0; }
-  50%      { translate: 0 -5px; }
 }
 .food::after {
   content: attr(aria-label);
@@ -735,7 +725,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
@@ -748,7 +738,7 @@
   left: var(--ax);
   transform: translateX(-50%);
   font-size: 20px;
-  color: #404040;
+  color: #26251e;
   white-space: nowrap;
 }
 
@@ -767,8 +757,8 @@
   width: 250px;
   height: 170px;
   padding: 24px 24px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: transform var(--t-lift) var(--ease-lift),
@@ -784,7 +774,7 @@
   margin-top: 10px;
   font-size: 14px;
   line-height: 20px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .learned {
   position: absolute;
@@ -794,17 +784,17 @@
   width: 660px;
   font-size: 17px;
   line-height: 26px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .learned p + p { margin-top: 10px; }
 .learned-label {
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   margin-bottom: 12px;
 }
 .learned strong {
   font-weight: 400;
-  color: #404040;
+  color: #26251e;
 }
 .case-outro {
   position: absolute;
@@ -817,7 +807,7 @@
 }
 .case-link {
   font-size: 16px;
-  color: #5e5e5e;
+  color: #5b5a53;
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
@@ -842,7 +832,7 @@
 }
 .bon span {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   opacity: 0;
   transition: opacity 0.6s ease 1.6s;
 }
@@ -1072,7 +1062,6 @@
   .check { transition: none; stroke-dashoffset: 0; }
   .illo-num, .illo-sub { transition: none; opacity: 1; }
   .prob-card:hover svg :is(.stroke, .guide, .arc, .check) { animation: none; }
-  .food img { animation: none; }
   .case-pitch strong, .learned strong, .craft2-principle strong,
   .hmw strong {
     transition: none;

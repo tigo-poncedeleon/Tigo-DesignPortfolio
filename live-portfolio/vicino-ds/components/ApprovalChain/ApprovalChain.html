@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ApprovalChain - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="ApprovalChain.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet {
+        display: grid;
+        gap: 34px;
+        max-width: 1040px;
+      }
+      .component-intro {
+        display: grid;
+        gap: 8px;
+        max-width: 70ch;
+      }
+      .component-set {
+        display: grid;
+        gap: 18px;
+        padding-block: 4px 22px;
+      }
+      .component-set + .component-set {
+        border-top: 1px solid rgba(29, 29, 31, 0.07);
+        padding-top: 28px;
+      }
+      .section-title {
+        display: grid;
+        gap: 6px;
+        max-width: 72ch;
+      }
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      h2 {
+        font-size: var(--fs-5);
+        font-weight: var(--fw-semibold);
+      }
+      p {
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.92em;
+        color: var(--text-2);
+      }
+      .eyebrow,
+      .specimen-label,
+      .state-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      /* Card the chain sits on in product (white card / drawer / plan gate). */
+      .demo-card {
+        width: min(100%, 380px);
+        padding: 20px 22px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: var(--shadow-2);
+      }
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        width: min(100%, 920px);
+      }
+      .state-card {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+        padding: 18px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: var(--shadow-2);
+      }
+      .primary,
+      .secondary {
+        height: 34px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: var(--r-full);
+        font: inherit;
+        font-size: var(--fs-3);
+        font-weight: var(--fw-semibold);
+        cursor: pointer;
+      }
+      .primary {
+        background: var(--ink-900);
+        color: #fff;
+      }
+      .secondary {
+        background: var(--surface-2);
+        color: var(--text-2);
+      }
+      .secondary.danger {
+        background: transparent;
+        color: var(--amber-700);
+      }
+      @media (max-width: 720px) {
+        body {
+          padding: 28px;
+        }
+        .state-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <span class="eyebrow">Component source</span>
+        <h1>ApprovalChain</h1>
+        <p>
+          Sequential approval timeline used wherever Pulse routes a decision through people: the
+          campaign <strong>plan gate</strong> (Gate A), per-post <strong>brief</strong> and
+          <strong>content</strong> approval (Gate B①/B②), and the
+          <strong>inbox review drawer</strong>. One renderer drives them all.
+        </p>
+        <p>
+          <strong>Identity vs. meaning.</strong> The avatar carries <em>who</em> and is
+          intentionally neutral (initials on a tonal fill) so it never competes with status colour.
+          Each step's state lives in a small <strong>badge</strong> clipped to the avatar corner and
+          in the status label: green = approved, cyan = active / your turn, gray = waiting, amber =
+          changes requested. The active step also gets a cyan ring. Changes-requested is
+          <strong>amber, never red</strong> — red is reserved for declining data.
+        </p>
+        <p>
+          <strong>Rail fills with progress.</strong> The connector below an approved step turns
+          green (<code>--success-200</code>), so how far the chain has advanced reads at a glance.
+        </p>
+        <p>
+          <strong>Motion.</strong> On mount, steps stagger in (opacity + 6px rise,
+          <code>55ms</code> apart) and badges pop (scale). The rail and active ring transition on
+          state change. All of it is disabled under <code>prefers-reduced-motion</code>.
+        </p>
+      </header>
+
+      <!-- Full chain in context -->
+      <section class="component-set" aria-label="Full chain">
+        <div class="section-title">
+          <span class="specimen-label">Component / full chain</span>
+          <h2>Brand-default chain</h2>
+          <p>Content lead → brand admin (you) → org owner. One step approved, you are up next.</p>
+        </div>
+        <div class="demo-card">
+          <div class="approval-block">
+            <div class="ac-label">Content approval<span class="ac-checkpoint">Gate B②</span></div>
+            <div class="approval-chain">
+              <div class="ac-step ac-step--approved" style="--i: 0">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar"
+                    >MR<span class="ac-badge ac-badge--approved"
+                      ><svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12l4.5 4.5L19 7" /></svg></span
+                  ></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Maya R.</div>
+                  <div class="ac-role">Content lead</div>
+                  <div class="ac-status ac-status--approved">Approved · 9:12 AM</div>
+                </div>
+              </div>
+              <div class="ac-step ac-step--you" style="--i: 1">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">DO<span class="ac-badge ac-badge--active"></span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Devin O.<span class="ac-you-tag">You</span></div>
+                  <div class="ac-role">Brand admin</div>
+                  <div class="ac-status ac-status--you">Needs your review</div>
+                </div>
+              </div>
+              <div class="ac-step ac-step--waiting" style="--i: 2">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">PN<span class="ac-badge ac-badge--waiting"></span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Priya N.</div>
+                  <div class="ac-role">Org owner</div>
+                  <div class="ac-status ac-status--waiting">Waiting</div>
+                </div>
+              </div>
+            </div>
+            <div class="ac-actions">
+              <button class="primary" type="button">Approve content</button>
+              <button class="secondary danger" type="button">Request changes</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step states -->
+      <section class="component-set" aria-label="Step states">
+        <div class="section-title">
+          <span class="specimen-label">State slices</span>
+          <h2>Step states</h2>
+          <p>
+            Frozen single-step frames. Each pairs a neutral avatar with one status badge + label.
+          </p>
+        </div>
+        <div class="state-grid">
+          <div class="state-card">
+            <small>Approved</small>
+            <div class="approval-chain">
+              <div class="ac-step ac-step--approved">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar"
+                    >MR<span class="ac-badge ac-badge--approved"
+                      ><svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12l4.5 4.5L19 7" /></svg></span
+                  ></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Maya R.</div>
+                  <div class="ac-role">Content lead</div>
+                  <div class="ac-status ac-status--approved">Approved · 9:12 AM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Your turn (active)</small>
+            <div class="approval-chain">
+              <div class="ac-step ac-step--you">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">DO<span class="ac-badge ac-badge--active"></span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Devin O.<span class="ac-you-tag">You</span></div>
+                  <div class="ac-role">Brand admin</div>
+                  <div class="ac-status ac-status--you">Needs your review</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Reviewing (someone else)</small>
+            <div class="approval-chain">
+              <div class="ac-step ac-step--reviewing">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">PN<span class="ac-badge ac-badge--active"></span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Priya N.</div>
+                  <div class="ac-role">Org owner</div>
+                  <div class="ac-status ac-status--reviewing">Reviewing · SLA 24h left</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Waiting</small>
+            <div class="approval-chain">
+              <div class="ac-step ac-step--waiting">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">PN<span class="ac-badge ac-badge--waiting"></span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Priya N.</div>
+                  <div class="ac-role">Org owner</div>
+                  <div class="ac-status ac-status--waiting">Waiting</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Changes requested</small>
+            <div class="approval-chain">
+              <div class="ac-step ac-step--changes">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">DO<span class="ac-badge ac-badge--changes">!</span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Devin O.<span class="ac-you-tag">You</span></div>
+                  <div class="ac-role">Brand admin</div>
+                  <div class="ac-status ac-status--changes">Requested changes · just now</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Requested-changes state -->
+      <section class="component-set" aria-label="Requested changes">
+        <div class="section-title">
+          <span class="specimen-label">Composed state</span>
+          <h2>Changes requested</h2>
+          <p>
+            When you send a post back, the footer swaps for an amber banner with your note and a
+            re-submit action. The author picks it up from here.
+          </p>
+        </div>
+        <div class="demo-card">
+          <div class="approval-block">
+            <div class="approval-chain">
+              <div class="ac-step ac-step--approved" style="--i: 0">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar"
+                    >MR<span class="ac-badge ac-badge--approved"
+                      ><svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M5 12l4.5 4.5L19 7" /></svg></span
+                  ></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Maya R.</div>
+                  <div class="ac-role">Content lead</div>
+                  <div class="ac-status ac-status--approved">Approved · 9:12 AM</div>
+                </div>
+              </div>
+              <div class="ac-step ac-step--changes" style="--i: 1">
+                <div class="ac-step__rail">
+                  <span class="ac-avatar">DO<span class="ac-badge ac-badge--changes">!</span></span>
+                </div>
+                <div class="ac-step__body">
+                  <div class="ac-name">Devin O.<span class="ac-you-tag">You</span></div>
+                  <div class="ac-role">Brand admin</div>
+                  <div class="ac-status ac-status--changes">Requested changes · just now</div>
+                </div>
+              </div>
+            </div>
+            <div class="changes-banner">
+              <div class="changes-banner__head">You requested changes</div>
+              <div class="changes-banner__body">
+                Swap the third card for the approved derm quote and drop the “3-day” claim.
+              </div>
+            </div>
+            <div class="ac-actions">
+              <button class="primary" type="button">Re-submit for review</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

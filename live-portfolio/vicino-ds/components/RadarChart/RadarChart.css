@@ -1,0 +1,168 @@
+/* RadarChart — multi-dimension profile comparison (owner decision 2026-07-07).
+   ≤8 axes, 1–2 series max: the current series wears --chart-1 (2px stroke,
+   flat ~10% wash, ≥8px vertex markers with a 2px surface ring); a comparison
+   period is context, so it wears --chart-muted with no fill (emphasis form,
+   not a second identity hue). Grid rings and spokes are solid hairlines;
+   axis labels wear text tokens. Single-series compact variant carries no
+   legend — the title names it. Visual source: tokens.css. */
+
+.radar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.radar__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.radar__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.radar__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Legend — present only for 2 series; swatch mirrors the line mark. */
+.radar__legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.radar__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.radar__swatch {
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  flex: none;
+}
+.radar__swatch--current {
+  background: var(--chart-1-line);
+}
+.radar__swatch--previous {
+  /* Mirrors the dashed comparison stroke. */
+  background: repeating-linear-gradient(90deg, var(--chart-muted) 0 5px, transparent 5px 8px);
+}
+
+/* Plot. */
+.radar__plot {
+  position: relative;
+  align-self: center;
+  width: min(100%, 320px);
+}
+.radar__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Axis labels may extend past the viewBox edge; the card padding absorbs them. */
+  overflow: visible;
+}
+.radar__grid {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.radar__spoke {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.radar__axis-label {
+  fill: var(--text-4);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  font-family: var(--font-sans);
+}
+/* Ring-scale anchors on the top spoke — the 0–100 scale must be readable
+   without hover. */
+.radar__scale text {
+  fill: var(--text-5);
+  font-size: 10px;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Series polygons. */
+.radar__area {
+  fill: var(--chart-1);
+  fill-opacity: 0.14;
+  stroke: var(--chart-1-line);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.radar__area--previous {
+  fill: none;
+  stroke: var(--chart-muted);
+  /* Comparison period reads as an outline sketch — dashed stroke on the pale
+     brand-cyan step (series style channel, not a gridline). */
+  stroke-dasharray: 5 4;
+}
+
+/* Vertex markers — ≥8px marks with a 2px surface ring; hover/focus readout. */
+.radar__dot {
+  /* Vertex markers wear ink — black points on the bright line. */
+  fill: var(--chart-emphasis);
+  stroke: var(--canvas);
+  stroke-width: 2;
+  transition: r var(--dur-1) var(--ease-out);
+  outline: none;
+  cursor: pointer;
+}
+.radar__dot:hover,
+.radar__dot:focus-visible {
+  r: 6;
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}

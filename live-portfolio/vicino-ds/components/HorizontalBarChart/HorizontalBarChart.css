@@ -1,0 +1,339 @@
+/* HorizontalBarChart — reusable horizontal bar scaffold for rankings, share,
+   and meters. The single most-reused analytics pattern in Pulse: region share,
+   platform/format/hook attribution, platform engagement, signal meters, and the
+   line-chart breakouts all share this structure.
+   Chart-norm rebuild (owner decision 2026-07-07): bars are one series → one
+   hue (--chart-1) — never colored by rank or value (that re-encodes what bar
+   length already shows). Bars are full pills anchored at the left
+   baseline. Ranked/open-scale comparisons are bare bars (no track — an open
+   scale has no 100%). The hatched track appears ONLY when the value is a
+   true fraction of a visible whole (share of the total, a score out of 100)
+   and the fill IS that fraction — never bar lengths normalized to the
+   leader (data-rigor pass 2026-07-08). Hatch is a pale step of the same
+   ramp, never gray. Values sit at the bar end in ink; fills are always
+   zero-based. Visual source: tokens.css. */
+
+.hbar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 620px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.hbar-specimen-frame {
+  box-sizing: border-box;
+  display: grid;
+  width: min(100%, 760px);
+  padding: 22px 24px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1.5px dashed rgba(106, 118, 135, 0.34);
+  border-radius: var(--r-lg);
+}
+
+.hbar-specimen-frame .hbar {
+  max-width: none;
+}
+
+/* Optional card wrapper (mirrors Card.css) for panel variants. */
+.hbar__card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.hbar__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.hbar__sub-head {
+  margin: 2px 0 8px;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* ===== Inline row: [label] [track] [end] ============================== */
+.hbar__row {
+  display: grid;
+  grid-template-columns: var(--hbar-label, 130px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.hbar__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.006em;
+  color: var(--text);
+}
+.hbar__label-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Leading platform icon uses the canonical PlatformBadge (.platform-badge--<key>). */
+
+/* Track. Default = meter/share: the unfilled remainder is a diagonal hatch in
+   a pale step of the SAME ramp as the fill (never gray, never a flat block) —
+   reference-style texture that reads as "remaining capacity". Full pill radius
+   (owner decision 2026-07-07: stylized big-radius marks). */
+.hbar__track {
+  position: relative;
+  height: 8px;
+  border-radius: var(--r-full);
+  background: repeating-linear-gradient(135deg, var(--chart-seq-200) 0 2px, transparent 2px 6px);
+  overflow: hidden;
+}
+.hbar__fill {
+  display: block;
+  height: 100%;
+  width: var(--pct, 0%);
+  border-radius: var(--r-full);
+  background: var(--chart-1);
+  transition:
+    width var(--dur-3) var(--ease-out),
+    filter var(--dur-2) var(--ease-out);
+}
+.hbar__row:hover .hbar__fill {
+  filter: brightness(0.95) saturate(1.15);
+}
+
+/* Bare variant for ranked bars — an open scale has no 100% track. */
+.hbar__track--bare {
+  background: transparent;
+  height: 16px;
+}
+
+/* ===== Ranked rows: rank digit column + thick bars + ink leader ======== */
+.hbar__row--ranked {
+  grid-template-columns: 16px var(--hbar-label, 96px) minmax(0, 1fr) auto;
+}
+.hbar__rank {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-4);
+  text-align: center;
+}
+.hbar__row--ranked:first-child .hbar__rank {
+  color: var(--text);
+}
+/* The leader is the chart's black anchor. */
+.hbar__fill--lead {
+  background: var(--chart-emphasis);
+}
+
+/* ===== Share strip: ONE stacked 100% bar + keyed region rows ===========
+   Part-to-whole reads as one bar of chiclet segments (2px surface gaps),
+   not a pile of near-identical meters. */
+.hbar__share-strip {
+  display: flex;
+  gap: 2px;
+  height: 16px;
+}
+.hbar__share-seg {
+  border-radius: 5px;
+  min-width: 8px;
+}
+.hbar__share-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 10px;
+}
+.hbar__share-row {
+  display: grid;
+  grid-template-columns: 10px auto minmax(0, 1fr) auto 52px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+}
+.hbar__share-row:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+.hbar__share-key {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-full);
+}
+.hbar__delta {
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+/* Delta whisper (owner decision 922322d): improving numbers stay neutral and
+   only the direction arrow carries green — declines/flats keep their tint so
+   the minority pops. */
+.hbar__delta--up {
+  color: var(--text-3);
+}
+.hbar__delta--up .hbar__delta-arrow {
+  color: var(--success-600);
+}
+.hbar__delta--down {
+  color: var(--red-600);
+}
+.hbar__delta--flat {
+  color: var(--text-4);
+}
+.hbar__pct {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.hbar__caption {
+  font-size: 10px;
+  color: var(--text-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} /* token candidate: below --fs-1 */
+
+/* ===== Signal meters: score TILES — value leads, meter is evidence ===== */
+.hbar__meters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.hbar__meter {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px;
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  border: 1px solid var(--border);
+}
+.hbar__meter-label {
+  font-size: var(--fs-2);
+  color: var(--text-3);
+}
+.hbar__meter-score {
+  font-size: var(--fs-8);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hbar__meter-track {
+  height: 6px;
+  margin-top: 3px;
+  border-radius: var(--r-full);
+  background: repeating-linear-gradient(135deg, var(--chart-seq-200) 0 2px, transparent 2px 6px);
+  overflow: hidden;
+}
+.hbar__meter-fill {
+  display: block;
+  height: 100%;
+  width: var(--pct, 0%);
+  border-radius: var(--r-full);
+  background: var(--chart-1);
+}
+
+/* Trailing value + meta + trend pill. */
+.hbar__end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+}
+.hbar__value {
+  font-size: var(--fs-3);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.hbar__meta {
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* ===== Trend pills (data trend semantics — not series identity) ======== */
+.hbar__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--r-full);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+}
+.hbar__pill svg {
+  display: block;
+}
+/* Up-pills whisper (owner decision 922322d): neutral pill, green arrow icon
+   only; down/flat pills keep their tint so declines pop. */
+.hbar__pill--up {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-3);
+}
+.hbar__pill--up svg {
+  color: var(--success-600);
+}
+.hbar__pill--flat {
+  background: var(--trend-stable-soft);
+  border-color: var(--status-scheduled-line);
+  color: var(--blue-600);
+}
+.hbar__pill--down {
+  background: var(--trend-down-soft);
+  border-color: var(--red-200);
+  color: var(--red-600);
+}
+
+/* ===== Dark CTA footer (mirrors Button .btn--dark) =================== */
+.hbar__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: var(--control-height-md, 44px);
+  margin-top: 6px;
+  border: 0;
+  border-radius: var(--r-full);
+  background: var(--ink-900);
+  color: #fff;
+  font: inherit;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    var(--shadow-1);
+  transition:
+    background var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+.hbar__cta:hover {
+  background: var(--ink-700);
+  transform: translateY(-1px);
+}
+.hbar__cta:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

@@ -1,0 +1,270 @@
+/* Timeline - reusable sequence display for schedule, production, approval, and
+   report events. Business patterns own copy and actions; Timeline owns the
+   ordered event anatomy, rail, marker, compact, horizontal, and state tones. */
+
+.timeline,
+.timeline * {
+  box-sizing: border-box;
+}
+
+.timeline {
+  --timeline-accent: var(--text-4);
+  --timeline-accent-soft: var(--surface-2);
+  --timeline-accent-line: var(--surface-edge);
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.timeline--panel {
+  max-width: 720px;
+  padding: 12px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  box-shadow: var(--shadow-1);
+}
+
+.timeline__item {
+  --timeline-accent: var(--text-4);
+  --timeline-accent-soft: var(--surface-2);
+  --timeline-accent-line: var(--surface-edge);
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+  color: var(--text);
+}
+
+.timeline__item + .timeline__item {
+  margin-top: 2px;
+}
+
+.timeline__rail {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-height: 76px;
+}
+
+.timeline__rail::before {
+  content: '';
+  position: absolute;
+  inset: 30px auto -16px;
+  width: 1px;
+  background: var(--surface-edge-strong);
+}
+
+.timeline__item:last-child .timeline__rail::before {
+  display: none;
+}
+
+.timeline__marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 3px;
+  border: 1px solid var(--timeline-accent-line);
+  border-radius: var(--r-full);
+  background: var(--canvas);
+  color: var(--timeline-accent);
+}
+
+.timeline__marker::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-full);
+  background: currentColor;
+}
+
+.timeline__body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px 0 18px;
+}
+
+.timeline__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+  min-width: 0;
+}
+
+.timeline__title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline__time,
+.timeline__meta,
+.timeline__description {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.timeline__time {
+  flex: none;
+  color: var(--text-4);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.timeline__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.timeline__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.timeline__meta-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: var(--r-full);
+  background: currentColor;
+}
+
+.timeline__item--complete {
+  --timeline-accent: var(--success-500);
+  --timeline-accent-soft: var(--success-50);
+  --timeline-accent-line: var(--success-200);
+}
+
+.timeline__item--current {
+  --timeline-accent: var(--indigo-500);
+  --timeline-accent-soft: var(--indigo-50);
+  --timeline-accent-line: var(--indigo-200);
+}
+
+.timeline__item--scheduled {
+  --timeline-accent: var(--blue-500);
+  --timeline-accent-soft: var(--blue-50);
+  --timeline-accent-line: var(--blue-200);
+}
+
+.timeline__item--waiting {
+  --timeline-accent: var(--text-4);
+  --timeline-accent-soft: var(--surface-2);
+  --timeline-accent-line: var(--surface-edge);
+}
+
+.timeline__item--attention {
+  --timeline-accent: var(--amber-500);
+  --timeline-accent-soft: var(--amber-50);
+  --timeline-accent-line: var(--amber-200);
+}
+
+.timeline__item--current .timeline__body {
+  padding-inline: 12px;
+  border-radius: var(--r-lg);
+  background: var(--timeline-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--timeline-accent-line);
+}
+
+.timeline__item--current .timeline__title {
+  color: var(--text);
+}
+
+.timeline--compact .timeline__item {
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 9px;
+}
+
+.timeline--compact .timeline__rail {
+  min-height: 54px;
+}
+
+.timeline--compact .timeline__marker {
+  width: 18px;
+  height: 18px;
+}
+
+.timeline--compact .timeline__marker::before {
+  width: 6px;
+  height: 6px;
+}
+
+.timeline--compact .timeline__body {
+  padding-bottom: 12px;
+}
+
+.timeline--horizontal {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  max-width: 860px;
+}
+
+.timeline--horizontal .timeline__item {
+  grid-template-columns: 1fr;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+}
+
+.timeline--horizontal .timeline__rail {
+  justify-items: start;
+  min-height: auto;
+}
+
+.timeline--horizontal .timeline__rail::before {
+  inset: 13px -18px auto 24px;
+  width: auto;
+  height: 1px;
+}
+
+.timeline--horizontal .timeline__item:last-child .timeline__rail::before {
+  display: none;
+}
+
+.timeline--horizontal .timeline__body {
+  padding: 0;
+}
+
+.timeline--horizontal .timeline__title {
+  white-space: normal;
+}
+
+@media (max-width: 640px) {
+  .timeline--horizontal {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline--horizontal .timeline__item {
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+
+  .timeline--horizontal .timeline__rail::before {
+    inset: 28px auto -16px;
+    width: 1px;
+    height: auto;
+  }
+}

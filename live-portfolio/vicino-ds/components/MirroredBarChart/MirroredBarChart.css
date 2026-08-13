@@ -1,0 +1,207 @@
+/* MirroredBarChart — bipolar gained/lost bars around a center baseline
+   (owner-approved adoption of the reference income/outcome widget,
+   2026-07-07). Gains grow up in brand cyan (--chart-1), losses down in
+   ink (--chart-2); a stat rail leads with the totals and a bipolar
+   y-axis labels the scale (HTML gutter — SVG text stretches under
+   preserveAspectRatio: none). Rounded data ends, square at the baseline.
+   Visual source: tokens.css. */
+
+.mirror {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1126px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mirror__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.mirror__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.mirror__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Body: stat rail + bipolar y-axis gutter + stretch plot. */
+.mirror__body {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Stat rail — the story first: gained / lost / net. */
+.mirror__rail {
+  flex: none;
+  width: 148px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.mirror__stat {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.mirror__stat--net {
+  background: var(--pulse-cyan-soft);
+}
+.mirror__stat-key {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+.mirror__stat-key--gain {
+  background: var(--chart-1);
+}
+.mirror__stat-key--loss {
+  background: var(--chart-2);
+}
+.mirror__stat-label {
+  font-size: var(--fs-2);
+  color: var(--text-3);
+}
+.mirror__stat-value {
+  margin-left: auto;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+}
+.mirror__stat--net .mirror__stat-value {
+  color: var(--pulse-cyan-dark);
+}
+
+.mirror__yaxis {
+  position: relative;
+  flex: none;
+  width: 36px;
+}
+.mirror__ytick {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: var(--fs-1);
+  color: var(--text-4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Plot. */
+.mirror__plot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.mirror__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mirror__grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.mirror__baseline {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.mirror__bar {
+  transition: filter var(--dur-2) var(--ease-out);
+  outline: none;
+  cursor: pointer;
+}
+.mirror__bar--gain {
+  fill: var(--chart-1);
+}
+.mirror__bar--loss {
+  fill: var(--chart-2);
+}
+.mirror__bar:hover {
+  filter: brightness(0.95) saturate(1.15);
+}
+.mirror__bar:focus-visible {
+  filter: brightness(0.95) saturate(1.15);
+  stroke: var(--pulse-cyan-line);
+  stroke-width: 3;
+}
+
+/* Week labels — pinned to each slot center inside the plot (an HTML strip;
+   SVG text would stretch under preserveAspectRatio: none). */
+.mirror__xlabels {
+  position: relative;
+  height: 16px;
+  margin-top: 4px;
+}
+.mirror__xlabel {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 900px) {
+  .mirror__body {
+    flex-wrap: wrap;
+  }
+  .mirror__rail {
+    width: 100%;
+    flex-direction: row;
+  }
+  .mirror__stat {
+    flex: 1;
+  }
+}

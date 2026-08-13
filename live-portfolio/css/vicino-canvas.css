@@ -1,0 +1,1523 @@
+/* ============================================================
+   The Vicino board miniature — the SHIPPED skin. Every value in
+   the token block below is read off the production stylesheets
+   (pulse-overrides.css, Board.css, BoardMiniMap.css,
+   ViewportToolbar.css, BoardToolbar.css) so the miniature and the
+   real canvas are the same design, not a resemblance.
+
+   Two homes for one element:
+     .vc          the board itself, at its 1920×1080 design px
+     .vc-tile     its seat in the chapter — scaled down, inert,
+                  running its attract loop like the arcade tiles,
+                  and a plain link to canvas.html, where the same
+                  board runs full-window with the input handed to it
+   ============================================================ */
+
+.vc {
+  /* ---- the shipped tokens ---- */
+  --p-font: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  --p-canvas: #eef3f3;                    /* board wash (Figma 113:219) */
+  --p-grid: rgba(15, 23, 42, 0.1);
+  --p-border: rgba(15, 23, 42, 0.08);
+  --p-border-strong: rgba(15, 23, 42, 0.12);
+  --p-node-border: rgba(15, 23, 42, 0.075);
+  --p-node-hover-border: rgba(15, 23, 42, 0.16);
+  --p-cyan: #49e0f5;
+  --p-cyan-deep: #063a42;
+  --p-teal: #0d7685;                      /* cost values, active tool ink */
+  --p-chip: #f0fdff;                      /* cyan chip fills */
+  --p-badge: #e5fbff;                     /* model badge bg */
+  --p-inset: #f7f9f9;                     /* node wells, minimap well */
+  --p-ink: #141416;                       /* the black + button */
+  --p-ink-pill: #1d1d1f;                  /* black Generate pill */
+  --p-ink-hover: #2f3135;
+  --p-text-1: #1d1d1f;
+  --p-text-2: #44464a;
+  --p-text-3: #5f6369;
+  --p-placeholder: #8a8e95;
+  --p-edge: #9b9cf1;                      /* soft purple connections */
+  --p-edge-hot: rgba(73, 224, 245, 0.9);
+  --p-shadow-toolbar: 0px 16px 18px rgba(15, 23, 42, 0.08),
+    0px 2px 2px rgba(15, 23, 42, 0.05);
+  --p-shadow-card: 0px 2px 8px rgba(15, 23, 42, 0.08);
+  --p-shadow-card-hover: 0px 2px 6px rgba(15, 23, 42, 0.08),
+    0px 16px 36px rgba(15, 23, 42, 0.09);
+  --p-shadow-minimap: 0px 10px 24px rgba(15, 23, 42, 0.05),
+    0px 1px 3px rgba(15, 23, 42, 0.06);
+  --p-shadow-panel: 0px 10px 24px rgba(15, 23, 42, 0.04),
+    0px 1px 3px rgba(15, 23, 42, 0.06);
+  --p-shadow-chip: 0px 4px 14px rgba(15, 23, 42, 0.08);
+  --p-shadow-sel: 0px 2px 8px rgba(15, 23, 42, 0.08),
+    0px 6px 20px rgba(73, 224, 245, 0.28);
+  --p-inset-hi: inset 0px 1px 0px rgba(255, 255, 255, 0.88);
+  --p-stage-dark: linear-gradient(90deg, #292e38 0%, #0f1217 100%);
+  --p-seg-track: rgba(18, 31, 45, 0.045);
+  --p-seg-thumb: inset 0 0 0 1px rgba(255, 255, 255, 0.78),
+    0 1px 2px rgba(18, 31, 45, 0.026);
+  --p-port-shadow: 0px 2px 5px rgba(15, 23, 42, 0.16);
+  --p-r-node: 16px;
+  --p-r-well: 12px;
+  --p-r-panel: 24px;
+  --p-r-control: 14px;
+  --p-r-rail: 16px;
+
+  position: relative;
+  width: 1920px;               /* a real window's worth of board */
+  height: 1080px;
+  font-family: var(--p-font);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--p-canvas);
+  border: 1px solid var(--p-border);
+}
+/* parked in its tile, the board is a live picture: nothing to press */
+.vc.is-parked { pointer-events: none; }
+.vc:focus, .vc:focus-visible { outline: none; }
+
+/* every stroked glyph in the chrome */
+.vc svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.vc svg.is-fill { fill: currentColor; stroke: none; }
+/* the generated art draws its own strokes — the chrome default above
+   must not ring every filled dot and halo in the scenes */
+.vc .vc-spin svg { stroke: none; }
+
+/* ---- the pannable ground ---- */
+.vc-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--p-canvas);
+  background-image: radial-gradient(circle, var(--p-grid) 1.5px, transparent 1.6px);
+  cursor: default;
+  touch-action: none;
+}
+.vc.is-panning .vc-viewport { background-image: none; }
+.vc.is-hand .vc-viewport { cursor: grab; }
+.vc.is-grabbing .vc-viewport { cursor: grabbing; }
+.vc-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+/* ============================================================
+   floating chrome — brand, pills, action toolbar
+   ============================================================ */
+.vc-brand {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--p-text-1);
+  pointer-events: none;
+}
+.vc-logo {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.9;
+}
+.vc-board {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.vc-brand-chev {
+  width: 14px;
+  height: 14px;
+  color: var(--p-text-3);
+}
+
+.vc-pills {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* the shipped pill: white, hairline, #2f3135 text (Figma 113:225) */
+.vc-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-ink-hover);
+  background: #ffffff;
+  border: 1px solid var(--p-border-strong);
+  border-radius: 9999px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--p-shadow-chip);
+  transition: background-color 0.15s ease;
+}
+.vc-pill:hover { background: var(--p-inset); }
+.vc-pill svg { width: 13px; height: 13px; }
+.vc-pill.is-credits { font-variant-numeric: tabular-nums; }
+.vc-pill.is-credits svg { color: var(--p-teal); }
+.vc-pill.is-run {
+  background: var(--p-chip);
+  border-color: rgba(73, 224, 245, 0.42);
+  color: var(--p-teal);
+}
+.vc-pill.is-run:hover:not(:disabled) { background: var(--p-badge); }
+.vc-pill.is-run:disabled { opacity: 0.6; cursor: default; }
+
+/* the action toolbar, floating top-center (BoardToolbar.css: pill,
+   6/10 padding, gap 8, toolbar shadow + inset highlight) */
+.vc-acttool {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #ffffff;
+  border: 1px solid var(--p-border);
+  border-radius: 9999px;
+  box-shadow: var(--p-shadow-toolbar), var(--p-inset-hi);
+  white-space: nowrap;
+  z-index: 5;
+}
+.vc-act-placeholder {
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--p-placeholder);
+}
+.vc-act-name {
+  padding: 0 4px 0 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-text-1);
+}
+.vc-act-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--p-border-strong);
+}
+.vc-act-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--p-ink-hover);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.vc-act-btn svg { width: 15px; height: 15px; }
+.vc-act-btn:hover:not(:disabled) { background: var(--p-inset); }
+.vc-act-btn:disabled { opacity: 0.6; cursor: default; }
+/* action pills tint by POSITION on hover — 1 cyan, 2 lavender, 3 green */
+.vc-act-pill {
+  padding: 6px 13px;
+  border: 1px solid var(--p-border-strong);
+  border-radius: 9999px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-ink-hover);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.vc-act-pill:disabled { opacity: 0.6; cursor: default; }
+.vc-act-pill.is-1:hover:not(:disabled) { background: #f0fdff; border-color: #b8f3fb; color: #0d7685; }
+.vc-act-pill.is-2:hover:not(:disabled) { background: #f1f1fe; border-color: #c7c9f8; color: #4a48c0; }
+.vc-act-pill.is-3:hover:not(:disabled) { background: #eff9f1; border-color: #abe2b3; color: #1e7a3d; }
+
+/* ============================================================
+   the create rail (left) — LeftSidebarToolbar.jsx verbatim:
+   64px card, radius 18, 10px padding, gap 8, 44px buttons, a
+   hairline divider, the 44px profile initial (17px bold teal)
+   ============================================================ */
+.vc-rail {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  translate: 0 -50%;
+  box-sizing: border-box;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid var(--p-border);
+  border-radius: 18px;
+  box-shadow: var(--p-shadow-card), var(--p-inset-hi);
+  z-index: 5;
+}
+.vc-rail-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: var(--p-ink);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: background-color 0.15s ease;
+}
+.vc-rail-add svg { width: 22px; height: 22px; }
+.vc-rail-add:hover { background: var(--p-ink-hover); }
+/* the hero entry: brand sparkle gradient + soft glow, scale on hover */
+.vc-rail-agent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(to bottom right, #3b82f6, #8b5cf6);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.vc-rail-agent svg { width: 20px; height: 20px; }
+.vc-rail-agent:hover {
+  background: linear-gradient(to bottom right, #2563eb, #7c3aed);
+  transform: scale(1.05);
+}
+.vc-rail-agent.is-on { box-shadow: 0 2px 10px rgba(139, 92, 246, 0.5),
+  0 0 0 3px rgba(139, 92, 246, 0.3); }
+.vc-railbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--p-text-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.vc-railbtn svg { width: 22px; height: 22px; }
+.vc-railbtn:hover { background: rgba(15, 23, 42, 0.06); color: var(--p-text-1); }
+.vc-rail-sep2 {
+  height: 1px;
+  width: 28px;
+  margin: 4px 0;
+  background: var(--p-border-strong);
+}
+.vc-rail-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--p-badge);
+  border: 1px solid var(--p-border-strong);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--p-teal);
+}
+
+/* ============================================================
+   the viewport toolbar (bottom-center) — ViewportToolbar.jsx
+   verbatim (the ViewportToolbar.css in the real repo is DEAD
+   code; the live styling is Tailwind inline): bottom 16, full
+   pill, 8/12 padding, 36px round buttons, 18px stroke-2 icons
+   ============================================================ */
+.vc-toolbar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid var(--p-border);
+  border-radius: 9999px;
+  box-shadow: var(--p-shadow-toolbar), var(--p-inset-hi);
+  white-space: nowrap;
+  z-index: 5;
+}
+.vc-sep {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background: var(--p-border-strong);
+}
+.vc-tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--p-text-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.vc-tool svg { width: 18px; height: 18px; }
+.vc-tool:hover:not(:disabled) { background: rgba(15, 23, 42, 0.06); color: var(--p-text-1); }
+.vc-tool.is-on { background: var(--p-chip); color: var(--p-teal); }
+.vc-tool.is-on:hover { background: var(--p-badge); }
+.vc-tool:disabled { color: #bdbdbd; opacity: 0.5; cursor: default; }
+.vc-zoom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0 12px;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--p-text-1);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.vc-zoom svg { width: 10px; height: 10px; }
+.vc-zoom:hover { background: rgba(15, 23, 42, 0.06); }
+.vc-zoommenu {
+  position: absolute;
+  bottom: 74px;                /* toolbar 16 + 52 pill + 6 offset */
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid var(--p-border);
+  border-radius: 12px;
+  box-shadow: var(--p-shadow-minimap);
+  z-index: 6;
+}
+.vc-zoommenu[hidden] { display: none; }
+.vc-zoommenu button {
+  min-height: 22px;
+  border: 0;
+  background: none;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  justify-content: center;
+  color: var(--p-text-1);
+  cursor: pointer;
+}
+.vc-zoommenu button:hover { background: rgba(15, 23, 42, 0.06); }
+.vc-zoommenu-sep {
+  height: 1px;
+  margin: 3px 2px;
+  background: var(--p-border);
+}
+
+/* ============================================================
+   the minimap — bottom-LEFT (BoardMiniMap.css verbatim): 32px
+   white card, padding 7, 20px grey well, cyan DIV viewport box
+   ============================================================ */
+.vc-map {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  padding: 7px;
+  border-radius: 32px;
+  border: 1px solid var(--p-border);
+  background: #ffffff;
+  box-shadow: var(--p-shadow-minimap), var(--p-inset-hi);
+  z-index: 5;
+}
+.vc-map[hidden] { display: none; }
+/* the WELL only — a bare `.vc-map svg` also catches the hide chip's
+   glyph and strokes it away (the invisible-× bug) */
+.vc-map > svg {
+  display: block;
+  width: 186px;
+  height: 112px;
+  border-radius: 20px;
+  border: 1px solid var(--p-border);
+  background: var(--p-inset);
+  box-sizing: border-box;
+  cursor: pointer;
+  stroke: none;
+  touch-action: none;
+}
+/* the ship's rects: soft grey-green pills, no stroke, no selected state */
+.vc-map-node { fill: #e1e8e6; }
+.vc-map-box {
+  position: absolute;
+  z-index: 5;
+  border: 2px solid #49e0f5;
+  border-radius: 10px;
+  background: rgba(73, 224, 245, 0.06);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.vc-map-box[hidden] { display: none; }
+.vc-map-hide {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 6;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid var(--p-border);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--p-text-3);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.vc-map-hide svg { width: 12px; height: 12px; stroke: currentColor; }
+.vc-map-hide:hover { background: #ffffff; color: var(--p-text-1); }
+.vc-map-collapsed {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 6;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid var(--p-border);
+  background: #ffffff;
+  box-shadow: var(--p-shadow-minimap);
+  color: var(--p-text-3);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.vc-map-collapsed[hidden] { display: none; }
+.vc-map-collapsed svg { width: 16px; height: 16px; }
+.vc-map-collapsed:hover { color: var(--p-text-1); background: var(--p-inset); }
+
+/* ============================================================
+   node cards — 16px shell, 48px header with NO bottom rule, the
+   cyan model badge, the header play chip, 12px inset wells
+   ============================================================ */
+.vc-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #ffffff;
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-node);
+  box-shadow: var(--p-shadow-card), var(--p-inset-hi);
+  user-select: none;
+  cursor: grab;
+}
+.vc-node:active { cursor: grabbing; }
+.vc-node:hover { border-color: var(--p-node-hover-border); box-shadow: var(--p-shadow-card-hover); }
+.vc-node.is-sel {
+  border-color: #49e0f5;
+  box-shadow: var(--p-shadow-sel);
+}
+.is-arranging .vc-node { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.vc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 14px;
+}
+.vc-head-icon {
+  display: flex;
+  color: var(--p-text-1);
+}
+.vc-head-icon svg { width: 17px; height: 17px; stroke-width: 1.5; }
+.vc-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--p-text-1);
+  white-space: nowrap;
+}
+.vc-badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--p-teal);
+  background: var(--p-badge);
+  border-radius: 8px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the header play/status chip (Figma 116:347): cyan chip, teal icon */
+.vc-playchip {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: var(--p-chip);
+  color: var(--p-teal);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.vc-playchip:hover { background: var(--p-badge); }
+.vc-playchip svg { width: 12px; height: 12px; }
+.vc-playchip-check, .vc-playchip-dot { display: none; }
+.vc-node.is-done .vc-playchip-play { display: none; }
+.vc-node.is-done .vc-playchip-check { display: flex; }
+.vc-node:is(.is-queued, .is-running, .is-validating) .vc-playchip-play { display: none; }
+.vc-node:is(.is-queued, .is-running, .is-validating) .vc-playchip-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.vc-node.is-queued .vc-playchip-dot { background: #b9bec0; }
+.vc-node.is-running .vc-playchip-dot {
+  background: #6366f1;
+  animation: vc-breathe 1s ease-in-out infinite;
+}
+.vc-node.is-validating .vc-playchip-dot {
+  background: #f19a08;
+  animation: vc-breathe 0.6s ease-in-out infinite;
+}
+@keyframes vc-breathe {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+.vc-body { padding: 0 14px 14px; }
+.vc-prompt {
+  min-height: 190px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 18px;
+  color: var(--p-text-2);
+  background: var(--p-inset);
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-well);
+  outline: none;
+  cursor: text;
+}
+.vc-prompt:focus-visible {
+  border-color: rgba(73, 224, 245, 0.9);
+  box-shadow: 0 0 0 2px rgba(73, 224, 245, 0.22);
+}
+.vc-well {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 278px;
+  background: var(--p-inset);
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-well);
+  overflow: hidden;
+}
+.vc-node.is-video .vc-well { height: 306px; }
+.vc-well-glyph { color: var(--p-placeholder); }
+.vc-well-glyph svg { width: 24px; height: 24px; stroke-width: 1.2; }
+.vc-well-hint {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--p-placeholder);
+}
+.vc-well-sub {
+  font-size: 10.5px;
+  color: var(--p-placeholder);
+  opacity: 0.75;
+}
+.vc-well.has-art {
+  gap: 0;
+  border-color: var(--p-node-border);
+}
+/* the resolved IMAGE — the returned frame fills the well edge to edge,
+   cropped from the center the way the shipped result tile crops */
+.vc-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* the resolved VIDEO — the clip loops in the well under the shipped
+   chrome (scrub strip, duration chip); a click parks it on its poster */
+.vc-gif {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  overflow: hidden;
+}
+.vc-clip, .vc-clip-still {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.vc-clip-still { opacity: 0; }
+/* paused: the still takes over, so the frame the label promises is the
+   frame on screen — an animated webp has no clock to stop */
+.vc-gif.is-paused .vc-clip-still { opacity: 1; }
+.vc-gif-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  background: rgba(15, 23, 42, 0.78);
+}
+.vc-gif-strip i {
+  width: 12px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.85);
+}
+.vc-gif-chip {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.55);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+.vc-gif.is-paused .vc-gif-chip::after { content: ' · paused'; }
+
+/* the resolved 3D — a live turntable; grab it and it spins */
+.vc-spin {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+.vc-spin.is-held { cursor: grabbing; }
+.vc-spin > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke: none;
+}
+.vc-spin-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--p-placeholder);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.vc-spin.is-held .vc-spin-hint { opacity: 0; }
+
+/* the run progress hairline along the node's foot */
+.vc-bar {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: transparent;
+}
+.vc-node:is(.is-running, .is-validating) .vc-bar {
+  background: rgba(73, 224, 245, 0.18);
+}
+/* the fill scales, never resizes — scaleX is compositor-only, so a
+   running bar costs zero layout/paint while the reader scrolls past */
+.vc-bar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(73, 224, 245, 0.65), var(--p-cyan));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.vc-node.is-validating .vc-bar i { background: #f19a08; }
+.vc-node:not(.is-running):not(.is-validating) .vc-bar i { transform: scaleX(0) !important; transition: none !important; }
+
+/* ---- ports: 10×28 pills, radius 6, 2px white ring, colored fill +
+   soft drop + per-type glow, half tucked under the card edge ---- */
+.vc-port {
+  position: absolute;
+  width: 10px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--pc);
+  border: 2px solid #ffffff;
+  box-shadow: var(--p-port-shadow), 0 0 8px var(--pg);
+  cursor: crosshair;
+  z-index: 2;
+}
+.vc-port.is-in { left: -5px; }
+.vc-port.is-out { right: -5px; }
+/* the 24px hit area the real handles carry */
+.vc-port::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+}
+
+/* ---- edges: soft purple; cyan when an endpoint is selected; a
+   streaming cyan dash while its target generates ---- */
+.vc-edges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+}
+.vc-edge-line {
+  fill: none;
+  stroke: var(--p-edge);
+  stroke-width: 2;
+  stroke-linecap: round;
+  pointer-events: none;
+  transition: stroke-width 0.15s ease;
+}
+.vc-edge-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+}
+.vc-edge:hover .vc-edge-line { stroke-width: 3.5; }
+.vc-edge.is-hot .vc-edge-line {
+  stroke: var(--p-edge-hot);
+  filter: drop-shadow(0 0 4px rgba(73, 224, 245, 0.4));
+}
+.vc-edge.is-running .vc-edge-line {
+  stroke: var(--p-edge-hot);
+  stroke-dasharray: 7 6;
+  animation: vc-flow 0.5s linear infinite;
+}
+@keyframes vc-flow {
+  to { stroke-dashoffset: -13; }
+}
+.vc-edge-x {
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.vc-edge:hover .vc-edge-x { opacity: 1; }
+.vc-edge-x circle {
+  fill: #ffffff;
+  stroke: var(--p-border-strong);
+  stroke-width: 1;
+}
+.vc-edge-x path {
+  stroke: #ef4444;
+  stroke-width: 1.6;
+}
+.vc-ghost {
+  fill: none;
+  stroke: var(--p-edge);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  stroke-linecap: round;
+  opacity: 0.75;
+  pointer-events: none;
+}
+.vc-ghost.is-snapped {
+  stroke: var(--p-edge-hot);
+  stroke-dasharray: none;
+  opacity: 1;
+}
+
+/* ---- groups: a quiet plate behind its members ---- */
+.vc-group {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1.5px solid var(--p-border-strong);
+  border-radius: 20px;
+  cursor: grab;
+}
+.vc-group:active { cursor: grabbing; }
+.vc-group-tag {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--p-text-3);
+  pointer-events: none;
+}
+
+/* ---- lasso + the Miro bbox ---- */
+.vc-lasso {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1px solid rgba(73, 224, 245, 0.95);
+  background: rgba(73, 224, 245, 0.09);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.vc-bbox {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1.5px solid rgba(73, 224, 245, 0.95);
+  background: rgba(73, 224, 245, 0.05);
+  border-radius: 12px;
+  cursor: grab;
+}
+.vc-bbox:active { cursor: grabbing; }
+.vc-bbox[hidden] { display: none; }
+
+/* ============================================================
+   the properties panel — 24px card, uppercase section labels,
+   dropdown controls (radius 14), segmented rows, the cyan
+   toggle, TOTAL COST, the black Generate pill
+   ============================================================ */
+.vc-panel {
+  position: absolute;
+  top: 64px;                 /* clear of the Share/Publish/credits pills */
+  right: 16px;
+  bottom: 16px;
+  width: 285px;              /* PropertiesPanel.css --inspector-width */
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-panel);
+  box-shadow: var(--p-shadow-panel), var(--p-inset-hi);
+  overflow-y: auto;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  animation: vc-panel-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vc-panel[hidden] { display: none; }
+@keyframes vc-panel-in {
+  from { opacity: 0; translate: 10px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+.vc-p-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--p-text-1);
+}
+.vc-p-title svg { width: 13px; height: 13px; color: var(--p-text-3); flex: none; }
+.vc-p-eyebrow {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--p-placeholder);
+}
+.vc-p-label {
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-placeholder);
+}
+/* dropdown control (model, ratio): grey field, radius 14, chevron */
+.vc-p-drop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-control);
+  background: var(--p-inset);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-text-1);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.vc-p-drop:hover { border-color: var(--p-border-strong); }
+.vc-p-drop svg { width: 12px; height: 12px; color: var(--p-text-3); }
+/* segmented control: soft track, white thumb with the inset ring */
+.vc-p-seg {
+  display: flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--p-seg-track);
+  border-radius: var(--p-r-control);
+}
+.vc-p-seg button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 6px 4px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--p-text-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.vc-p-seg button.is-on {
+  background: #ffffff;
+  color: var(--p-text-1);
+  box-shadow: var(--p-seg-thumb);
+}
+.vc-p-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--p-text-2);
+}
+.vc-p-toggle {
+  position: relative;
+  width: 36px;
+  height: 21px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(18, 31, 45, 0.14);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.vc-p-toggle i {
+  position: absolute;
+  top: 2.5px;
+  left: 2.5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(18, 31, 45, 0.2);
+  transition: translate 0.18s ease;
+}
+.vc-p-toggle.is-on { background: var(--p-cyan); }
+.vc-p-toggle.is-on i { translate: 15px 0; }
+/* label + right-aligned hint on one line ("reference images · Max 3") */
+.vc-p-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.vc-p-label-row .vc-p-label { margin-bottom: 6px; }
+.vc-p-hint {
+  font-size: 10px;
+  color: var(--p-placeholder);
+}
+/* the detected-input info row: dot, bold mode, quiet source line */
+.vc-p-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-control);
+  background: var(--p-inset);
+}
+.vc-p-info i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-text-2);
+  flex: none;
+}
+.vc-p-info strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--p-text-1);
+}
+.vc-p-info span {
+  display: block;
+  font-size: 11px;
+  color: var(--p-text-3);
+}
+/* the dashed add-a-reference well */
+.vc-p-ref {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px dashed var(--p-border-strong);
+  border-radius: 10px;
+  background: var(--p-inset);
+  color: var(--p-placeholder);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.vc-p-ref:hover { border-color: var(--p-text-3); color: var(--p-text-3); }
+.vc-p-ref svg { width: 14px; height: 14px; }
+.vc-p-quote {
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--p-text-2);
+  background: var(--p-inset);
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-well);
+  padding: 9px 11px;
+}
+.vc-p-meta {
+  margin-top: 12px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--p-placeholder);
+}
+.vc-p-foot {
+  margin-top: auto;
+  padding-top: 14px;
+}
+.vc-p-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--p-node-border);
+}
+.vc-p-total span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--p-placeholder);
+}
+.vc-p-total strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--p-teal);
+  font-variant-numeric: tabular-nums;
+}
+/* the black Generate pill — --pulse-ink, the shipped CTA */
+.vc-p-run {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 10px;
+  border: 0;
+  padding: 10px 0;
+  border-radius: 9999px;
+  background: var(--p-ink-pill);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+.vc-p-run svg { width: 13px; height: 13px; }
+.vc-p-run:hover:not(:disabled) { background: var(--p-ink-hover); }
+.vc-p-run:disabled { opacity: 0.6; cursor: default; }
+
+/* ============================================================
+   menus, confirm, chat, empty, toast
+   ============================================================ */
+.vc-menu {
+  position: absolute;
+  min-width: 196px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid var(--p-border);
+  border-radius: 12px;
+  box-shadow: var(--p-shadow-minimap);
+  z-index: 8;
+}
+.vc-menu[hidden] { display: none; }
+.vc-menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  border: 0;
+  background: none;
+  padding: 7px 10px;
+  border-radius: 8px;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--p-text-1);
+  cursor: pointer;
+}
+.vc-menu button:hover:not(:disabled) { background: var(--p-inset); }
+.vc-menu button:disabled { color: var(--p-placeholder); cursor: default; }
+.vc-menu-hint {
+  font-size: 11px;
+  color: var(--p-placeholder);
+}
+.vc-menu-sep {
+  display: block;
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--p-border);
+}
+
+.vc-confirm {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 16px;
+  background: #ffffff;
+  border: 1px solid var(--p-border);
+  border-radius: 9999px;
+  box-shadow: var(--p-shadow-toolbar), var(--p-inset-hi);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-text-1);
+  white-space: nowrap;
+  z-index: 7;
+}
+.vc-confirm[hidden] { display: none; }
+.vc-confirm button {
+  border: 1px solid var(--p-border-strong);
+  background: none;
+  padding: 5px 13px;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-text-1);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.vc-confirm button:hover { background: var(--p-inset); }
+.vc-confirm button.is-danger {
+  color: #ffffff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+.vc-confirm button.is-danger:hover { filter: brightness(1.08); }
+
+/* the agent panel, floating beside the rail (Figma 140:511) */
+.vc-chat {
+  position: absolute;
+  left: 104px;               /* the rail ends at 88; a 16px breath */
+  bottom: 24px;
+  width: 274px;
+  background: #ffffff;
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-panel);
+  box-shadow: var(--p-shadow-panel), var(--p-inset-hi);
+  overflow: hidden;
+  z-index: 6;
+}
+.vc-chat[hidden] { display: none; }
+.vc-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 14px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--p-text-1);
+}
+.vc-chat-head svg { width: 13px; height: 13px; color: #8b8df5; }
+.vc-chat-head button {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--p-text-3);
+  cursor: pointer;
+}
+.vc-chat-head button:hover { background: var(--p-inset); }
+.vc-chat-head button svg { width: 10px; height: 10px; color: currentColor; }
+.vc-chat-log {
+  max-height: 172px;
+  overflow-y: auto;
+  padding: 0 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vc-msg {
+  max-width: 92%;
+  padding: 7px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  line-height: 16px;
+}
+.vc-msg.is-agent {
+  align-self: flex-start;
+  background: var(--p-inset);
+  color: var(--p-text-2);
+}
+.vc-msg.is-user {
+  align-self: flex-end;
+  background: var(--p-chip);
+  color: var(--p-cyan-deep);
+}
+.vc-chat-form {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--p-node-border);
+}
+.vc-chat-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--p-node-border);
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: var(--p-text-1);
+  background: var(--p-inset);
+  outline: none;
+}
+.vc-chat-form input:focus-visible { border-color: rgba(73, 224, 245, 0.9); }
+.vc-chat-form input::placeholder { color: var(--p-placeholder); }
+.vc-chat-form button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: var(--p-ink-pill);
+  color: #ffffff;
+  cursor: pointer;
+}
+.vc-chat-form button:hover { background: var(--p-ink-hover); }
+.vc-chat-form button svg { width: 10px; height: 10px; }
+
+.vc-empty {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  translate: -50% -50%;
+  text-align: center;
+  padding: 24px 32px;
+  background: #ffffff;
+  border: 1px solid var(--p-node-border);
+  border-radius: var(--p-r-panel);
+  box-shadow: var(--p-shadow-panel), var(--p-inset-hi);
+  z-index: 4;
+}
+.vc-empty[hidden] { display: none; }
+.vc-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--p-text-1);
+}
+.vc-empty-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--p-placeholder);
+}
+.vc-empty-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.vc-empty-row button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--p-border-strong);
+  background: #ffffff;
+  padding: 8px 15px;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-ink-hover);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.vc-empty-row button:hover {
+  background: var(--p-chip);
+  border-color: rgba(73, 224, 245, 0.42);
+  color: var(--p-teal);
+}
+.vc-empty-row svg { width: 14px; height: 14px; }
+
+.vc-toast {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  translate: -50% -6px;
+  padding: 7px 15px;
+  background: #ffffff;
+  border: 1px solid var(--p-border-strong);
+  border-radius: 9999px;
+  box-shadow: var(--p-shadow-chip);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-text-1);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, translate 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 9;
+}
+.vc-toast.is-on { opacity: 1; translate: -50% 0; }
+
+/* ============================================================
+   THE TILE — the board's seat in the chapter: scaled with zoom
+   (its layout px never change), inert, framed like a play card
+   ============================================================ */
+.vc-tile {
+  display: block;
+  position: absolute;
+  top: 148px;
+  left: var(--ax, 50%);
+  transform: translateX(-50%);
+  width: fit-content;
+  cursor: pointer;
+  border-radius: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
+}
+.case-slide:not(.revealed) .vc-tile { opacity: 0; translate: 0 16px; }
+.vc-seat {
+  zoom: var(--tile-z, 0.5);
+  border-radius: 24px;
+  overflow: hidden;
+  /* the attract loop repaints the board while parked — containment keeps
+     those repaints off the rest of the page's compositor budget */
+  contain: layout paint;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.18);
+  transition: box-shadow var(--t-micro) ease;
+}
+.vc-tile:hover .vc-seat,
+.vc-tile:focus-visible .vc-seat {
+  box-shadow: 0 8px 22px rgba(6, 58, 66, 0.16);
+}
+.vc-tile:focus-visible { outline: 2px solid var(--vi-ink, #0d7685); outline-offset: 4px; }
+/* the corner glyph — the play cards' manner */
+.vc-tile-open {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0px 4px 14px rgba(15, 23, 42, 0.08);
+  color: #2f3135;
+  pointer-events: none;
+  transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
+              transform var(--t-snap) var(--ease-spring);
+}
+.vc-tile-open svg { width: 15px; height: 15px; }
+.vc-tile:hover .vc-tile-open,
+.vc-tile:focus-visible .vc-tile-open {
+  background: #f0fdff;
+  color: #0d7685;
+  transform: scale(1.08);
+}
+
+/* ============================================================
+   reduced motion + small screens
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .vc-edge.is-running .vc-edge-line { animation: none; }
+  /* an animated webp has no clock CSS can stop, so the poster covers it */
+  .vc-clip-still { opacity: 1; }
+  .vc-node.is-running .vc-playchip-dot,
+  .vc-node.is-validating .vc-playchip-dot { animation: none; }
+  .vc-panel { animation: none; }
+  .is-arranging .vc-node { transition: none; }
+  .vc-tile { transition: opacity 0.25s ease; translate: none; }
+  .vc-tile:hover .vc-tile-open { transform: none; }
+  .vc-p-toggle i { transition: none; }
+}
+
+@media (max-width: 700px) {
+  /* the tile falls into the flow; vicino.js keeps --tile-z fitted */
+  .vc-tile {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: fit-content;
+    margin: 18px auto 0;
+  }
+  /* the panel needs a desk; the pills slim down */
+  .vc-panel { display: none !important; }
+  .vc-pill:not(.is-run):not(.is-credits) { display: none; }
+}

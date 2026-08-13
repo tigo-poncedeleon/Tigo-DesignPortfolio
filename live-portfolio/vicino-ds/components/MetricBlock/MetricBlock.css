@@ -1,0 +1,189 @@
+/* MetricBlock - reusable metric atom for report strips, dense panels, and
+   dashboard summaries. MetricCard stays the framed card surface; MetricBlock
+   owns label/value/unit/delta anatomy wherever the surface is supplied by a
+   parent panel. */
+
+.metric-block,
+.metric-block * {
+  box-sizing: border-box;
+}
+
+.metric-block {
+  --metric-accent: var(--text-3);
+  --metric-accent-soft: var(--surface-2);
+  --metric-accent-line: var(--surface-edge);
+  --metric-accent-ink: var(--text);
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.metric-block--panel {
+  padding: 16px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  box-shadow: var(--shadow-1);
+}
+
+.metric-block--positive {
+  --metric-accent: var(--success-500);
+  --metric-accent-soft: var(--success-50);
+  --metric-accent-line: var(--success-200);
+  --metric-accent-ink: var(--success-700);
+}
+
+.metric-block--negative {
+  --metric-accent: var(--red-500);
+  --metric-accent-soft: var(--red-50);
+  --metric-accent-line: var(--red-200);
+  --metric-accent-ink: var(--red-700);
+}
+
+.metric-block--stable {
+  --metric-accent: var(--blue-500);
+  --metric-accent-soft: var(--blue-50);
+  --metric-accent-line: var(--blue-200);
+  --metric-accent-ink: var(--blue-700);
+}
+
+.metric-block--building {
+  --metric-accent: var(--indigo-500);
+  --metric-accent-soft: var(--indigo-50);
+  --metric-accent-line: var(--indigo-200);
+  --metric-accent-ink: var(--indigo-700);
+}
+
+.metric-block__label {
+  overflow: hidden;
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--lh-snug);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.metric-block__value-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 7px;
+  min-width: 0;
+}
+
+.metric-block__value {
+  color: var(--text);
+  font-size: var(--fs-figure);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.metric-block__unit {
+  color: var(--text-3);
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.metric-block__support {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.metric-delta,
+.metric-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--metric-accent-ink);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.metric-delta {
+  width: max-content;
+  max-width: 100%;
+  padding: 5px 9px;
+  border: 1px solid var(--metric-accent-line);
+  border-radius: var(--r-full);
+  background: var(--metric-accent-soft);
+}
+
+.metric-delta__icon,
+.metric-trend__icon {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  color: var(--metric-accent);
+}
+
+.metric-block--compact {
+  gap: 6px;
+}
+
+.metric-block--compact .metric-block__value {
+  font-size: var(--fs-8);
+}
+
+.metric-block--compact .metric-block__support {
+  font-size: var(--fs-2);
+}
+
+.metric-block--hero {
+  gap: 10px;
+}
+
+.metric-block--hero .metric-block__value {
+  font-size: var(--fs-10);
+}
+
+.metric-block--inline {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.metric-block--inline .metric-block__label {
+  grid-column: 1;
+}
+
+.metric-block--inline .metric-block__value-row {
+  grid-column: 1;
+}
+
+.metric-block--inline .metric-delta,
+.metric-block--inline .metric-trend {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: end;
+}
+
+@media (max-width: 560px) {
+  .metric-block--inline {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-block--inline .metric-delta,
+  .metric-block--inline .metric-trend {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+  }
+
+  .metric-block--hero .metric-block__value {
+    font-size: var(--fs-9);
+  }
+}

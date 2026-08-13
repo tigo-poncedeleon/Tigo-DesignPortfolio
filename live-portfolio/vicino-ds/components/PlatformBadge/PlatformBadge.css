@@ -1,0 +1,159 @@
+.tag-pill,
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tag-pill {
+  min-height: 30px;
+  padding: 0 13px;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+  color: var(--ink-700);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+}
+
+.platform-badge {
+  /* Full-bleed logo treatment promoted from the app (owner-approved look):
+     the glyph fills the chip edge-to-edge instead of sitting inset. */
+  --platform-badge-logo-size: 118%;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--ink-700);
+  font-size: 0;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.platform-badge--sm {
+  width: 21px;
+  height: 21px;
+  border-radius: 7px;
+}
+
+.platform-badge--sm svg {
+  width: 15px;
+  height: 15px;
+}
+
+.platform-badge--muted {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+
+.platform-badge--disabled {
+  opacity: 0.36;
+}
+
+.platform-badge svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.platform-badge img {
+  display: block;
+  width: var(--platform-badge-logo-size);
+  height: var(--platform-badge-logo-size);
+  object-fit: contain;
+}
+
+.platform-badge--ig {
+  background: var(--surface-2) url('../../../../assets/platform-logos/instagram.png') center /
+    var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--tt {
+  --platform-badge-logo-size: 92%;
+  background: var(--surface-2) url('../../../../assets/platform-logos/tiktok.png') center /
+    var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--yt {
+  background: var(--surface-2);
+  color: var(--platform-youtube);
+}
+
+.platform-badge--pt {
+  background: var(--surface-2);
+  color: var(--platform-pinterest);
+}
+
+.platform-badge--li {
+  background: var(--surface-2) url('../../../../assets/platform-logos/linkedin.png') center /
+    var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--fb {
+  background: var(--surface-2) url('../../../../assets/platform-logos/facebook.png') center /
+    var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--x {
+  background: var(--surface-2) url('../../../../assets/platform-logos/x.png') center /
+    var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--ga {
+  background: var(--surface-2) url('../../../../assets/platform-logos/google-analytics.png')
+    center / var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--gd {
+  background: var(--surface-2) url('../../../../assets/platform-logos/google-drive.png') center /
+    var(--platform-badge-logo-size) var(--platform-badge-logo-size) no-repeat;
+}
+
+.platform-badge--em {
+  background: var(--surface-2);
+  color: var(--text-3);
+}
+
+.platform-badge--ev {
+  background: var(--surface-2);
+  color: var(--blue-600);
+}
+
+.platform-badge--oo,
+.platform-badge--unknown {
+  background: var(--surface-2);
+  color: var(--text-3);
+}
+
+.platform-badge--ig svg,
+.platform-badge--tt svg,
+.platform-badge--li svg,
+.platform-badge--fb svg,
+.platform-badge--x svg,
+.platform-badge--ga svg,
+.platform-badge--gd svg {
+  display: none;
+}
+
+.platform-badge--yt svg,
+.platform-badge--pt svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Fallback code chip for platforms without a PNG glyph (YT/PT): the runtime
+   renders the uppercased platform code in the platform's brand colour. */
+.platform-badge__fallback {
+  color: var(--text-3);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0;
+}

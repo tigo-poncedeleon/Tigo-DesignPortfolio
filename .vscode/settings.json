@@ -1,0 +1,6 @@
+{
+  // The workspace root holds two folders (live-portfolio, old-portfolio) and no
+  // index.html of its own — the site moved down a level in the restructure.
+  // Point Live Server at the real site so "Go Live" opens it directly.
+  "liveServer.settings.root": "/live-portfolio"
+}

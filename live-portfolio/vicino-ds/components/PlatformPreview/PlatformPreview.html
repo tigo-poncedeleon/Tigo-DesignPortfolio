@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PlatformPreview - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="PlatformPreview.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        max-width: 64ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .specimen-label {
+        display: block;
+        margin-bottom: var(--space-3);
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .pp-section {
+        margin-bottom: 40px;
+      }
+      .pp-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+        align-items: flex-start;
+      }
+      /* Neutral media placeholder for the handoff (the product feeds a real frame). */
+      .ig-post__media,
+      .yt-post__player,
+      .tk-post,
+      .fb-post__media,
+      .x-post__media {
+        background-image: linear-gradient(150deg, #e7eef4 0%, #cdd8e2 55%, #b9c6d3 100%);
+      }
+      .tk-post {
+        background-color: #b9c6d3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">PlatformPreview</h1>
+    <p class="handoff-sub">
+      Per-channel post previews used in Studio / campaign content review. Each platform mirrors its
+      real surface — Instagram feed card, YouTube watch page, TikTok reel — so reviewers see how a
+      post actually reads before it ships. Platform brand colors and app-like card shadows are
+      intentional fixtures, not Pulse surface tokens. The tonal switcher drives which channel shows.
+    </p>
+
+    <div class="pp-section">
+      <span class="specimen-label">Platform switcher</span>
+      <div class="platform-workspace platform-workspace--instagram">
+        <div class="platform-switch" role="tablist" aria-label="Switch platform preview">
+          <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            class="platform-switch__btn is-active"
+          >
+            <span
+              class="platform-switch__logo platform-switch__logo--instagram"
+              aria-hidden="true"
+            ></span>
+            <span>Instagram</span>
+          </button>
+          <button type="button" role="tab" aria-selected="false" class="platform-switch__btn">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <rect x="2" y="5" width="20" height="14" rx="4.2" fill="#ff0033" />
+              <path d="M10 8.6l6 3.4-6 3.4z" fill="#fff" />
+            </svg>
+            <span>YouTube</span>
+          </button>
+          <button type="button" role="tab" aria-selected="false" class="platform-switch__btn">
+            <span
+              class="platform-switch__logo platform-switch__logo--tiktok"
+              aria-hidden="true"
+            ></span>
+            <span>TikTok</span>
+          </button>
+          <button type="button" role="tab" aria-selected="false" class="platform-switch__btn">
+            <span
+              class="platform-switch__logo platform-switch__logo--facebook"
+              aria-hidden="true"
+            ></span>
+            <span>Facebook</span>
+          </button>
+          <button type="button" role="tab" aria-selected="false" class="platform-switch__btn">
+            <span class="platform-switch__logo platform-switch__logo--x" aria-hidden="true"></span>
+            <span>X</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pp-section">
+      <span class="specimen-label">Channel post previews</span>
+      <div class="pp-row">
+        <!-- Instagram feed post -->
+        <article class="ig-post">
+          <div class="ig-post__top">
+            <span class="ig-post__avatar"><i></i></span>
+            <span class="ig-post__id"
+              ><div class="ig-post__name">aurelia.skin</div>
+              <div class="ig-post__sub">Sponsored</div></span
+            >
+            <span class="ig-post__more"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="5" cy="12" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="19" cy="12" r="1.6" /></svg
+            ></span>
+          </div>
+          <div class="ig-post__media"></div>
+          <div class="ig-post__actions">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"
+              />
+            </svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.4 8.4 0 1 1 21 11.5z" />
+            </svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
+            </svg>
+            <span class="ig-post__save"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg
+            ></span>
+          </div>
+          <div class="ig-post__likes">2,318 likes</div>
+          <div class="ig-post__caption">
+            <b>aurelia.skin</b> What is a ceramide? — the education drop your routine was missing.
+            Full breakdown inside.
+          </div>
+          <div class="ig-post__caption ig-post__tags">#aureliaskin #education #skincareroutine</div>
+          <div class="ig-post__comments">View all 47 comments</div>
+        </article>
+
+        <!-- YouTube watch -->
+        <article class="yt-post">
+          <div class="yt-post__player">
+            <span class="yt-post__play"></span>
+            <span class="yt-post__dur">0:32</span>
+          </div>
+          <div class="yt-post__body">
+            <div class="yt-post__title">What is a ceramide? — the science, explained simply</div>
+            <div class="yt-post__channel">
+              <span class="yt-post__chav"></span>
+              <span class="yt-post__chid"
+                ><div class="yt-post__chname">Aurélia Skin</div>
+                <div class="yt-post__chsub">48.2K subscribers</div></span
+              >
+              <span class="yt-post__subscribe">Subscribe</span>
+            </div>
+            <div class="yt-post__meta">12K views · 2 days ago</div>
+            <div class="yt-post__actions">
+              <span class="yt-chip"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zm0 0 4.5-8a2 2 0 0 1 2 2v3h5a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17 20H7"
+                  />
+                </svg>
+                1.2K</span
+              >
+              <span class="yt-chip"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3zm0 0-4.5 8a2 2 0 0 1-2-2v-3h-5a2 2 0 0 1-2-2.3l1.3-7A2 2 0 0 1 7 4h10"
+                  /></svg
+              ></span>
+              <span class="yt-chip"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+                </svg>
+                Share</span
+              >
+              <span class="yt-chip"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16" />
+                </svg>
+                Save</span
+              >
+            </div>
+          </div>
+        </article>
+
+        <!-- TikTok reel -->
+        <article class="tk-post">
+          <div class="tk-post__top"><span>Following</span><b>For You</b></div>
+          <div class="tk-post__rail">
+            <span class="tk-post__avatar"></span>
+            <span class="tk-rail-item"
+              ><svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"
+                /></svg
+              ><span>18.4K</span></span
+            >
+            <span class="tk-rail-item"
+              ><svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.4 8.4 0 1 1 21 11.5z" /></svg
+              ><span>312</span></span
+            >
+            <span class="tk-rail-item"
+              ><svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg
+              ><span>2.1K</span></span
+            >
+            <span class="tk-rail-item"
+              ><svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg
+              ><span>Share</span></span
+            >
+          </div>
+          <div class="tk-post__caption">
+            <strong>@aurelia.skin</strong>
+            <p>What is a ceramide? — the education drop your routine was missing.</p>
+            <div class="tk-post__music">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M9 18a3 3 0 1 1-2-2.83V5l11-2v9.17A3 3 0 1 0 18 15V3L7 5v8.17A3 3 0 0 0 6 13"
+                /></svg
+              ><span>original sound · Aurélia Skin</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Facebook feed -->
+        <article class="fb-post">
+          <div class="fb-post__top">
+            <span class="fb-post__avatar"></span>
+            <span class="fb-post__id">
+              <b>Aurelia Skin</b>
+              <small>Sponsored · 2d</small>
+            </span>
+            <span class="fb-post__more">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="5" cy="12" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="19" cy="12" r="1.6" />
+              </svg>
+            </span>
+          </div>
+          <p class="fb-post__copy">
+            What is a ceramide? A calm guide to the barrier support your routine has been missing.
+          </p>
+          <div class="fb-post__media"></div>
+          <div class="fb-post__stats">1.8K reactions · 86 comments</div>
+          <div class="fb-post__actions">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zm0 0 4.5-8a2 2 0 0 1 2 2v3h5a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17 20H7"
+                />
+              </svg>
+              Like
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.4 8.4 0 1 1 21 11.5z" />
+              </svg>
+              Comment
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+              </svg>
+              Share
+            </span>
+          </div>
+        </article>
+
+        <!-- X post -->
+        <article class="x-post">
+          <div class="x-post__top">
+            <span class="x-post__avatar"></span>
+            <span class="x-post__id">
+              <b>Aurelia Skin</b>
+              <small>@aurelia_skin · 2d</small>
+            </span>
+            <span class="x-post__more">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="5" cy="12" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="19" cy="12" r="1.6" />
+              </svg>
+            </span>
+          </div>
+          <p class="x-post__copy">
+            Ceramides are not a trend ingredient. They help explain why a calm, consistent barrier
+            routine works.
+          </p>
+          <div class="x-post__media"></div>
+          <div class="x-post__meta">9:12 AM · Jun 7 · 24K views</div>
+          <div class="x-post__actions">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.4 8.4 0 0 1-12 7.6L3 21l1.9-6A8.4 8.4 0 1 1 21 11.5z" />
+              </svg>
+              312
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 3v12m0 0 4-4m-4 4-4-4M7 21V9m0 0 4 4M7 9l-4 4" />
+              </svg>
+              1.1K
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"
+                />
+              </svg>
+              4.8K
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+              </svg>
+            </span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>

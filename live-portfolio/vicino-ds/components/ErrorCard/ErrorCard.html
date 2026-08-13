@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ErrorCard - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Card/Card.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .stage {
+        max-width: 360px;
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 720px;
+      }
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .component-intro {
+        gap: 8px;
+        max-width: 64ch;
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>ErrorCard</h1>
+        <p>Error-state card for blocked previews, failed loads, and actionable recovery moments.</p>
+      </header>
+
+      <section class="section" aria-label="Error card static slices">
+        <div class="section-title">
+          <span>Slices</span>
+        </div>
+        <article class="card error-card is-error stage" role="status">
+          <h3>Preview failed</h3>
+          <p>Refresh the source asset before handing off this post.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

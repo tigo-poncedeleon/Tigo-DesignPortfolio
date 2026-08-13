@@ -11,56 +11,45 @@
    of stretching with the viewport (js/stage-fit.js) */
 .play-stage {
   position: relative;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   opacity: 0;
   transition: opacity var(--t-stage) ease;
 }
 .play-stage.revealed { opacity: 1; }
 
-/* ---- entrance: title, court, and record row rise in turn when the
-   stage reveals — the case-study chapters' manner ---- */
+/* ---- entrance: the title and the three tiles rise in turn when the
+   stage reveals — the work grid's manner ---- */
 .play-title { transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise); }
-.record-row {
-  transition: opacity var(--t-fade) ease 0.16s,
-              translate var(--t-rise) var(--ease-rise) 0.16s;
-}
-.play-stage:not(.revealed) :is(.play-title, .board, .record-row) {
+.play-stage:not(.revealed) :is(.play-title, .play-card) {
   opacity: 0;
-  translate: 0 16px;
+  translate: 0 18px;
 }
 
-/* ---- the snap scroller: one game per gesture, sliding in HORIZONTALLY —
-   the same mechanics as work.css's carousel (vertical wheel is translated
-   to pages by js/play-pager.js; horizontal swipes scroll natively). Nav +
-   pager stay outside and hold still. Scrollbar hidden per site
-   convention. ---- */
+/* ---- the boards stack DOWN the document; the page itself is the scroller
+   (js/play-pager.js only spies which game is in view for the rail) ----*/
+/* the DOCUMENT is the scroller now — the projects stack DOWN the page
+   instead of sliding in from the side */
 .play-scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
+  flex-direction: column;
 }
-.play-scroll::-webkit-scrollbar { display: none; }
 .play-slide {
   position: relative;
   flex: none;
   width: 100%;
-  height: 100%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  /* the three tiles' own height — a court plus its meta block */
+  --grid-h: 404px;
+  /* header rhythm + the tiles + the shared floor (styles.css), instead of
+     a flat 832 that left 277 of it empty under the courts */
+  height: calc(var(--content-top, 152px) + var(--grid-h) + var(--stage-floor, 150px));
 }
 
 /* ---- title (Figma 1395:202 rev 2: plain 24px text again — the capsule
    was removed from the frame; pair centres on the frame axis at top 40) ---- */
 .play-title {
   position: absolute;
-  top: 40px;
+  top: var(--title-top, 40px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -71,11 +60,13 @@
 .play-title h2 {
   font-size: 28px;                    /* user's 28px header unification */
   font-weight: 400;
-  color: #5e5e5e;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 .play-title p {
   font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.015em;
+  color: rgba(38, 37, 30, 0.34);
 }
 
 /* ---- the court (Figma 1395:162: 1135×426 @ 72,203 — vertically centred
@@ -87,8 +78,8 @@
   margin-left: -567.5px;
   width: 1135px;
   height: 426px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   overflow: hidden;
@@ -98,7 +89,7 @@
 }
 /* the court wakes a touch under the cursor — the site card hover */
 .board:hover {
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(38, 37, 30, 0.12);
   box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
               0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -111,19 +102,19 @@
   left: 19px;
   width: 1094px;
   height: 378px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #cdcdc9;
   border-radius: 20px;
   pointer-events: none;
 }
 
-/* Paddles and ball (Figma 1395:164: solid #5e5e5e); both are placed with
+/* Paddles and ball (Figma 1395:164: solid #5b5a53); both are placed with
    transforms from js/pong.js (base at the board's content-box origin). */
 .paddle,
 .ball {
   position: absolute;
   top: 0;
   left: 0;
-  background: #5e5e5e;
+  background: #5b5a53;
   border-radius: 5px;
   will-change: transform;
 }
@@ -147,7 +138,7 @@
   border-radius: 5px;
   will-change: transform;
 }
-.snake-seg  { background: #5e5e5e; }
+.snake-seg  { background: #5b5a53; }
 .snake-food { background: var(--orange); }
 
 /* ---- Snake's SQUARE court (Figma 1417:116/115: 492×492 @ top 165, rail
@@ -233,42 +224,10 @@
   left: 0;
   width: 42px;
   border-radius: 5px;
-  background: #5e5e5e;
+  background: #5b5a53;
   will-change: transform;
 }
 
-/* ---- pager dots — the work.html navigator, two games ---- */
-.play-pager {
-  position: absolute;
-  top: 778px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6.15px;
-  padding: 6.15px 16.9px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.562px solid #d9d9d9;
-  border-radius: 5.623px;
-}
-.play-dot {
-  position: relative;
-  width: 7.69px;
-  height: 7.69px;
-  border-radius: 50%;
-  border: 1px solid #5e5e5e;
-  background: transparent;
-  transition: background-color var(--t-micro) ease;
-}
-/* an invisible halo grows each dot's hit target to ~26px */
-.play-dot::before {
-  content: '';
-  position: absolute;
-  inset: -9px;
-  border-radius: 50%;
-}
-.play-dot:hover, .play-dot:focus-visible { background: rgba(94, 94, 94, 0.45); }
-.play-dot[aria-current='page'] { background: #5e5e5e; }
 
 /* ---- centre overlays: tallies or countdown ---- */
 .board-overlay {
@@ -293,19 +252,19 @@
 .score-player   { left: 781px; width: 64px; }
 .score-label {
   font-size: 24px;                    /* 1395:157 rev 3 — down from 36 */
-  color: #5e5e5e;
+  color: #5b5a53;
   line-height: 29px;
 }
 .score-num {
   font-size: 24px;
-  color: rgba(0, 0, 0, 0.25);
+  color: rgba(38, 37, 30, 0.3);
   line-height: 29px;
   margin-top: 5px;                    /* mock pitch: 34px label→num */
 }
 
 .countdown {
   font-size: 24px;                    /* follows the smaller board type */
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 
 /* ============================================================
@@ -313,17 +272,13 @@
    js/records.js from the shared scoreboard API
    ============================================================ */
 .record-row {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+  margin-top: 12px;
   white-space: nowrap;
 }
-#pong   .record-row { top: 663px; }
-#snake  .record-row { top: 686px; }
-#flappy .record-row { top: 733px; }
 
 /* a little hand-drawn crown that draws itself once the stage settles,
    and redraws when you admire it */
@@ -350,17 +305,17 @@
   padding: 6px 14px;
   font-size: 14px;
   line-height: 1.35;
-  color: #5e5e5e;
-  background: rgba(253, 143, 59, 0.13);
-  border: 1px solid rgba(253, 143, 59, 0.35);
+  color: #5b5a53;
+  background: rgba(245, 78, 0, 0.13);
+  border: 1px solid rgba(245, 78, 0, 0.35);
   border-radius: 20px;
 }
 .record-val { color: var(--orange); }
 .record-chip.is-offline {
-  background: rgba(233, 233, 233, 0.48);
-  border-color: #d9d9d9;
+  background: rgba(230, 229, 224, 0.48);
+  border-color: #cdcdc9;
 }
-.record-chip.is-offline .record-val { color: rgba(0, 0, 0, 0.42); }
+.record-chip.is-offline .record-val { color: rgba(38, 37, 30, 0.48); }
 /* a fresh record pops the chip once */
 .record-chip.is-pop { animation: record-pop 0.5s var(--ease-pop); }
 @keyframes record-pop {
@@ -381,7 +336,7 @@
 }
 .entry-head {
   font-size: 16px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
 .entry-head strong {
   font-weight: 400;
@@ -400,8 +355,8 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: #404040;
-  border-bottom: 2px solid #d9d9d9;
+  color: #26251e;
+  border-bottom: 2px solid #cdcdc9;
   transition: border-color var(--t-micro) ease;
 }
 .entry-slot.is-cur { border-color: var(--orange); }
@@ -419,7 +374,7 @@
 .entry-hint {
   margin-top: 10px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 /* the off-screen input that summons the OS keyboard on touch — present
    but invisible; the letter slots are the real display */
@@ -445,7 +400,7 @@
   border: none;
   line-height: 0;
   cursor: pointer;
-  color: #494949;
+  color: #45443e;
   transition: color var(--t-micro) ease;
 }
 .board-btn:hover,
@@ -496,7 +451,7 @@
 @media (max-width: 700px) {
   /* Play retires on phones (the boards want a keyboard + a wider court):
      hide the games and show a courtesy note instead */
-  .play-scroll, .play-pager { display: none; }
+  .play-scroll { display: none; }
   .play-mobile {
     display: flex;
     flex-direction: column;
@@ -510,25 +465,25 @@
     font-size: 12px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(0, 0, 0, 0.42);
+    color: rgba(38, 37, 30, 0.48);
   }
   .play-mobile-title {
     margin-top: 12px;
     font-size: 26px;
     font-weight: 400;
     line-height: 32px;
-    color: #5e5e5e;
+    color: var(--ink);
   }
   .play-mobile-copy {
     margin-top: 16px;
     font-size: 16px;
     line-height: 24px;
-    color: rgba(0, 0, 0, 0.42);
+    color: rgba(38, 37, 30, 0.48);
   }
   .play-mobile-link {
     margin-top: 26px;
     font-size: 16px;
-    color: #5e5e5e;
+    color: #5b5a53;
     text-decoration: none;
     transition: color var(--t-micro) ease;
   }
@@ -606,8 +561,294 @@
 
   .record-row { position: static; transform: none; }
   .record-chip { white-space: normal; }
-  .play-pager { top: auto; bottom: 18px; }
 
   .record-entry { bottom: 22px; width: 92%; }
   .entry-head { font-size: 15px; }
+}
+
+/* ============================================================
+   THEATER (js/theater.js) — the corner glyph on each court fills the
+   window with it. The board is MOVED, never cloned (records.js appends
+   the initials entry INTO the board and finds it by id), into a fixed
+   unscaled layer; a zoom on the holder does the fit, so the game's own
+   layout px never change and a live run survives the trip both ways.
+   ============================================================ */
+
+/* The court fills the CARD, not the window — same box as the case overlay.
+   That is load-bearing, not cosmetic: nothing inside a game dismisses it
+   any more, so the chrome strip and the rail must stay uncovered and live.
+   Closing the game's tab, or clicking back to another, is the way out. */
+/* The court fills the CARD and stands exactly where .shell-card stands —
+   the band it reaches up behind the chrome strip included, so the hole cut
+   for the active tab shows the game's own surface rather than the play grid
+   frozen underneath. Under the strip (20), never over it: the tabs and the
+   rail stay live beside the game. */
+.theater {
+  position: fixed;
+  top: 0;
+  left: calc(var(--shell-rail, 260px) + 1px);
+  right: 0;
+  bottom: 0;
+  z-index: 16;              /* over the card and the case frame (15) */
+  padding-top: var(--shell-chrome-h, 40px);   /* centre BELOW the strip */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+html.rail-closed .theater { left: 0; }
+.theater[hidden] { display: none; }
+html.theater-open { overflow: hidden; }
+
+/* OPAQUE. A translucent, blurred surface let the play grid go on moving
+   behind the court — three live games showing through the one you are
+   trying to read. The page under it is simply covered now. */
+.theater-veil {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.theater.is-open .theater-veil { opacity: 1; }
+
+/* the FLIP rides the stage (plain viewport px); the zoom rides the inner
+   holder — keeping them on separate elements keeps the arithmetic honest */
+.theater-stage {
+  position: relative;
+  transform-origin: 0 0;
+  opacity: 0;
+  transition: transform 0.42s var(--ease-rise), opacity 0.3s ease;
+}
+.theater.is-open .theater-stage { opacity: 1; }
+
+/* the board arrives wearing its slide-absolute geometry — neutralise it */
+#theater-fit .board {
+  position: relative;
+  top: 0;
+  left: 0;
+  margin: 0;
+}
+
+/* the stage takes focus when the court lands (so the keys reach the game),
+   but it is not a control — no ring on it */
+.theater-stage:focus { outline: none; }
+
+/* the way back, clear of the chrome strip the layer now reaches behind */
+.theater-x {
+  position: absolute;
+  top: calc(var(--shell-chrome-h, 40px) + 14px);
+  right: 16px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(247, 247, 244, 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid #cdcdc9;
+  border-radius: 8px;
+  color: #84847e;
+  cursor: pointer;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
+              border-color var(--t-micro) ease;
+}
+.theater-x svg { width: 17px; height: 17px; }
+.theater-x:hover,
+.theater-x:focus-visible {
+  color: var(--ink);
+  background: rgba(38, 37, 30, 0.06);
+  border-color: rgba(38, 37, 30, 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theater-stage { transition: opacity 0.25s ease; }
+}
+@media (max-width: 700px) {
+  .theater,
+  .board-expand { display: none; }
+}
+
+/* ============================================================
+   The play grid — one screen, three tiles, and the games IDLE
+   LIVE inside them: each tile holds the real board scaled down
+   with zoom (layout px untouched, so the engines never notice).
+   Clicking a tile lifts its court into the theater. In the tiles
+   the games ignore the keyboard entirely (inView in each engine).
+   ============================================================ */
+.play-grid {
+  position: absolute;
+  /* hung from the title on the shared header rhythm (styles.css), so the
+     air under "Play" matches the air under "Hello" */
+  top: var(--content-top, 152px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, 356px);
+  gap: 28px;
+}
+
+/* a tile: the work grid's door, holding a live court */
+.play-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  background: rgba(230, 229, 224, 0.23);
+  border: 1.5px solid #e9e8e3;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity var(--t-fade) ease calc(var(--n, 0) * 0.08s),
+              translate var(--t-rise) var(--ease-rise) calc(var(--n, 0) * 0.08s),
+              border-color var(--t-micro) ease,
+              box-shadow var(--t-micro) ease;
+}
+.play-stage.revealed .play-card {
+  transition: opacity var(--t-fade) ease,
+              translate var(--t-lift) var(--ease-lift),
+              border-color var(--t-micro) ease,
+              box-shadow var(--t-micro) ease;
+}
+.play-card:hover,
+.play-card:focus-visible {
+  translate: 0 -4px;
+  border-color: rgba(38, 37, 30, 0.12);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
+              0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* The screen: one SQUARE per tile, identical across all three, with the
+   miniature court centred in it. The courts themselves are three different
+   shapes (pong is a 2.7:1 strip, snake a square, flappy nearly one) and
+   cannot be squared without cropping a paddle or distorting a game — so it
+   is the screen that is squared, and every court is fitted inside the same
+   one. That is what makes the row read as a set. */
+.play-holder {
+  width: 264px;
+  height: 264px;                 /* square — the whole point */
+  margin: 16px auto 0;
+  border-radius: 18px;
+  background: rgba(230, 229, 224, 0.3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;          /* the TILE is the door; the court plays
+                                    only in the theater */
+}
+/* the boards ride in wearing their slide-absolute geometry — neutralise
+   it (ids so the per-board #snake-board offsets lose) */
+.play-card #board,
+.play-card #snake-board,
+.play-card #flappy-board {
+  position: relative;
+  top: 0;
+  left: 0;
+  margin: 0;
+  flex: none;
+  /* the screen is the frame now, so the court's own one steps back — the
+     border is made INVISIBLE, never removed: these boards are border-box,
+     so dropping the width would resize the playfield the engines measure
+     and shift every sprite. Colour costs nothing. */
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+}
+/* Per-court fit: every board's LONGEST side lands on the same 232px inside
+   the 264 screen, so the three courts share a bounding square and 16px of
+   air. (1135, 492 and 640 are the boards' own layout widths — if one ever
+   changes, its zoom is 232 ÷ that number.) */
+/* Every court fitted WHOLE inside the square screen. Pong was cropped to
+   fill it for a while and that was a mistake with a clear tell: its paddles
+   live at the two extreme ends of a 2.7:1 court, so any crop square enough
+   to fill the screen cuts one of them off — the tile showed a player
+   rallying against nobody.
+
+   So the tile does not crop pong: it RESIZES it. Parked in its preview the
+   court is literally snake's square card (492², rail 436.56², the same
+   borders and radii) and the demo rally plays inside that square with both
+   paddles whole. Nothing here is a picture of pong — it is pong, on a
+   square table. The classic 2.7:1 court comes back the moment the theater
+   takes the board, because these selectors stop matching; js/pong.js
+   re-measures its playfield off the rail (ResizeObserver) either way. */
+.play-card #board {
+  width: 492px;
+  height: 492px;
+  border-width: 2.31px;
+  border-radius: 35.803px;
+  /* no box-shadow: the group rule above drops the court's own frame in the
+     tile, and re-declaring it here would win and give pong a shadow the
+     other two don't have */
+}
+.play-card #board-wall {
+  left: 24.25px;
+  top: 27.72px;
+  width: 436.56px;
+  height: 436.56px;
+  border-width: 1.155px;
+  border-radius: 23.099px;
+}
+.play-card #board        { zoom: 0.4715; }   /*  492 wide → 232 × 232 */
+.play-card #snake-board  { zoom: 0.4715; }   /*  492 wide → 232 × 232 */
+.play-card #flappy-board { zoom: 0.3625; }   /*  640 wide → 232 × 213 */
+
+/* No controls in a preview: the tile is a picture of the game, and the
+   press on it opens the game rather than starting one. (The buttons come
+   straight back in the theater — these selectors stop matching the moment
+   the board is moved out of the tile.) */
+.play-card .board-btn { display: none; }
+
+/* the fullscreen glyph, waking on hover in the tile's corner */
+.play-card-go {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(247, 247, 244, 0.88);
+  border: 1px solid #e6e5e0;
+  color: #7a7974;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, color var(--t-micro) ease,
+              transform var(--t-snap) var(--ease-spring);
+}
+.play-card:hover .play-card-go,
+.play-card:focus-visible .play-card-go {
+  opacity: 1;
+  color: #26251e;
+  transform: translate(1px, -1px);
+}
+
+/* name · credit · crown under the court */
+.play-card-meta {
+  padding: 8px 24px 22px;
+  text-align: center;
+}
+.play-card-meta h3 {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--ink);
+}
+.play-card-meta p {
+  margin-top: 3px;
+  font-size: 13.25px;
+  line-height: 18px;
+  color: rgba(38, 37, 30, 0.48);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-card { transition: opacity 0.25s ease; }
+  .play-stage:not(.revealed) .play-card { translate: none; }
 }

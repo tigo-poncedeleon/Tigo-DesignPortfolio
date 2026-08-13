@@ -1,56 +1,50 @@
 /* ============================================================
-   Work — project screens (Vicino AI · Pantry Pal · Drone)
-   Geometry is a 1:1 copy of Figma frames 1328:445 / 1401:39 /
-   1401:62 (1280×832): fixed px, desktop only, same conventions
-   as styles.css. These frames keep the PLAIN title style (no
-   capsule) and the full-size house-chip nav.
+   Work — one screen, three doors.
+   The projects sit side by side as quiet tiles in the courts'
+   own manner (the play boards' surface, radius and hover), each
+   opening its case study over the page (js/case-overlay.js).
+   Same conventions as styles.css: fixed px inside the 1280×832
+   stage, desktop only.
    ============================================================ */
 
-/* the stage fills the shell's content card, pinned to an exact
-   1280x832 — so every Figma offset lands where it was drawn instead
-   of stretching with the viewport (js/stage-fit.js) */
 .work-stage {
   position: relative;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   opacity: 0;
   transition: opacity var(--t-stage) ease;
 }
 .work-stage.revealed { opacity: 1; }
 
-/* ---- the snap scroller: one project per gesture, sliding in HORIZONTALLY.
-   Slides sit in a row at viewport size; mandatory snapping + snap-stop pulls
-   the NEXT slide fully into place instead of free-scrolling past it. Vertical
-   wheel/trackpad gestures are translated to pages by js/work.js. Nav + pager
-   live outside this element so they hold still. Scrollbar hidden per site
-   convention. ---- */
 .work-scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;            /* dot clicks glide instead of jump */
-  scrollbar-width: none;
+  flex-direction: column;
 }
-.work-scroll::-webkit-scrollbar { display: none; }
 .work-slide {
   position: relative;
   flex: none;
   width: 100%;
-  height: 100%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;           /* a big fling still stops one slide on */
+  /* the stepper's own height, shared with .pick-stage below so the panel
+     cannot drift out of step with what it holds */
+  --pick-h: 440px;
+  /* as tall as its contents and no taller: header rhythm + stepper + the
+     shared floor (styles.css) */
+  height: calc(var(--content-top, 152px) + var(--pick-h) + var(--stage-floor, 150px));
+  /* …but never shorter than one screen of card. Work's own contents come to
+     742, which on a normal window is ~150px short of the reading area — and a
+     section that does not fill the window is CENTRED in it when you navigate
+     to it (js/shell.js restY), which hung a band of empty page above the
+     title. Owning a whole screen puts it back on restY's other branch: a
+     section that already fills the window lands its top edge at the top.
+     --hero-h is the hero's own measurement, one screen of card in card px
+     (js/main.js writes it to the root); the calc is the pre-JS fallback. */
+  min-height: var(--hero-h, calc(100dvh - var(--shell-chrome-h, 40px)));
 }
 
-
-/* ---- title (Figma Group 41: company + role centred on the frame axis,
-   27.313px; the pair sits at top 42) ---- */
+/* ---- title pair, the site's header manner ---- */
 .work-title {
   position: absolute;
-  top: 42px;
+  top: var(--title-top, 40px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -59,158 +53,204 @@
   white-space: nowrap;
 }
 .work-title h2 {
-  font-size: 28px;                    /* user's 28px header unification */
+  font-size: 28px;
   font-weight: 400;
-  color: #5e5e5e;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 .work-title p {
   font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.015em;
+  color: rgba(38, 37, 30, 0.34);
 }
 
-/* ---- date chip (Figma Group 40: 98×23.85 r6.625 under the title; nudged
-   down from the mock's 80 for a little more air under the title) ---- */
-.work-date {
+/* ---- the bento: one hero tile and two companions, centred in the
+   frame. Vicino is desktop work — its display earns the big window;
+   the phone and the badge sit beside it as compact rows. ---- */
+/* ============================================================
+   The stepper — an index of the work, one shown large, its note
+   beside it. The case studies present their own screens exactly
+   this way; Work is the same instrument pointed at the studies.
+   ============================================================ */
+.work-pick {
   position: absolute;
-  top: 87px;
+  /* hung from the title, not centred in the panel — the air under the
+     header is the same here as it is under About's (styles.css) */
+  top: var(--content-top, 152px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 4px 5px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid #d9d9d9;
-  border-radius: 6.625px;
-  font-size: 13.25px;
-  color: #5e5e5e;
-  white-space: nowrap;
+  width: 1112px;
+  display: grid;
+  grid-template-columns: 232px 1fr 268px;
+  align-items: center;
+  gap: 44px;
 }
 
-/* ---- showcase images: each page centres its own frame-exact box ---- */
-.work-img-vicino {
-  position: absolute;
-  top: 67px;
-  left: 50%;
-  margin-left: -375.5px;
-  width: 751px;
-  height: 751px;
-}
-.work-img-pantry {
-  position: absolute;
-  top: 122px;
-  left: 50%;
-  margin-left: -159px;
-  width: 318px;
-  height: 636px;
-}
-/* the drone logo: Figma's fill-crop percentages assumed a different source
-   padding than the exported PNG, which over-zoomed — the PNG's own framing
-   already matches the mock, so it renders 1:1 in the frame's box */
-.work-img-drone {
-  position: absolute;
-  top: 194px;
-  left: 50%;
-  margin-left: -233.5px;
-  width: 467px;
-  height: 468.4px;
-}
-.work-img-vicino img,
-.work-img-pantry img,
-.work-img-drone img {
-  display: block;
+/* ---- the index ---- */
+.pick-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.pick-row {
   width: 100%;
-  height: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 11px 14px;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 19px;
+  line-height: 1.2;
+  text-align: left;
+  color: rgba(38, 37, 30, 0.48);
+  cursor: pointer;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
 }
-/* the vicino display, pantry phone, and drone badge are doors now —
-   they lift a touch under the cursor */
-a.work-img-vicino,
-a.work-img-pantry,
-a.work-img-drone {
-  display: block;
-  transition: translate var(--t-lift) var(--ease-lift);
+.pick-n {
+  flex: none;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(38, 37, 30, 0.30);
+  transition: color var(--t-micro) ease;
 }
-a.work-img-vicino:hover, a.work-img-vicino:focus-visible,
-a.work-img-pantry:hover, a.work-img-pantry:focus-visible,
-a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
+.pick-row:hover { color: var(--ink); }
+/* the one you are on wears the accent on the site's warm chip — the same
+   pairing the case studies use for their own step lists */
+.pick-row.is-current {
+  color: var(--orange);
+  background: rgba(38, 37, 30, 0.06);
+}
+.pick-row.is-current .pick-n { color: var(--orange); }
+.pick-row:focus-visible { outline-offset: 1px; }
 
-/* the only click affordance — a minimal "opens" arrow in each project's
-   top-right CORNER (at the header level, clear of the centred image, so it
-   never sits on the mockup; the images are the doors, no verbose tag).
-   Quiet at rest, it firms and nudges out as the image lifts on hover. */
-.work-open {
+/* ---- the stage: all three stacked, only the current one lit, so the swap
+   is a cross-fade in place rather than a reflow. The shots sit on the
+   stage's MIDDLE line, which is the line the index and the note already sit
+   on (the grid centres both columns). Hung from the top instead, each shot
+   left its own leftover under it — 61px for the monitor, 155 for the mark —
+   and the picture read as floating above the two blocks of words beside it.
+   The three now share one centre, whichever project is up. ---- */
+.pick-stage {
+  position: relative;
+  height: var(--pick-h, 440px);
+  display: grid;
+  place-items: center;
+}
+.pick-shot {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: auto;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+  scale: 0.97;
+  pointer-events: none;
+  transition: opacity var(--t-glide) ease, scale var(--t-lift) var(--ease-lift);
+}
+.pick-shot.is-current { opacity: 1; scale: 1; pointer-events: auto; }
+.pick-shot img {
+  max-width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  border-radius: 14px;
+  transition: scale var(--t-lift) var(--ease-lift);
+}
+/* Sized per piece rather than uniformly: these are three different KINDS of
+   picture — a screen, a device, a mark — and one shared ceiling makes the
+   logo loom and the monitor look timid. Each is set to the size it wants to
+   be looked at. */
+/* the Vicino shot is cropped to its ink (2048×1706, Aug 2026) — as a square
+   it carried 12% of empty margin top and bottom, which no layout can see:
+   the box began at 152 and the monitor began 60px lower. 379 keeps the
+   monitor at exactly the size it was drawn at when the margin was in. */
+.work-img-vicino img { max-height: 379px; }   /* a whole screen; give it room */
+.work-img-pantry img { max-height: 440px; }   /* a phone, already tall */
+.work-img-drone  img { max-height: 285px; }   /* a mark, not a scene */
+.pick-stage:hover .pick-shot.is-current img { scale: 1.015; }
+
+/* the corner glyph the work cards always wore, kept on the stage */
+.pick-open {
   position: absolute;
-  top: 42px;
-  right: 40px;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid #e3e3e3;
-  color: #808080;
+  background: rgba(247, 247, 244, 0.88);
+  border: 1px solid #e6e5e0;
+  color: #7a7974;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  opacity: 0.6;
-  pointer-events: none;                 /* the image is the click target */
+  opacity: 0;
+  pointer-events: none;
   transition: opacity 0.22s ease, color var(--t-micro) ease,
               transform var(--t-snap) var(--ease-spring);
 }
-/* the badge sits after its link, so firm it on the image's hover */
-.work-img-vicino:hover ~ .work-open, .work-img-vicino:focus-visible ~ .work-open,
-.work-img-pantry:hover ~ .work-open, .work-img-pantry:focus-visible ~ .work-open,
-.work-img-drone:hover ~ .work-open, .work-img-drone:focus-visible ~ .work-open {
-  opacity: 1;
-  color: #404040;
-  transform: translate(1px, -1px);
+.pick-stage:hover .pick-open { opacity: 1; color: #26251e; transform: translate(1px, -1px); }
+
+/* ---- the note ---- */
+.pick-note { position: relative; align-self: center; }
+.pick-card {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  translate: 0 -50%;
+  opacity: 0;
+  transition: opacity var(--t-glide) ease, translate var(--t-glide) var(--ease-glide);
+  pointer-events: none;
+}
+.pick-card.is-current { opacity: 1; translate: 0 -50%; pointer-events: auto; }
+.pick-card:not(.is-current) { translate: 0 calc(-50% + 8px); }
+.pick-card h3 {
+  font-size: 21px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.pick-role {
+  margin-top: 5px;
+  font-size: 13.25px;
+  color: rgba(38, 37, 30, 0.48);
+}
+.pick-copy {
+  margin-top: 14px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(38, 37, 30, 0.62);
+}
+.pick-hint {
+  position: absolute;
+  top: 190px;
+  left: 0;
+  font-size: 12.5px;
+  color: rgba(38, 37, 30, 0.34);
 }
 
-/* ---- pager (Figma Group 44, three dots per user decision — the mock's
-   4th dot has no project yet): dot links, current page dark ---- */
-.work-pager {
-  position: absolute;
-  top: 778px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6.15px;
-  padding: 6.15px 16.9px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.562px solid #d9d9d9;
-  border-radius: 5.623px;
+/* ---- entrance: the three parts arrive in turn as the stage reveals ---- */
+.work-slide:not(.revealed) .work-pick { opacity: 0; translate: 0 18px; }
+.work-pick {
+  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
 }
-/* dots: #5e5e5e ring resting, #5e5e5e fill on the current project */
-.work-dot {
-  position: relative;
-  width: 7.69px;
-  height: 7.69px;
-  border-radius: 50%;
-  border: 1px solid #5e5e5e;
-  background: transparent;
-  transition: background-color var(--t-micro) ease;
-}
-/* an invisible halo grows each dot's hit target to ~26px */
-.work-dot::before {
-  content: '';
-  position: absolute;
-  inset: -9px;
-  border-radius: 50%;
-}
-.work-dot:hover, .work-dot:focus-visible { background: rgba(94, 94, 94, 0.45); }
-.work-dot[aria-current='page'] { background: #5e5e5e; }
+.work-pick.is-plain * { transition: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
-  .work-scroll { scroll-behavior: auto; }
+  .work-card { transition: opacity 0.25s ease; }
+  .work-slide:not(.revealed) .work-card { translate: none; }
+  .work-card:hover .work-card-art img { scale: none; }
 }
 
 /* ============================================================
-   MOBILE (≤700px) — the horizontal carousel UNROLLS into a
-   vertical scroll: the three projects stack and scroll DOWN like
-   the rest of the site on mobile. Each is a full-width block
-   (title · role · date · the tappable showcase), separated by a
-   hairline, and rises in as it enters the viewport (js/work.js).
-   Desktop untouched above.
+   MOBILE (≤700px) — the grid unrolls into a single column; each
+   door is a full-width tile and rises in as it enters the
+   viewport (js/work.js). Desktop untouched above.
    ============================================================ */
 @media (max-width: 700px) {
   .work-stage {
@@ -218,81 +258,42 @@ a.work-img-drone:hover, a.work-img-drone:focus-visible { translate: 0 -4px; }
     min-height: 100dvh;
     overflow: visible;
   }
-  .work-scroll {
-    position: static;
-    inset: auto;
-    display: block;
-    overflow: visible;
-    scroll-snap-type: none;
-  }
+  .work-scroll { display: block; }
   .work-slide {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
     height: auto;
-    padding: 52px 20px 56px;
+    min-height: 0;                 /* the phone has no card to fill a screen of */
+    padding: 68px 20px 120px;      /* the last tile clears the bottom bar */
   }
-  .work-slide:first-of-type { padding-top: 68px; }
-  .work-slide:last-of-type { padding-bottom: 120px; } /* clear the bottom bar */
-  .work-slide + .work-slide { border-top: 1px solid #ececec; }
-
   .work-title {
     position: static;
     transform: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
+    justify-content: center;
     white-space: normal;
     text-align: center;
   }
   .work-title h2 { font-size: 24px; line-height: 30px; }
-  .work-title p { font-size: 15px; color: rgba(0, 0, 0, 0.42); }
-  .work-date {
+  .work-title p { font-size: 15px; color: rgba(38, 37, 30, 0.48); }
+
+  /* the stepper unstacks and comes into FLOW — index, shot, note down the
+     column — so the section is as tall as what it holds. (It was still
+     hung off the desktop frame here, absolutely positioned, and spilled
+     past its own section into the one below.) The 20px under the title is
+     the phone's shared header gap, as About's. */
+  .work-pick {
     position: static;
     transform: none;
-    margin-top: 14px;
+    width: auto;
+    max-width: 420px;
+    margin: 20px auto 0;
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-  .work-img-vicino,
-  .work-img-pantry,
-  .work-img-drone {
-    position: relative;              /* anchors the .work-open corner cue */
-    top: auto;                       /* drop the desktop left:50%/top offsets,
-                                        else relative shifts the image */
-    left: auto;
-    margin: 30px 0 0;
-    height: auto;
-  }
-  /* no hover on touch — the cue stays gently visible at each block's
-     top-right, up in the header, clear of the image below */
-  .work-open { opacity: 0.9; top: 22px; right: 18px; }
-  .work-img-vicino { width: min(360px, 90vw); }
-  .work-img-pantry { width: 210px; }
-  .work-img-drone  { width: min(300px, 78vw); }
+  .pick-stage { height: 300px; }
+  .pick-shot img,
   .work-img-vicino img,
   .work-img-pantry img,
-  .work-img-drone img { width: 100%; height: auto; }
-  /* the doors lift-tap: keep a gentle press feedback on touch */
-  a.work-img-vicino:active,
-  a.work-img-pantry:active,
-  a.work-img-drone:active { translate: 0 -2px; }
-
-  /* the horizontal dot pager retires — vertical scroll needs no carousel */
-  .work-pager { display: none; }
-
-  /* each project rises in as it scrolls into view (work.js adds .revealed);
-     its parts stagger up softly */
-  .work-slide > * {
-    transition: opacity 0.6s ease var(--d, 0s),
-                translate 0.7s var(--ease-rise) var(--d, 0s);
-  }
-  .work-slide:not(.revealed) > * { opacity: 0; translate: 0 22px; }
-  .work-slide > .work-date { --d: 0.06s; }
-  .work-slide > :is(.work-img-vicino, .work-img-pantry, .work-img-drone) { --d: 0.12s; }
-}
-
-@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
-  .work-slide > * { transition: opacity 0.25s ease; translate: none; }
-  .work-slide:not(.revealed) > * { translate: none; }
+  .work-img-drone img { max-height: 300px; }
+  .pick-note { min-height: 168px; }
+  .pick-open { opacity: 0.9; }
+  .pick-row:active { background: rgba(38, 37, 30, 0.06); }
 }

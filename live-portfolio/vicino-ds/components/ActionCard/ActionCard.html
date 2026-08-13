@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ActionCard - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="../Card/Card.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .stage {
+        max-width: 380px;
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 760px;
+      }
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .component-intro {
+        gap: 8px;
+        max-width: 64ch;
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>ActionCard</h1>
+        <p>Compact card with supporting copy and one primary action.</p>
+      </header>
+
+      <section class="section" aria-label="Action card static slices">
+        <div class="section-title">
+          <span>Slices</span>
+        </div>
+        <article class="card action-card stage">
+          <div class="action-card__body">
+            <h3>Review campaign fit</h3>
+            <p>Confirm the creative angle before the next post moves into production.</p>
+          </div>
+          <button class="btn btn--primary" type="button">Open review</button>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

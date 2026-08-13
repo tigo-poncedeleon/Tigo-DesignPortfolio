@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ButtonPrimary - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 920px;
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+      }
+      .component-intro {
+        display: grid;
+        gap: 8px;
+        max-width: 68ch;
+      }
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .section-title {
+        display: grid;
+        gap: 5px;
+      }
+      .section-title span,
+      .state small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .section-title p {
+        max-width: 60ch;
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .demo-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .states {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+        gap: 12px;
+      }
+      .state {
+        display: grid;
+        gap: 10px;
+        justify-items: start;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>ButtonPrimary</h1>
+        <p>
+          Primary creation/action button. Uses <code>tokens.css</code> and <code>Button.css</code>.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Primary button animated component">
+        <div class="section-title">
+          <span>Animated component</span>
+          <p>Click-through loading and success behavior for primary actions.</p>
+        </div>
+        <div class="demo-strip">
+          <div class="state">
+            <small>Publish flow</small
+            ><button
+              class="btn btn--primary"
+              type="button"
+              data-button-demo
+              data-demo-busy="Publishing"
+              data-demo-success="Published"
+            >
+              <span class="btn__spinner" aria-hidden="true"></span>
+              <svg
+                class="btn__check"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M3 7.4l2.6 2.6L11 4.2" />
+              </svg>
+              <span class="btn__label">Publish</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Primary button static slices">
+        <div class="section-title">
+          <span>Slices</span>
+          <p>Frozen states for the primary button component set.</p>
+        </div>
+        <div class="states">
+          <div class="state">
+            <small>Default</small><button class="btn btn--primary" type="button">Continue</button>
+          </div>
+          <div class="state">
+            <small>Hover</small
+            ><button class="btn btn--primary is-hover" type="button">Continue</button>
+          </div>
+          <div class="state">
+            <small>Focus</small
+            ><button class="btn btn--primary is-focus" type="button">Continue</button>
+          </div>
+          <div class="state">
+            <small>Pressed</small
+            ><button class="btn btn--primary is-pressed" type="button">Continue</button>
+          </div>
+          <div class="state">
+            <small>Loading</small
+            ><button class="btn btn--primary is-loading" type="button" aria-busy="true">
+              <span class="btn__spinner" aria-hidden="true"></span
+              ><span class="btn__label">Working</span>
+            </button>
+          </div>
+          <div class="state">
+            <small>Success</small
+            ><button class="btn btn--primary is-success" type="button">
+              <svg
+                class="btn__check"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M3 7.4l2.6 2.6L11 4.2" />
+              </svg>
+              <span class="btn__label">Saved</span>
+            </button>
+          </div>
+          <div class="state">
+            <small>Disabled</small
+            ><button class="btn btn--primary" type="button" disabled>Continue</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      document.querySelectorAll('[data-button-demo]').forEach((button) => {
+        const label = button.querySelector('.btn__label');
+        const busy = button.dataset.demoBusy || 'Working';
+        const success = button.dataset.demoSuccess || 'Saved';
+        button.addEventListener('click', () => {
+          button.classList.remove('is-success');
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+          if (label) label.textContent = busy;
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.classList.add('is-success');
+            button.removeAttribute('aria-busy');
+            if (label) label.textContent = success;
+          }, 760);
+        });
+      });
+    </script>
+  </body>
+</html>

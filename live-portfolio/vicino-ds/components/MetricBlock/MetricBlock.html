@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricBlock - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="MetricBlock.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1080px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 72ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      .wide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>MetricBlock</h1>
+        <p>
+          Numeric atom for KPI strips, report summaries, and dense operational panels. Use
+          MetricCard when the metric also needs its own card surface.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Metric tone slices">
+        <div class="section-title">
+          <span>MetricBlock / MetricDelta</span>
+        </div>
+        <div class="grid">
+          <article class="metric-block metric-block--panel metric-block--positive">
+            <span class="metric-block__label">Save rate</span>
+            <span class="metric-block__value-row">
+              <strong class="metric-block__value">31</strong>
+              <span class="metric-block__unit">%</span>
+            </span>
+            <span class="metric-delta">
+              <svg
+                class="metric-delta__icon"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 10V2M3 5l3-3 3 3" />
+              </svg>
+              +18% vs prior
+            </span>
+          </article>
+
+          <article class="metric-block metric-block--panel metric-block--negative">
+            <span class="metric-block__label">Delivery trust</span>
+            <span class="metric-block__value-row">
+              <strong class="metric-block__value">74</strong>
+              <span class="metric-block__unit">pts</span>
+            </span>
+            <span class="metric-delta">
+              <svg
+                class="metric-delta__icon"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 2v8M3 7l3 3 3-3" />
+              </svg>
+              -6 pts today
+            </span>
+          </article>
+
+          <article class="metric-block metric-block--panel metric-block--stable">
+            <span class="metric-block__label">Reply queue</span>
+            <span class="metric-block__value-row">
+              <strong class="metric-block__value">47</strong>
+              <span class="metric-block__unit">comments</span>
+            </span>
+            <span class="metric-delta">
+              <svg
+                class="metric-delta__icon"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M3 6h6" />
+              </svg>
+              in normal band
+            </span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Metric layout slices">
+        <div class="section-title">
+          <span>Compact / hero / inline</span>
+        </div>
+        <div class="wide-grid">
+          <article
+            class="metric-block metric-block--panel metric-block--compact metric-block--building"
+          >
+            <span class="metric-block__label">Creative render</span>
+            <span class="metric-block__value-row">
+              <strong class="metric-block__value">62</strong>
+              <span class="metric-block__unit">%</span>
+            </span>
+            <p class="metric-block__support">ETA 18m, captions queued behind it.</p>
+          </article>
+
+          <article
+            class="metric-block metric-block--panel metric-block--hero metric-block--positive"
+          >
+            <span class="metric-block__label">Qualified signal lift</span>
+            <span class="metric-block__value-row">
+              <strong class="metric-block__value">2.4</strong>
+              <span class="metric-block__unit">x</span>
+            </span>
+            <span class="metric-trend">
+              <svg
+                class="metric-trend__icon"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 10V2M3 5l3-3 3 3" />
+              </svg>
+              Fit proof is carrying the week.
+            </span>
+          </article>
+
+          <article
+            class="metric-block metric-block--panel metric-block--inline metric-block--stable"
+          >
+            <span class="metric-block__label">Report confidence</span>
+            <span class="metric-block__value-row">
+              <strong class="metric-block__value">92</strong>
+              <span class="metric-block__unit">%</span>
+            </span>
+            <span class="metric-delta">stable</span>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

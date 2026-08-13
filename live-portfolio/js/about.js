@@ -35,7 +35,7 @@
       { threshold: 0.12 }
     );
     slides.forEach((s) => io.observe(s));
-  } else if (scroller && slides.length) {
+  } else if (slides.length) {
     // ---- the reading thread: map how far down the chapters we are onto
     // --p. The stitch used to ride this page's own hairline; the shell's
     // sidebar owns that drawing now, so this only reports the fraction
@@ -43,12 +43,15 @@
     let threadRaf = 0;
     const trackScroll = () => {
       threadRaf = 0;
-      const max = scroller.scrollHeight - scroller.clientHeight;
-      if (stage) stage.classList.toggle('is-scrolled', scroller.scrollTop > 40);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const y = window.scrollY;
+      // relative to the stage's own top — About no longer sits at the top of
+      // the document, so a raw scrollY check would already be true on arrival
+      if (stage) stage.classList.toggle('is-scrolled', stage.getBoundingClientRect().top < -40);
       window.dispatchEvent(new CustomEvent('shell:progress',
-        { detail: { p: max ? scroller.scrollTop / max : 0 } }));
+        { detail: { p: max ? y / max : 0 } }));
     };
-    scroller.addEventListener('scroll', () => {
+    window.addEventListener('scroll', () => {
       if (!threadRaf) threadRaf = requestAnimationFrame(trackScroll);
     }, { passive: true });
     trackScroll();
@@ -73,15 +76,28 @@
           }
         });
       },
-      { root: scroller, threshold: 0.6 }
+      {
+        // NOT threshold 0.6. A chapter is often taller than the window now
+        // that the document scrolls, and a section that can never be 60%
+        // visible never fires — it would sit at opacity 0 forever. Firing on
+        // the section that straddles the middle of the screen is the same
+        // intent and holds at any height.
+        rootMargin: '-45% 0px -45% 0px', threshold: 0,
+      }
     );
     slides.forEach((s) => observer.observe(s));
 
     // restore a deep link deterministically — the native anchor scroll can
     // lose the race against the scroll-spy; only after settling does the
     // spy start mirroring the hash back
-    const target = slides.find((s) => '#' + s.id === location.hash);
-    if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    // #resume was its own chapter until the experience column moved into the
+    // story spread — old links still land where the experience now lives
+    const wanted = location.hash === '#resume' ? '#bio' : location.hash;
+    const target = slides.find((s) => '#' + s.id === wanted);
+    // a pixel-exact tab restore (js/shell.js) outranks the section jump
+    if (target && !window.__pixelRestore) {
+      target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
     setTimeout(() => { window.__hashReady = true; }, 600);
 
   }
@@ -195,17 +211,18 @@
     });
   }
 
-  // full-screen look range: the far edge of the screen turns the head to a
-  // near-profile (83° / 46°) — hard-capped below 90°, where a flat plane
-  // would mirror-invert (the "flip" this replaces)
+  // look range: livelier than the first cut (32°/18° read as barely awake at
+  // 148px) but still short of MINI_LOOK's near-profile sweep, which would
+  // swing the face across the letter's words. Most of the felt sensitivity
+  // is the lerp — the head answers the cursor sooner, not just farther.
   window.Portrait.look(view, {
-    maxY: 1.45,          // rad ~ 83 deg
-    maxX: 0.8,           // rad ~ 46 deg
-    perspective: 900,
-    lerp: 0.06,
+    maxY: 0.85,          // rad ~ 49 deg
+    maxX: 0.5,           // rad ~ 29 deg
+    perspective: 700,    // a touch more depth so the bigger turn reads as 3D
+    lerp: 0.1,
     idleDelay: 400,
-    idleAmpY: 0.06,
-    idleAmpX: 0.03,
+    idleAmpY: 0.08,
+    idleAmpX: 0.04,
     idleSpeedY: 0.5,
     idleSpeedX: 0.4,
   });

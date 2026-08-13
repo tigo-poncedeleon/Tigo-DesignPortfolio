@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Button - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="Button.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: clamp(28px, 3vw, 48px);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+      }
+      .component-intro {
+        max-width: 72ch;
+        margin-bottom: 34px;
+      }
+      .button-set {
+        display: grid;
+        gap: 10px;
+        width: min(100%, 1320px);
+        margin: 0;
+        padding-bottom: 8px;
+      }
+      .button-set-row {
+        display: grid;
+        grid-template-columns: 96px repeat(7, minmax(120px, 1fr));
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+      }
+      .button-set-row.is-icon {
+        grid-template-columns: 96px repeat(7, minmax(120px, 1fr));
+      }
+      .button-set-row.is-toggle {
+        grid-template-columns: 96px repeat(2, minmax(140px, 180px));
+        justify-content: start;
+      }
+      .button-set-label {
+        align-self: center;
+      }
+      .button-set-label,
+      .button-set-state {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .button-set-state {
+        min-height: 20px;
+      }
+      .button-set-cell {
+        display: grid;
+        min-height: 72px;
+        align-items: center;
+        justify-items: center;
+        min-width: 0;
+        padding: 12px 8px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .button-set-empty {
+        background: transparent;
+      }
+      .button-interaction-section {
+        display: grid;
+        gap: 14px;
+        width: min(100%, 1320px);
+        margin: 0 0 34px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .button-interaction-section:first-of-type {
+        padding-top: 0;
+        border-top: 0;
+      }
+      .button-interaction-title {
+        display: grid;
+        gap: 5px;
+      }
+      .button-interaction-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .button-interaction-title p {
+        max-width: 640px;
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .button-interaction-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
+        gap: 12px;
+      }
+      .button-interaction-card {
+        display: grid;
+        align-content: center;
+        justify-items: start;
+        min-height: 118px;
+        gap: 14px;
+        padding: 18px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .button-interaction-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      @media (max-width: 1040px) {
+        .button-set-row[aria-hidden='true'] {
+          display: none;
+        }
+        .button-set-row,
+        .button-set-row.is-toggle,
+        .button-set-row.is-icon {
+          grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+        }
+        .button-set-label {
+          grid-column: 1 / -1;
+          grid-row: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="component-intro" aria-label="Introduction">
+      <h1 class="handoff-title">Button</h1>
+      <p class="handoff-sub">
+        Reference set: every button variant is sliced across its supported states, with its own
+        click-through interaction specimen.
+      </p>
+    </header>
+
+    <section class="button-interaction-section" aria-label="Button interaction demos">
+      <div class="button-interaction-title">
+        <span>Animated components</span>
+        <p>
+          Animated button behavior lives outside the state matrix. These demos prove click, loading,
+          success, and toggle behavior without crowding the static slices.
+        </p>
+      </div>
+      <div class="button-interaction-grid">
+        <div class="button-interaction-card">
+          <small>Primary / publish</small>
+          <button
+            class="btn btn--primary"
+            type="button"
+            data-button-demo
+            data-demo-busy="Publishing"
+            data-demo-success="Published"
+          >
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <svg
+              class="btn__check"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 7.4l2.6 2.6L11 4.2" />
+            </svg>
+            <span class="btn__label">Publish</span>
+          </button>
+        </div>
+        <div class="button-interaction-card">
+          <small>Secondary / open</small>
+          <button
+            class="btn btn--secondary"
+            type="button"
+            data-button-demo
+            data-demo-busy="Opening"
+          >
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__label">Open</span>
+          </button>
+        </div>
+        <div class="button-interaction-card">
+          <small>Ghost / edit</small>
+          <button
+            class="btn btn--ghost btn--muted"
+            type="button"
+            data-button-demo
+            data-demo-busy="Editing"
+          >
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__label">Edit</span>
+          </button>
+        </div>
+        <div class="button-interaction-card">
+          <small>Danger / remove</small>
+          <button
+            class="btn btn--danger"
+            type="button"
+            data-button-demo
+            data-demo-busy="Deleting"
+            data-demo-success="Removed"
+          >
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <svg
+              class="btn__check"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 7.4l2.6 2.6L11 4.2" />
+            </svg>
+            <span class="btn__label">Delete</span>
+          </button>
+        </div>
+        <div class="button-interaction-card">
+          <small>Icon / filter</small>
+          <button class="btn btn--icon" type="button" aria-label="Run filter demo" data-icon-demo>
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <svg
+              class="btn__check"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 7.4l2.6 2.6L11 4.2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="button-interaction-section" aria-label="Button static slices">
+      <div class="button-interaction-title">
+        <span>Static slices</span>
+        <p>Frozen frames for each variant. These are the placeable state slices for Figma.</p>
+      </div>
+
+      <div class="button-set" aria-label="Button variant by state component set">
+        <div class="button-set-row" aria-hidden="true">
+          <span></span>
+          <span class="button-set-state">Default</span>
+          <span class="button-set-state">Hover</span>
+          <span class="button-set-state">Focus</span>
+          <span class="button-set-state">Pressed</span>
+          <span class="button-set-state">Loading</span>
+          <span class="button-set-state">Success</span>
+          <span class="button-set-state">Disabled</span>
+        </div>
+
+        <div class="button-set-row">
+          <span class="button-set-label">Primary</span>
+          <div class="button-set-cell">
+            <button class="btn btn--primary" type="button">Continue</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--primary is-hover" type="button">Continue</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--primary is-focus" type="button">Continue</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--primary is-pressed" type="button">Continue</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--primary is-loading" type="button" aria-busy="true">
+              <span class="btn__spinner" aria-hidden="true"></span
+              ><span class="btn__label">Working</span>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--primary is-success" type="button">
+              <svg
+                class="btn__check"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M3 7.4l2.6 2.6L11 4.2" />
+              </svg>
+              <span class="btn__label">Saved</span>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--primary" type="button" disabled>Continue</button>
+          </div>
+        </div>
+
+        <div class="button-set-row">
+          <span class="button-set-label">Secondary</span>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary" type="button">Review</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary is-hover" type="button">Review</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary is-focus" type="button">Review</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary is-pressed" type="button">Review</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary is-loading" type="button" aria-busy="true">
+              <span class="btn__spinner" aria-hidden="true"></span
+              ><span class="btn__label">Opening</span>
+            </button>
+          </div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary" type="button" disabled>Review</button>
+          </div>
+        </div>
+
+        <div class="button-set-row">
+          <span class="button-set-label">Ghost</span>
+          <div class="button-set-cell">
+            <button class="btn btn--ghost" type="button">Edit</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--ghost is-hover" type="button">Edit</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--ghost is-focus" type="button">Edit</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--ghost is-pressed" type="button">Edit</button>
+          </div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell">
+            <button class="btn btn--ghost" type="button" disabled>Edit</button>
+          </div>
+        </div>
+
+        <div class="button-set-row">
+          <span class="button-set-label">Danger</span>
+          <div class="button-set-cell">
+            <button class="btn btn--danger" type="button">Delete</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--danger is-hover" type="button">Delete</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--danger is-focus" type="button">Delete</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--danger is-pressed" type="button">Delete</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--danger is-loading" type="button" aria-busy="true">
+              <span class="btn__spinner" aria-hidden="true"></span
+              ><span class="btn__label">Deleting</span>
+            </button>
+          </div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell">
+            <button class="btn btn--danger" type="button" disabled>Delete</button>
+          </div>
+        </div>
+
+        <div class="button-set-row">
+          <span class="button-set-label">Warning</span>
+          <div class="button-set-cell">
+            <button class="btn btn--warning" type="button">Adjust plan</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--warning is-hover" type="button">Adjust plan</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--warning is-focus" type="button">Adjust plan</button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--warning is-pressed" type="button">Adjust plan</button>
+          </div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell">
+            <button class="btn btn--warning" type="button" disabled>Adjust plan</button>
+          </div>
+        </div>
+
+        <div class="button-set-row">
+          <span class="button-set-label">Dashed</span>
+          <div class="button-set-cell">
+            <button class="btn btn--dashed" type="button">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M6 2v8M2 6h8" />
+              </svg>
+              <span class="btn__label">Add lens</span>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--dashed is-hover" type="button">
+              <span class="btn__label">Add lens</span>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--dashed is-focus" type="button">
+              <span class="btn__label">Add lens</span>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--dashed is-pressed" type="button">
+              <span class="btn__label">Add lens</span>
+            </button>
+          </div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell">
+            <button class="btn btn--dashed" type="button" disabled>
+              <span class="btn__label">Add lens</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="button-set-row is-icon">
+          <span class="button-set-label">IconButton</span>
+          <div class="button-set-cell">
+            <button class="btn btn--icon" type="button" aria-label="Filter">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--icon is-hover" type="button" aria-label="Filter hover">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--icon is-focus" type="button" aria-label="Filter focus">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--icon is-pressed" type="button" aria-label="Filter pressed">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell button-set-empty"></div>
+          <div class="button-set-cell">
+            <button class="btn btn--icon" type="button" aria-label="Filter disabled" disabled>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat selected (chatbot only) — a picked suggestion chip -->
+      <div class="specimen-row">
+        <span class="specimen-label">Chat selected</span>
+        <button class="btn btn--chat-selected" type="button" aria-pressed="true">
+          One campaign
+        </button>
+      </div>
+    </section>
+
+    <section class="button-interaction-section" aria-label="Toggle button interaction demo">
+      <div class="button-interaction-title">
+        <span>Toggle animated component</span>
+        <p>The toggle demo is separate from the static default and active frames.</p>
+      </div>
+      <div class="button-interaction-grid">
+        <div class="button-interaction-card">
+          <small>Pause / resume</small>
+          <button
+            class="btn btn--secondary btn--pill"
+            type="button"
+            aria-pressed="false"
+            data-toggle-demo
+            data-toggle-on="Resume"
+            data-toggle-off="Pause"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="6" y="5" width="4" height="14" rx="1" />
+              <rect x="14" y="5" width="4" height="14" rx="1" />
+            </svg>
+            <span class="btn__label">Pause</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="button-interaction-section" aria-label="Toggle button static slices">
+      <div class="button-interaction-title">
+        <span>Toggle slices</span>
+        <p>Static rest and active frames for the pause/resume toggle.</p>
+      </div>
+      <div class="button-set" aria-label="Toggle button (pause / resume) component set">
+        <div class="button-set-row is-toggle" aria-hidden="true">
+          <span class="button-set-label">Toggle</span>
+          <span class="button-set-state">Default</span>
+          <span class="button-set-state">Active</span>
+        </div>
+        <div class="button-set-row is-toggle">
+          <span class="button-set-label">Pause / Resume</span>
+          <div class="button-set-cell">
+            <button class="btn btn--secondary btn--pill" type="button" aria-pressed="false">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <rect x="6" y="5" width="4" height="14" rx="1" />
+                <rect x="14" y="5" width="4" height="14" rx="1" />
+              </svg>
+              <span class="btn__label">Pause</span>
+            </button>
+          </div>
+          <div class="button-set-cell">
+            <button class="btn btn--dark btn--pill" type="button" aria-pressed="true">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span class="btn__label">Resume</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.querySelectorAll('[data-button-demo]').forEach((button) => {
+        const label = button.querySelector('.btn__label');
+        const restLabel = label ? label.textContent : '';
+        const busyLabel = button.dataset.demoBusy || 'Working';
+        const successLabel = button.dataset.demoSuccess || '';
+
+        button.addEventListener('click', () => {
+          button.classList.remove('is-success');
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+          if (label) label.textContent = busyLabel;
+
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.removeAttribute('aria-busy');
+            if (successLabel) {
+              button.classList.add('is-success');
+              if (label) label.textContent = successLabel;
+              return;
+            }
+            if (label) label.textContent = restLabel;
+          }, 760);
+        });
+      });
+
+      document.querySelectorAll('[data-icon-demo]').forEach((button) => {
+        button.addEventListener('click', () => {
+          button.classList.remove('is-success');
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.classList.add('is-success');
+            button.removeAttribute('aria-busy');
+          }, 760);
+        });
+      });
+
+      // Toggle (pause / resume): flips variant, label, glyph, and aria-pressed.
+      const TOGGLE_ICON = {
+        off: '<rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" />',
+        on: '<path d="M8 5v14l11-7z" />',
+      };
+      document.querySelectorAll('[data-toggle-demo]').forEach((button) => {
+        const label = button.querySelector('.btn__label');
+        const svg = button.querySelector('svg');
+        const onLabel = button.dataset.toggleOn || 'Resume';
+        const offLabel = button.dataset.toggleOff || (label ? label.textContent : 'Pause');
+        button.addEventListener('click', () => {
+          const on = button.getAttribute('aria-pressed') !== 'true';
+          button.setAttribute('aria-pressed', on ? 'true' : 'false');
+          button.classList.toggle('btn--dark', on);
+          button.classList.toggle('btn--secondary', !on);
+          if (label) label.textContent = on ? onLabel : offLabel;
+          if (svg) svg.innerHTML = on ? TOGGLE_ICON.on : TOGGLE_ICON.off;
+        });
+      });
+    </script>
+  </body>
+</html>

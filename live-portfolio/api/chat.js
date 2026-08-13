@@ -48,6 +48,24 @@ const SYSTEM_PROMPT =
   "HIRING: open to full-time product design / design engineering roles " +
   "starting summer 2027. Contact: tigoponcedeleon@gmail.com.";
 
+// The chat's mood toggle. The client sends one of these three words with
+// each request; anything else falls back to friendly. Every mood keeps the
+// facts straight and the answers short — only the voice changes.
+const PERSONAS = {
+  friendly: '',
+  whimsical:
+    'TONE FOR THIS CONVERSATION: whimsical. Answer with a light, playful ' +
+    'touch — a small flourish, an unexpected image, a wink — while keeping ' +
+    'every fact accurate and every answer just as short. Never let the whimsy ' +
+    'bury the information, and still never use markdown.',
+  suspicious:
+    'TONE FOR THIS CONVERSATION: comically suspicious. Answer like a wary ' +
+    'noir detective who finds every question just a little too convenient — ' +
+    'side-eye the asker, mutter about what they might really be after — but ' +
+    'ALWAYS still give the full, accurate answer, just as short as ever. The ' +
+    'suspicion is a bit, never an excuse to withhold. Still never use markdown.',
+};
+
 export default async function handler(req, res) {
   // CORS: the proxy serves the deployed site AND local/dev copies of the
   // portfolio (draft-portfolio runs on localhost and calls this URL directly).
@@ -82,6 +100,11 @@ export default async function handler(req, res) {
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: 'Request body must include a non-empty "messages" array' });
   }
+
+  // the mood is whitelisted here, never interpolated from the client — an
+  // unknown word simply means the house voice
+  const tone = PERSONAS[body && body.persona] || '';
+  const system = tone ? SYSTEM_PROMPT + '\n\n' + tone : SYSTEM_PROMPT;
 
   try {
     const upstream = await fetch('https://api.anthropic.com/v1/messages', {

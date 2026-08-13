@@ -11,9 +11,7 @@
    of stretching with the viewport (js/stage-fit.js) */
 .about-stage {
   position: relative;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   opacity: 0;
   transition: opacity var(--t-stage) ease;
 }
@@ -21,23 +19,20 @@
 
 
 
-/* ---- the chapter stack: one screen per section, free scrolling ---- */
+/* ---- the chapter stack. The DOCUMENT is the scroller now, so the
+   chapters are just three card-height blocks in normal flow. ---- */
 .about-scroll {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
 }
-.about-scroll::-webkit-scrollbar { display: none; }
 .about-slide {
   position: relative;
   flex: none;
   width: 100%;
-  height: 100%;
+  height: var(--card-h, 832px);
+  /* the story chapter is the one that grows: the year column runs its full
+     length in the document and the letter pins beside it */
   /* midline of the content area right of the 247px divider */
   --ax: 50%;
 }
@@ -45,7 +40,7 @@
 /* ---- per-slide title pair (the site standard) ---- */
 .about-title {
   position: absolute;
-  top: 40px;
+  top: var(--title-top, 40px);
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -56,11 +51,13 @@
 .about-title h2 {
   font-size: 28px;
   font-weight: 400;
-  color: #5e5e5e;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 .about-title p {
   font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.015em;
+  color: rgba(38, 37, 30, 0.34);
 }
 
 /* ---- slide artifacts rise softly the first time they snap in (the
@@ -77,90 +74,202 @@
 }
 /* the card grids arrive one card at a time — each card rides its own --n
    (set inline) so the row deals itself left to right */
-.about-slide:not(.revealed) :is(.xp-row, .craft-card) {
+.about-slide:not(.revealed) .craft-card {
   opacity: 0;
   translate: 0 18px;
 }
+/* the postings arrive on OPACITY ONLY. Nothing between the scrollport and
+   a position:sticky element may be transformed — a translate here would
+   make .tl-item the containing block and the pin would come undone. */
+.tl-item {
+  transition: opacity var(--t-fade) ease calc(var(--n, 3) * 0.09s);
+}
+.about-slide:not(.revealed) .tl-item { opacity: 0; }
 
 /* ============================================================
-   01 · story — the full bio beside the hedcut, which watches
-   you read it. Group centred: text 480 + 80 gap + face 330.
+   01 · story — a SPREAD. Left, the years; right, the letter.
+   Group centred: 440 column + 80 gap + 480 letter = 1000.
+   Both halves are cut to the same height (js/timeline.js
+   measures the letter and writes it to --tl-h), so the graphic
+   is exactly as long as the words beside it.
    ============================================================ */
-.story-bio {
+#bio.about-slide {
+  height: auto;
+  /* the chapter that sets the header rhythm the rest of the site follows */
+  padding: var(--content-top, 152px) 0 var(--stage-floor, 150px);
+}
+.story-cols {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 80px;
+  width: 1000px;
+}
+/* the letter holds still while the years run past it */
+.letter-col { position: sticky; top: 92px; }
+.tl-col     { width: 440px; }
+.letter-col { width: 480px; }
+
+/* each half is titled like a broadsheet column — quiet label over a
+   hairline that draws itself left → right, and the pair keeps both
+   bodies on the same baseline. Its rule sits directly on the content, so
+   it behaves exactly like the year rules further down the column. */
+.col-head {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+.col-cap {
+  font-size: 13.25px;
+  color: rgba(38, 37, 30, 0.48);
+}
+.col-head::after {
+  content: '';
   position: absolute;
-  top: 158px;
-  left: calc(var(--ax) - 445px);
-  width: 480px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #e6e5e0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-draw) 0.15s;
+}
+.about-slide.revealed .col-head::after { transform: scaleX(1); }
+
+/* ---- the year column: its own scrollport. Wheel over it and the axis
+   moves; the letter half still pages the chapter deck, so nothing is
+   hijacked. overscroll-behavior stops a trackpad flick from carrying
+   through into the next chapter halfway down someone's life. ---- */
+.letter-body { padding-top: 16px; }
+/* no scrollport: the DOCUMENT is the scroller, so the column simply runs
+   its full length and each posting pins against the page */
+.tl { position: relative; }
+.tl-track { position: relative; }
+.tl-list  { list-style: none; }
+
+.tl-axis {
+  position: absolute;
+  left: 62px;
+  top: 0;
+  width: 1px;
+  height: var(--tl-axis-h, 100%);
+  background: #e6e5e0;
+}
+
+/* the RULER — one numeral per year, each its own text, each PINNED to the
+   axis at the middle of its own run of postings (js/timeline.js sets the
+   top). They ride the track, so they travel up the screen with everything
+   else instead of hanging in the frame while the postings pass underneath. */
+.tl-years { position: absolute; inset: 0; }
+.tl-year {
+  position: absolute;
+  left: 0;
+  width: 62px;
+  text-align: center;
+  z-index: 1;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: #a1a19f;
+  font-variant-numeric: tabular-nums;
+}
+
+/* THE MECHANIC, in two rules: every posting owns a block of the axis as
+   tall as the time until the next one (--h, from js/timeline.js), and its
+   text pins to the top of that block. js/timeline.js lays the fall on top;
+   when the block runs out, the next posting's rule has it. */
+.tl-item { position: relative; height: var(--h, 280px); }
+.tl-body {
+  position: sticky;
+  top: 92px;                    /* clears the sticky chrome strip */
+  /* the SAME 16px on both sides of every rule: text arriving under one and
+     text being pushed up into one stop the same distance short of it */
+  padding: 16px 0 16px 96px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+/* only once JS is driving does the column single out its current
+   posting — with scripting off, every one stays fully present */
+.tl.is-live .tl-body             { opacity: 0.34; }
+.tl.is-live .is-current .tl-body { opacity: 1; }
+
+.tl-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e6e5e0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-draw)
+              calc(0.25s + var(--n, 3) * 0.12s);
+  display: none;
+}
+.about-slide.revealed .tl-rule { transform: scaleX(1); }
+/* a rule means a YEAR turned over, nothing else — two roles from the same
+   year run on together (js/timeline.js sets .is-year-start), and the
+   masthead hairline opens the first year. */
+.tl-item.is-year-start .tl-rule { display: block; }
+
+/* Four steps of ink and nothing else: the role in full ink, the employer
+   one step back, the summary one more, the where-and-when quietest. Sizes
+   fall on the site's own scale; weight never changes. */
+.tl-role {
+  font-size: 20px;
+  line-height: 26px;
+  letter-spacing: -0.15px;
+  color: var(--ink);
+}
+.tl-co {
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 20px;
+  color: #5b5a53;
+}
+.tl-meta {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 18px;
+  color: #a1a19f;
+}
+.tl-sum {
+  margin-top: 10px;
+  max-width: 316px;
+  font-size: 14.5px;
+  line-height: 20px;
+  color: #7a7974;
+}
+
+/* ---- the letter ---- */
+.story-bio {
   font-size: 20px;
   line-height: 30px;
-  color: #5e5e5e;
+  color: #5b5a53;
 }
-.story-bio p + p { margin-top: 24px; }
+.story-bio p + p { margin-top: 20px; }
 .story-bio strong {
-  font-weight: 400;                   /* emphasis by INK, not weight */
-  color: #404040;
-  /* an orange HIGHLIGHTER sweep behind the key phrases (the case studies'
-     manner — replaced the old 2px underline); drawn left → right in
-     reading order once the slide settles (delays below) */
-  background: linear-gradient(rgba(253, 143, 59, 0.3), rgba(253, 143, 59, 0.3))
-              no-repeat left 78% / 0% 0.58em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  transition: background-size 0.55s var(--ease-draw) var(--ud, 0.6s);
+  font-weight: 400;                   /* emphasis by COLOUR, not by weight —
+                                         ember activates emphasis, Cursor's way */
+  color: var(--orange);
 }
-.about-slide.revealed .story-bio strong { background-size: 100% 0.58em; }
-.story-bio p:nth-of-type(1) strong:nth-of-type(1) { --ud: 0.6s; }
-.story-bio p:nth-of-type(1) strong:nth-of-type(2) { --ud: 0.9s; }
-.story-bio p:nth-of-type(2) strong:nth-of-type(1) { --ud: 1.2s; }
-.story-bio p:nth-of-type(2) strong:nth-of-type(2) { --ud: 1.5s; }
 
-/* the signature closes the letter: ink strokes draw themselves after
-   the underlines (T → i → go), the orange i-dot lands last; hovering
-   makes the pen sign it again */
-.sig {
-  position: absolute;
-  top: 655px;
-  left: calc(var(--ax) - 430px);
-  width: 190px;
-  height: 84px;
-  transform: rotate(-3deg);
-}
-.sig path {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.7s var(--ease-draw);
-}
-.sig .sig-s1 { transition-delay: 1.7s; }
-.sig .sig-s2 { transition-delay: 2s; }
-.sig .sig-s3 { transition-delay: 2.3s; }
-.sig .sig-dot {
-  fill: var(--orange);
-  opacity: 0;
-  transition: opacity 0.3s ease 2.75s;
-}
-.about-slide.revealed .sig path { stroke-dashoffset: 0; }
-.about-slide.revealed .sig .sig-dot { opacity: 1; }
-.sig:hover path {
-  animation: craft-redraw 0.8s var(--ease-draw) both;
-}
-.sig:hover .sig-s2 { animation-delay: 0.2s; }
-.sig:hover .sig-s3 { animation-delay: 0.4s; }
-.sig:hover .sig-dot {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: dot-pop var(--t-pop) var(--ease-pop) 0.75s both;
-}
+/* the hedcut is SET INTO the letter — floated out of the first paragraph,
+   which runs around it. js/about.js narrows its look-at range to match: at
+   330px it could turn to a near-profile over empty space, but in a 148px
+   box that same turn would swing across the words. */
 .about-portrait {
-  position: absolute;
-  top: 174px;
-  left: calc(var(--ax) + 115px);
-  width: 330px;
-  height: 421px;
+  position: relative;
+  float: right;
+  width: 148px;
+  height: 190px;
+  margin: 5px 0 12px 26px;
   cursor: pointer;                    /* click the face — it takes a spin */
 }
 .about-portrait.is-spun {
@@ -185,14 +294,16 @@
 .scroll-hint {
   position: absolute;
   bottom: 24px;
-  left: var(--ax);
+  /* the middle of the 80px gutter between the two columns, not the card's
+     midline — on the midline its box grazes the letter */
+  left: calc(var(--ax) - 22px);
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -216,7 +327,7 @@
    ============================================================ */
 .stroke {
   fill: none;
-  stroke: #5e5e5e;
+  stroke: #5b5a53;
   stroke-width: 1.2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -228,7 +339,7 @@
 .stroke.s3 { transition-delay: 0.5s; }
 .guide {
   fill: none;
-  stroke: #d9d9d9;
+  stroke: #cdcdc9;
   stroke-width: 1.2;
   stroke-dasharray: 2 5;
   stroke-linecap: round;
@@ -236,189 +347,27 @@
   transition: opacity 0.5s ease 0.9s;
 }
 .dot {
-  fill: #5e5e5e;
+  fill: #5b5a53;
   opacity: 0;
   transition: opacity 0.4s ease 1s;
 }
 .dot.hollow {
   fill: var(--bg);
-  stroke: #5e5e5e;
+  stroke: #5b5a53;
   stroke-width: 1.2;
 }
 .about-slide.revealed .stroke { stroke-dashoffset: 0; }
 .about-slide.revealed .guide,
 .about-slide.revealed .dot { opacity: 1; }
 
-/* ============================================================
-   resume — the LEDGER: four postings as ONE ruled typographic
-   column, newest first (no cards; the craft grid keeps those).
-   The rows share a fixed height: the hovered/focused row
-   BREATHES OPEN via flex-grow while the others compress, so the
-   column never changes size. Opening reveals the summary and
-   wakes the employer's mark from grey to colour; each row's
-   hairline draws itself when the chapter arrives.
-   ============================================================ */
-.xp-ledger {
-  position: absolute;
-  top: 140px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  width: 880px;
-  height: 460px;
-}
-.xp-row {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-start;
-  gap: 28px;
-  padding: 24px 18px 0;
-  transition: flex-grow 0.5s var(--ease-rise),
-              opacity var(--t-fade) ease calc(var(--n) * 0.09s),
-              translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
-}
-.xp-row:hover,
-.xp-row:focus-visible { flex-grow: 2; }
-/* the rules: a hairline under every row (plus one over the first)
-   that draws itself left → right on reveal, top to bottom */
-.xp-row::after,
-.xp-row:first-child::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: #e3e3e3;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.7s var(--ease-draw)
-              calc(0.2s + var(--n) * 0.12s);
-}
-.xp-row:first-child::before { top: 0; bottom: auto; transition-delay: 0.1s; }
-.about-slide.revealed .xp-row::after,
-.about-slide.revealed .xp-row:first-child::before { transform: scaleX(1); }
-
-/* the margin index — quiet numerals that warm when their row opens */
-.xp-num {
-  flex: none;
-  width: 34px;
-  padding-top: 6px;
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.35);
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s ease;
-}
-.xp-row:hover .xp-num,
-.xp-row:focus-visible .xp-num { color: var(--orange); }
-
-.xp-main { flex: 1; min-width: 0; }
-.xp-role {
-  font-size: 22px;
-  line-height: 28px;
-  color: #404040;
-}
-.xp-co {
-  margin-top: 4px;
-  font-size: 15px;
-  color: #767676;                    /* quiet locator label under the role */
-}
-/* the summary waits below the fold of the closed row and rises in once
-   the row opens — the readable body line (mid grey, not the faint
-   caption tone), so "what I did" actually reads */
-.xp-sum {
-  margin-top: 15px;
-  max-width: 520px;
-  font-size: 15.5px;
-  line-height: 23px;
-  color: #5e5e5e;
-  opacity: 0;
-  translate: 0 8px;
-  transition: opacity 0.25s ease,
-              translate 0.35s var(--ease-rise);
-}
-.xp-row:hover .xp-sum,
-.xp-row:focus-visible .xp-sum {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: 0.12s;
-}
-
-/* the right margin: date chip over location, then the mark */
-.xp-when {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 7px;
-  padding-top: 3px;
-}
-.xp-date {
-  display: inline-block;
-  padding: 3px 9px;
-  font-size: 13.25px;
-  color: #5e5e5e;
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid #d9d9d9;
-  border-radius: 6.625px;
-  white-space: nowrap;
-}
-.xp-loc {
-  font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
-  white-space: nowrap;
-}
-/* the employer's mark — sleeping in grey until its row is visited */
-.xp-logo {
-  flex: none;
-  width: 96px;
-  height: 46px;
-  margin-top: 4px;
-  object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.45;
-  transition: filter 0.25s ease, opacity 0.25s ease,
-              scale 0.4s var(--ease-spring);
-}
-.xp-row:hover .xp-logo,
-.xp-row:focus-visible .xp-logo {
-  filter: none;
-  opacity: 1;
-  scale: 1.12;
-}
 .slide-link {
-  position: absolute;
-  top: 618px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  font-size: 16px;
-  color: #5e5e5e;
+  font-size: 13.25px;                  /* it rides the cap line */
+  color: #5b5a53;
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }
 .slide-link:hover,
 .slide-link:focus-visible { color: var(--orange); }
-
-/* the resume chapter carries TWO doors on the line the others give one —
-   the wrapper takes over the positioning so the pair centres as a unit */
-.slide-links {
-  position: absolute;
-  top: 618px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  display: flex;
-  align-items: baseline;
-  gap: 28px;
-  white-space: nowrap;
-}
-.slide-links .slide-link {
-  position: static;
-  transform: none;
-}
 
 /* ============================================================
    skills — four illustration cards, drawn in thin ink
@@ -435,8 +384,8 @@
   width: 240px;
   height: 460px;
   padding: 26px 20px;
-  background: rgba(233, 233, 233, 0.23);
-  border: 2px solid #eeeded;
+  background: rgba(230, 229, 224, 0.23);
+  border: 2px solid #e9e8e3;
   border-radius: 31px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: transform var(--t-lift) var(--ease-lift),
@@ -446,7 +395,7 @@
 }
 .craft-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(38, 37, 30, 0.12);
   box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08),
               0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -494,7 +443,7 @@
   display: block;
   margin-top: 14px;
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .craft-chips {
   margin-top: 12px;
@@ -508,9 +457,9 @@
 .craft-chip {
   padding: 5px 12px;
   font-size: 14px;
-  color: #5e5e5e;
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid #d9d9d9;
+  color: #5b5a53;
+  background: rgba(230, 229, 224, 0.48);
+  border: 1px solid #cdcdc9;
   border-radius: 20px;
   white-space: nowrap;
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
@@ -525,9 +474,9 @@
 .craft-chip:nth-child(4) { --cd: calc(var(--n) * 0.09s + 0.99s); }
 .craft-chip:nth-child(5) { --cd: calc(var(--n) * 0.09s + 1.07s); }
 .craft-chip:hover {
-  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
-  border-color: rgba(253, 143, 59, 0.35);
-  color: var(--orange);
+  background: rgba(38, 37, 30, 0.06);   /* the sitewide grey hover wash */
+  border-color: rgba(38, 37, 30, 0.2);
+  color: var(--ink);
 }
 
 /* ============================================================
@@ -535,22 +484,27 @@
    write on, a send chip. Kept deliberately unlike the ai page's
    grey chat panel.
    ============================================================ */
+/* the chapter ends at the social row, so that is what its height is made
+   of: the row's own top, its 44px of marks, and the shared floor */
+#contact.about-slide {
+  height: calc(var(--social-top, 600px) + 44px + var(--stage-floor, 150px));
+}
 .compose {
   position: absolute;
-  top: 200px;
+  top: var(--content-top, 152px);
   left: var(--ax);
   margin-left: -320px;
   width: 640px;
   padding: 24px 28px;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.17);
+  background: #fdfdfb;                /* letter paper — never pure white */
+  border: 1px solid rgba(38, 37, 30, 0.17);
   border-radius: 20px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: border-color var(--t-micro) ease, box-shadow var(--t-micro) ease,
               opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
 }
 .compose:focus-within {
-  border-color: rgba(0, 0, 0, 0.42);
+  border-color: rgba(38, 37, 30, 0.48);
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 .compose-to {
@@ -561,14 +515,14 @@
 .to-label {
   min-width: 38px;                    /* to/from share a column, pills align */
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 .to-chip {
   padding: 3px 10px;
   font-size: 13.25px;
-  color: #5e5e5e;
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid #d9d9d9;
+  color: #5b5a53;
+  background: rgba(38, 37, 30, 0.04);
+  border: 0.663px solid #cdcdc9;
   border-radius: 6.625px;
 }
 .compose-from {
@@ -582,23 +536,23 @@
   padding: 3px 10px;
   font: inherit;
   font-size: 13.25px;
-  color: #5e5e5e;
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid #d9d9d9;
+  color: #5b5a53;
+  background: rgba(38, 37, 30, 0.04);
+  border: 0.663px solid #cdcdc9;
   border-radius: 6.625px;
   outline: none;
   caret-color: var(--orange);
   transition: border-color var(--t-micro) ease;
 }
-.from-input:focus { border-color: rgba(0, 0, 0, 0.17); }
-.from-input::placeholder { color: #7c7c7c; }
+.from-input:focus { border-color: rgba(38, 37, 30, 0.24); }
+.from-input::placeholder { color: #7a7974; }
 /* letterhead rule — the line-art guides' dash rhythm (2 on, 5 off),
    drawn in CSS so the header and the meat of the letter part ways */
 .compose-rule {
   height: 1px;
   margin-top: 18px;
   background-image: repeating-linear-gradient(90deg,
-    #d9d9d9 0 2px, transparent 2px 7px);
+    #cdcdc9 0 2px, transparent 2px 7px);
 }
 .compose-body {
   display: block;
@@ -612,21 +566,21 @@
   font: inherit;
   font-size: 20px;
   line-height: 30px;
-  color: #404040;
+  color: #26251e;
   caret-color: var(--orange);
 }
-.compose-body::placeholder { color: #7c7c7c; }
+.compose-body::placeholder { color: #7a7974; }
 .compose-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 6px;
   padding-top: 14px;
-  border-top: 1px solid #eeeded;
+  border-top: 1px solid #e9e8e3;
 }
 .compose-hint {
   font-size: 13.25px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   transition: color var(--t-micro) ease;
 }
 .compose-hint.is-sent { color: var(--orange); }
@@ -638,9 +592,9 @@
   padding: 8px 22px;
   font: inherit;
   font-size: 18.6px;
-  color: #5e5e5e;
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid #d9d9d9;
+  color: #5b5a53;
+  background: rgba(230, 229, 224, 0.48);
+  border: 1px solid #cdcdc9;
   border-radius: 20px;
   cursor: pointer;
   transition: transform var(--t-lift) var(--ease-lift),
@@ -649,16 +603,16 @@
 }
 .compose-send:hover:not([disabled]),
 .compose-send:focus-visible:not([disabled]) {
-  background: rgba(253, 143, 59, 0.13);   /* the sitewide warm hover wash */
-  border-color: rgba(253, 143, 59, 0.35);
-  color: var(--orange);
+  background: rgba(38, 37, 30, 0.06);   /* the sitewide grey hover wash */
+  border-color: rgba(38, 37, 30, 0.2);
+  color: var(--ink);
   transform: translateY(-1.5px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06),
               0 0.5px 1px rgba(0, 0, 0, 0.05);
 }
 .compose-send[disabled] {
   cursor: default;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
 }
 /* on a successful send the little arrow LAUNCHES — up and out of the
    chip, then slips back in from below (about.js flags the button) */
@@ -675,7 +629,7 @@
 /* ---- elsewhere: bare monochrome marks that warm on hover ---- */
 .social-row {
   position: absolute;
-  top: 648px;
+  top: var(--social-top, 600px);   /* rides up with the letter, same 60px under it */
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -689,7 +643,7 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  color: #ababab;
+  color: #a1a19f;
   transition: color var(--t-micro) ease,
               translate var(--t-lift) var(--ease-lift);
 }
@@ -701,7 +655,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(38, 37, 30, 0.48);
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
@@ -747,6 +701,8 @@
     height: auto;
     padding: 30px 20px 42px;
   }
+  /* the id beats the class, so the desktop calc has to be undone by name */
+  #contact.about-slide { height: auto; }
   .about-slide:first-of-type { padding-top: 54px; }
   /* the last chapter clears the shared site-nav bottom bar (styles.css) */
   .about-slide:last-of-type { padding-bottom: 116px; }
@@ -765,28 +721,56 @@
   .about-title p { font-size: 16px; }
   .scroll-hint { display: none; }
 
-  /* 01 · bio — letter, signature, then the face, stacked */
+  /* 01 · story — the spread unstacks: the letter first, then the years
+     beneath it. The timeline needs NO scrollport here — the page itself is
+     the scrollport, so position:sticky pins each posting against the
+     document and the bump comes out identical, for free. */
+  .story-cols {
+    position: static;
+    transform: none;
+    display: flex;
+    flex-direction: column-reverse;    /* letter, then the years */
+    align-items: center;
+    gap: 42px;
+    width: auto;
+  }
+  .tl-col, .letter-col {
+    width: 100%;
+    max-width: 460px;
+  }
+  .tl {
+    height: auto;
+    overflow: visible;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .tl-track { padding-bottom: 0 !important; }
+  .tl-body {
+    top: 64px;
+    padding-left: 74px;
+  }
+  .tl.is-live .tl-body { opacity: 1; } /* no window to single one out inside */
+  .tl-axis { left: 52px; }
+  .tl-year { width: 52px; }
+  .tl-role { font-size: 19px; line-height: 25px; }
+  .tl-sum  { font-size: 15px; }
+
   .story-bio {
     position: static;
     width: auto;
-    max-width: 460px;
     margin: 0 auto;
     font-size: 17px;
     line-height: 26px;
   }
   .story-bio p + p { margin-top: 18px; }
-  .sig {
-    position: static;
-    display: block;
-    margin: 16px auto 0;
-  }
   .about-portrait {
-    position: relative;                /* in flow, but still the canvas's box */
+    position: relative;
     top: auto;
     left: auto;
-    width: 240px;
-    height: 306px;                     /* keeps the 330:421 face ratio */
-    margin: 18px auto 0;
+    float: right;
+    width: 120px;
+    height: 154px;                     /* keeps the 330:421 face ratio */
+    margin: 3px 0 10px 18px;
   }
 
   /* 02 · craft — the four ink cards deal into a centred column */
@@ -805,46 +789,6 @@
   .craft-illo { height: 160px; }
   .craft-illo svg { width: 140px; height: 140px; }
 
-  /* 03 · experience — the ledger unrolls: every row open, no
-     accordion, the rules already drawn */
-  .xp-ledger {
-    position: static;
-    transform: none;
-    width: 100%;
-    max-width: 460px;
-    height: auto;
-    margin: 0 auto;
-  }
-  .xp-row {
-    flex: none;
-    display: block;
-    overflow: visible;
-    padding: 18px 2px 20px;
-  }
-  .xp-num { display: none; }
-  .xp-when {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 12px;
-    padding: 0;
-    margin-bottom: 8px;
-  }
-  .xp-role { font-size: 19px; line-height: 25px; }
-  .xp-sum {
-    opacity: 1;
-    translate: none;
-    margin-top: 10px;
-    transition: none;
-  }
-  .xp-logo {
-    display: block;
-    height: 40px;
-    width: auto;
-    max-width: 120px;
-    margin-top: 14px;
-    filter: none;
-    opacity: 1;
-  }
   .slide-link {
     position: static;
     display: block;
@@ -889,26 +833,22 @@
 @media (prefers-reduced-motion: reduce) {
   .about-scroll { scroll-behavior: auto; }
   .about-title, .about-portrait, .story-bio,
-  .xp-row, .craft-card, .craft-chip, .slide-link,
+  .tl-item, .craft-card, .craft-chip, .slide-link,
   .compose, .social-row {
     transition: opacity 0.25s ease;
     translate: none;
   }
-  /* the ledger opens instantly, rules pre-drawn, summary just fades */
-  .xp-row::after, .xp-row:first-child::before {
-    transition: none;
-    transform: scaleX(1);
-  }
-  .xp-sum { transition: opacity 0.25s ease; translate: none; }
-  .xp-logo { transition: filter 0.25s ease, opacity 0.25s ease; }
-  .xp-row:hover .xp-logo, .xp-row:focus-visible .xp-logo { scale: none; }
+  /* the year column stops pinning and becomes what it always was
+     underneath: a plain ruled chronology, every rule already drawn,
+     nothing singled out */
+  .tl-body { position: static; opacity: 1; }
+  .tl.is-live .tl-body { opacity: 1; }
+  .tl { scroll-behavior: auto; }
+  .tl-rule { transition: none; transform: scaleX(1); }
+  .col-head::after { transition: none; transform: scaleX(1); }
   .about-portrait { cursor: default; }
   .about-portrait.is-spun { animation: none; }
   .compose-send.is-sent-anim svg { animation: none; }
-  .story-bio strong { transition: none; background-size: 100% 0.58em; }
-  .sig path { transition: none; stroke-dashoffset: 0; }
-  .sig .sig-dot { transition: none; opacity: 1; }
-  .sig:hover path, .sig:hover .sig-dot { animation: none; }
   .craft-chip:hover { transform: none; }
   .compose-send:hover, .compose-send:focus-visible { transform: none; }
   .social:hover, .social:focus-visible { translate: none; }

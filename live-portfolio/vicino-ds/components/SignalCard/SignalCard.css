@@ -1,0 +1,193 @@
+/* SignalCard — rich signal-feed card (tag / time / title / desc / CTA + sources,
+   and a stat / trend-badge / sparkline column). Promoted from the app signal page
+   (draft/pulse-app signal.css `.sig-card-v2`). Tokens from ../tokens.css.
+   NOTE: classes keep the app names (.sig-card-v2 / .sig-v2-*) so the app consumes
+   without a markup/JS rename; normalize to .signal-card later if desired. */
+/* make risk signal card clickable */
+.sig-card-v2[data-category='risk'] {
+  cursor: pointer;
+}
+
+.sig-card-v2[data-category='risk']:hover .sig-v2-inner {
+  background: rgba(241, 154, 8, 0.02);
+}
+
+.sig-card-v2.filtered-out {
+  display: none;
+}
+
+.sig-card-v2 {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  transition:
+    background var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease);
+}
+
+.sig-card-v2:hover {
+  background: var(--card-bg-strong);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.sig-v2-inner {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  padding: 20px;
+}
+
+.sig-v2-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sig-v2-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sig-v2-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 11px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.sig-v2-tag.risk {
+  background: var(--data-status-risk-soft);
+  border: 1px solid var(--data-status-risk-line);
+  color: var(--data-status-risk);
+}
+
+.sig-v2-tag.action {
+  background: var(--data-status-action-soft);
+  border: 1px solid var(--data-status-action-line);
+  color: var(--data-status-action);
+}
+
+.sig-v2-tag.highlight {
+  background: var(--data-status-highlight-soft);
+  border: 1px solid var(--data-status-highlight-line);
+  color: var(--data-status-highlight);
+}
+
+.sig-v2-time {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-4);
+}
+
+.sig-v2-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sig-v2-title {
+  font-size: var(--fs-5);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  line-height: var(--lh-snug);
+}
+
+.sig-v2-desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-3);
+  line-height: 22px;
+}
+
+.sig-v2-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sig-v2-sources {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--blue-600);
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.sig-v2-right {
+  width: 130px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+
+.sig-v2-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sig-v2-num {
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--ink);
+}
+
+.sig-v2-sublabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-4);
+}
+
+.sig-v2-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border-radius: 9999px;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  line-height: 15px;
+  width: fit-content;
+}
+
+.sig-v2-badge.amber {
+  background: var(--data-status-risk-soft);
+  border: 1px solid var(--data-status-risk-line);
+  color: var(--data-status-risk);
+}
+
+.sig-v2-badge.blue {
+  background: var(--data-status-action-soft);
+  border: 1px solid var(--data-status-action-line);
+  color: var(--data-status-action);
+}
+
+.sig-v2-badge.green {
+  background: var(--data-status-highlight-soft);
+  border: 1px solid var(--data-status-highlight-line);
+  color: var(--data-status-highlight);
+}
+
+.sig-v2-chart {
+  height: 40px;
+}
+
+.sig-v2-chart img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NodeGenerationMap - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="NodeGenerationMap.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        max-width: 64ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .specimen-label {
+        display: block;
+        margin-bottom: var(--space-3);
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .specimen {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 32px;
+        max-width: 980px;
+        margin-bottom: 44px;
+        padding: 20px;
+        border-radius: var(--r-xl);
+        background: var(--surface);
+      }
+      .specimen__status {
+        align-self: start;
+      }
+      .vc-status {
+        margin-bottom: 18px;
+      }
+      .handoff-note {
+        max-width: 64ch;
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        line-height: var(--lh-normal);
+      }
+      @media (max-width: 760px) {
+        .specimen {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">NodeGenerationMap</h1>
+    <p class="handoff-sub">
+      Generation DAG for a post: prompt / image / video / editor nodes that move
+      <b>queued &rarr; running &rarr; done</b> as production advances, on a dotted stage, with a
+      progress bar and a step pipeline. Animated in product (running edges flow, the running node's
+      dot glows); the frame below is a frozen mid-generation state. Cyan = neutral diagram path,
+      amber = the active/running edge, green = done.
+    </p>
+
+    <span class="specimen-label">Mid-generation (state frame)</span>
+    <div class="specimen">
+      <div class="vicino-canvas" data-canvas></div>
+      <div class="specimen__status">
+        <div class="vc-status">
+          <div class="vc-status__row">
+            <span data-vc-steps>0 of 30 steps</span><span class="vc-status__eta">~4 min left</span>
+          </div>
+          <div class="vc-progress"><span class="vc-progress__bar"></span></div>
+        </div>
+        <div class="vc-pipeline">
+          <div class="vc-pl-step vc-pl-step--done"><span class="vc-pl-dot"></span>Brief</div>
+          <div class="vc-pl-step vc-pl-step--running">
+            <span class="vc-pl-dot"></span>Generating
+          </div>
+          <div class="vc-pl-step"><span class="vc-pl-dot"></span>Render</div>
+          <div class="vc-pl-step"><span class="vc-pl-dot"></span>QA</div>
+          <div class="vc-pl-step"><span class="vc-pl-dot"></span>Content review</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="handoff-note">
+      Component source &middot; preview pending in the HTML component browser &middot; Figma handoff
+      pending. Reduced-motion: edges/dots/spinner stop animating, states stay visible. The 8.5px
+      node-label / wait text is the DS-allowed diagram-internal type exception, not product UI type.
+      Page-local origin:
+      <code>draft/campaign-page/js/components/node-generation-map.js</code>.
+    </p>
+
+    <script>
+      // Faithful to the page module's data + render; here it renders one static
+      // frame at a fixed progress (no animation loop) so designers see the anatomy
+      // and the queued/running/done states together.
+      const VC_W = 880,
+        VC_H = 300,
+        VC_NW = 120,
+        VC_NH = 78;
+      const VC_THR = {
+        0: 0,
+        6: 0.05,
+        1: 0.12,
+        7: 0.19,
+        2: 0.27,
+        3: 0.4,
+        8: 0.5,
+        4: 0.62,
+        9: 0.72,
+        5: 0.82,
+        10: 0.9,
+      };
+      const VC_EDGES = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [4, 5],
+        [6, 7],
+        [7, 8],
+        [8, 9],
+        [9, 10],
+        [1, 3],
+        [2, 4],
+        [7, 4],
+        [8, 4],
+      ];
+      const NODES = [
+        { id: 0, x: 8, y: 16, kind: 'prompt', label: 'Hook prompt' },
+        { id: 1, x: 156, y: 12, kind: 'image', label: 'Reference frame' },
+        { id: 2, x: 304, y: 18, kind: 'image', label: 'Keyframe 01' },
+        { id: 3, x: 452, y: 14, kind: 'video', label: 'Clip 01' },
+        { id: 4, x: 600, y: 20, kind: 'editor', label: 'Video editor' },
+        { id: 5, x: 748, y: 16, kind: 'editor', label: 'Vertical cut' },
+        { id: 6, x: 8, y: 168, kind: 'prompt', label: 'Caption prompt' },
+        { id: 7, x: 156, y: 172, kind: 'image', label: 'Keyframe 02' },
+        { id: 8, x: 304, y: 176, kind: 'video', label: 'Clip 02' },
+        { id: 9, x: 452, y: 178, kind: 'editor', label: 'Caption sync' },
+        { id: 10, x: 600, y: 182, kind: 'editor', label: 'QA pass' },
+      ];
+      const nodeBody = (n) =>
+        n.kind === 'prompt'
+          ? `<div class="vc-node__body"><div class="vc-skel">${[100, 80, 92, 60].map((w) => `<i style="width:${w}%"></i>`).join('')}</div></div>`
+          : `<div class="vc-node__body"><div class="vc-wait"><span class="vc-spin"></span><b class="vc-q">queued</b><b class="vc-r">running</b></div><div class="vc-thumb">${n.kind === 'video' ? '<span class="vc-play"><i><svg width="8" height="8" viewBox="0 0 24 24" fill="#1d1d1f"><path d="M8 5v14l11-7z"/></svg></i></span>' : ''}</div></div>`;
+      const byId = (id) => NODES.find((n) => n.id === id);
+      const cy = (n) => n.y + VC_NH / 2;
+      const edges = VC_EDGES.map(([a, b]) => {
+        const na = byId(a),
+          nb = byId(b);
+        const x1 = na.x + VC_NW,
+          y1 = cy(na),
+          x2 = nb.x,
+          y2 = cy(nb),
+          mx = (x1 + x2) / 2;
+        return `<path class="vc-edge" data-thr="${VC_THR[b]}" d="M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}"/>`;
+      }).join('');
+      const nodeEls = NODES.map(
+        (n) =>
+          `<div class="vc-node vc-node--${n.kind}" data-thr="${VC_THR[n.id]}" style="left:${(n.x / VC_W) * 100}%;top:${(n.y / VC_H) * 100}%;width:${(VC_NW / VC_W) * 100}%;height:${(VC_NH / VC_H) * 100}%"><div class="vc-node__head"><span class="vc-dot"></span><span class="vc-node__label">${n.label}</span></div>${nodeBody(n)}</div>`
+      ).join('');
+      const status = (progress, thr) =>
+        progress >= thr + 0.08 ? 'done' : progress >= thr ? 'running' : 'queued';
+      const canvas = document.querySelector('[data-canvas]');
+      canvas.innerHTML = `<div class="vc-stage"><svg viewBox="0 0 ${VC_W} ${VC_H}" preserveAspectRatio="none">${edges}</svg>${nodeEls}<div class="vc-fade"></div></div>`;
+      const progress = 0.5; // frozen mid-generation frame
+      canvas
+        .querySelectorAll('.vc-node')
+        .forEach((n) => n.classList.add('is-' + status(progress, parseFloat(n.dataset.thr))));
+      canvas.querySelectorAll('.vc-edge').forEach((e) => {
+        const s = status(progress, parseFloat(e.dataset.thr));
+        e.classList.add(s === 'running' ? 'is-run' : 'is-' + s);
+      });
+      document.querySelector('.vc-progress__bar').style.width = (progress * 100).toFixed(0) + '%';
+      document.querySelector('[data-vc-steps]').textContent =
+        Math.round(progress * 30) + ' of 30 steps';
+    </script>
+  </body>
+</html>

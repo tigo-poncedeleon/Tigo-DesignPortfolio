@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SignalRow - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="SignalRow.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        max-width: 66ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">SignalRow</h1>
+    <p class="handoff-sub">
+      A vertical feed row for triage. The whole row is the target; severity is expressed by a dot,
+      tone, and copy, not by stacking alert cards.
+    </p>
+
+    <div class="signal-specimen">
+      <button class="signal-row signal-row--risk is-selected" type="button" aria-pressed="true">
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span class="signal-content">
+          <span class="signal-title">Delivery-time complaints need a calm response</span>
+          <span class="signal-summary"
+            >8 posts in 4 hours are naming slow cross-border delivery.</span
+          >
+        </span>
+        <span class="signal-meta">4h ago - Open signal</span>
+      </button>
+      <button class="signal-row signal-row--watch" type="button" aria-pressed="false">
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span class="signal-content">
+          <span class="signal-title">Mood-based shopping is surging on TikTok</span>
+          <span class="signal-summary"
+            >24K monthly conversations, strongest around capsule edits.</span
+          >
+        </span>
+        <span class="signal-meta">2h ago - Review</span>
+      </button>
+      <button class="signal-row signal-row--info" type="button" aria-pressed="false">
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span class="signal-content">
+          <span class="signal-title">Creator reply window is open</span>
+          <span class="signal-summary">Three comments can become proof-led story prompts.</span>
+        </span>
+        <span class="signal-meta">Now - Route</span>
+      </button>
+    </div>
+
+    <section class="signal-state-section" aria-label="SignalRow static state snapshots">
+      <span class="specimen-label">State snapshots</span>
+      <button class="signal-row signal-row--watch is-hover" type="button" aria-pressed="false">
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span class="signal-content">
+          <span class="signal-title">Hover reveals the row as the target</span>
+          <span class="signal-summary">No nested action card; the row owns selection.</span>
+        </span>
+        <span class="signal-meta">Hover - Review</span>
+      </button>
+      <button class="signal-row signal-row--info is-focus" type="button" aria-pressed="false">
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span class="signal-content">
+          <span class="signal-title">Keyboard focus remains visible</span>
+          <span class="signal-summary">Focus ring appears on the full row target.</span>
+        </span>
+        <span class="signal-meta">Focus - Route</span>
+      </button>
+      <button class="signal-row signal-row--risk is-disabled" type="button" disabled>
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span class="signal-content">
+          <span class="signal-title">Disabled while action is pending</span>
+          <span class="signal-summary">The row keeps anatomy but drops interaction emphasis.</span>
+        </span>
+        <span class="signal-meta">Pending</span>
+      </button>
+    </section>
+
+    <script>
+      document.querySelectorAll('.signal-row').forEach((row) => {
+        row.addEventListener('click', () => {
+          document.querySelectorAll('.signal-row').forEach((item) => {
+            item.classList.remove('is-selected');
+            item.setAttribute('aria-pressed', 'false');
+          });
+          row.classList.add('is-selected');
+          row.setAttribute('aria-pressed', 'true');
+        });
+      });
+    </script>
+  </body>
+</html>

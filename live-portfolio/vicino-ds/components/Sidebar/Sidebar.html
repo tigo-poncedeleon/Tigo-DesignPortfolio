@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sidebar - Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="Sidebar.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: clamp(28px, 3vw, 44px);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sidebar-page {
+        display: grid;
+        gap: var(--space-8);
+        max-width: 1120px;
+      }
+      .sidebar-section {
+        display: grid;
+        gap: var(--space-4);
+      }
+      .sidebar-section-head {
+        display: grid;
+        gap: 5px;
+        max-width: 66ch;
+      }
+      .sidebar-section-head span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .sidebar-section-head p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .sidebar-live-layout {
+        display: grid;
+        grid-template-columns: 244px minmax(320px, 1fr);
+        align-items: start;
+        gap: clamp(24px, 4vw, 48px);
+      }
+      .sidebar-stage {
+        position: relative;
+        width: 244px;
+        height: min(820px, calc(100vh - 88px));
+        min-height: 680px;
+        overflow: visible;
+      }
+      /* The shipped .sidebar default is position: fixed (pinned app shell). This
+         demo pins it inside the stage frame instead so the board stays contained;
+         the app itself relies on the fixed default. */
+      .sidebar-stage > .sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        min-height: 0;
+        border-radius: 0;
+        border-right: 1px solid var(--border);
+        box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+      }
+      .sidebar-stage > .sidebar .sidebar-edge-toggle {
+        opacity: 1;
+      }
+      .interaction-panel {
+        display: grid;
+        gap: 14px;
+        max-width: 520px;
+      }
+      .interaction-panel h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: var(--fs-6);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-title);
+      }
+      .interaction-panel p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .interaction-checks {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .interaction-checks li {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        align-items: start;
+        gap: 9px;
+        color: var(--text-2);
+        font-size: var(--fs-3);
+        line-height: 1.45;
+      }
+      .interaction-checks li::before {
+        display: grid;
+        place-items: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        color: var(--ink-900);
+        content: '';
+      }
+      .interaction-checks li.is-live::before {
+        background: var(--cyan-100);
+        box-shadow: inset 0 0 0 1px var(--cyan-200);
+      }
+      .interaction-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .interaction-action {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: var(--canvas);
+        color: var(--text-2);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        box-shadow: inset 0 0 0 1px var(--border);
+      }
+      .interaction-action.is-primary {
+        background: var(--ink-900);
+        color: #fff;
+        box-shadow: none;
+      }
+      .handoff-note {
+        max-width: 68ch;
+      }
+      .handoff-note h1 {
+        margin: 0 0 6px;
+        color: var(--ink-800);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-note p {
+        margin: 0 0 12px;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .handoff-note code {
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgba(15, 23, 42, 0.05);
+        font-family: var(--font-mono);
+        font-size: var(--fs-2);
+      }
+      .state-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 0;
+      }
+      .state-list h2 {
+        margin: 0;
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .sidebar-taxonomy {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .sidebar-taxonomy-item {
+        display: grid;
+        gap: 3px;
+        padding: 12px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: var(--surface-highlight);
+      }
+      .sidebar-taxonomy-item b {
+        color: var(--text);
+        font-size: var(--fs-3);
+        font-weight: var(--fw-semibold);
+      }
+      .sidebar-taxonomy-item span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        line-height: 1.35;
+      }
+      .state-sample {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .state-sample.is-manage {
+        background: var(--surface);
+      }
+      .toggle-sample {
+        position: relative;
+        width: 220px;
+        height: 86px;
+        border-radius: 0;
+        background: var(--canvas);
+        box-shadow: var(--surface-highlight);
+      }
+      .toggle-sample.is-collapsed {
+        width: 80px;
+        background: linear-gradient(90deg, var(--canvas) 0 64px, transparent 64px);
+      }
+      .toggle-sample.is-collapsed .sidebar-edge-toggle.sample.collapsed {
+        right: 0;
+      }
+      .rail-slice-grid {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .rail-slice {
+        display: grid;
+        min-height: 392px;
+        overflow: hidden;
+        border-radius: 0;
+        background: var(--canvas);
+        box-shadow:
+          inset 0 0 0 1px rgba(18, 31, 45, 0.055),
+          0 10px 24px rgba(18, 31, 45, 0.055);
+      }
+      .rail-slice.expanded {
+        width: 174px;
+        grid-template-rows: auto auto auto 1fr auto;
+      }
+      .rail-slice.collapsed {
+        width: 64px;
+        justify-items: center;
+        grid-template-rows: auto auto auto 1fr auto;
+      }
+      .rail-slice-row,
+      .rail-slice-workspace {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 0 10px;
+        border-bottom: 1px solid rgba(29, 29, 31, 0.055);
+      }
+      .rail-slice.collapsed .rail-slice-row,
+      .rail-slice.collapsed .rail-slice-workspace {
+        justify-content: center;
+        width: 100%;
+        padding: 0;
+      }
+      .rail-slice-mark,
+      .rail-slice-avatar {
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        flex: none;
+        border-radius: 6px;
+        background: var(--ink-900);
+        color: #fff;
+        font-size: var(--fs-1);
+        font-weight: var(--fw-heavy);
+      }
+      .rail-slice-avatar {
+        position: relative;
+        background: var(--surface-2);
+        color: var(--ink-800);
+      }
+      .rail-slice-workspace::after {
+        width: 5px;
+        height: 5px;
+        margin-left: auto;
+        border-right: 1.2px solid currentColor;
+        border-bottom: 1.2px solid currentColor;
+        opacity: 0.55;
+        transform: rotate(45deg);
+        content: '';
+      }
+      .rail-slice.collapsed .rail-slice-workspace::after {
+        display: none;
+      }
+      .rail-slice-copy {
+        min-width: 0;
+        overflow: hidden;
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .rail-slice-nav,
+      .rail-slice-chat {
+        display: grid;
+        gap: 3px;
+        padding: 8px;
+      }
+      .rail-slice.collapsed .rail-slice-nav {
+        justify-items: center;
+        width: 100%;
+        padding: 8px 0;
+      }
+      .rail-slice-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        padding: 0 8px;
+        border-radius: var(--r-sm);
+        color: var(--text-2);
+        font-size: var(--fs-2);
+      }
+      .rail-slice-item.active {
+        background: var(--ink-900);
+        color: #fff;
+        font-weight: var(--fw-semibold);
+      }
+      .rail-slice.collapsed .rail-slice-item {
+        justify-content: center;
+        width: 34px;
+        padding: 0;
+      }
+      .rail-slice-item svg {
+        width: 15px;
+        height: 15px;
+        flex: none;
+      }
+      .rail-slice-chat {
+        align-content: start;
+        border-top: 1px solid rgba(29, 29, 31, 0.055);
+      }
+      .rail-slice-chat-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .rail-slice-chat-row {
+        min-height: 34px;
+        padding: 7px 8px;
+        border-radius: var(--r-sm);
+        background: var(--surface-2);
+      }
+      .rail-slice-chat-row b,
+      .rail-slice-chat-row span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .rail-slice-chat-row b {
+        font-size: var(--fs-1);
+      }
+      .rail-slice-chat-row span {
+        color: var(--text-4);
+        font-size: 9px;
+      }
+      .rail-slice-new {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        margin-top: 12px;
+        border-radius: 10px;
+        background: var(--surface-3);
+        color: var(--ink-900);
+      }
+      .rail-slice-new::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: currentColor;
+        content: '';
+      }
+      .rail-slice-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 10px;
+        border-top: 1px solid rgba(29, 29, 31, 0.055);
+      }
+      .rail-slice.collapsed .rail-slice-user {
+        justify-content: center;
+        width: 100%;
+        padding: 0;
+      }
+      @media (max-width: 720px) {
+        .sidebar-live-layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar-taxonomy {
+          grid-template-columns: 1fr;
+        }
+        body {
+          gap: 28px;
+          padding: 24px;
+        }
+        .sidebar-stage,
+        .sidebar-stage > .sidebar {
+          height: min(680px, calc(100vh - 48px));
+        }
+        .sidebar-stage {
+          width: min(244px, calc(100vw - 48px));
+          min-height: 0;
+        }
+        .handoff-note {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sidebar-page">
+      <header class="handoff-note" aria-label="Introduction">
+        <h1>Sidebar</h1>
+        <p>
+          New shell taxonomy: <code>Brand</code> identifies Pulse, <code>Workspace</code> owns the
+          brand switcher and all workspace destinations, and <code>Recent chat</code> owns
+          conversation history plus chat actions.
+        </p>
+        <p>
+          The recent chat list scrolls independently. Collapse/expand is attached to the rail edge:
+          collapse sits flush inside the expanded rail; expand sits flush outside the collapsed
+          rail. Collapsed rails keep only page icons and compact recent-chat dot affordances; recent
+          chat history never becomes placeholder dash rows.
+        </p>
+        <p>
+          Active page and active chat states are intentionally darker so selection is readable
+          against the neutral rail.
+        </p>
+      </header>
+
+      <section class="sidebar-section" aria-label="Sidebar animated component">
+        <div class="sidebar-section-head">
+          <span>Animated component</span>
+          <p>
+            The live rail collapses, expands, switches active nav, manages recent chats, and starts
+            a new chat. The fixed stage keeps surrounding UI from shifting while the rail animates.
+          </p>
+        </div>
+        <div class="sidebar-live-layout">
+          <div class="sidebar-stage">
+            <aside class="sidebar" aria-label="Primary navigation">
+              <section class="sidebar-fixed" aria-label="Brand and workspace">
+                <div class="sidebar-logo">
+                  <div class="logo-mark">P</div>
+                  <div class="logo-name">Pulse</div>
+                </div>
+                <button
+                  class="sidebar-edge-toggle"
+                  type="button"
+                  aria-label="Collapse sidebar"
+                  title="Collapse sidebar"
+                >
+                  <svg
+                    class="sidebar-toggle-icon"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 3L5 7l4 4"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  class="workspace-switch"
+                  type="button"
+                  aria-label="Switch workspace"
+                  title="Aurelia"
+                >
+                  <div class="workspace-avatar">AS</div>
+                  <span class="workspace-name">Aurelia Skin</span>
+                  <svg width="14" height="14" fill="none" viewBox="0 0 14 14" aria-hidden="true">
+                    <path
+                      d="M4 6l3 3 3-3"
+                      stroke="currentColor"
+                      stroke-width="1.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                <div class="workspace-section-title">Workspace</div>
+                <nav class="primary-nav" aria-label="Workspace destinations">
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <path
+                        d="M3 8l7-5 7 5v9a1 1 0 01-1 1h-4v-6h-4v6H4a1 1 0 01-1-1V8z"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    <span>Home</span>
+                  </button>
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" />
+                      <circle cx="10" cy="10" r="3.5" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                    <span>Strategy</span>
+                  </button>
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <rect
+                        x="3"
+                        y="4"
+                        width="14"
+                        height="13"
+                        rx="2"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      />
+                      <path
+                        d="M7 2v4M13 2v4"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <span>Calendar</span>
+                    <span class="nav-badge">2</span>
+                  </button>
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <path
+                        d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      />
+                      <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                    <span>Signal</span>
+                    <span class="nav-badge watch">2</span>
+                  </button>
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <path
+                        d="M3 15V9m4 6V5m4 10V10m4 5V3"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <span>Analytics</span>
+                  </button>
+                  <button class="nav-item active" type="button" aria-current="page">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <rect
+                        x="3"
+                        y="4"
+                        width="14"
+                        height="13"
+                        rx="2"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      />
+                      <path
+                        d="M7 2v4M13 2v4M3 9h14"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <span>Campaigns</span>
+                    <span class="nav-badge">4</span>
+                  </button>
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <rect
+                        x="4"
+                        y="3"
+                        width="12"
+                        height="14"
+                        rx="2"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      />
+                      <path
+                        d="M7 7h6M7 10.5h6M7 14h4"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <span>Vault</span>
+                  </button>
+                  <button class="nav-item" type="button">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                      <rect
+                        x="3"
+                        y="5"
+                        width="14"
+                        height="10"
+                        rx="2"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      />
+                      <path
+                        d="M3 7l7 5 7-5"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    <span>Inbox</span>
+                    <span class="nav-badge">3</span>
+                  </button>
+                </nav>
+              </section>
+
+              <section class="recent-chat-panel" aria-label="Recent chats">
+                <div class="recent-chat-head">
+                  <span>Recent chat</span>
+                  <div class="recent-chat-actions" aria-label="Recent chat actions">
+                    <button
+                      class="manage-chat-button"
+                      type="button"
+                      aria-label="Manage recent chats"
+                      aria-pressed="false"
+                      title="Manage chats"
+                    >
+                      <svg fill="none" viewBox="0 0 16 16" aria-hidden="true">
+                        <path
+                          d="M3 4h10M3 8h10M3 12h6"
+                          stroke="currentColor"
+                          stroke-width="1.45"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      class="new-chat-button"
+                      type="button"
+                      aria-label="Start new chat"
+                      title="New chat"
+                    >
+                      <svg fill="none" viewBox="0 0 16 16" aria-hidden="true">
+                        <path
+                          d="M8 3.5v9M3.5 8h9"
+                          stroke="currentColor"
+                          stroke-width="1.7"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="recent-chat-list" role="list">
+                  <button class="chat-item" type="button" role="listitem" aria-selected="false">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Summer launch guardrails</span>
+                      <span class="chat-meta">Campaign planning - 12m</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Delivery-time risk response</span>
+                      <span class="chat-meta">Signal follow-up - 1h</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Q2 creator proof readout</span>
+                      <span class="chat-meta">Analytics - Yesterday</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Quiet confidence post set</span>
+                      <span class="chat-meta">Campaign draft - Tue</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Audience concern summary</span>
+                      <span class="chat-meta">Signal report - Mon</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Creator brief polish</span>
+                      <span class="chat-meta">Vault - Jun 10</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">IG carousel review</span>
+                      <span class="chat-meta">Campaign - Jun 8</span>
+                    </span>
+                  </button>
+                  <button class="chat-item" type="button" role="listitem">
+                    <span class="chat-select-mark" aria-hidden="true"></span>
+                    <span class="chat-copy">
+                      <span class="chat-title">Competitive copy notes</span>
+                      <span class="chat-meta">Strategy - Jun 5</span>
+                    </span>
+                  </button>
+                </div>
+                <div class="chat-manage-bar" aria-live="polite">
+                  <span class="chat-manage-count">0 selected</span>
+                  <button class="chat-delete-button" type="button" disabled>Delete</button>
+                </div>
+              </section>
+
+              <div class="sidebar-bottom">
+                <div class="sidebar-user">
+                  <div class="user-avatar">MR</div>
+                  <div class="user-info">
+                    <div class="user-name">Maya R.</div>
+                    <div class="user-role">Brand Lead</div>
+                  </div>
+                  <button
+                    class="sidebar-settings"
+                    type="button"
+                    title="Settings"
+                    aria-label="Open settings"
+                  >
+                    <svg
+                      width="15"
+                      height="15"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="1.55"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="3" />
+                      <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+          <aside class="interaction-panel" aria-label="Sidebar interaction coverage">
+            <h2>Live interaction coverage</h2>
+            <p>
+              The specimen is intentionally interactive: use the edge control to collapse or expand,
+              switch workspace tabs without page jump, manage recent chats, and start a new chat.
+            </p>
+            <div class="interaction-actions" aria-label="Interactive controls represented">
+              <span class="interaction-action is-primary">Edge collapse / expand</span>
+              <span class="interaction-action">Active nav switch</span>
+              <span class="interaction-action">Manage chats</span>
+              <span class="interaction-action">New chat</span>
+            </div>
+            <ul class="interaction-checks">
+              <li class="is-live">
+                Expanded rail keeps Brand, Workspace, and Recent chat aligned.
+              </li>
+              <li class="is-live">
+                Collapsed rail keeps page icons and recent-chat dots centered.
+              </li>
+              <li>Scroll position is preserved when clicking nav or toggling manage mode.</li>
+              <li>
+                Native scrollbars stay hidden while wheel, touch, and keyboard scroll continue.
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="sidebar-section" aria-label="Sidebar static slices">
+        <div class="sidebar-section-head">
+          <span>Slices</span>
+          <p>
+            Static Brand, Workspace, Recent chat, manage, and edge-toggle frames are separated from
+            the live interaction so designers can place them without inheriting runtime movement.
+          </p>
+        </div>
+        <div class="sidebar-taxonomy" aria-label="Sidebar slice taxonomy">
+          <div class="sidebar-taxonomy-item">
+            <b>Brand</b>
+            <span>Pulse mark and product identity pinned to the rail.</span>
+          </div>
+          <div class="sidebar-taxonomy-item">
+            <b>Workspace</b>
+            <span>Brand switcher plus all former Perception and Creative destinations.</span>
+          </div>
+          <div class="sidebar-taxonomy-item">
+            <b>Recent chat</b>
+            <span>Scrollable conversation history, new chat, manage, and delete states.</span>
+          </div>
+        </div>
+        <div class="state-list" aria-label="Sidebar state snapshots">
+          <h2>Brand + workspace + recent chat rail</h2>
+          <div class="state-sample">
+            <div class="rail-slice-grid" aria-label="Expanded and collapsed sidebar rail slices">
+              <div>
+                <div class="rail-slice expanded">
+                  <div class="rail-slice-row">
+                    <span class="rail-slice-mark">P</span><span class="rail-slice-copy">Pulse</span>
+                  </div>
+                  <div class="rail-slice-workspace">
+                    <span class="rail-slice-avatar is-switch">AS</span
+                    ><span class="rail-slice-copy">Aurelia Skin</span>
+                  </div>
+                  <div class="rail-slice-nav">
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <path
+                          d="M3.5 9.5 10 4l6.5 5.5V16a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V9.5Z"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                      <span>Home</span>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" />
+                        <circle cx="10" cy="10" r="3.5" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                      <span>Strategy</span>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="3"
+                          y="4"
+                          width="14"
+                          height="13"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                      <span>Calendar</span>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <path
+                          d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                        <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                      <span>Signal</span>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M3 15V9m4 6V5m4 10V10m4 5V3" stroke="currentColor" />
+                      </svg>
+                      <span>Analytics</span>
+                    </div>
+                    <div class="rail-slice-item active">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="3"
+                          y="4"
+                          width="14"
+                          height="13"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                        <path d="M7 2v4M13 2v4M3 9h14" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                      <span>Campaigns</span>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="4"
+                          y="3"
+                          width="12"
+                          height="14"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                        <path d="M7 7h6M7 10.5h6M7 14h4" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                      <span>Vault</span>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="3"
+                          y="5"
+                          width="14"
+                          height="10"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                      <span>Inbox</span>
+                    </div>
+                  </div>
+                  <div class="rail-slice-chat">
+                    <div class="rail-slice-chat-head"><span>Recent chat</span><span>+</span></div>
+                    <div class="rail-slice-chat-row">
+                      <b>Summer launch</b><span>Campaign planning</span>
+                    </div>
+                    <div class="rail-slice-chat-row">
+                      <b>Delivery risk</b><span>Signal follow-up</span>
+                    </div>
+                    <div class="rail-slice-chat-row">
+                      <b>Creator proof</b><span>Analytics readout</span>
+                    </div>
+                    <div class="rail-slice-chat-row">
+                      <b>Quiet confidence</b><span>Campaign draft</span>
+                    </div>
+                  </div>
+                  <div class="rail-slice-user">
+                    <span class="user-avatar">MR</span><span class="rail-slice-copy">Maya R.</span>
+                  </div>
+                </div>
+                <small>Expanded rail / SidebarExpandedRail</small>
+              </div>
+              <div>
+                <div class="rail-slice collapsed">
+                  <div class="rail-slice-row"><span class="rail-slice-mark">P</span></div>
+                  <div class="rail-slice-workspace">
+                    <span class="rail-slice-avatar is-switch">AS</span>
+                  </div>
+                  <div class="rail-slice-nav">
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <path
+                          d="M3.5 9.5 10 4l6.5 5.5V16a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V9.5Z"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" />
+                        <circle cx="10" cy="10" r="3.5" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="3"
+                          y="4"
+                          width="14"
+                          height="13"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <path
+                          d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                        <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M3 15V9m4 6V5m4 10V10m4 5V3" stroke="currentColor" />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item active">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="3"
+                          y="4"
+                          width="14"
+                          height="13"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                        <path d="M7 2v4M13 2v4M3 9h14" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="4"
+                          y="3"
+                          width="12"
+                          height="14"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                        <path d="M7 7h6M7 10.5h6M7 14h4" stroke="currentColor" stroke-width="1.5" />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-item">
+                      <svg fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                        <rect
+                          x="3"
+                          y="5"
+                          width="14"
+                          height="10"
+                          rx="2"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                    </div>
+                    <div class="rail-slice-new"></div>
+                  </div>
+                  <div></div>
+                  <div class="rail-slice-user"><span class="user-avatar">MR</span></div>
+                </div>
+                <small>Collapsed rail / SidebarCollapsedRail</small>
+              </div>
+            </div>
+          </div>
+
+          <h2>Workspace item states</h2>
+          <div class="state-sample">
+            <button class="nav-item is-hover" type="button">
+              <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                <path
+                  d="M3 15V9m4 6V5m4 10V10m4 5V3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span>Hover</span>
+            </button>
+            <button class="nav-item is-focus" type="button">
+              <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" />
+                <circle cx="10" cy="10" r="3.5" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+              <span>Focus</span>
+            </button>
+            <button class="nav-item active" type="button" aria-current="page">
+              <svg class="nav-icon" fill="none" viewBox="0 0 20 20" aria-hidden="true">
+                <rect
+                  x="3"
+                  y="4"
+                  width="14"
+                  height="13"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M7 2v4M13 2v4M3 9h14"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span>Active</span><span class="nav-badge">4</span>
+            </button>
+            <button class="chat-item active" type="button" aria-selected="true">
+              <span class="chat-select-mark" aria-hidden="true"></span>
+              <span class="chat-copy">
+                <span class="chat-title">Active recent chat</span>
+                <span class="chat-meta">Selected conversation</span>
+              </span>
+            </button>
+          </div>
+          <h2>Recent chat manage</h2>
+          <div class="state-sample is-manage">
+            <div class="recent-chat-panel is-managing" style="padding: 0">
+              <div class="recent-chat-head">
+                <span>Recent chat</span>
+                <div class="recent-chat-actions">
+                  <button class="manage-chat-button active" type="button" aria-pressed="true">
+                    <svg fill="none" viewBox="0 0 16 16" aria-hidden="true">
+                      <path
+                        d="M3 4h10M3 8h10M3 12h6"
+                        stroke="currentColor"
+                        stroke-width="1.45"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <button class="chat-item is-selected" type="button">
+                <span class="chat-select-mark" aria-hidden="true"></span>
+                <span class="chat-copy">
+                  <span class="chat-title">Selected chat</span>
+                  <span class="chat-meta">Ready to delete</span>
+                </span>
+              </button>
+              <div class="chat-manage-bar is-visible">
+                <span class="chat-manage-count">1 selected</span>
+                <button class="chat-delete-button" type="button">Delete</button>
+              </div>
+            </div>
+          </div>
+          <h2>Edge toggle</h2>
+          <div class="state-sample">
+            <div class="toggle-sample">
+              <span class="sidebar-edge-toggle sample" aria-hidden="true">
+                <svg class="sidebar-toggle-icon" fill="none" viewBox="0 0 14 14">
+                  <path
+                    d="M9 3L5 7l4 4"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            </div>
+            <div class="toggle-sample is-collapsed">
+              <span class="sidebar-edge-toggle sample collapsed" aria-hidden="true">
+                <svg class="sidebar-toggle-icon" fill="none" viewBox="0 0 14 14">
+                  <path
+                    d="M5 3l4 4-4 4"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const sb = document.querySelector('.sidebar');
+      const btn = sb.querySelector('.sidebar-edge-toggle');
+      const path = btn.querySelector('path');
+      let collapseTimer;
+
+      btn.addEventListener('click', () => {
+        window.clearTimeout(collapseTimer);
+        const collapsed = !sb.classList.contains('is-collapsed');
+        sb.classList.add('is-animating');
+        requestAnimationFrame(() => {
+          sb.classList.toggle('is-collapsed', collapsed);
+          path.setAttribute('d', collapsed ? 'M5 3l4 4-4 4' : 'M9 3L5 7l4 4');
+          btn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+          btn.setAttribute('title', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+          collapseTimer = window.setTimeout(() => sb.classList.remove('is-animating'), 240);
+        });
+      });
+
+      function keepScrollPosition(callback) {
+        const pageX = window.scrollX;
+        const pageY = window.scrollY;
+        const chatList = sb.querySelector('.recent-chat-list');
+        const chatY = chatList ? chatList.scrollTop : 0;
+
+        callback();
+
+        requestAnimationFrame(() => {
+          window.scrollTo(pageX, pageY);
+          if (chatList) {
+            chatList.scrollTop = chatY;
+          }
+        });
+      }
+
+      function activateNavItem(item) {
+        keepScrollPosition(() => {
+          sb.querySelectorAll('.nav-item').forEach((n) => {
+            n.classList.remove('active', 'is-activating');
+            n.removeAttribute('aria-current');
+          });
+          item.classList.add('active', 'is-activating');
+          item.setAttribute('aria-current', 'page');
+          item.focus({ preventScroll: true });
+          window.setTimeout(() => item.classList.remove('is-activating'), 280);
+        });
+      }
+
+      sb.querySelectorAll('.nav-item').forEach((item) => {
+        item.addEventListener('pointerdown', (event) => {
+          event.preventDefault();
+        });
+        item.addEventListener('click', () => activateNavItem(item));
+      });
+
+      function updateManageBar() {
+        const selected = [...sb.querySelectorAll('.chat-item.is-selected')];
+        const bar = sb.querySelector('.chat-manage-bar');
+        const count = sb.querySelector('.chat-manage-count');
+        const del = sb.querySelector('.chat-delete-button');
+        const hasSelection = selected.length > 0;
+        count.textContent = `${selected.length} selected`;
+        del.disabled = !hasSelection;
+        bar.classList.toggle('is-visible', sb.classList.contains('is-managing'));
+      }
+
+      function bindChatItem(item) {
+        item.addEventListener('click', () => {
+          if (sb.classList.contains('is-managing')) {
+            item.classList.toggle('is-selected');
+            item.setAttribute(
+              'aria-pressed',
+              item.classList.contains('is-selected') ? 'true' : 'false'
+            );
+            updateManageBar();
+            return;
+          }
+          sb.querySelectorAll('.chat-item').forEach((n) => {
+            n.classList.remove('active');
+            n.setAttribute('aria-selected', 'false');
+          });
+          item.classList.add('active');
+          item.setAttribute('aria-selected', 'true');
+        });
+      }
+
+      sb.querySelectorAll('.chat-item').forEach(bindChatItem);
+
+      sb.querySelector('.manage-chat-button').addEventListener('click', () => {
+        const managing = sb.classList.toggle('is-managing');
+        const manageButton = sb.querySelector('.manage-chat-button');
+        manageButton.classList.toggle('active', managing);
+        manageButton.setAttribute('aria-pressed', managing ? 'true' : 'false');
+        sb.querySelectorAll('.chat-item').forEach((item) => {
+          item.setAttribute(
+            'aria-pressed',
+            item.classList.contains('is-selected') ? 'true' : 'false'
+          );
+        });
+        updateManageBar();
+      });
+
+      sb.querySelector('.chat-delete-button').addEventListener('click', () => {
+        sb.querySelectorAll('.chat-item.is-selected').forEach((item) => item.remove());
+        updateManageBar();
+      });
+
+      sb.querySelector('.new-chat-button').addEventListener('click', () => {
+        const list = sb.querySelector('.recent-chat-list');
+        const previousScrollTop = list.scrollTop;
+        const previousScrollHeight = list.scrollHeight;
+        const item = document.createElement('button');
+        item.className = 'chat-item active';
+        item.type = 'button';
+        item.setAttribute('role', 'listitem');
+        item.setAttribute('aria-selected', 'true');
+        item.innerHTML =
+          '<span class="chat-select-mark" aria-hidden="true"></span><span class="chat-copy"><span class="chat-title">New chat</span><span class="chat-meta">Just now</span></span>';
+        list.querySelectorAll('.chat-item').forEach((n) => {
+          n.classList.remove('active');
+          n.setAttribute('aria-selected', 'false');
+        });
+        list.prepend(item);
+        bindChatItem(item);
+        list.scrollTop = previousScrollTop + (list.scrollHeight - previousScrollHeight);
+        updateManageBar();
+      });
+    </script>
+  </body>
+</html>

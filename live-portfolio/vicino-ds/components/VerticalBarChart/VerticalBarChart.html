@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VerticalBarChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="VerticalBarChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 572px), 572px));
+        gap: 40px 48px;
+        align-items: flex-start;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">VerticalBarChart</h1>
+    <p class="handoff-sub">
+      Column scaffold for single-series and grouped bar charts. Rounded columns square at the
+      baseline over solid hairline gridlines; a single series ramps light→dark BY VALUE with the
+      peak as the black anchor + pinned chip (no legend), and the grouped pair reads brand cyan ×
+      ink plus a legend. Only the extreme is direct-labeled — hover or focus any bar for its exact
+      value. Pair with DataTable for the full-values accessibility twin.
+    </p>
+
+    <div class="specimen">
+      <!-- Variant: single series -->
+      <div class="specimen-item">
+        <span class="specimen-label">Single series + peak label</span>
+        <div class="vbar">
+          <div class="vbar__head">
+            <div>
+              <h2 class="vbar__title">Posts Published</h2>
+              <p class="vbar__sub">per week · last 6 weeks</p>
+            </div>
+          </div>
+          <div class="vbar__hero">
+            <span class="vbar__hero-value">50</span>
+            <span class="vbar__hero-delta">posts · ↑ +18% vs prior 6 weeks</span>
+          </div>
+          <div
+            class="vbar__plot"
+            role="img"
+            aria-label="Single-series bar chart of posts published per week, peaking at 11 in week 5."
+          >
+            <svg viewBox="0 0 538 216">
+              <g class="vbar__grid">
+                <line x1="34" y1="135" x2="524" y2="135" />
+                <line x1="34" y1="90" x2="524" y2="90" />
+                <line x1="34" y1="45" x2="524" y2="45" />
+              </g>
+              <line class="vbar__baseline" x1="34" y1="180" x2="524" y2="180" />
+              <g class="vbar__ticks" text-anchor="end">
+                <text x="26" y="184">0</text>
+                <text x="26" y="139">4</text>
+                <text x="26" y="94">8</text>
+                <text x="26" y="49">12</text>
+              </g>
+              <g>
+                <path
+                  class="vbar__bar vbar__bar--r200"
+                  d="M50.83,180 V135.75 Q50.83,123.75 62.83,123.75 H86.83 Q98.83,123.75 98.83,135.75 V180 Z"
+                  tabindex="0"
+                  data-tip-value="5 posts"
+                  data-tip-label="W1"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--r300"
+                  d="M132.5,180 V113.25 Q132.5,101.25 144.5,101.25 H168.5 Q180.5,101.25 180.5,113.25 V180 Z"
+                  tabindex="0"
+                  data-tip-value="7 posts"
+                  data-tip-label="W2"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--r400"
+                  d="M214.17,180 V90.75 Q214.17,78.75 226.17,78.75 H250.17 Q262.17,78.75 262.17,90.75 V180 Z"
+                  tabindex="0"
+                  data-tip-value="9 posts"
+                  data-tip-label="W3"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--r300"
+                  d="M295.83,180 V102 Q295.83,90 307.83,90 H331.83 Q343.83,90 343.83,102 V180 Z"
+                  tabindex="0"
+                  data-tip-value="8 posts"
+                  data-tip-label="W4"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--hot"
+                  d="M377.5,180 V68.25 Q377.5,56.25 389.5,56.25 H413.5 Q425.5,56.25 425.5,68.25 V180 Z"
+                  tabindex="0"
+                  data-tip-value="11 posts"
+                  data-tip-label="W5 · peak"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--r500"
+                  d="M459.17,180 V79.5 Q459.17,67.5 471.17,67.5 H495.17 Q507.17,67.5 507.17,79.5 V180 Z"
+                  tabindex="0"
+                  data-tip-value="10 posts"
+                  data-tip-label="W6"
+                ></path>
+              </g>
+              <line class="vbar__ref" x1="34" y1="86.25" x2="524" y2="86.25" />
+              <text class="vbar__ref-label" x="38" y="80">avg 8.3</text>
+              <g class="vbar__cats" text-anchor="middle">
+                <text x="74.83" y="200">W1</text>
+                <text x="156.5" y="200">W2</text>
+                <text x="238.17" y="200">W3</text>
+                <text x="319.83" y="200">W4</text>
+                <text x="401.5" y="200">W5</text>
+                <text x="483.17" y="200">W6</text>
+              </g>
+            </svg>
+            <div class="vbar__chip" style="left: 74.6%; top: 26%">11</div>
+            <div class="chart-tip" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: grouped 2-series + legend + annotation + stat trio -->
+      <div class="specimen-item">
+        <span class="specimen-label">Grouped 2-series + legend + annotation + stats</span>
+        <div class="vbar">
+          <div class="vbar__head">
+            <div>
+              <h2 class="vbar__title">Gender by Age Range</h2>
+              <p class="vbar__sub">age split within each gender · all platforms · last 30 days</p>
+            </div>
+            <div class="vbar__legend">
+              <span class="vbar__legend-item"
+                ><span class="vbar__swatch vbar__swatch--a"></span>Women</span
+              >
+              <span class="vbar__legend-item"
+                ><span class="vbar__swatch vbar__swatch--b"></span>Men</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="vbar__plot"
+            role="img"
+            aria-label="Grouped bar chart of women vs men audience share by age range. Women peak at 38% in 25–34; men peak at 35% in 35–44."
+          >
+            <svg viewBox="0 0 538 216">
+              <g class="vbar__grid">
+                <line x1="34" y1="140" x2="524" y2="140" />
+                <line x1="34" y1="100" x2="524" y2="100" />
+                <line x1="34" y1="60" x2="524" y2="60" />
+                <line x1="34" y1="20" x2="524" y2="20" />
+              </g>
+              <line class="vbar__baseline" x1="34" y1="180" x2="524" y2="180" />
+              <g class="vbar__ticks" text-anchor="end">
+                <text x="26" y="184">0%</text>
+                <text x="26" y="144">10%</text>
+                <text x="26" y="104">20%</text>
+                <text x="26" y="64">30%</text>
+                <text x="26" y="24">40%</text>
+              </g>
+              <g>
+                <path
+                  class="vbar__bar vbar__bar--a"
+                  d="M59.5,180 V67 Q59.5,60 66.5,60 H74.5 Q81.5,60 81.5,67 V180 Z"
+                  tabindex="0"
+                  data-tip-value="30%"
+                  data-tip-label="Women · 18–24"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--b"
+                  d="M84.5,180 V103 Q84.5,96 91.5,96 H99.5 Q106.5,96 106.5,103 V180 Z"
+                  tabindex="0"
+                  data-tip-value="21%"
+                  data-tip-label="Men · 18–24"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--a"
+                  d="M157.5,180 V35 Q157.5,28 164.5,28 H172.5 Q179.5,28 179.5,35 V180 Z"
+                  tabindex="0"
+                  data-tip-value="38%"
+                  data-tip-label="Women · 25–34 · peak"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--b"
+                  d="M182.5,180 V107 Q182.5,100 189.5,100 H197.5 Q204.5,100 204.5,107 V180 Z"
+                  tabindex="0"
+                  data-tip-value="20%"
+                  data-tip-label="Men · 25–34"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--a"
+                  d="M255.5,180 V99 Q255.5,92 262.5,92 H270.5 Q277.5,92 277.5,99 V180 Z"
+                  tabindex="0"
+                  data-tip-value="22%"
+                  data-tip-label="Women · 35–44"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--b"
+                  d="M280.5,180 V47 Q280.5,40 287.5,40 H295.5 Q302.5,40 302.5,47 V180 Z"
+                  tabindex="0"
+                  data-tip-value="35%"
+                  data-tip-label="Men · 35–44"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--a"
+                  d="M353.5,180 V159 Q353.5,152 360.5,152 H368.5 Q375.5,152 375.5,159 V180 Z"
+                  tabindex="0"
+                  data-tip-value="7%"
+                  data-tip-label="Women · 45–54"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--b"
+                  d="M378.5,180 V127 Q378.5,120 385.5,120 H393.5 Q400.5,120 400.5,127 V180 Z"
+                  tabindex="0"
+                  data-tip-value="15%"
+                  data-tip-label="Men · 45–54"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--a"
+                  d="M451.5,180 V175 Q451.5,168 458.5,168 H466.5 Q473.5,168 473.5,175 V180 Z"
+                  tabindex="0"
+                  data-tip-value="3%"
+                  data-tip-label="Women · 55–64"
+                ></path>
+                <path
+                  class="vbar__bar vbar__bar--b"
+                  d="M476.5,180 V151 Q476.5,144 483.5,144 H491.5 Q498.5,144 498.5,151 V180 Z"
+                  tabindex="0"
+                  data-tip-value="9%"
+                  data-tip-label="Men · 55–64"
+                ></path>
+              </g>
+              <text class="vbar__note" x="181" y="14" text-anchor="middle">Core segment</text>
+              <g class="vbar__cats" text-anchor="middle">
+                <text x="83" y="200">18–24</text>
+                <text x="181" y="200">25–34</text>
+                <text x="279" y="200">35–44</text>
+                <text x="377" y="200">45–54</text>
+                <text x="475" y="200">55–64</text>
+              </g>
+            </svg>
+            <div class="chart-tip" role="status"></div>
+          </div>
+
+          <div class="vbar__stats">
+            <div class="vbar__stat">
+              <span class="vbar__stat-head"
+                ><span class="vbar__stat-key vbar__stat-key--a"></span>Women</span
+              >
+              <span class="vbar__stat-row"
+                ><span class="vbar__stat-num">64%</span
+                ><span class="vbar__stat-delta vbar__stat-delta--up"
+                  ><span class="vbar__stat-delta-arrow" aria-hidden="true">↑</span> +12pp</span
+                ></span
+              >
+            </div>
+            <div class="vbar__stat">
+              <span class="vbar__stat-head"
+                ><span class="vbar__stat-key vbar__stat-key--b"></span>Men</span
+              >
+              <span class="vbar__stat-row"
+                ><span class="vbar__stat-num">31%</span
+                ><span class="vbar__stat-delta vbar__stat-delta--flat">– stable</span></span
+              >
+            </div>
+            <div class="vbar__stat">
+              <span class="vbar__stat-head"
+                ><span class="vbar__stat-key vbar__stat-key--muted"></span>Other</span
+              >
+              <span class="vbar__stat-row"><span class="vbar__stat-num">5%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-mark hover/focus readout.
+      document.querySelectorAll('.vbar__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        const svg = plot.querySelector('svg');
+        if (!tip || !svg) return;
+        const show = (bar) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = bar.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = bar.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const barRect = bar.getBoundingClientRect();
+          tip.style.left = barRect.left - plotRect.left + barRect.width / 2 + 'px';
+          tip.style.top = barRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.vbar__bar').forEach((bar) => {
+          bar.addEventListener('pointerenter', () => show(bar));
+          bar.addEventListener('pointerleave', hide);
+          bar.addEventListener('focus', () => show(bar));
+          bar.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

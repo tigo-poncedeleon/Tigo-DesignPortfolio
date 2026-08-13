@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PostChip + CampaignRow - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="PostChip.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+
+      .handoff-sub {
+        margin: 0 0 36px;
+        max-width: 72ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+
+      /* Specimen-board chrome — moved out of PostChip.css (2026-07-02) so the
+         app-adopted component CSS ships anatomy only. */
+      .post-chip-specimen {
+        display: grid;
+        gap: var(--space-6);
+        max-width: 1160px;
+      }
+
+      .platform-icon-ig {
+        background: rgba(255, 255, 255, 0.92) url('../../../../assets/platform-logos/instagram.png')
+          center / 78% 78% no-repeat;
+      }
+
+      .platform-icon-tt {
+        background: rgba(255, 255, 255, 0.92)
+          url('../../../../assets/platform-logos/TikTok_Icon_Black_Circle.png') center / 78% 78%
+          no-repeat;
+      }
+
+      .platform-icon-fb {
+        background: rgba(255, 255, 255, 0.92) url('../../../../assets/platform-logos/facebook.png')
+          center / 78% 78% no-repeat;
+      }
+
+      .platform-icon-li {
+        background: rgba(255, 255, 255, 0.92) url('../../../../assets/platform-logos/linkedin.png')
+          center / 78% 78% no-repeat;
+      }
+
+      .platform-icon-x {
+        background: rgba(255, 255, 255, 0.92) url('../../../../assets/platform-logos/x.png')
+          center / 70% 70% no-repeat;
+      }
+
+      .platform-icon-ig svg,
+      .platform-icon-tt svg,
+      .platform-icon-fb svg,
+      .platform-icon-li svg,
+      .platform-icon-x svg {
+        display: none;
+      }
+
+      .post-chip-state-section {
+        display: grid;
+        gap: var(--space-3);
+        max-width: 920px;
+        margin-top: var(--space-6);
+      }
+
+      .post-chip-slice-section {
+        display: grid;
+        gap: var(--space-3);
+        max-width: 1160px;
+        margin-top: var(--space-7);
+      }
+
+      .post-chip-state-section .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .post-chip-slice-section .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .post-chip-slice-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-4);
+        align-items: stretch;
+      }
+
+      .post-chip-slice {
+        display: grid;
+        align-content: start;
+        gap: var(--space-3);
+        min-width: 0;
+        padding: var(--space-4);
+        border-radius: var(--r-lg);
+        background: rgba(238, 239, 238, 0.54);
+        overflow: hidden;
+      }
+
+      .post-chip-slice > small {
+        display: grid;
+        gap: 3px;
+      }
+
+      .post-chip-slice > small span {
+        color: var(--text-3);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0;
+      }
+
+      .post-chip-slice > small em {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-style: normal;
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .slice-caption {
+        max-width: 46ch;
+        margin: -4px 0 0;
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        line-height: 1.42;
+      }
+
+      .post-chip-slice.is-rail,
+      .post-chip-slice.is-wide,
+      .post-chip-slice.is-row-shell {
+        grid-column: span 2;
+      }
+
+      .post-chip-slice.is-row-shell {
+        grid-column: 1 / -1;
+      }
+
+      .post-chip-slice .crow-left {
+        min-width: 0;
+      }
+
+      .post-chip-slice .crow-mid {
+        width: 100%;
+        min-height: 156px;
+      }
+
+      .post-chip-slice .more-task-strip {
+        min-height: 156px;
+      }
+
+      .post-chip-slice .campaign-pipeline.is-slice {
+        max-height: none;
+        opacity: 1;
+        transform: none;
+        margin-top: 0;
+      }
+
+      .post-chip-slice .campaign-pipeline.is-slice .pipeline-steps {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      @media (max-width: 1080px) {
+        .post-chip-slice .campaign-pipeline.is-slice .pipeline-steps {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        .post-chip-slice .campaign-pipeline.is-slice .pipeline-steps {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .post-chip-slice .camp-row {
+        box-shadow: none;
+      }
+
+      .post-chip-slice.is-row-shell .camp-row {
+        overflow: visible;
+      }
+
+      .post-chip-slice.is-row-shell .camp-row-inner {
+        grid-template-columns: minmax(190px, 250px) minmax(300px, 1fr) minmax(190px, 220px);
+        gap: 24px;
+        align-items: center;
+      }
+
+      .post-chip-slice.is-row-shell .crow-mid {
+        box-sizing: border-box;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .post-chip-slice.is-row-shell .crow-right {
+        min-width: 0;
+      }
+
+      .post-chip-slice.is-row-shell .crow-kpi-row {
+        flex-wrap: wrap;
+      }
+
+      .post-chip-slice.is-row-shell .crow-cta {
+        min-width: 0;
+      }
+
+      .post-chip-slice .camp-row:hover {
+        border-color: var(--surface-edge);
+        background: var(--surface-glass);
+        box-shadow: none;
+      }
+
+      .post-chip-state-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+        align-items: stretch;
+        padding: var(--space-4);
+        border-radius: var(--r-lg);
+        background: rgba(238, 239, 238, 0.54);
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">PostChip + CampaignRow</h1>
+    <p class="handoff-sub">
+      One campaign row owns the post chips, hidden posts, right-side state, and pipeline disclosure.
+      Click a post chip to update the row; click the active production chip again to open its
+      pipeline. Use +N more to reveal hidden post tasks.
+    </p>
+
+    <main class="post-chip-specimen section-campaigns" data-campaign-specimen></main>
+
+    <section
+      class="post-chip-slice-section section-campaigns"
+      aria-label="Campaign row anatomy slices"
+    >
+      <span class="specimen-label">Campaign anatomy slices</span>
+      <div class="post-chip-slice-grid">
+        <article class="post-chip-slice is-meta">
+          <small><span>Campaign identity</span><em>CampaignMeta</em></small>
+          <p class="slice-caption">
+            The row's left identity block: phase, status, title, goal, metric, and date.
+          </p>
+          <div class="crow-left">
+            <div class="crow-meta-row">
+              <span class="crow-phase">Product launch</span>
+              <span class="crow-status"><span class="s-dot"></span>In pipeline</span>
+            </div>
+            <div class="crow-name">Quiet Confidence Uniform</div>
+            <div class="crow-goal">Prove the look in real life before asking shoppers to buy.</div>
+            <div class="crow-strategy">
+              <span class="crow-strategy-pill">
+                <svg class="north-star-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M8 2.2l1.55 3.14 3.47.5-2.51 2.45.59 3.46L8 10.12l-3.1 1.63.59-3.46-2.51-2.45 3.47-.5L8 2.2z"
+                  />
+                </svg>
+                <span>shop-look taps</span>
+              </span>
+            </div>
+            <div class="crow-sub">Jun 10 - Jun 28</div>
+          </div>
+        </article>
+        <article class="post-chip-slice is-rail">
+          <small><span>Post rail</span><em>PostChipRail</em></small>
+          <p class="slice-caption">
+            A fixed-width production rail. Items stay readable; overflow moves into +N more.
+          </p>
+          <div class="crow-mid">
+            <button class="post-chip active" type="button" aria-expanded="true">
+              <div class="post-chip-status building"><span class="pdot"></span>Building</div>
+              <div class="post-chip-title">Texture try-on credibility</div>
+              <div class="post-chip-foot">
+                <span class="post-chip-num">#2</span>
+                <span
+                  class="platform-icon platform-icon-ig"
+                  aria-label="Instagram"
+                  title="Instagram"
+                >
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2" />
+                    <circle cx="10" cy="10" r="3.15" />
+                    <circle cx="14.1" cy="5.9" r="1" />
+                  </svg>
+                </span>
+              </div>
+            </button>
+            <button class="post-chip" type="button" aria-expanded="false">
+              <div class="post-chip-status ready"><span class="pdot"></span>Ready</div>
+              <div class="post-chip-title">Fit with confidence</div>
+              <div class="post-chip-foot">
+                <span class="post-chip-num">#3</span>
+                <span
+                  class="platform-icon platform-icon-ig"
+                  aria-label="Instagram"
+                  title="Instagram"
+                >
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2" />
+                    <circle cx="10" cy="10" r="3.15" />
+                    <circle cx="14.1" cy="5.9" r="1" />
+                  </svg>
+                </span>
+              </div>
+            </button>
+            <button class="post-more" type="button" aria-expanded="false">
+              <span class="post-more-count">+2</span>
+              <span class="post-more-lbl">More</span>
+            </button>
+          </div>
+        </article>
+        <article class="post-chip-slice">
+          <small><span>Right progress state</span><em>RightState / ProgressMeter</em></small>
+          <p class="slice-caption">
+            The row's current KPI, solid progress meter, and primary row action.
+          </p>
+          <div class="crow-right-state">
+            <div class="crow-kpi-row">
+              <span class="crow-kpi-val">62%</span>
+              <span class="crow-kpi-delta">ETA 18m</span>
+            </div>
+            <div class="crow-progress">
+              <div class="crow-progress-row"><span>Studio render</span><strong>62%</strong></div>
+              <div class="crow-progress-track">
+                <span class="crow-progress-fill" style="width: 62%"></span>
+              </div>
+            </div>
+            <button class="crow-cta" type="button">Watch progress</button>
+          </div>
+        </article>
+        <article class="post-chip-slice">
+          <small><span>Hidden task card</span><em>MoreTask</em></small>
+          <p class="slice-caption">
+            A secondary task revealed from +N more; it can open the shared pipeline.
+          </p>
+          <button class="more-task selected" type="button" aria-expanded="true">
+            <div class="more-task-title">Claim-safe caption</div>
+            <div class="more-task-meta">Brand voice check</div>
+          </button>
+        </article>
+        <article class="post-chip-slice is-wide">
+          <small><span>Hidden task strip</span><em>MoreTaskStrip</em></small>
+          <p class="slice-caption">The expanded overflow area for hidden posts or task cards.</p>
+          <div class="more-task-strip">
+            <button class="more-task" type="button">
+              <div class="more-task-title">Claim-safe caption</div>
+              <div class="more-task-meta">Brand voice check</div>
+            </button>
+            <button class="more-task" type="button">
+              <div class="more-task-title">Slot Thu 19:00</div>
+              <div class="more-task-meta">IG + TikTok queue</div>
+            </button>
+          </div>
+        </article>
+        <article class="post-chip-slice is-wide">
+          <small><span>Pipeline disclosure</span><em>PipelineHeader / CampaignPipeline</em></small>
+          <p class="slice-caption">
+            The below-row production panel opened by a selected chip or hidden task.
+          </p>
+          <div class="campaign-pipeline is-slice" data-open="true" aria-hidden="false">
+            <div class="pipeline-head">
+              <div class="pipeline-copy">
+                <div class="pipeline-context">
+                  <span class="pipeline-context-label">Selected post</span>
+                  <span class="pipeline-context-title">#2 - Texture try-on credibility</span>
+                  <span class="pipeline-context-status building">
+                    <span class="pdot"></span>Building
+                  </span>
+                </div>
+                <div class="pipeline-title">Texture try-on credibility - generation pipeline</div>
+                <div class="pipeline-sub">
+                  Specific production path for the selected post above. Creative render is active;
+                  captions queue next.
+                </div>
+              </div>
+              <div class="pipeline-actions">
+                <button class="pipeline-handoff" type="button">
+                  Open campaign
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" /></svg>
+                </button>
+                <button class="pipeline-close" type="button" aria-label="Close pipeline">
+                  <svg viewBox="0 0 14 14" aria-hidden="true">
+                    <path d="M3 3l8 8M11 3l-8 8" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="pipeline-steps">
+              <div class="pipeline-step done">
+                <div class="pipeline-step-kicker">
+                  <span class="pipeline-step-num">01</span>
+                  <span class="pipeline-step-label">Done</span>
+                </div>
+                <div class="pipeline-step-title">Trend fit locked</div>
+                <div class="pipeline-step-meta">
+                  Mood-edit angle matched to Quiet Confidence Uniform.
+                </div>
+              </div>
+              <div class="pipeline-step current">
+                <div class="pipeline-step-kicker">
+                  <span class="pipeline-step-num">02</span>
+                  <span class="pipeline-step-label">Building now</span>
+                </div>
+                <div class="pipeline-step-title">Creative render</div>
+                <div class="pipeline-step-meta">Draft 01 rendering; 62% complete.</div>
+              </div>
+              <div class="pipeline-step waiting">
+                <div class="pipeline-step-kicker">
+                  <span class="pipeline-step-num">03</span>
+                  <span class="pipeline-step-label">Queued</span>
+                </div>
+                <div class="pipeline-step-title">Caption variants</div>
+                <div class="pipeline-step-meta">3 hooks, 1 delivery-safe alt.</div>
+              </div>
+              <div class="pipeline-step waiting">
+                <div class="pipeline-step-kicker">
+                  <span class="pipeline-step-num">04</span>
+                  <span class="pipeline-step-label">Needs you</span>
+                </div>
+                <div class="pipeline-step-title">Approve and schedule</div>
+                <div class="pipeline-step-meta">Target slot: Jun 11, 12:00 PM.</div>
+              </div>
+              <div class="pipeline-step waiting">
+                <div class="pipeline-step-kicker">
+                  <span class="pipeline-step-num">05</span>
+                  <span class="pipeline-step-label">Queued</span>
+                </div>
+                <div class="pipeline-step-title">Publish handoff</div>
+                <div class="pipeline-step-meta">Route through Campaign once approved.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="post-chip-slice is-row-shell">
+          <small><span>Full row composition</span><em>CampaignRowShell</em></small>
+          <p class="slice-caption">
+            How identity, production rail, and right state compose into one campaign row.
+          </p>
+          <div class="camp-row">
+            <div class="camp-row-inner">
+              <div class="crow-left">
+                <div class="crow-name">Campaign meta</div>
+                <div class="crow-goal">Left column owns campaign identity and timing.</div>
+              </div>
+              <div class="crow-mid">
+                <button class="post-chip active" type="button" aria-expanded="false">
+                  <div class="post-chip-status building"><span class="pdot"></span>Building</div>
+                  <div class="post-chip-title">Active post chip</div>
+                  <div class="post-chip-foot">
+                    <span class="post-chip-num">#2</span>
+                    <span
+                      class="platform-icon platform-icon-ig"
+                      aria-label="Instagram"
+                      title="Instagram"
+                    >
+                      <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2" />
+                        <circle cx="10" cy="10" r="3.15" />
+                        <circle cx="14.1" cy="5.9" r="1" />
+                      </svg>
+                    </span>
+                  </div>
+                </button>
+                <button class="post-more" type="button" aria-expanded="false">
+                  <span class="post-more-count">+4</span>
+                  <span class="post-more-lbl">More</span>
+                </button>
+              </div>
+              <div class="crow-right">
+                <div class="crow-right-state">
+                  <div class="crow-kpi-row">
+                    <span class="crow-kpi-val">62%</span>
+                    <span class="crow-kpi-delta">ETA 18m</span>
+                  </div>
+                  <button class="crow-cta" type="button">Watch progress</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="post-chip-state-section section-campaigns"
+      aria-label="PostChip static state snapshots"
+    >
+      <span class="specimen-label">State snapshots</span>
+      <div class="post-chip-state-grid">
+        <button class="post-chip" type="button" aria-expanded="false">
+          <div class="post-chip-status scheduled"><span class="pdot"></span>Scheduled</div>
+          <div class="post-chip-title">Quiet outfits: 5 days</div>
+          <div class="post-chip-foot">
+            <span class="post-chip-num">#1</span>
+            <span class="platform-icon platform-icon-ig" aria-label="Instagram" title="Instagram">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2" />
+                <circle cx="10" cy="10" r="3.15" />
+                <circle cx="14.1" cy="5.9" r="1" />
+              </svg>
+            </span>
+          </div>
+        </button>
+        <button class="post-chip is-hover" type="button" aria-expanded="false">
+          <div class="post-chip-status ready"><span class="pdot"></span>Ready</div>
+          <div class="post-chip-title">Fit with confidence</div>
+          <div class="post-chip-foot">
+            <span class="post-chip-num">#3</span>
+            <span class="platform-icon platform-icon-ig" aria-label="Instagram" title="Instagram">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2" />
+                <circle cx="10" cy="10" r="3.15" />
+                <circle cx="14.1" cy="5.9" r="1" />
+              </svg>
+            </span>
+          </div>
+        </button>
+        <button class="post-chip active" type="button" aria-expanded="false">
+          <div class="post-chip-status building"><span class="pdot"></span>Building</div>
+          <div class="post-chip-title">Texture try-on credibility</div>
+          <div class="post-chip-foot">
+            <span class="post-chip-num">#2</span>
+            <span class="platform-icon platform-icon-ig" aria-label="Instagram" title="Instagram">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2" />
+                <circle cx="10" cy="10" r="3.15" />
+                <circle cx="14.1" cy="5.9" r="1" />
+              </svg>
+            </span>
+          </div>
+        </button>
+        <button class="post-chip is-focus" type="button" aria-expanded="false">
+          <div class="post-chip-status ready"><span class="pdot"></span>Ready</div>
+          <div class="post-chip-title">Keyboard focus state</div>
+          <div class="post-chip-foot">
+            <span class="post-chip-num">#4</span>
+            <span class="platform-icon platform-icon-tt" aria-label="TikTok" title="TikTok">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path
+                  d="M11.8 3.2v7.15a3.45 3.45 0 1 1-2.08-3.17V4.9c1.45.95 2.38 1.18 4.04 1.24v2.05c-.92-.03-1.58-.17-2.36-.5v2.69"
+                />
+              </svg>
+            </span>
+          </div>
+        </button>
+        <button class="post-more" type="button" aria-expanded="true">
+          <span class="post-more-count">+2</span>
+          <span class="post-more-lbl">More</span>
+        </button>
+      </div>
+    </section>
+
+    <script>
+      const campaign = {
+        phase: 'Product launch',
+        status: 'pipeline',
+        statusLabel: 'In pipeline',
+        name: 'Quiet Confidence Uniform',
+        goal: 'Prove the look in real life before asking shoppers to buy.',
+        northStar: 'shop-look taps',
+        dateRange: 'Jun 10 - Jun 28',
+        chips: [
+          {
+            id: 'scheduled',
+            stageLabel: 'Scheduled',
+            num: '#1',
+            platform: 'IG',
+            title: 'Quiet outfits: 5 days',
+            state: 'scheduled',
+            stateLabel: 'Scheduled',
+          },
+          {
+            id: 'texture',
+            stageLabel: 'Producing now',
+            num: '#2',
+            platform: 'IG',
+            title: 'Texture try-on credibility',
+            state: 'building',
+            stateLabel: 'Building',
+            pipelineKey: 'texture-proof',
+            defaultActive: true,
+          },
+          {
+            id: 'fit',
+            stageLabel: 'Up next',
+            num: '#3',
+            platform: 'IG',
+            title: 'Fit with confidence',
+            state: 'ready',
+            stateLabel: 'Ready',
+          },
+        ],
+        moreTasks: [
+          {
+            stage: 'Review',
+            title: 'Claim-safe caption',
+            meta: 'Brand voice check',
+            state: 'review',
+          },
+          {
+            stage: 'Publish',
+            title: 'Slot Thu 19:00',
+            meta: 'IG + TikTok queue',
+            state: 'publish',
+          },
+        ],
+        states: {
+          scheduled: {
+            label: 'Scheduled post',
+            value: 'Thu 19:00',
+            delta: 'Ready to queue',
+            cta: 'View slot',
+            progress: ['Schedule locked', 100],
+          },
+          building: {
+            label: 'Building - texture proof',
+            value: '62%',
+            delta: 'ETA 18m',
+            cta: 'Watch progress',
+            progress: ['Studio render', 62],
+          },
+          ready: {
+            label: 'Ready brief',
+            value: '3',
+            delta: 'assets ready',
+            cta: 'Open brief',
+            progress: ['Brief quality', 84],
+          },
+          review: {
+            label: 'Review queue',
+            value: '1',
+            delta: 'brand check',
+            cta: 'Review caption',
+            progress: ['Claim pass', 44],
+          },
+          publish: {
+            label: 'Publish slot',
+            value: '2',
+            delta: 'channels',
+            cta: 'Open schedule',
+            progress: ['Queue health', 76],
+          },
+        },
+      };
+
+      const specimen = document.querySelector('[data-campaign-specimen]');
+      let activeChipId =
+        campaign.chips.find((chip) => chip.defaultActive)?.id || campaign.chips[0].id;
+      let moreOpen = false;
+      let selectedTaskIndex = -1;
+      let pipelineSource = null;
+      let railCapacity = campaign.chips.length;
+      let railObserver = null;
+
+      function activeChip() {
+        return campaign.chips.find((chip) => chip.id === activeChipId) || campaign.chips[0];
+      }
+
+      function currentStateKey() {
+        if (selectedTaskIndex >= 0) return campaign.moreTasks[selectedTaskIndex].state;
+        return activeChip().state;
+      }
+
+      function render() {
+        const pipeline = pipelineSource ? createPipeline() : null;
+        specimen.replaceChildren(renderRow(pipeline));
+        requestAnimationFrame(observeRail);
+      }
+
+      function renderRow(pipeline) {
+        const row = document.createElement('section');
+        row.className = `camp-row status-${campaign.status}${moreOpen ? ' more-open' : ''}${
+          pipeline ? ' pipeline-open' : ''
+        }`;
+        row.setAttribute('aria-label', 'Campaign row specimen');
+
+        const inner = document.createElement('div');
+        inner.className = 'camp-row-inner';
+        inner.append(renderLeft(), renderMiddle(), renderRight());
+
+        row.append(inner, renderMoreStrip(), renderPipeline(pipeline));
+        return row;
+      }
+
+      function renderLeft() {
+        const left = document.createElement('div');
+        left.className = 'crow-left';
+        left.innerHTML = `
+          <div class="crow-meta-row">
+            <span class="crow-phase">${campaign.phase}</span>
+            <span class="crow-status"><span class="s-dot"></span>${campaign.statusLabel}</span>
+          </div>
+          <div class="crow-name">${campaign.name}</div>
+          <div class="crow-goal">${campaign.goal}</div>
+          <div class="crow-strategy">
+            <span class="crow-strategy-pill" aria-label="North Star: ${campaign.northStar}">
+              <svg class="north-star-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 2.2l1.55 3.14 3.47.5-2.51 2.45.59 3.46L8 10.12l-3.1 1.63.59-3.46-2.51-2.45 3.47-.5L8 2.2z" />
+              </svg>
+              <span>${campaign.northStar}</span>
+            </span>
+          </div>
+          <div class="crow-sub">${campaign.dateRange}</div>
+        `;
+        return left;
+      }
+
+      function renderMiddle() {
+        const middle = document.createElement('div');
+        middle.className = 'crow-mid';
+        visibleChips().forEach((chip) => middle.append(renderPostChip(chip)));
+        middle.append(renderMoreButton());
+        return middle;
+      }
+
+      function visibleChips() {
+        const capacity = Math.max(1, Math.min(campaign.chips.length, railCapacity));
+        const visibleIds = campaign.chips.slice(0, capacity).map((chip) => chip.id);
+        if (!visibleIds.includes(activeChipId)) {
+          visibleIds[visibleIds.length - 1] = activeChipId;
+        }
+        const visibleSet = new Set(visibleIds);
+        return campaign.chips.filter((chip) => visibleSet.has(chip.id));
+      }
+
+      function hiddenChips() {
+        const visibleSet = new Set(visibleChips().map((chip) => chip.id));
+        return campaign.chips.filter((chip) => !visibleSet.has(chip.id));
+      }
+
+      function hiddenCount() {
+        return hiddenChips().length + campaign.moreTasks.length;
+      }
+
+      function updateRailCapacity(width) {
+        const rowWidth = specimen.getBoundingClientRect().width;
+        const innerWidth = Math.max(0, width - 28);
+        const chipWidth = 124;
+        const moreWidth = 66;
+        const railCapacityByWidth = Math.max(
+          1,
+          Math.min(campaign.chips.length, Math.floor((innerWidth - moreWidth) / chipWidth))
+        );
+        const rowCapacity = rowWidth < 760 ? 1 : rowWidth < 980 ? 2 : campaign.chips.length;
+        const nextCapacity = Math.max(1, Math.min(railCapacityByWidth, rowCapacity));
+        if (nextCapacity === railCapacity) return;
+        railCapacity = nextCapacity;
+        render();
+      }
+
+      function observeRail() {
+        railObserver?.disconnect();
+        const rail = specimen.querySelector('.crow-mid');
+        if (!rail) return;
+        updateRailCapacity(rail.getBoundingClientRect().width);
+        railObserver = new ResizeObserver(([entry]) => {
+          updateRailCapacity(entry.contentRect.width);
+        });
+        railObserver.observe(rail);
+      }
+
+      function selectChip(chip) {
+        selectedTaskIndex = -1;
+        activeChipId = chip.id;
+        if (chip.pipelineKey) {
+          pipelineSource =
+            pipelineSource?.type === 'chip' && pipelineSource.id === chip.id
+              ? null
+              : { type: 'chip', id: chip.id };
+        } else {
+          pipelineSource = null;
+        }
+        render();
+      }
+
+      function platformName(platform) {
+        return (
+          {
+            IG: 'Instagram',
+            TT: 'TikTok',
+            FB: 'Facebook',
+            LI: 'LinkedIn',
+            X: 'X',
+          }[platform] || 'Platform'
+        );
+      }
+
+      function platformIcon(platform) {
+        const name = platformName(platform);
+        const key = platform.toLowerCase();
+        const icons = {
+          ig: '<rect x="3.25" y="3.25" width="13.5" height="13.5" rx="4.2"/><circle cx="10" cy="10" r="3.15"/><circle cx="14.1" cy="5.9" r="1"/>',
+          tt: '<path d="M11.8 3.2v7.15a3.45 3.45 0 1 1-2.08-3.17V4.9c1.45.95 2.38 1.18 4.04 1.24v2.05c-.92-.03-1.58-.17-2.36-.5v2.69"/>',
+          fb: '',
+          li: '',
+          x: '',
+        };
+        const icon = Object.prototype.hasOwnProperty.call(icons, key)
+          ? icons[key]
+          : '<circle cx="10" cy="10" r="3.4"/><path d="M10 3.5v1.8M10 14.7v1.8M3.5 10h1.8M14.7 10h1.8"/>';
+        return `
+          <span class="platform-icon platform-icon-${key}" aria-label="${name}" title="${name}">
+            <svg viewBox="0 0 20 20" aria-hidden="true">${icon}</svg>
+          </span>
+        `;
+      }
+
+      function renderPostChip(chip) {
+        const button = document.createElement('button');
+        const isActive = chip.id === activeChipId;
+        const isExpanded = pipelineSource?.type === 'chip' && pipelineSource.id === chip.id;
+        button.type = 'button';
+        button.className = `post-chip${isActive ? ' active' : ''}${isExpanded ? ' selected' : ''}`;
+        button.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        button.innerHTML = `
+          <div class="post-chip-status ${chip.state}">
+            <span class="pdot"></span>${chip.stateLabel}
+          </div>
+          <div class="post-chip-title">${chip.title}</div>
+          <div class="post-chip-foot">
+            <span class="post-chip-num">${chip.num}</span>
+            ${platformIcon(chip.platform)}
+          </div>
+        `;
+        button.addEventListener('click', () => selectChip(chip));
+        return button;
+      }
+
+      function renderMoreButton() {
+        const button = document.createElement('button');
+        button.className = 'post-more';
+        button.type = 'button';
+        button.setAttribute('aria-expanded', moreOpen ? 'true' : 'false');
+        button.setAttribute(
+          'aria-label',
+          `${moreOpen ? 'Hide' : 'Show'} ${hiddenCount()} more post tasks`
+        );
+        button.innerHTML = `
+          <div class="post-more-count">+${hiddenCount()}</div>
+          <div class="post-more-lbl">${moreOpen ? 'hide' : 'more'}</div>
+        `;
+        button.addEventListener('click', () => {
+          moreOpen = !moreOpen;
+          if (!moreOpen && pipelineSource?.type === 'task') {
+            pipelineSource = null;
+            selectedTaskIndex = -1;
+          }
+          render();
+        });
+        return button;
+      }
+
+      function renderRight() {
+        const state = campaign.states[currentStateKey()] || campaign.states.building;
+        const right = document.createElement('aside');
+        right.className = 'crow-right';
+        right.innerHTML = `
+          <div class="crow-right-state">
+            <div class="crow-kpi-row">
+              <span class="crow-kpi-val">${state.value}</span>
+              <span class="crow-kpi-delta">${state.delta}</span>
+            </div>
+            <div class="crow-progress">
+              <div class="crow-progress-row">
+                <span>${state.progress[0]}</span>
+                <strong>${state.progress[1]}%</strong>
+              </div>
+              <div class="crow-progress-track">
+                <span class="crow-progress-fill" style="width: ${state.progress[1]}%"></span>
+              </div>
+            </div>
+            <button class="crow-cta" type="button">${state.cta}</button>
+          </div>
+        `;
+        return right;
+      }
+
+      function renderMoreStrip() {
+        const wrap = document.createElement('div');
+        wrap.className = 'campaign-more';
+        wrap.setAttribute('aria-hidden', moreOpen ? 'false' : 'true');
+
+        const strip = document.createElement('div');
+        strip.className = 'more-task-strip';
+        hiddenChips().forEach((chip) => {
+          strip.append(renderHiddenChip(chip));
+        });
+        campaign.moreTasks.forEach((task, index) => {
+          strip.append(renderMoreTask(task, index));
+        });
+        wrap.append(strip);
+        return wrap;
+      }
+
+      function renderHiddenChip(chip) {
+        const button = document.createElement('button');
+        const isActive = chip.id === activeChipId;
+        button.type = 'button';
+        button.className = `more-task hidden-chip${isActive ? ' selected' : ''}`;
+        button.setAttribute('aria-label', `Show ${chip.title}`);
+        button.innerHTML = `
+          <div class="post-chip-status ${chip.state}">
+            <span class="pdot"></span>${chip.stateLabel}
+          </div>
+          <div class="more-task-title">${chip.title}</div>
+          <div class="more-task-foot">
+            <span class="post-chip-num">${chip.num}</span>
+            ${platformIcon(chip.platform)}
+          </div>
+        `;
+        button.addEventListener('click', () => selectChip(chip));
+        return button;
+      }
+
+      function renderMoreTask(task, index) {
+        const selected = selectedTaskIndex === index;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `more-task${selected ? ' selected' : ''}`;
+        button.setAttribute('aria-expanded', selected ? 'true' : 'false');
+        button.innerHTML = `
+          <div class="more-task-title">${task.title}</div>
+          <div class="more-task-meta">${task.meta}</div>
+        `;
+        button.addEventListener('click', () => {
+          moreOpen = true;
+          selectedTaskIndex = selected ? -1 : index;
+          pipelineSource = selected ? null : { type: 'task', index };
+          render();
+        });
+        return button;
+      }
+
+      function createPipeline() {
+        if (pipelineSource.type === 'task') {
+          const task = campaign.moreTasks[pipelineSource.index];
+          return {
+            title: `${task.title} - execution pipeline`,
+            sub: 'Specific execution path for the selected hidden post above.',
+            contextLabel: 'Selected hidden post',
+            selected: task.title,
+            statusLabel: task.stage,
+            statusClass: task.state,
+            steps: [
+              ['done', 'Context', 'Campaign linked', 'Goal, audience, and channel are attached.'],
+              ['current', task.stage, task.title, task.meta],
+              [
+                'waiting',
+                'Creative',
+                'Channel-ready pass',
+                'Generate final asset and copy variants.',
+              ],
+              ['waiting', 'Review', 'Brand check', 'Confirm claim, voice, and campaign fit.'],
+              ['waiting', 'Ship', 'Schedule or publish', 'Route to Campaign detail once approved.'],
+            ],
+          };
+        }
+
+        const chip = activeChip();
+        return {
+          title: `${chip.title} - generation pipeline`,
+          sub:
+            chip.state === 'ready'
+              ? 'Specific production path for the selected post above. The render is ready; approval is the next handoff.'
+              : 'Specific production path for the selected post above. Creative render is active; captions queue next.',
+          contextLabel: 'Selected post',
+          selected: `${chip.num} - ${chip.title}`,
+          statusLabel: chip.stateLabel,
+          statusClass: chip.state,
+          steps: [
+            [
+              'done',
+              'Done',
+              'Trend fit locked',
+              'Mood-edit angle matched to Quiet Confidence Uniform.',
+            ],
+            ['done', 'Done', 'Shot plan', 'Texture macro, fit cue, and movement proof locked.'],
+            ['current', 'Building now', 'Creative render', 'Draft 01 rendering; 62% complete.'],
+            ['waiting', 'Queued', 'Caption variants', '3 hooks, 1 delivery-safe alt.'],
+            ['waiting', 'Needs you', 'Approve and schedule', 'Target slot: Jun 11, 12:00 PM.'],
+          ],
+        };
+      }
+
+      function renderPipeline(pipeline) {
+        const panel = document.createElement('div');
+        panel.className = 'campaign-pipeline';
+        panel.dataset.open = pipeline ? 'true' : 'false';
+        panel.setAttribute('aria-hidden', pipeline ? 'false' : 'true');
+        if (!pipeline) return panel;
+
+        const head = document.createElement('div');
+        head.className = 'pipeline-head';
+        head.innerHTML = `
+          <div class="pipeline-copy">
+            <div class="pipeline-context">
+              <span class="pipeline-context-label">${pipeline.contextLabel}</span>
+              <span class="pipeline-context-title">${pipeline.selected}</span>
+              <span class="pipeline-context-status ${pipeline.statusClass}">
+                <span class="pdot"></span>${pipeline.statusLabel}
+              </span>
+            </div>
+            <div class="pipeline-title">${pipeline.title}</div>
+            <div class="pipeline-sub">${pipeline.sub}</div>
+          </div>
+          <div class="pipeline-actions">
+            <button class="pipeline-handoff" type="button">
+              Open campaign
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4"/></svg>
+            </button>
+          </div>
+        `;
+
+        const close = document.createElement('button');
+        close.className = 'pipeline-close';
+        close.type = 'button';
+        close.setAttribute('aria-label', 'Close pipeline');
+        close.innerHTML =
+          '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
+        close.addEventListener('click', () => {
+          pipelineSource = null;
+          selectedTaskIndex = -1;
+          render();
+        });
+        head.querySelector('.pipeline-actions')?.append(close);
+
+        const steps = document.createElement('div');
+        steps.className = 'pipeline-steps';
+        pipeline.steps.forEach(([state, label, title, meta], index) => {
+          const step = document.createElement('div');
+          step.className = `pipeline-step ${state}`;
+          if (state === 'current') step.setAttribute('aria-current', 'step');
+          step.innerHTML = `
+            <div class="pipeline-step-kicker">
+              <span class="pipeline-step-num">${String(index + 1).padStart(2, '0')}</span>
+              <span class="pipeline-step-label">${label}</span>
+            </div>
+            <div class="pipeline-step-title">${title}</div>
+            <div class="pipeline-step-meta">${meta}</div>
+          `;
+          steps.append(step);
+        });
+
+        panel.append(head, steps);
+        return panel;
+      }
+
+      render();
+    </script>
+  </body>
+</html>

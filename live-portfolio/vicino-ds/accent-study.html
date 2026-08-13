@@ -1,0 +1,2101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      if (window.self !== window.top) document.documentElement.classList.add('is-embedded');
+    </script>
+    <style>
+/* ===================================================================
+   Pulse React design tokens.
+   Source of truth for the React app. The static design-system/handoff files
+   are handoff documentation; this file owns product implementation.
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Newsreader:ital,opsz,wght@0,18..72,400..500;1,18..72,400..500&display=swap');
+
+:root {
+  /* Core surfaces: neutral command UI with cyan reserved for auxiliary status/highlight. */
+  --bg: #f4f7f7;
+  --canvas: #ffffff;
+  --surface: #f8faf9;
+  --surface-2: #ecf1f0;
+  --surface-3: #e1e8e6;
+  --border: rgba(29, 29, 31, 0.08);
+  --border-strong: rgba(29, 29, 31, 0.16);
+  --ink-900: #141416;
+  --ink-800: #1d1d1f;
+  --ink-700: #2f3135;
+  --ink-600: #44464a;
+  /* Text hierarchy. Lead with weight + tone, not size, to separate levels.
+     1 primary  → titles, key numbers, primary body
+     2 secondary→ standard body, descriptions
+     3 tertiary → supporting copy, meta, captions
+     4 quaternary→ labels, eyebrows, placeholder, quiet meta
+     5 disabled → disabled / faint, non-actionable text */
+  --text-1: var(--ink-800);
+  --text: var(--text-1);
+  --text-2: var(--ink-600);
+  --text-3: #5f6369;
+  --text-4: #8a8e95;
+  --text-5: #b1b5bb;
+
+  --ink: var(--ink-800);
+  --ink-2: var(--ink-700);
+  --ink-soft: rgba(29, 29, 31, 0.06);
+  --ink-line: rgba(29, 29, 31, 0.12);
+  --white-glass: rgba(255, 255, 255, 0.74);
+
+  --pulse-cyan: #49e0f5;
+  --pulse-cyan-strong: #16a9bc;
+  --pulse-cyan-dark: #0d7685;
+  --pulse-cyan-soft: #e5fbff;
+  --pulse-cyan-line: rgba(73, 224, 245, 0.42);
+
+  /* Legacy green/lime names remain as aliases until component class names are renamed. */
+  --pulse-lime: var(--pulse-cyan);
+  --pulse-lime-strong: var(--pulse-cyan-strong);
+  --pulse-lime-soft: var(--pulse-cyan-soft);
+  --pulse-lime-line: var(--pulse-cyan-line);
+
+  --cyan-50: #f0fdff;
+  --cyan-100: #e5fbff;
+  --cyan-200: #b8f3fb;
+  --cyan-500: var(--pulse-cyan);
+  --cyan-600: #0ea5b8;
+  --cyan-700: var(--pulse-cyan-dark);
+
+  /* --green-* is the real green ramp (positive / live / data-up), mirroring the
+     --success-* semantic alias. Honest naming: --green is green, --cyan is cyan —
+     never alias --green to cyan. If you need cyan, use --cyan-*. */
+  --green-50: var(--success-50);
+  --green-100: var(--success-100);
+  --green-200: var(--success-200);
+  --green-500: var(--success-500);
+  --green-600: var(--success-600);
+  --green-700: var(--success-700);
+
+  /* Success — real green for landed states: completed, approved, published,
+     on-track, delivered. Distinct from cyan momentum and from severity.
+     Status base = #43ba51. On white, use 600/700 for text (500 is a fill/dot). */
+  --success-50: #eff9f1;
+  --success-100: #d5f0da;
+  --success-200: #abe2b3;
+  --success-500: #43ba51;
+  --success-600: #2e9d40;
+  --success-700: #207d32;
+  --success: var(--success-600);
+  --success-soft: var(--success-100);
+  --success-line: var(--success-200);
+
+  /* Functional color only. Do not use blue as brand chrome. Status base = #3987f3. */
+  --info: #3987f3;
+  --info-soft: rgba(57, 135, 243, 0.11);
+  --info-line: rgba(57, 135, 243, 0.26);
+
+  --brand: var(--pulse-lime);
+  --brand-2: var(--pulse-lime-strong);
+  --brand-soft: var(--pulse-lime-soft);
+  --navy-deep: var(--ink);
+
+  --blue: var(--info);
+  --indigo: #6366f1;
+  --cyan: var(--cyan-600);
+  --green: var(--success);
+  --red: #ef4444;
+  --orange: #f19a08;
+  --yellow: #f5b800;
+  --teal: #14b8a6;
+  --pink: #ec4899;
+
+  --cyan-soft: var(--cyan-100);
+  --green-soft: var(--success-soft);
+  --red-soft: rgba(239, 68, 68, 0.11);
+  --orange-soft: rgba(241, 154, 8, 0.14);
+  --blue-soft: var(--info-soft);
+  --indigo-soft: rgba(99, 102, 241, 0.12);
+
+  /* Semantic lightness ramps. Same 6 stops as cyan: 50/100 soft fills, 200
+     borders/lines, 500 the base, 600 text/dot on light, 700 deepest emphasis. */
+  --red-50: #fef2f2;
+  --red-100: #fde4e4;
+  --red-200: #f9c9c9;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* Status base = #f19a08. Amber on white is low-contrast: use 700 for text. */
+  --amber-50: #fef6e7;
+  --amber-100: #fce7be;
+  --amber-200: #f7ce84;
+  --amber-500: #f19a08;
+  --amber-600: #cc7f06;
+  --amber-700: #a1640b;
+  --amber: var(--amber-500);
+  --amber-soft: var(--amber-100);
+  --amber-line: var(--amber-200);
+
+  /* Status base = #3987f3. On white, use 600/700 for text. */
+  --blue-50: #eff5fe;
+  --blue-100: #d7e6fd;
+  --blue-200: #b0cdfa;
+  --blue-500: #3987f3;
+  --blue-600: #1f6fe0;
+  --blue-700: #1a57b0;
+
+  --indigo-50: #f1f1fe;
+  --indigo-100: #e2e3fc;
+  --indigo-200: #c7c9f8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+
+  --perception: var(--ink);
+  --perception-soft: var(--ink-soft);
+  --creative: var(--pulse-lime);
+  --creative-soft: var(--pulse-lime-soft);
+
+  --severity-critical: var(--severity-watch);
+  --severity-critical-soft: var(--severity-watch-soft);
+  --severity-critical-line: var(--severity-watch-line);
+  --severity-warning: var(--amber-600);
+  --severity-warning-soft: rgba(204, 127, 6, 0.14);
+  --severity-warning-line: rgba(204, 127, 6, 0.3);
+  --severity-info: var(--info);
+  --severity-info-soft: var(--info-soft);
+  --severity-info-line: var(--info-line);
+  --severity-positive: var(--success-500);
+  --severity-positive-soft: var(--success-50);
+  --severity-positive-line: var(--success-200);
+
+  --status-live: var(--success-500);
+  --status-live-soft: var(--success-50);
+  --status-live-line: var(--success-200);
+  --status-ready: var(--cyan-700);
+  --status-ready-soft: var(--cyan-50);
+  --status-ready-line: var(--cyan-200);
+  /* Done / Approved / Published / On-track. Real green, separate from cyan
+     Live/Ready momentum. Use for landed positive states, not for severity. */
+  --status-success: var(--success-500);
+  --status-success-soft: var(--success-100);
+  --status-success-line: var(--success-200);
+  --status-scheduled: var(--blue-500);
+  --status-scheduled-soft: var(--blue-50);
+  --status-scheduled-line: var(--blue-200);
+  --status-draft: var(--amber-500);
+  --status-draft-soft: var(--amber-50);
+  --status-draft-line: var(--amber-200);
+  --status-rendering: var(--indigo-500);
+  --status-rendering-soft: var(--indigo-50);
+  --status-rendering-line: var(--indigo-200);
+  --status-neutral: var(--text-4);
+  --status-neutral-soft: rgba(29, 29, 31, 0.045);
+  --status-neutral-line: rgba(29, 29, 31, 0.08);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-2xl: 30px;
+  --r-3xl: 40px;
+  --r-full: 9999px;
+
+  /* Layered modern shadow scale — kept light. Hairline / subtle resting / overlay. */
+  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-2: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 10px rgba(15, 23, 42, 0.04);
+  --shadow-3: 0 2px 6px rgba(15, 23, 42, 0.05), 0 14px 30px rgba(15, 23, 42, 0.07);
+  --shadow-panel: -10px 0 28px rgba(15, 23, 42, 0.06), -1px 0 3px rgba(15, 23, 42, 0.03);
+  --shadow-dock: 0 2px 4px rgba(15, 23, 42, 0.05), 0 16px 36px rgba(15, 23, 42, 0.08);
+
+  --surface-glass: #ffffff;
+  --surface-glass-strong: #ffffff;
+  --surface-edge: rgba(29, 29, 31, 0.068);
+  --surface-edge-strong: rgba(29, 29, 31, 0.11);
+  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --surface-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --surface-shadow-hover: 0 1px 3px rgba(15, 23, 42, 0.05), 0 10px 24px rgba(15, 23, 42, 0.055);
+
+  --card-bg: var(--surface-glass);
+  --card-bg-strong: var(--surface-glass-strong);
+  --card-border: var(--surface-edge);
+  --card-radius: 16px;
+  --card-shadow: var(--surface-highlight), var(--surface-shadow-rest);
+  --card-shadow-hover: var(--surface-highlight), var(--surface-shadow-hover);
+  --button-dark: var(--ink-900);
+  --button-dark-hover: var(--ink-700);
+  --button-glass: rgba(255, 255, 255, 0.76);
+  --focus-ring: 0 0 0 3px rgba(73, 224, 245, 0.42);
+
+  /* Shared control geometry. Use these for buttons, pills, chips, and handoffs. */
+  --control-height-sm: 34px;
+  --control-height-md: 38px;
+  --control-height-lg: 44px;
+  --control-pad-x-sm: 16px;
+  --control-pad-x-md: 18px;
+  --control-pad-x-lg: 24px;
+  --control-gap: 7px;
+  --chip-height: 32px;
+  --chip-pad-x: 14px;
+  --chip-pad-x-compact: 12px;
+  --module-pad-x: clamp(28px, 3.6vw, 58px);
+  --module-pad-y: 28px;
+  --inner-card-radius: 20px;
+  --inner-media-radius: 16px;
+
+  --font-sans:
+    'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial,
+    sans-serif;
+  --font-display: var(--font-sans);
+  /* Manrope-only platform: numeric/code slots inherit the sans stack and rely
+     on font-variant-numeric for tabular alignment. */
+  --font-mono: var(--font-sans);
+  /* The ONE exception to the single-typeface rule: Newsreader is a serif used
+     only for stylized report display titles above 64px (covers, report heroes).
+     Never for body, UI, labels, numbers, or any heading on the H1-H4 ladder.
+     Weight caps at medium (400-500); italic is available and on-brand here. */
+  --font-report: 'Newsreader', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --type-report-display: clamp(64px, 8vw, 96px);
+
+  /* Type scale */
+  --fs-1: 11px;
+  --fs-2: 12px;
+  --fs-3: 13px;
+  --fs-4: 14px;
+  --fs-5: 15px;
+  --fs-6: 17px;
+  --fs-7: 20px;
+  --fs-8: 24px;
+  /* Key data figures (KPI / metric numbers, cadence) use one standard size. */
+  --fs-figure: 32px;
+  --fs-9: 30px;
+  --fs-10: 42px;
+  --fs-11: 58px;
+
+  /* Heading system. Page entrances may use a stylized Manrope display title;
+     module and card headings stay calmer for reading. Hierarchy comes from
+     size, spacing, position, and structure — NOT from heavier weight. */
+  --type-page-display: 64px; /* expressive page entrance / workspace title */
+  --type-h1: 48px; /* primary page / large title */
+  --type-h2: 28px; /* section / sub title */
+  --type-h3: 21px; /* mid title — kept substantial, not a tiny step */
+  --type-h4: 18px; /* card title — kept substantial, not a tiny step */
+  /* Fixed gap between content headings and captions. Display page entrances
+     need a larger gap so the support line reads as its own calm row. */
+  --heading-gap: 8px;
+  --display-heading-gap: 20px;
+
+  --type-display: var(--type-page-display);
+  --type-headline: var(--type-h1);
+  --type-section: var(--type-h2);
+  --type-card-title: var(--type-h4);
+  --type-caption: 13px; /* description / supporting line under a title */
+  --type-body: 14px;
+  --type-supporting: 13px;
+  --type-meta: 12.5px;
+  --type-label: 11px;
+  --type-metric: 26px;
+  --type-page-title: var(--type-page-display);
+  --type-module-title: var(--type-h2);
+  --type-ui-title: var(--type-card-title);
+  --type-ui-body: var(--type-body);
+  --type-ui-supporting: var(--type-supporting);
+  --type-ui-meta: var(--type-meta);
+  --type-ui-label: var(--type-label);
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 650;
+  --fw-heavy: 700;
+  --fw-black: 760;
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.62;
+  --tracking-display: 0;
+  --tracking-title: 0;
+  --tracking-ui: 0;
+  --tracking-label: 0.06em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 72px;
+
+  --layout-rail: 220px;
+  --layout-rail-collapsed: 64px;
+  --layout-page-max: 1240px;
+  --layout-readable: 720px;
+  --layout-wide-readable: 960px;
+  --layout-pad-desktop: 48px;
+  --layout-pad-compact: 34px;
+  --layout-pad-mobile: 20px;
+  --grid-columns: 12;
+  --grid-gap: 24px;
+  --grid-gap-tight: 16px;
+  --grid-gap-loose: 32px;
+  --section-gap: 76px;
+  --section-gap-mobile: 52px;
+  --bp-mobile: 820px;
+  --bp-tablet: 1180px;
+  --bp-desktop: 1440px;
+  --bp-wide: 1728px;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-disclosure: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-1: 0.12s;
+  --dur-2: 0.18s;
+  --dur-3: 0.32s;
+  --dur-disclosure: 0.42s;
+
+  --panel-bg: transparent;
+  --panel-border-color: transparent;
+  --panel-shadow: none;
+  --panel-radius: 0;
+  --panel-pad: 0;
+}
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow: hidden;
+  letter-spacing: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button:focus-visible,
+.nav-item:focus-visible,
+.action-row:focus-visible,
+.section-head:focus-visible,
+.post-chip:focus-visible {
+  outline: 2px solid rgba(155, 229, 84, 0.9);
+  outline-offset: 3px;
+}
+
+/* When the AI side panel is open, keep the sidebar fixed at the far left and
+   slide the assistant into the space immediately to its right. Only the page
+   content column shifts, so the navigation order stays: rail -> AI -> content. */
+.app .main,
+.signal-page .main,
+.analytics-page .main,
+.calendar-app .calendar-main,
+.strategy-page .main,
+.campaigns-page .main,
+.studio-page .main {
+  transition: margin-left 0.36s cubic-bezier(0.32, 0.72, 0.24, 1);
+}
+body.ai-panel-open .app .main,
+body.ai-panel-open .signal-page .main,
+body.ai-panel-open .analytics-page .main,
+body.ai-panel-open .calendar-app .calendar-main,
+body.ai-panel-open .strategy-page .main,
+body.ai-panel-open .campaigns-page .main,
+body.ai-panel-open .studio-page .main {
+  margin-left: var(--ai-width, 400px);
+}
+
+/* Inner two-column layouts assume ~1200px headroom. When the AI panel eats
+   400px of the viewport, even a 1600px monitor effectively becomes <1200px
+   in the content area, so collapse to single column based on viewport. */
+@media (max-width: 1600px) {
+  body.ai-panel-open .action-workspace {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      'posts'
+      'signals' !important;
+  }
+  body.ai-panel-open .signal-queue-panel {
+    min-height: 0;
+  }
+}
+
+
+/* Shared Pulse button system. Visual source: src/tokens.css. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
+  height: var(--control-height-md);
+  padding: 0 var(--control-pad-x-md);
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-ui);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  border: 0;
+  transition:
+    background var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+
+.btn svg {
+  transition: transform var(--dur-1) var(--ease);
+}
+
+.btn:focus {
+  outline: none;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn[disabled],
+.btn:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.btn--sm {
+  height: var(--control-height-sm);
+  padding: 0 var(--control-pad-x-sm);
+  font-size: 13px;
+  gap: 6px;
+}
+
+.btn--lg {
+  height: var(--control-height-lg);
+  padding: 0 var(--control-pad-x-lg);
+  font-size: 15px;
+}
+
+.btn--pill {
+  border-radius: var(--r-full);
+}
+
+.btn--primary,
+.btn--dark {
+  background: var(--button-dark);
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    var(--shadow-1);
+}
+
+.btn--primary:hover,
+.btn--dark:hover {
+  background: var(--button-dark-hover);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+.btn--dark svg {
+  color: currentColor;
+}
+
+.btn--dark:hover svg,
+.btn--ghost:hover svg {
+  transform: translateX(2px);
+}
+
+.btn--secondary {
+  background: var(--button-glass);
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    var(--shadow-1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+
+.btn--secondary:hover {
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge-strong),
+    var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+.btn--ghost {
+  color: var(--text-3);
+  background: transparent;
+}
+
+.btn--ghost:hover {
+  color: var(--text);
+  background: var(--ink-soft);
+}
+
+.btn--ghost.btn--muted {
+  color: var(--text-4);
+}
+
+.btn--ghost.btn--muted:hover {
+  color: var(--text);
+  background: var(--ink-soft);
+}
+
+.btn--danger {
+  background: var(--red);
+  color: #fff;
+  box-shadow: var(--shadow-1);
+}
+
+.btn--danger:hover {
+  background: #dc2626;
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+.btn--icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text-3);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge),
+    var(--shadow-1);
+}
+
+.btn--icon:hover {
+  background: #fff;
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 1px var(--surface-edge-strong),
+    var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  transition:
+    border-color var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--surface-edge-strong);
+  box-shadow: var(--card-shadow-hover);
+}
+
+    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pulse Dashboard Accent Study</title>
+    <style>
+      :root {
+        --study-cyan: #49e0f5;
+        --study-green: #75fb90;
+        --study-yellow: #ead025;
+        --study-violet: #6648f6;
+        --study-yellow-line: #d4bc1f;
+        --study-black: #141416;
+        --study-black-2: #1d1d1f;
+        --study-line: rgba(18, 31, 45, 0.075);
+        --study-panel: rgba(247, 249, 248, 0.88);
+        --study-card: rgba(255, 255, 255, 0.965);
+        --study-radius-panel: 36px;
+        --study-radius-card: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font-sans);
+        color: var(--text);
+        background:
+          radial-gradient(
+            56% 44% at 88% 90%,
+            rgba(117, 251, 144, 0.08) 0%,
+            rgba(174, 229, 221, 0.05) 38%,
+            rgba(255, 255, 255, 0) 74%
+          ),
+          radial-gradient(
+            50% 42% at 6% 6%,
+            rgba(73, 224, 245, 0.08) 0%,
+            rgba(225, 242, 229, 0.07) 38%,
+            rgba(255, 255, 255, 0) 74%
+          ),
+          var(--bg);
+        letter-spacing: 0;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .study-shell {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .study-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 18px 14px;
+        border-right: 1px solid rgba(18, 31, 45, 0.065);
+        background: rgba(255, 255, 255, 0.56);
+        backdrop-filter: blur(24px) saturate(1.12);
+        -webkit-backdrop-filter: blur(24px) saturate(1.12);
+      }
+
+      .brand-mark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 42px;
+        padding: 0 8px;
+        margin-bottom: 24px;
+      }
+
+      .brand-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        background: var(--study-black);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+          0 8px 20px rgba(20, 20, 22, 0.14);
+      }
+
+      .brand-name {
+        display: grid;
+        gap: 1px;
+      }
+
+      .brand-name strong {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        letter-spacing: 0;
+      }
+
+      .brand-name span {
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-4);
+      }
+
+      .nav-group {
+        display: grid;
+        gap: 6px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        height: 36px;
+        padding: 0 10px;
+        border-radius: var(--r-full);
+        color: var(--text-3);
+        font-size: 13px;
+        font-weight: 450;
+      }
+
+      .nav-item::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(29, 29, 31, 0.18);
+      }
+
+      .nav-item.is-active {
+        color: var(--text);
+        background: rgba(29, 29, 31, 0.06);
+      }
+
+      .nav-item.is-active::before {
+        background: var(--study-black);
+        box-shadow: 0 0 0 4px rgba(29, 29, 31, 0.08);
+      }
+
+      .nav-item.swatch-cyan::before {
+        background: var(--study-cyan);
+      }
+      .nav-item.swatch-green::before {
+        background: var(--study-green);
+      }
+      .nav-item.swatch-yellow::before {
+        background: var(--study-yellow);
+      }
+      .nav-item.swatch-violet::before {
+        background: var(--study-violet);
+      }
+
+      .sidebar-note {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 16px;
+        padding: 14px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.74);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.82),
+          0 1px 2px rgba(18, 31, 45, 0.026);
+        border: 1px solid rgba(18, 31, 45, 0.065);
+      }
+
+      .sidebar-note b {
+        display: block;
+        font-size: 22px;
+        line-height: 1;
+        font-weight: 450;
+        color: var(--study-black);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.018em;
+      }
+
+      .sidebar-note span {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-4);
+        font-size: 10.5px;
+        line-height: 1.3;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .study-main {
+        min-width: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 14px 30px 90px;
+      }
+
+      .study-inner {
+        width: min(100%, 1240px);
+        margin: 0 auto;
+      }
+
+      .topbar {
+        min-height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .breadcrumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-4);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .breadcrumb::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--study-black);
+        box-shadow: 0 0 0 4px rgba(29, 29, 31, 0.08);
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .topbar-actions .btn {
+        font-weight: 450;
+      }
+
+      .hero-panel {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        margin-bottom: 18px;
+        padding: 22px 28px;
+        border-radius: var(--r-3xl);
+        border: 1px solid rgba(18, 31, 45, 0.075);
+        background: #fbfcfb;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.84),
+          0 1px 2px rgba(18, 31, 45, 0.028),
+          0 16px 40px rgba(72, 91, 86, 0.052);
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 32px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        max-width: 680px;
+        margin: 0;
+        font-size: clamp(30px, 3vw, 42px);
+        line-height: 1.08;
+        font-weight: 400;
+        letter-spacing: -0.03em;
+        color: var(--study-black);
+      }
+
+      .hero-sub {
+        max-width: 640px;
+        margin: 8px 0 0;
+        color: #6e6e73;
+        font-size: 15px;
+        line-height: 1.48;
+        font-weight: 400;
+      }
+
+      .hero-swatches {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      .hero-swatch {
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+      }
+
+      .hero-swatch i {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        box-shadow:
+          inset 0 0 0 1px rgba(18, 31, 45, 0.07),
+          0 8px 18px rgba(20, 20, 22, 0.1);
+      }
+
+      .hero-swatch span {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        color: var(--text-4);
+        text-transform: uppercase;
+      }
+
+      .hero-swatch.black i {
+        background: var(--study-black);
+      }
+      .hero-swatch.cyan i {
+        background: var(--study-cyan);
+      }
+      .hero-swatch.green i {
+        background: var(--study-green);
+      }
+      .hero-swatch.yellow i {
+        background: var(--study-yellow);
+      }
+      .hero-swatch.violet i {
+        background: var(--study-violet);
+      }
+
+      .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin: 30px 0 18px;
+      }
+
+      .section-title {
+        min-width: 0;
+      }
+
+      .section-route {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+        color: var(--text-4);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .section-route::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--study-black);
+        box-shadow: 0 0 0 4px rgba(29, 29, 31, 0.08);
+      }
+
+      h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: clamp(28px, 2.6vw, 38px);
+        line-height: 1.15;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
+      .section-sub {
+        max-width: 620px;
+        margin: 8px 0 0;
+        color: var(--text-3);
+        font-size: 15px;
+        line-height: 1.45;
+        font-weight: 400;
+      }
+
+      /* ============================================
+       Variant cards - one accent per card.
+       Everything inside reads from --a / --a-soft.
+       ============================================ */
+
+      .variant-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .variant {
+        --a: var(--study-cyan);
+        --a-soft: rgba(73, 224, 245, 0.14);
+        --a-line: rgba(73, 224, 245, 0.32);
+        border-radius: var(--study-radius-panel);
+        background: var(--study-panel);
+        border: 1px solid var(--study-line);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.76),
+          0 1px 2px rgba(18, 31, 45, 0.018),
+          0 16px 40px rgba(72, 91, 86, 0.052);
+        backdrop-filter: blur(24px) saturate(1.2);
+        -webkit-backdrop-filter: blur(24px) saturate(1.2);
+        overflow: hidden;
+      }
+
+      .variant.v-cyan {
+        --a: var(--study-cyan);
+        --a-soft: rgba(73, 224, 245, 0.15);
+        --a-line: rgba(73, 224, 245, 0.34);
+        --a-area: rgba(73, 224, 245, 0.09);
+      }
+
+      .variant.v-green {
+        --a: var(--study-green);
+        --a-soft: rgba(117, 251, 144, 0.16);
+        --a-line: rgba(117, 251, 144, 0.36);
+        --a-area: rgba(117, 251, 144, 0.1);
+      }
+
+      .variant.v-yellow {
+        --a: var(--study-yellow);
+        --a-soft: rgba(234, 208, 37, 0.15);
+        --a-line: rgba(234, 208, 37, 0.34);
+        --a-area: rgba(234, 208, 37, 0.1);
+        --a-stroke: var(--study-yellow-line);
+      }
+
+      .variant.v-violet {
+        --a: var(--study-violet);
+        --a-soft: rgba(102, 72, 246, 0.11);
+        --a-line: rgba(102, 72, 246, 0.3);
+        --a-area: rgba(102, 72, 246, 0.06);
+      }
+
+      .variant-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 18px 14px;
+        border-bottom: 1px solid rgba(18, 31, 45, 0.065);
+      }
+
+      .variant-id {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .variant-chip {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: var(--a);
+        flex-shrink: 0;
+        box-shadow:
+          inset 0 0 0 1px rgba(18, 31, 45, 0.08),
+          0 8px 18px rgba(20, 20, 22, 0.1);
+      }
+
+      .variant-id h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: 20px;
+        line-height: 1.14;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
+      .variant-id span {
+        display: block;
+        margin-top: 3px;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        color: var(--text-4);
+        text-transform: uppercase;
+      }
+
+      .variant-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 28px;
+        padding: 0 10px;
+        border-radius: var(--r-full);
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow:
+          inset 0 0 0 1px rgba(15, 21, 30, 0.055),
+          inset 0 1px 0 rgba(255, 255, 255, 0.78),
+          0 1px 2px rgba(18, 31, 45, 0.026);
+        color: var(--text-3);
+        font-size: 11.5px;
+        font-weight: 450;
+        white-space: nowrap;
+      }
+
+      .variant-pill::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--a);
+        box-shadow: 0 0 0 3px var(--a-soft);
+      }
+
+      .variant-body {
+        display: grid;
+        gap: 10px;
+        padding: 16px 18px 18px;
+      }
+
+      /* --- line chart block --- */
+
+      .v-line-card {
+        padding: 16px 18px 12px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid rgba(18, 31, 45, 0.06);
+        box-shadow: 0 1px 2px rgba(18, 31, 45, 0.022);
+        overflow: hidden;
+      }
+
+      .v-topline {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 8px;
+      }
+
+      .v-big {
+        font-size: clamp(34px, 2.8vw, 44px);
+        font-weight: 450;
+        line-height: 1.03;
+        color: var(--study-black);
+        letter-spacing: -0.03em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .v-big small {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-4);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .v-delta {
+        display: inline-flex;
+        align-items: center;
+        height: 28px;
+        padding: 0 10px;
+        border-radius: var(--r-full);
+        background: var(--a-soft);
+        box-shadow: inset 0 0 0 1px var(--a-line);
+        color: var(--study-black);
+        font-size: 12px;
+        font-weight: 550;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      .v-line-chart {
+        width: 100%;
+        height: 150px;
+        display: block;
+        overflow: visible;
+      }
+
+      .v-line-chart .grid {
+        fill: none;
+        stroke: rgba(15, 23, 42, 0.06);
+        stroke-width: 1;
+        stroke-dasharray: 2 6;
+      }
+
+      .v-line-chart .area {
+        fill: var(--a-area, var(--a-soft));
+      }
+
+      .v-line-chart .line-primary {
+        fill: none;
+        stroke: var(--study-black);
+        stroke-width: 2.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .v-line-chart .line-accent {
+        fill: none;
+        stroke: var(--a-stroke, var(--a));
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .v-line-chart .point {
+        fill: #fff;
+        stroke: var(--study-black);
+        stroke-width: 2;
+      }
+
+      .v-line-chart .point-accent {
+        fill: var(--a-stroke, var(--a));
+        stroke: #fff;
+        stroke-width: 2;
+      }
+
+      .v-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-family: var(--font-sans);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-5);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* --- column (vertical bar) chart block --- */
+
+      .v-col-card {
+        padding: 16px 18px 14px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid rgba(18, 31, 45, 0.06);
+        box-shadow: 0 1px 2px rgba(18, 31, 45, 0.022);
+      }
+
+      .v-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .v-card-head strong {
+        color: var(--text);
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+
+      .v-card-head span {
+        font-family: var(--font-sans);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-4);
+      }
+
+      .v-columns {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        align-items: end;
+        justify-items: center;
+        gap: 8px;
+        height: 120px;
+      }
+
+      .v-columns i {
+        display: block;
+        width: min(12px, 100%);
+        border-radius: var(--r-full);
+        background: rgba(20, 20, 22, 0.16);
+      }
+
+      .v-columns i.is-accent {
+        background: var(--a-stroke, var(--a));
+      }
+
+      .v-col-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-family: var(--font-sans);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-5);
+      }
+
+      /* --- horizontal bar block --- */
+
+      .v-bars-card {
+        padding: 16px 18px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid rgba(18, 31, 45, 0.06);
+        box-shadow: 0 1px 2px rgba(18, 31, 45, 0.022);
+        display: grid;
+        gap: 12px;
+      }
+
+      .v-bar-row {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr) 44px;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .v-bar-label {
+        min-width: 0;
+        color: var(--text-3);
+        font-size: 12px;
+        font-weight: 450;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .v-bar-track {
+        height: 9px;
+        border-radius: var(--r-full);
+        background: rgba(29, 29, 31, 0.06);
+        overflow: hidden;
+      }
+
+      .v-bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: rgba(20, 20, 22, 0.24);
+      }
+
+      .v-bar-fill.accent {
+        background: var(--a);
+      }
+
+      .v-bar-value {
+        color: var(--text);
+        font-family: var(--font-sans);
+        font-size: 11.5px;
+        font-weight: 500;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* --- footer tags --- */
+
+      .v-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .v-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 30px;
+        padding: 0 11px;
+        border-radius: var(--r-full);
+        background: var(--study-card);
+        border: 1px solid rgba(18, 31, 45, 0.075);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.76),
+          0 1px 2px rgba(18, 31, 45, 0.026);
+        color: var(--text-2);
+        font-size: 12px;
+        font-weight: 450;
+        white-space: nowrap;
+      }
+
+      .v-tag::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--a);
+      }
+
+      .v-tag.is-filled {
+        background: var(--a-soft);
+        border-color: var(--a-line);
+        color: var(--study-black);
+      }
+
+      .v-tag.is-black {
+        background: rgba(29, 29, 31, 0.96);
+        border-color: rgba(29, 29, 31, 0.96);
+        color: #fff;
+      }
+
+      /* ============================================
+       Combined reference panel at the bottom
+       ============================================ */
+
+      .combined-panel {
+        margin-top: 18px;
+        border-radius: var(--study-radius-panel);
+        background: var(--study-panel);
+        border: 1px solid var(--study-line);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.76),
+          0 1px 2px rgba(18, 31, 45, 0.018),
+          0 16px 40px rgba(72, 91, 86, 0.052);
+        backdrop-filter: blur(24px) saturate(1.2);
+        -webkit-backdrop-filter: blur(24px) saturate(1.2);
+        overflow: hidden;
+      }
+
+      .combined-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 18px 14px;
+        border-bottom: 1px solid rgba(18, 31, 45, 0.065);
+      }
+
+      .panel-kicker {
+        margin-bottom: 6px;
+        color: var(--text-4);
+        font-size: 10.5px;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .combined-head h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: 22px;
+        line-height: 1.14;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
+      .combined-wrap {
+        padding: 18px;
+      }
+
+      .combined-chart-card {
+        padding: 18px 20px 14px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid rgba(18, 31, 45, 0.06);
+        box-shadow: 0 1px 2px rgba(18, 31, 45, 0.022);
+        overflow: hidden;
+      }
+
+      .combined-chart {
+        width: 100%;
+        height: 200px;
+        display: block;
+        overflow: visible;
+      }
+
+      .combined-chart .grid {
+        fill: none;
+        stroke: rgba(15, 23, 42, 0.06);
+        stroke-width: 1;
+        stroke-dasharray: 2 6;
+      }
+
+      .combined-chart .line-primary {
+        fill: none;
+        stroke: var(--study-black);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .combined-chart .s-cyan,
+      .combined-chart .s-green,
+      .combined-chart .s-yellow,
+      .combined-chart .s-violet {
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .combined-chart .s-cyan {
+        stroke: var(--study-cyan);
+      }
+      .combined-chart .s-green {
+        stroke: var(--study-green);
+      }
+      .combined-chart .s-yellow {
+        stroke: var(--study-yellow-line);
+      }
+      .combined-chart .s-violet {
+        stroke: var(--study-violet);
+      }
+
+      .combined-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 14px;
+      }
+
+      .combined-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-3);
+        font-size: 12px;
+        font-weight: 450;
+      }
+
+      .combined-legend span::before {
+        content: '';
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--legend-color, var(--study-black));
+      }
+
+      @media (max-width: 1040px) {
+        .study-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .study-sidebar {
+          display: none;
+        }
+
+        .study-main {
+          padding: 14px 20px 72px;
+        }
+
+        .variant-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .study-main {
+          padding: 12px 14px 64px;
+        }
+
+        .topbar,
+        .section-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero-panel {
+          padding: 24px 18px;
+          border-radius: 30px;
+        }
+
+        h1 {
+          font-size: 30px;
+        }
+
+        .v-bar-row {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+
+        .v-bar-value {
+          text-align: left;
+        }
+      }
+    </style>
+      <style>.is-embedded body { padding-top: 12px; }</style>
+  </head>
+  <body>
+    <div class="study-shell">
+      <aside class="study-sidebar" aria-label="Pulse navigation">
+        <div class="brand-mark">
+          <div class="brand-dot"></div>
+          <div class="brand-name">
+            <strong>Pulse</strong>
+            <span>Accent study</span>
+          </div>
+        </div>
+
+        <nav class="nav-group" aria-label="Sections">
+          <div class="nav-item is-active">Overview</div>
+          <div class="nav-item swatch-cyan">Cyan #49E0F5</div>
+          <div class="nav-item swatch-green">Green #75FB90</div>
+          <div class="nav-item swatch-yellow">Yellow #EAD025</div>
+          <div class="nav-item swatch-violet">Violet #6648F6</div>
+        </nav>
+
+        <div class="sidebar-note">
+          <b>1 + 4</b>
+          <span>Black base, four accent candidates</span>
+        </div>
+      </aside>
+
+      <main class="study-main">
+        <div class="study-inner">
+          <header class="topbar">
+            <div class="breadcrumb">Pulse design system</div>
+            <div class="topbar-actions">
+              <button class="btn btn--secondary" type="button">Export view</button>
+              <button class="btn btn--dark" type="button">Review queue</button>
+            </div>
+          </header>
+
+          <section class="hero-panel">
+            <div>
+              <h1>One accent at a time.</h1>
+              <p class="hero-sub">
+                Same dashboard, same structure, four candidate accents. Black #141416 carries the
+                hierarchy in every variant - only the signal color changes, so the difference
+                between candidates is the only thing you compare.
+              </p>
+            </div>
+            <div class="hero-swatches" aria-label="Palette">
+              <div class="hero-swatch black"><i></i><span>Base</span></div>
+              <div class="hero-swatch cyan"><i></i><span>49E0F5</span></div>
+              <div class="hero-swatch green"><i></i><span>75FB90</span></div>
+              <div class="hero-swatch yellow"><i></i><span>EAD025</span></div>
+              <div class="hero-swatch violet"><i></i><span>6648F6</span></div>
+            </div>
+          </section>
+
+          <div class="section-head">
+            <div class="section-title">
+              <div class="section-route">Comparison</div>
+              <h2>Four variants, identical layout</h2>
+              <p class="section-sub">
+                Each card repeats the same line chart, column chart, progress bars, and status
+                chips. Scan vertically to judge one color; scan horizontally to compare candidates.
+              </p>
+            </div>
+          </div>
+
+          <div class="variant-grid">
+            <!-- ============ CYAN ============ -->
+            <article class="variant v-cyan">
+              <header class="variant-head">
+                <div class="variant-id">
+                  <div class="variant-chip"></div>
+                  <div>
+                    <h3>Cyan</h3>
+                    <span>#49E0F5 - Analysis</span>
+                  </div>
+                </div>
+                <div class="variant-pill">Candidate A</div>
+              </header>
+              <div class="variant-body">
+                <div class="v-line-card">
+                  <div class="v-topline">
+                    <div class="v-big">128.6k<small>Weighted engagement</small></div>
+                    <div class="v-delta">+14.8%</div>
+                  </div>
+                  <svg
+                    class="v-line-chart"
+                    viewBox="0 0 360 150"
+                    role="img"
+                    aria-label="Line chart, black primary with cyan secondary series"
+                  >
+                    <path class="grid" d="M0 20H360M0 60H360M0 100H360M0 140H360" />
+                    <path
+                      class="area"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30 L360 150 L0 150 Z"
+                    />
+                    <path
+                      class="line-accent"
+                      d="M0 124 C42 110 66 96 106 102 C150 108 172 76 214 84 C258 92 286 58 324 64 C340 66 352 56 360 52"
+                    />
+                    <path
+                      class="line-primary"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30"
+                    />
+                    <circle class="point" cx="322" cy="38" r="4.5" />
+                    <circle class="point-accent" cx="324" cy="64" r="4.5" />
+                  </svg>
+                  <div class="v-meta">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span
+                    ><span>Sat</span><span>Sun</span>
+                  </div>
+                </div>
+
+                <div class="v-col-card">
+                  <div class="v-card-head">
+                    <strong>Daily signal volume</strong>
+                    <span>Peak in accent</span>
+                  </div>
+                  <div class="v-columns" aria-label="Column chart, peak days highlighted in cyan">
+                    <i style="height: 38%"></i><i style="height: 52%"></i><i style="height: 30%"></i
+                    ><i style="height: 60%"></i><i style="height: 44%"></i
+                    ><i style="height: 68%"></i><i style="height: 36%"></i
+                    ><i style="height: 58%"></i><i style="height: 48%"></i
+                    ><i class="is-accent" style="height: 92%"></i><i style="height: 64%"></i
+                    ><i class="is-accent" style="height: 78%"></i>
+                  </div>
+                  <div class="v-col-labels">
+                    <span>01</span><span>04</span><span>08</span><span>12</span>
+                  </div>
+                </div>
+
+                <div class="v-bars-card" aria-label="Channel progress bars">
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Organic</div>
+                    <div class="v-bar-track">
+                      <div class="v-bar-fill accent" style="width: 84%"></div>
+                    </div>
+                    <div class="v-bar-value">84%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Creators</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 71%"></div></div>
+                    <div class="v-bar-value">71%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Paid social</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 58%"></div></div>
+                    <div class="v-bar-value">58%</div>
+                  </div>
+                </div>
+
+                <div class="v-tags">
+                  <span class="v-tag is-black">Primary action</span>
+                  <span class="v-tag is-filled">Signal ready</span>
+                  <span class="v-tag">Forecast track</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- ============ GREEN ============ -->
+            <article class="variant v-green">
+              <header class="variant-head">
+                <div class="variant-id">
+                  <div class="variant-chip"></div>
+                  <div>
+                    <h3>Green</h3>
+                    <span>#75FB90 - Healthy state</span>
+                  </div>
+                </div>
+                <div class="variant-pill">Candidate B</div>
+              </header>
+              <div class="variant-body">
+                <div class="v-line-card">
+                  <div class="v-topline">
+                    <div class="v-big">131.2k<small>Weighted engagement</small></div>
+                    <div class="v-delta">+12.3%</div>
+                  </div>
+                  <svg
+                    class="v-line-chart"
+                    viewBox="0 0 360 150"
+                    role="img"
+                    aria-label="Line chart, black primary with green secondary series"
+                  >
+                    <path class="grid" d="M0 20H360M0 60H360M0 100H360M0 140H360" />
+                    <path
+                      class="area"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30 L360 150 L0 150 Z"
+                    />
+                    <path
+                      class="line-accent"
+                      d="M0 124 C42 110 66 96 106 102 C150 108 172 76 214 84 C258 92 286 58 324 64 C340 66 352 56 360 52"
+                    />
+                    <path
+                      class="line-primary"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30"
+                    />
+                    <circle class="point" cx="322" cy="38" r="4.5" />
+                    <circle class="point-accent" cx="324" cy="64" r="4.5" />
+                  </svg>
+                  <div class="v-meta">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span
+                    ><span>Sat</span><span>Sun</span>
+                  </div>
+                </div>
+
+                <div class="v-col-card">
+                  <div class="v-card-head">
+                    <strong>Daily signal volume</strong>
+                    <span>Peak in accent</span>
+                  </div>
+                  <div class="v-columns" aria-label="Column chart, peak days highlighted in green">
+                    <i style="height: 38%"></i><i style="height: 52%"></i><i style="height: 30%"></i
+                    ><i style="height: 60%"></i><i style="height: 44%"></i
+                    ><i style="height: 68%"></i><i style="height: 36%"></i
+                    ><i style="height: 58%"></i><i style="height: 48%"></i
+                    ><i class="is-accent" style="height: 92%"></i><i style="height: 64%"></i
+                    ><i class="is-accent" style="height: 78%"></i>
+                  </div>
+                  <div class="v-col-labels">
+                    <span>01</span><span>04</span><span>08</span><span>12</span>
+                  </div>
+                </div>
+
+                <div class="v-bars-card" aria-label="Channel progress bars">
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Organic</div>
+                    <div class="v-bar-track">
+                      <div class="v-bar-fill accent" style="width: 84%"></div>
+                    </div>
+                    <div class="v-bar-value">84%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Creators</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 71%"></div></div>
+                    <div class="v-bar-value">71%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Paid social</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 58%"></div></div>
+                    <div class="v-bar-value">58%</div>
+                  </div>
+                </div>
+
+                <div class="v-tags">
+                  <span class="v-tag is-black">Primary action</span>
+                  <span class="v-tag is-filled">Signal ready</span>
+                  <span class="v-tag">Forecast track</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- ============ YELLOW ============ -->
+            <article class="variant v-yellow">
+              <header class="variant-head">
+                <div class="variant-id">
+                  <div class="variant-chip"></div>
+                  <div>
+                    <h3>Yellow</h3>
+                    <span>#EAD025 - Attention</span>
+                  </div>
+                </div>
+                <div class="variant-pill">Candidate C</div>
+              </header>
+              <div class="variant-body">
+                <div class="v-line-card">
+                  <div class="v-topline">
+                    <div class="v-big">126.4k<small>Weighted engagement</small></div>
+                    <div class="v-delta">+9.6%</div>
+                  </div>
+                  <svg
+                    class="v-line-chart"
+                    viewBox="0 0 360 150"
+                    role="img"
+                    aria-label="Line chart, black primary with yellow secondary series"
+                  >
+                    <path class="grid" d="M0 20H360M0 60H360M0 100H360M0 140H360" />
+                    <path
+                      class="area"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30 L360 150 L0 150 Z"
+                    />
+                    <path
+                      class="line-accent"
+                      d="M0 124 C42 110 66 96 106 102 C150 108 172 76 214 84 C258 92 286 58 324 64 C340 66 352 56 360 52"
+                    />
+                    <path
+                      class="line-primary"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30"
+                    />
+                    <circle class="point" cx="322" cy="38" r="4.5" />
+                    <circle class="point-accent" cx="324" cy="64" r="4.5" />
+                  </svg>
+                  <div class="v-meta">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span
+                    ><span>Sat</span><span>Sun</span>
+                  </div>
+                </div>
+
+                <div class="v-col-card">
+                  <div class="v-card-head">
+                    <strong>Daily signal volume</strong>
+                    <span>Peak in accent</span>
+                  </div>
+                  <div class="v-columns" aria-label="Column chart, peak days highlighted in yellow">
+                    <i style="height: 38%"></i><i style="height: 52%"></i><i style="height: 30%"></i
+                    ><i style="height: 60%"></i><i style="height: 44%"></i
+                    ><i style="height: 68%"></i><i style="height: 36%"></i
+                    ><i style="height: 58%"></i><i style="height: 48%"></i
+                    ><i class="is-accent" style="height: 92%"></i><i style="height: 64%"></i
+                    ><i class="is-accent" style="height: 78%"></i>
+                  </div>
+                  <div class="v-col-labels">
+                    <span>01</span><span>04</span><span>08</span><span>12</span>
+                  </div>
+                </div>
+
+                <div class="v-bars-card" aria-label="Channel progress bars">
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Organic</div>
+                    <div class="v-bar-track">
+                      <div class="v-bar-fill accent" style="width: 84%"></div>
+                    </div>
+                    <div class="v-bar-value">84%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Creators</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 71%"></div></div>
+                    <div class="v-bar-value">71%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Paid social</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 58%"></div></div>
+                    <div class="v-bar-value">58%</div>
+                  </div>
+                </div>
+
+                <div class="v-tags">
+                  <span class="v-tag is-black">Primary action</span>
+                  <span class="v-tag is-filled">Signal ready</span>
+                  <span class="v-tag">Forecast track</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- ============ VIOLET ============ -->
+            <article class="variant v-violet">
+              <header class="variant-head">
+                <div class="variant-id">
+                  <div class="variant-chip"></div>
+                  <div>
+                    <h3>Violet</h3>
+                    <span>#6648F6 - Forecast</span>
+                  </div>
+                </div>
+                <div class="variant-pill">Candidate D</div>
+              </header>
+              <div class="variant-body">
+                <div class="v-line-card">
+                  <div class="v-topline">
+                    <div class="v-big">129.8k<small>Weighted engagement</small></div>
+                    <div class="v-delta">+11.2%</div>
+                  </div>
+                  <svg
+                    class="v-line-chart"
+                    viewBox="0 0 360 150"
+                    role="img"
+                    aria-label="Line chart, black primary with violet secondary series"
+                  >
+                    <path class="grid" d="M0 20H360M0 60H360M0 100H360M0 140H360" />
+                    <path
+                      class="area"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30 L360 150 L0 150 Z"
+                    />
+                    <path
+                      class="line-accent"
+                      d="M0 124 C42 110 66 96 106 102 C150 108 172 76 214 84 C258 92 286 58 324 64 C340 66 352 56 360 52"
+                    />
+                    <path
+                      class="line-primary"
+                      d="M0 112 C40 102 62 70 104 78 C146 86 168 50 212 58 C254 66 282 28 322 38 C338 42 350 36 360 30"
+                    />
+                    <circle class="point" cx="322" cy="38" r="4.5" />
+                    <circle class="point-accent" cx="324" cy="64" r="4.5" />
+                  </svg>
+                  <div class="v-meta">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span
+                    ><span>Sat</span><span>Sun</span>
+                  </div>
+                </div>
+
+                <div class="v-col-card">
+                  <div class="v-card-head">
+                    <strong>Daily signal volume</strong>
+                    <span>Peak in accent</span>
+                  </div>
+                  <div class="v-columns" aria-label="Column chart, peak days highlighted in violet">
+                    <i style="height: 38%"></i><i style="height: 52%"></i><i style="height: 30%"></i
+                    ><i style="height: 60%"></i><i style="height: 44%"></i
+                    ><i style="height: 68%"></i><i style="height: 36%"></i
+                    ><i style="height: 58%"></i><i style="height: 48%"></i
+                    ><i class="is-accent" style="height: 92%"></i><i style="height: 64%"></i
+                    ><i class="is-accent" style="height: 78%"></i>
+                  </div>
+                  <div class="v-col-labels">
+                    <span>01</span><span>04</span><span>08</span><span>12</span>
+                  </div>
+                </div>
+
+                <div class="v-bars-card" aria-label="Channel progress bars">
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Organic</div>
+                    <div class="v-bar-track">
+                      <div class="v-bar-fill accent" style="width: 84%"></div>
+                    </div>
+                    <div class="v-bar-value">84%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Creators</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 71%"></div></div>
+                    <div class="v-bar-value">71%</div>
+                  </div>
+                  <div class="v-bar-row">
+                    <div class="v-bar-label">Paid social</div>
+                    <div class="v-bar-track"><div class="v-bar-fill" style="width: 58%"></div></div>
+                    <div class="v-bar-value">58%</div>
+                  </div>
+                </div>
+
+                <div class="v-tags">
+                  <span class="v-tag is-black">Primary action</span>
+                  <span class="v-tag is-filled">Signal ready</span>
+                  <span class="v-tag">Forecast track</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="section-head">
+            <div class="section-title">
+              <div class="section-route">Reference</div>
+              <h2>All four on one chart</h2>
+              <p class="section-sub">
+                If the palette ships as a full set, this is how the series read together: black
+                leads, the four accents stay thin and secondary.
+              </p>
+            </div>
+          </div>
+
+          <article class="combined-panel">
+            <div class="combined-head">
+              <div>
+                <div class="panel-kicker">Full palette</div>
+                <h3>Black primary with all accent series</h3>
+              </div>
+            </div>
+            <div class="combined-wrap">
+              <div class="combined-chart-card">
+                <svg
+                  class="combined-chart"
+                  viewBox="0 0 760 200"
+                  role="img"
+                  aria-label="Line chart with black primary and four accent series"
+                >
+                  <path class="grid" d="M0 25H760M0 70H760M0 115H760M0 160H760" />
+                  <path
+                    class="s-cyan"
+                    d="M0 170 C70 150 120 92 200 98 C280 104 330 142 410 122 C490 102 540 72 620 90 C680 102 720 72 760 62"
+                  />
+                  <path
+                    class="s-green"
+                    d="M0 120 C80 134 140 150 210 138 C290 124 340 88 420 104 C500 120 560 142 630 118 C690 100 724 96 760 86"
+                  />
+                  <path
+                    class="s-yellow"
+                    d="M0 96 C70 110 130 70 205 84 C285 98 340 122 420 96 C500 72 550 110 628 92 C690 78 720 98 760 74"
+                  />
+                  <path
+                    class="s-violet"
+                    d="M0 158 C80 168 130 122 208 132 C288 142 350 172 420 148 C500 126 560 154 630 130 C690 112 724 128 760 110"
+                  />
+                  <path
+                    class="line-primary"
+                    d="M0 146 C80 132 132 96 205 108 C286 122 336 68 418 78 C498 88 548 36 628 50 C680 58 716 46 760 32"
+                  />
+                </svg>
+                <div class="combined-legend">
+                  <span style="--legend-color: var(--study-black)">Black primary</span>
+                  <span style="--legend-color: var(--study-cyan)">Cyan #49E0F5</span>
+                  <span style="--legend-color: var(--study-green)">Green #75FB90</span>
+                  <span style="--legend-color: var(--study-yellow-line)"
+                    >Yellow #EAD025 - line #D4BC1F</span
+                  >
+                  <span style="--legend-color: var(--study-violet)">Violet #6648F6</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,514 @@
+﻿/* ===================================================================
+   Pulse design tokens — TRUTH SOURCE.
+   This is the canonical token set (see /CANONICAL.md). Edit token values here.
+   The per-component handoff pages (components/<Name>/<Name>.html) and the
+   component browser (html-component-preview.html) link this file directly.
+   demo/pulse-react/src/tokens.css is a paused legacy subset, not a source;
+   `node scripts/verify.mjs` reports any other tokens.css that drifts from this.
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Newsreader:ital,opsz,wght@0,18..72,400..500;1,18..72,400..500&display=swap');
+
+:root {
+  /* Core surfaces: neutral command UI with cyan reserved for auxiliary status/highlight. */
+  --bg: #f4f7f7;
+  --canvas: #ffffff;
+  --surface: #f8faf9;
+  --surface-2: #ecf1f0;
+  --surface-3: #e1e8e6;
+  --border: rgba(29, 29, 31, 0.08);
+  --border-strong: rgba(29, 29, 31, 0.16);
+  --ink-900: #141416;
+  --ink-800: #1d1d1f;
+  --ink-700: #2f3135;
+  --ink-600: #44464a;
+  /* Text hierarchy. Lead with weight + tone, not size, to separate levels.
+     1 primary  → titles, key numbers, primary body
+     2 secondary→ standard body, descriptions
+     3 tertiary → supporting copy, meta, captions
+     4 quaternary→ labels, eyebrows, placeholder, quiet meta
+     5 disabled → disabled / faint, non-actionable text */
+  --text-1: var(--ink-800);
+  --text: var(--text-1);
+  --text-2: var(--ink-600);
+  --text-3: #5f6369;
+  --text-4: #8a8e95;
+  --text-5: #b1b5bb;
+
+  --ink: var(--ink-800);
+  --ink-2: var(--ink-700);
+  --ink-soft: rgba(29, 29, 31, 0.06);
+  --ink-line: rgba(29, 29, 31, 0.12);
+  --white-glass: rgba(255, 255, 255, 0.74);
+
+  --color-primary-cyan: #49e0f5;
+  --color-green: #43ba51;
+  --color-blue: #3987f3;
+  --color-amber: #f19a08;
+  --color-red: #ef4444;
+  --color-purple: #6366f1;
+
+  --pulse-cyan: var(--color-primary-cyan);
+  --pulse-cyan-strong: #16a9bc;
+  --pulse-cyan-dark: #0d7685;
+  --pulse-cyan-soft: #e5fbff;
+  --pulse-cyan-line: rgba(73, 224, 245, 0.42);
+
+  /* Legacy green/lime names remain as aliases until component class names are renamed. */
+  --pulse-lime: var(--pulse-cyan);
+  --pulse-lime-strong: var(--pulse-cyan-strong);
+  --pulse-lime-soft: var(--pulse-cyan-soft);
+  --pulse-lime-line: var(--pulse-cyan-line);
+
+  --cyan-50: #f0fdff;
+  --cyan-100: #e5fbff;
+  --cyan-200: #b8f3fb;
+  --cyan-500: var(--pulse-cyan);
+  --cyan-600: #0ea5b8;
+  --cyan-700: var(--pulse-cyan-dark);
+
+  /* --green-* is the real green ramp (positive / live / data-up), mirroring the
+     --success-* semantic alias. Honest naming: --green is green, --cyan is cyan —
+     never alias --green to cyan. If you need cyan, use --cyan-*. */
+  --green-50: var(--success-50);
+  --green-100: var(--success-100);
+  --green-200: var(--success-200);
+  --green-500: var(--success-500);
+  --green-600: var(--success-600);
+  --green-700: var(--success-700);
+
+  /* Success — real green for positive states: active/live, approved, completed,
+     published, on-track, delivered. Distinct from cyan ready semantics.
+     Status base = #43ba51. On white, use 600/700 for text (500 is a fill/dot). */
+  --success-50: #eff9f1;
+  --success-100: #d5f0da;
+  --success-200: #abe2b3;
+  --success-500: var(--color-green);
+  --success-600: #2e9d40;
+  --success-700: #207d32;
+  --success: var(--success-600);
+  --success-soft: var(--success-100);
+  --success-line: var(--success-200);
+
+  /* Functional color only. Do not use blue as brand chrome. Status base = #3987f3. */
+  --info: var(--color-blue);
+  --info-soft: rgba(57, 135, 243, 0.11);
+  --info-line: rgba(57, 135, 243, 0.26);
+
+  --brand: var(--pulse-lime);
+  --brand-2: var(--pulse-lime-strong);
+  --brand-soft: var(--pulse-cyan-soft);
+  --navy-deep: var(--ink);
+
+  --blue: var(--info);
+  --indigo: var(--color-purple);
+  --cyan: var(--cyan-600);
+  --green: var(--success);
+  --red: var(--color-red);
+  --orange: var(--color-amber);
+  --yellow: #f5b800;
+  --teal: #14b8a6;
+  --pink: #ec4899;
+
+  --cyan-soft: var(--cyan-100);
+  --green-soft: var(--success-soft);
+  --red-soft: rgba(239, 68, 68, 0.11);
+  --orange-soft: rgba(241, 154, 8, 0.14);
+  --blue-soft: var(--info-soft);
+  --indigo-soft: rgba(99, 102, 241, 0.12);
+
+  /* Semantic lightness ramps. Same 6 stops as cyan: 50/100 soft fills, 200
+     borders/lines, 500 the base, 600 text/dot on light, 700 deepest emphasis.
+     Dots are flat solid markers; no glow, halo, ping, pulse, or outward rings. */
+  /* Red is reserved for destructive actions and declining data: delete/remove,
+     negative delta, drop-off, loss, or a metric moving down. Do not use red for
+     generic risk, urgency, or routing. */
+  --red-50: #fef2f2;
+  --red-100: #fde4e4;
+  --red-200: #f9c9c9;
+  --red-500: var(--color-red);
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* Status base = #f19a08. Amber on white is low-contrast: use 700 for text. */
+  --amber-50: #fef6e7;
+  --amber-100: #fce7be;
+  --amber-200: #f7ce84;
+  --amber-500: var(--color-amber);
+  --amber-600: #cc7f06;
+  --amber-700: #a1640b;
+  --amber: var(--amber-500);
+  --amber-soft: var(--amber-100);
+  --amber-line: var(--amber-200);
+
+  /* Status base = #3987f3. On white, use 600/700 for text. */
+  --blue-50: #eff5fe;
+  --blue-100: #d7e6fd;
+  --blue-200: #b0cdfa;
+  --blue-500: var(--color-blue);
+  --blue-600: #1f6fe0;
+  --blue-700: #1a57b0;
+
+  --indigo-50: #f1f1fe;
+  --indigo-100: #e2e3fc;
+  --indigo-200: #c7c9f8;
+  --indigo-500: var(--color-purple);
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+
+  /* Platform brand glyph colours — external brand marks, EXEMPT from the Pulse
+     semantic ladder (they are not status/data/severity colours). One canonical
+     value per platform so IG/Pinterest stop rendering two different reds/pinks
+     across pages. Consume via var(--platform-<name>); do not re-hardcode. */
+  --platform-instagram: #d95b7f;
+  --platform-pinterest: #e60023;
+  --platform-youtube: #ff0033;
+  --platform-linkedin: #0a66c2;
+  --platform-facebook: #1877f2;
+  --platform-tiktok: #111827;
+  --platform-x: #0f0f0f;
+
+  --perception: var(--ink);
+  --perception-soft: var(--ink-soft);
+  --creative: var(--pulse-lime);
+  --creative-soft: var(--pulse-lime-soft);
+
+  --severity-watch: var(--amber-200);
+  --severity-watch-ink: var(--amber-700);
+  --severity-watch-soft: var(--amber-50);
+  --severity-watch-line: var(--amber-200);
+  /* Legacy critical aliases resolve to amber/watch; red is data-decline only. */
+  --severity-critical: var(--severity-watch);
+  --severity-critical-soft: var(--severity-watch-soft);
+  --severity-critical-line: var(--severity-watch-line);
+  --severity-warning: var(--amber-600);
+  --severity-warning-soft: rgba(204, 127, 6, 0.14);
+  --severity-warning-line: rgba(204, 127, 6, 0.3);
+  --severity-info: var(--info);
+  --severity-info-soft: var(--info-soft);
+  --severity-info-line: var(--info-line);
+  --severity-positive: var(--success-500);
+  --severity-positive-soft: var(--success-50);
+  --severity-positive-line: var(--success-200);
+
+  /* Status tags:
+     green = positive / active-live / approved
+     blue = suggested action / scheduled
+     amber = risk / negative / on hold
+     cyan = ready (light cyan fill with #0D7685 text)
+     purple = in progress */
+  --status-live: var(--success-500);
+  --status-live-soft: var(--success-50);
+  --status-live-line: var(--success-200);
+  --status-ready: var(--cyan-700);
+  --status-ready-soft: var(--cyan-50);
+  --status-ready-line: var(--cyan-200);
+  --status-success: var(--success-500);
+  --status-success-soft: var(--success-100);
+  --status-success-line: var(--success-200);
+  --status-scheduled: var(--blue-500);
+  --status-scheduled-soft: var(--blue-50);
+  --status-scheduled-line: var(--blue-200);
+  --status-draft: var(--amber-500);
+  --status-draft-soft: var(--amber-50);
+  --status-draft-line: var(--amber-200);
+  --status-rendering: var(--indigo-500);
+  --status-rendering-soft: var(--indigo-50);
+  --status-rendering-line: var(--indigo-200);
+  --status-neutral: var(--text-4);
+  --status-neutral-soft: rgba(29, 29, 31, 0.045);
+  --status-neutral-line: rgba(29, 29, 31, 0.08);
+
+  /* Data status labels classify an insight or row result. They are larger,
+     outlined pills without dots, distinct from process/generation state. */
+  --data-status-risk: var(--amber-500);
+  --data-status-risk-soft: #fffaf2;
+  --data-status-risk-line: #f7dca8;
+  --data-status-action: var(--blue-500);
+  --data-status-action-soft: var(--blue-50);
+  --data-status-action-line: var(--blue-200);
+  --data-status-highlight: var(--success-500);
+  --data-status-highlight-soft: var(--success-50);
+  --data-status-highlight-line: var(--success-200);
+  --data-status-decline: var(--red-500);
+  --data-status-decline-soft: var(--red-50);
+  --data-status-decline-line: var(--red-200);
+
+  /* Data trends. Red appears only when the data itself is declining. */
+  --trend-up: var(--success-500);
+  --trend-up-soft: var(--success-50);
+  --trend-down: var(--red-500);
+  --trend-down-soft: var(--red-50);
+  --trend-stable: var(--blue-500);
+  --trend-stable-soft: var(--blue-50);
+
+  /* Diagram semantics. */
+  --diagram-neutral: var(--pulse-cyan);
+  --diagram-best: var(--success-500);
+  --diagram-worst: var(--amber-500);
+
+  /* Chart series (data-viz, owner decision 2026-07-07; brightened same day —
+     owner wants the airy read, so bright slots lean on the relief rule).
+     Categorical slots are assigned in FIXED order 1→N — never cycled past 6,
+     never re-ranked when a filter removes a series. Validated (CVD ΔE ≥ 12
+     adjacent) against white card surfaces; slots 1/3/6 sit below 3:1 by
+     design, so every chart MUST ship visible value labels / a value legend /
+     the DataTable twin (they all do). Slot 1 is the Pulse data hue;
+     single-series charts use slot 1 only. --chart-1-strong is the deeper step
+     for chart TEXT (word-cloud leads, emphasis captions) — fills stay bright.
+     --chart-muted is the de-emphasis series ("Other", context/comparison) —
+     never an identity hue. Red is NOT a series color (reserved for declining
+     data); status colors never double as series. */
+  /* Owner decision 2026-07-07 (3rd round): charts live in the BRIGHT band.
+     Series slots are each ramp's 500 base — fills never go darker than
+     --cyan-600 #0ea5b8 (still vivid); the deep desaturated teals read muddy
+     on large areas and are banned from marks. Slot 1 = the brand cyan base
+     itself for FILLS; thin marks (2px lines, small dots) can't carry #49e0f5
+     on white, so they wear --chart-1-line (cyan-600). --chart-1-strong is for
+     chart TEXT only. --chart-muted is the pale in-family step ("Other",
+     context) — charts carry no gray series. */
+  --chart-1: var(--cyan-500);
+  /* Thin marks (2px lines) — one bright step under the brand base; the old
+     cyan-600 line read muddy (owner). Markers on lines wear ink instead. */
+  --chart-1-line: #22cfe8;
+  --chart-1-strong: #17909f;
+  /* THE emphasized mark (peak bar, best slot, conversion end) may wear brand
+     ink — one black anchor per chart, paired with its pinned chip. Ink is
+     emphasis, never a series identity. */
+  --chart-emphasis: var(--ink-900);
+  /* Mono-cyan + ink theme (owner decision): series identity comes from the
+     brand family plus the black anchor — slot 2 IS ink, slots 3-4 are deeper/
+     lighter cyan steps. Indigo/teal are the 5-6 series escape hatch only;
+     warm hues never enter charts. Lightness + ink separation reads under CVD
+     by construction (no reliance on hue pairs). */
+  --chart-2: var(--ink-900);
+  --chart-3: var(--cyan-600);
+  --chart-4: #7ce8f7;
+  --chart-5: var(--indigo-500);
+  --chart-6: var(--teal);
+  --chart-muted: var(--cyan-200);
+
+  /* Sequential / ordinal brand-cyan ramp — magnitude (choropleth, value-
+     ramped bars) and ordered stages (funnel). Bright band only: tops out at
+     cyan-600, with the brand base as step 400. Adjacent steps lean on 2px
+     surface gaps + direct labels for separation. */
+  --chart-seq-100: var(--cyan-100);
+  --chart-seq-200: var(--cyan-200);
+  --chart-seq-300: #7ce8f7;
+  --chart-seq-400: var(--cyan-500);
+  --chart-seq-500: #22cfe8;
+  --chart-seq-600: var(--cyan-600);
+
+  /* Generation status is process state: compact, dot-led, and separate from
+     data classification.
+     queued = neutral gray
+     scheduled = blue
+     in progress / generating / rendering / building = purple
+     ready = light cyan fill with #0D7685 text
+     approved / live / published / completed = green
+     on hold / blocked / failed / needs attention = amber
+     Red never appears in generation status. */
+  --generation-queued: var(--status-neutral);
+  --generation-queued-soft: var(--status-neutral-soft);
+  --generation-queued-line: var(--status-neutral-line);
+  --generation-scheduled: var(--blue-500);
+  --generation-scheduled-soft: var(--blue-50);
+  --generation-scheduled-line: var(--blue-200);
+  --generation-building: var(--indigo-500);
+  --generation-building-soft: var(--indigo-50);
+  --generation-building-line: var(--indigo-200);
+  --generation-ready: var(--cyan-700);
+  --generation-ready-soft: var(--cyan-50);
+  --generation-ready-line: var(--cyan-200);
+  --generation-published: var(--success-500);
+  --generation-published-soft: var(--success-50);
+  --generation-published-line: var(--success-200);
+  --generation-onhold: var(--amber-500);
+  --generation-onhold-soft: var(--amber-50);
+  --generation-onhold-line: var(--amber-200);
+  --generation-blocked: var(--amber-500);
+  --generation-blocked-soft: var(--amber-50);
+  --generation-blocked-line: var(--amber-200);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-2xl: 30px;
+  --r-3xl: 40px;
+  --r-full: 9999px;
+
+  /* Layered modern shadow scale — kept light. Hairline / subtle resting / overlay. */
+  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-2: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 10px rgba(15, 23, 42, 0.04);
+  --shadow-3: 0 2px 6px rgba(15, 23, 42, 0.05), 0 14px 30px rgba(15, 23, 42, 0.07);
+  --shadow-panel: -10px 0 28px rgba(15, 23, 42, 0.06), -1px 0 3px rgba(15, 23, 42, 0.03);
+  --shadow-dock: 0 2px 4px rgba(15, 23, 42, 0.05), 0 16px 36px rgba(15, 23, 42, 0.08);
+
+  /* Owner decision 2026-07-04: the app uses flat SOLID cards, not glass — so
+     these "glass" surfaces are opaque white. (Any card's leftover backdrop-filter
+     is inert behind an opaque fill.) Name kept to avoid a repo-wide rename. */
+  --surface-glass: #ffffff;
+  --surface-glass-strong: #ffffff;
+  --surface-edge: rgba(29, 29, 31, 0.068);
+  --surface-edge-strong: rgba(29, 29, 31, 0.11);
+  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --surface-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --surface-shadow-hover: 0 1px 3px rgba(15, 23, 42, 0.05), 0 10px 24px rgba(15, 23, 42, 0.055);
+
+  --card-bg: var(--surface-glass);
+  --card-bg-strong: var(--surface-glass-strong);
+  --card-border: var(--surface-edge);
+  --card-radius: 16px;
+  --card-shadow: var(--surface-highlight), var(--surface-shadow-rest);
+  --card-shadow-hover: var(--surface-highlight), var(--surface-shadow-hover);
+  --button-dark: var(--ink-900);
+  --button-dark-hover: var(--ink-700);
+  --button-glass: rgba(255, 255, 255, 0.76);
+  --button-shadow-rest: none;
+  --button-shadow-hover: 0 2px 6px rgba(15, 23, 42, 0.08);
+  --button-shadow-danger-hover: 0 2px 6px rgba(239, 68, 68, 0.14);
+  --focus-ring: 0 0 0 3px rgba(73, 224, 245, 0.42);
+
+  /* Shared control geometry. Use these for buttons, pills, chips, and handoffs. */
+  --control-height-sm: 34px;
+  --control-height-md: 38px;
+  --control-height-lg: 44px;
+  --control-pad-x-sm: 16px;
+  --control-pad-x-md: 18px;
+  --control-pad-x-lg: 24px;
+  --control-gap: 7px;
+  --chip-height: 32px;
+  --chip-pad-x: 14px;
+  --chip-pad-x-compact: 12px;
+  --module-pad-x: clamp(28px, 3.6vw, 58px);
+  --module-pad-y: 28px;
+  --inner-card-radius: 20px;
+  --inner-media-radius: 16px;
+
+  --font-sans:
+    'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial,
+    sans-serif;
+  --font-display: var(--font-sans);
+  /* Manrope-only platform: numeric/code slots inherit the sans stack and rely
+     on font-variant-numeric for tabular alignment. */
+  --font-mono: var(--font-sans);
+  /* The ONE exception to the single-typeface rule: Newsreader is a serif used
+     only for stylized report display titles above 64px (covers, report heroes).
+     Never for body, UI, labels, numbers, or any heading on the H1-H4 ladder.
+     Weight caps at medium (400-500); italic is available and on-brand here. */
+  --font-report: 'Newsreader', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --type-report-display: clamp(64px, 8vw, 96px);
+
+  /* Type scale */
+  --fs-1: 11px;
+  --fs-2: 12px;
+  --fs-3: 13px;
+  --fs-4: 14px;
+  --fs-5: 15px;
+  --fs-6: 17px;
+  --fs-7: 20px;
+  --fs-8: 24px;
+  /* Key data figures (KPI / metric numbers, cadence) use one standard size. */
+  --fs-figure: 32px;
+  --fs-9: 30px;
+  --fs-10: 42px;
+  --fs-11: 58px;
+
+  /* Heading system. Page entrances may use a stylized Manrope display title;
+     module and card headings stay calmer for reading. Hierarchy comes from
+     size, spacing, position, and structure — NOT from heavier weight. */
+  --type-page-display: 64px; /* expressive page entrance / workspace title */
+  --type-h1: 48px; /* primary page / large title */
+  --type-h2: 28px; /* section / sub title */
+  --type-h3: 21px; /* mid title — kept substantial, not a tiny step */
+  --type-h4: 18px; /* card title — kept substantial, not a tiny step */
+  /* Fixed gap between content headings and captions. Display page entrances
+     need a larger gap so the support line reads as its own calm row. */
+  --heading-gap: 8px;
+  --display-heading-gap: 20px;
+
+  --type-display: var(--type-page-display);
+  --type-headline: var(--type-h1);
+  --type-section: var(--type-h2);
+  --type-card-title: var(--type-h4);
+  --type-caption: 13px; /* description / supporting line under a title */
+  --type-body: 14px;
+  --type-supporting: 13px;
+  --type-meta: 12.5px;
+  --type-label: 11px;
+  --type-metric: 26px;
+  --type-page-title: var(--type-page-display);
+  --type-module-title: var(--type-h2);
+  --type-ui-title: var(--type-card-title);
+  --type-ui-body: var(--type-body);
+  --type-ui-supporting: var(--type-supporting);
+  --type-ui-meta: var(--type-meta);
+  --type-ui-label: var(--type-label);
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 650;
+  --fw-heavy: 700;
+  --fw-black: 760;
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.62;
+  --tracking-display: 0;
+  --tracking-title: 0;
+  --tracking-ui: 0;
+  --tracking-label: 0.06em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 72px;
+
+  --layout-rail: 220px;
+  /* Owner decision 2026-07-03: widened 56 -> 64 so the collapsed rail can hold
+     the expand chevron centered inside it, not clinging to the outer edge. */
+  --layout-rail-collapsed: 64px;
+  /* Owner decision 2026-07-01: one content band across the app, unified to
+     campaign's (1240 border-box with 56px side padding = 1128 visible). */
+  --layout-page-max: 1240px;
+  --layout-readable: 720px;
+  --layout-wide-readable: 960px;
+  --layout-pad-desktop: 48px;
+  --layout-pad-compact: 34px;
+  --layout-pad-mobile: 20px;
+  --grid-columns: 12;
+  --grid-gap: 24px;
+  --grid-gap-tight: 16px;
+  --grid-gap-loose: 32px;
+  --section-gap: 76px;
+  --section-gap-mobile: 52px;
+  --bp-mobile: 820px;
+  --bp-tablet: 1180px;
+  --bp-desktop: 1440px;
+  --bp-wide: 1728px;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-disclosure: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-1: 0.12s;
+  --dur-2: 0.18s;
+  --dur-3: 0.32s;
+  --dur-disclosure: 0.42s;
+
+  --panel-bg: transparent;
+  --panel-border-color: transparent;
+  --panel-shadow: none;
+  --panel-radius: 0;
+  --panel-pad: 0;
+}

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PieChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="PieChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 460px));
+        gap: 40px 48px;
+        align-items: flex-start;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">PieChart</h1>
+    <p class="handoff-sub">
+      Part-to-whole share at a glance. Slices wear the mono-cyan + ink theme (the runner-up is the
+      black anchor) with a 2px surface gap and rounded outer corners; in-slice % labels only where
+      they fit (ink/white by fill), and a legend carrying label + exact value. Cap at 6 segments —
+      fold the tail into a muted "Other". For comparing close values, use a bar chart instead; for a
+      2-slice split, use a stat tile.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Share pie + in-slice labels + value legend</span>
+        <div class="pie">
+          <div class="pie__head">
+            <div>
+              <h2 class="pie__title">Content Mix by Format</h2>
+              <p class="pie__sub">share of published posts · last 30 days · 64 posts</p>
+            </div>
+          </div>
+          <div class="pie__body">
+            <div
+              class="pie__plot"
+              role="img"
+              aria-label="Pie chart of content mix: video 38%, carousel 26%, static image 18%, story 11%, other 7%."
+            >
+              <svg viewBox="0 0 220 220">
+                <path
+                  class="pie__slice pie__slice--1"
+                  d="M110,110 L110,26 Q110,22 114,22.09 A88,88 0 0 1 173.09,171.35 Q170.24,174.15 167.5,171.23 Z"
+                  tabindex="0"
+                  data-tip-value="38% · 24 posts"
+                  data-tip-label="Video"
+                ></path>
+                <path
+                  class="pie__slice pie__slice--2"
+                  d="M110,110 L167.5,171.23 Q170.24,174.15 167.26,176.82 A88,88 0 0 1 44.81,169.12 Q42.19,166.09 45.28,163.54 Z"
+                  tabindex="0"
+                  data-tip-value="26% · 17 posts"
+                  data-tip-label="Carousel"
+                ></path>
+                <path
+                  class="pie__slice pie__slice--3"
+                  d="M110,110 L45.28,163.54 Q42.19,166.09 39.72,162.95 A88,88 0 0 1 28.75,76.19 Q30.38,72.53 33.99,74.23 Z"
+                  tabindex="0"
+                  data-tip-value="18% · 12 posts"
+                  data-tip-label="Static image"
+                ></path>
+                <path
+                  class="pie__slice pie__slice--4"
+                  d="M110,110 L33.99,74.23 Q30.38,72.53 32.16,68.95 A88,88 0 0 1 68.95,32.16 Q72.53,30.38 74.23,33.99 Z"
+                  tabindex="0"
+                  data-tip-value="11% · 7 posts"
+                  data-tip-label="Story"
+                ></path>
+                <path
+                  class="pie__slice pie__slice--muted"
+                  d="M110,110 L74.23,33.99 Q72.53,30.38 76.19,28.75 A88,88 0 0 1 106,22.09 Q110,22 110,26 Z"
+                  tabindex="0"
+                  data-tip-value="7% · 4 posts"
+                  data-tip-label="Other"
+                ></path>
+                <g text-anchor="middle">
+                  <text class="pie__slice-label pie__slice-label--ink" x="160.73" y="94.5">
+                    38%
+                  </text>
+                  <text class="pie__slice-label" x="106.57" y="169">26%</text>
+                  <text class="pie__slice-label pie__slice-label--ink" x="55.87" y="121.5">
+                    18%
+                  </text>
+                  <text class="pie__slice-label pie__slice-label--ink" x="71.42" y="76">11%</text>
+                </g>
+              </svg>
+              <div class="chart-tip" role="status"></div>
+            </div>
+            <div class="pie__legend">
+              <div class="pie__legend-item">
+                <span class="pie__swatch pie__swatch--1"></span>
+                <span class="pie__legend-name">Video</span>
+                <span class="pie__legend-value">38%</span>
+              </div>
+              <div class="pie__legend-item">
+                <span class="pie__swatch pie__swatch--2"></span>
+                <span class="pie__legend-name">Carousel</span>
+                <span class="pie__legend-value">26%</span>
+              </div>
+              <div class="pie__legend-item">
+                <span class="pie__swatch pie__swatch--3"></span>
+                <span class="pie__legend-name">Static image</span>
+                <span class="pie__legend-value">18%</span>
+              </div>
+              <div class="pie__legend-item">
+                <span class="pie__swatch pie__swatch--4"></span>
+                <span class="pie__legend-name">Story</span>
+                <span class="pie__legend-value">11%</span>
+              </div>
+              <div class="pie__legend-item">
+                <span class="pie__swatch pie__swatch--muted"></span>
+                <span class="pie__legend-name">Other</span>
+                <span class="pie__legend-value">7%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-slice hover/focus readout.
+      document.querySelectorAll('.pie__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        if (!tip) return;
+        const show = (slice) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = slice.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = slice.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const sliceRect = slice.getBoundingClientRect();
+          tip.style.left = sliceRect.left - plotRect.left + sliceRect.width / 2 + 'px';
+          tip.style.top = sliceRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.pie__slice').forEach((slice) => {
+          slice.addEventListener('pointerenter', () => show(slice));
+          slice.addEventListener('pointerleave', hide);
+          slice.addEventListener('focus', () => show(slice));
+          slice.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

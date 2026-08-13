@@ -1,0 +1,244 @@
+/* ApprovalChain — sequential approval timeline.
+   Identity lives in a neutral initials avatar; meaning lives in a small status
+   badge clipped to the avatar corner and in the status label colour. The rail
+   between steps fills green as approvals flow down the chain, so progress reads
+   at a glance. One renderer powers every surface (plan gate, brief / content
+   approval, inbox review drawer). */
+
+.approval-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Optional header: what is being approved + its checkpoint tag. */
+.ac-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.ac-checkpoint {
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  background: var(--indigo-50);
+  color: var(--indigo-700);
+  font-size: var(--fs-1);
+  letter-spacing: 0.02em;
+}
+
+.approval-chain {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Step = avatar (identity) + status badge (semantic) + label. */
+.ac-step {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding-bottom: 18px;
+}
+/* Entrance stagger is gated behind .animate-in — JS adds that class only on the
+   FIRST reveal of the chain, so the stagger never replays on a later re-render.
+   Without the gate a data-driven render (full-render-on-mutation) would re-run
+   the animation on every state change. */
+.approval-chain.animate-in .ac-step {
+  animation: acStepIn var(--dur-3) var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+.ac-step:last-child {
+  padding-bottom: 0;
+}
+
+.ac-step__rail {
+  position: relative;
+  flex: 0 0 32px;
+  display: flex;
+  justify-content: center;
+}
+/* Connector to the next step; fills green once this step is approved. */
+.ac-step:not(:last-child) .ac-step__rail::after {
+  content: '';
+  position: absolute;
+  top: 36px;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  border-radius: 2px;
+  background: rgba(29, 29, 31, 0.1);
+  transition: background var(--dur-3) var(--ease);
+}
+.ac-step--approved:not(:last-child) .ac-step__rail::after {
+  background: var(--success-200);
+}
+
+/* Avatar — intentionally neutral so the status colour stays meaningful. */
+.ac-avatar {
+  position: relative;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  transition: box-shadow var(--dur-2) var(--ease);
+}
+/* Optional real photo overlaying the neutral initials fallback (fills the avatar
+   circle; the initials show through until/unless a photo is provided). */
+.ac-avatar__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.ac-step--you .ac-avatar,
+.ac-step--reviewing .ac-avatar {
+  box-shadow: 0 0 0 2px var(--cyan-500);
+}
+.ac-step--approved .ac-avatar {
+  color: var(--text-3);
+}
+
+/* Status badge clipped to the avatar corner. Amber (never red) for changes. */
+.ac-badge {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--canvas);
+  font-size: 9px;
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  color: #fff;
+}
+.approval-chain.animate-in .ac-badge {
+  animation: acBadgePop var(--dur-2) var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 90ms);
+}
+.ac-badge svg {
+  width: 9px;
+  height: 9px;
+}
+.ac-badge--approved {
+  background: var(--success-500);
+}
+.ac-badge--active {
+  background: var(--cyan-500);
+}
+.ac-badge--waiting {
+  background: var(--surface-3);
+}
+.ac-badge--changes {
+  background: var(--amber-500);
+}
+
+.ac-step__body {
+  min-width: 0;
+  padding-top: 3px;
+}
+.ac-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
+}
+.ac-you-tag {
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  background: var(--cyan-100);
+  color: var(--cyan-700);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-heavy);
+}
+.ac-role {
+  font-size: var(--fs-2);
+  color: var(--text-3);
+  margin-top: 1px;
+}
+.ac-status {
+  margin-top: 4px;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+}
+.ac-status--approved {
+  color: var(--success-700);
+}
+.ac-status--you,
+.ac-status--reviewing {
+  color: var(--cyan-700);
+}
+.ac-status--waiting {
+  color: var(--text-3);
+}
+.ac-status--changes {
+  color: var(--amber-700);
+}
+
+@keyframes acStepIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes acBadgePop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .approval-chain.animate-in .ac-step,
+  .approval-chain.animate-in .ac-badge {
+    animation: none;
+  }
+}
+
+/* Requested-changes banner (shown in place of the chain footer). Amber, not red. */
+.changes-banner {
+  border-radius: 10px;
+  background: var(--amber-50);
+  padding: 11px 13px;
+}
+.changes-banner__head {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-heavy);
+  color: var(--amber-700);
+}
+.changes-banner__body {
+  margin-top: 4px;
+  font-size: var(--fs-2);
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+/* Decision actions. */
+.ac-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

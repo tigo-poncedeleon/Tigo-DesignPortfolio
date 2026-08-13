@@ -1,0 +1,205 @@
+/* DonutChart — part-to-whole ring with a center KPI (owner decision
+   2026-07-07). Same rules as PieChart: ≤6 segments in fixed --chart-1→N
+   order, 2px surface gaps between fills, in-segment % labels only where they
+   fit, legend carries label + exact value in text tokens. The center figure
+   uses proportional figures (never tabular-nums at display size). For a
+   single ratio against a limit, use a meter/ScoreGauge instead.
+   Visual source: tokens.css. */
+
+.donut {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.donut__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.donut__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.donut__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Body: plot + legend side by side. */
+.donut__body {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.donut__plot {
+  position: relative;
+  flex: none;
+  width: 196px;
+}
+.donut__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Segments — solid categorical fills separated by a 2px surface gap. */
+.donut__seg {
+  stroke: var(--canvas);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transition: filter var(--dur-2) var(--ease-out);
+  outline: none;
+}
+.donut__seg--1 {
+  fill: var(--chart-1);
+}
+.donut__seg--2 {
+  fill: var(--chart-2);
+}
+.donut__seg--3 {
+  fill: var(--chart-3);
+}
+.donut__seg--4 {
+  fill: var(--chart-4);
+}
+.donut__seg--5 {
+  fill: var(--chart-5);
+}
+.donut__seg--6 {
+  fill: var(--chart-6);
+}
+.donut__seg--muted {
+  fill: var(--chart-muted);
+}
+.donut__seg:hover {
+  filter: brightness(0.95) saturate(1.15);
+  cursor: pointer;
+}
+.donut__seg:focus-visible {
+  filter: brightness(0.95) saturate(1.15);
+  stroke: var(--pulse-cyan-line);
+  stroke-width: 3;
+}
+
+/* Center KPI — HTML overlay; proportional figures at display size. */
+.donut__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+  text-align: center;
+}
+.donut__center-value {
+  font-size: var(--fs-8);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.donut__center-label {
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Legend — identity + value in text tokens; swatch mirrors the mark. */
+.donut__legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.donut__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-3);
+}
+.donut__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+.donut__swatch--1 {
+  background: var(--chart-1);
+}
+.donut__swatch--2 {
+  background: var(--chart-2);
+}
+.donut__swatch--3 {
+  background: var(--chart-3);
+}
+.donut__swatch--4 {
+  background: var(--chart-4);
+}
+.donut__swatch--muted {
+  background: var(--chart-muted);
+}
+.donut__legend-name {
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.donut__legend-value {
+  margin-left: auto;
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.donut__legend-meta {
+  margin-left: 6px;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}

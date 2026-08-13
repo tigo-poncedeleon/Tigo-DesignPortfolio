@@ -89,7 +89,7 @@ window.Portrait = (() => {
 
     // an opaque page-coloured silhouette base, so the ribbons sit on
     // solid ground rather than on whatever is behind the canvas
-    const bg = getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#fdfdfd';
+    const bg = getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#f7f7f4';
     octx.save();
     octx.drawImage(img, 0, 0, TEX_W, TEX_H);
     octx.globalCompositeOperation = 'source-in';

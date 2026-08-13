@@ -1,0 +1,148 @@
+/* ActivityHeatmap — day × time grid of rounded cells (owner-approved adoption
+   of the reference "Activity by time" widget, 2026-07-07). Cells wear the
+   bright brand-cyan sequential ramp by intensity (never past cyan-600); the
+   scale legend names the ramp ends; every cell carries a hover/focus
+   read-out. Labels wear text tokens. Visual source: tokens.css. */
+
+.heatmap {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 640px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.heatmap__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.heatmap__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.heatmap__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Grid: time labels left, day labels top, 7×6 rounded cells. */
+.heatmap__plot {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px repeat(7, 1fr);
+  gap: 5px;
+  align-items: center;
+}
+.heatmap__day,
+.heatmap__time {
+  font-size: var(--fs-1);
+  color: var(--text-4);
+  text-align: center;
+}
+.heatmap__time {
+  text-align: right;
+  padding-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.heatmap__cell {
+  height: 28px;
+  border: 0;
+  border-radius: var(--r-sm);
+  padding: 0;
+  cursor: pointer;
+  transition: filter var(--dur-2) var(--ease-out);
+}
+.heatmap__cell:hover {
+  filter: brightness(0.95) saturate(1.2);
+}
+.heatmap__cell:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.heatmap__cell--l1 {
+  background: var(--cyan-50);
+}
+.heatmap__cell--l2 {
+  background: var(--chart-seq-100);
+}
+.heatmap__cell--l3 {
+  background: var(--chart-seq-200);
+}
+.heatmap__cell--l4 {
+  background: var(--chart-seq-300);
+}
+.heatmap__cell--l5 {
+  background: var(--chart-seq-400);
+}
+.heatmap__cell--l6 {
+  background: var(--chart-seq-600);
+}
+
+/* Scale legend — Less → More. */
+.heatmap__scale {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  font-size: var(--fs-1);
+  color: var(--text-4);
+}
+.heatmap__scale-swatch {
+  width: 16px;
+  height: 10px;
+  border-radius: 4px;
+}
+.heatmap__scale span {
+  margin: 0 3px;
+}
+/* Real range of the ramp — the scale must be readable without hover. */
+.heatmap__scale-range {
+  margin-left: 10px;
+  color: var(--text-4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}

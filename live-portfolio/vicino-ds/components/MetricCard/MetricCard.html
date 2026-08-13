@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCard - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Card/Card.css" />
+    <link rel="stylesheet" href="MetricCard.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 960px;
+      }
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .component-intro {
+        gap: 8px;
+        max-width: 64ch;
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>MetricCard</h1>
+        <p>Compact metric surface for trend snapshots and dashboard summaries.</p>
+      </header>
+
+      <section class="section" aria-label="Metric card static slices">
+        <div class="section-title">
+          <span>Slices</span>
+        </div>
+        <div class="metric-grid">
+          <article class="card metric-card">
+            <span class="metric-card__label">Active campaigns</span>
+            <strong class="metric-card__value">14.2K</strong>
+            <span class="metric-card__delta metric-card__delta--accent"
+              >+9.4% from prior period</span
+            >
+          </article>
+          <article class="card metric-card metric-card--compact">
+            <span class="metric-card__label">Engagement</span>
+            <span class="metric-card__value-row">
+              <strong class="metric-card__value">5.4</strong>
+              <span class="metric-card__unit">%</span>
+            </span>
+            <span class="metric-card__delta metric-card__delta--up">
+              <span class="metric-card__trend-icon">↑</span>0.4pt
+            </span>
+            <svg
+              class="metric-card__spark"
+              viewBox="0 0 120 32"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M0 26 L30 22 L60 24 L90 14 L120 8"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                vector-effect="non-scaling-stroke"
+              ></path>
+              <circle cx="120" cy="8" r="2.2" fill="currentColor"></circle>
+            </svg>
+          </article>
+          <article class="card metric-card metric-card--mini">
+            <span class="metric-card__label">Views</span>
+            <strong class="metric-card__value">24.8K</strong>
+            <span class="metric-card__delta metric-card__delta--up">▲ 12% vs avg</span>
+          </article>
+          <article class="card metric-card metric-card--ink">
+            <span class="metric-card__label">Same-day risk</span>
+            <strong class="metric-card__value">1</strong>
+            <span class="metric-card__delta metric-card__delta--down-good">response due 4 PM</span>
+          </article>
+          <article class="card metric-card metric-card--warning">
+            <span class="metric-card__label">Needs response</span>
+            <strong class="metric-card__value">2</strong>
+            <span class="metric-card__delta metric-card__delta--flat">inside trust window</span>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

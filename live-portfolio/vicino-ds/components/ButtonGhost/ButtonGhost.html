@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ButtonGhost - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 760px;
+      }
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .component-intro {
+        gap: 8px;
+        max-width: 66ch;
+      }
+      .section-title {
+        display: grid;
+        gap: 5px;
+      }
+      .section-title span,
+      small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .demo-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .states {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .state {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>ButtonGhost</h1>
+        <p>Ghost button for inline, low-emphasis commands that still need a clear target.</p>
+      </header>
+
+      <section class="section" aria-label="Ghost button animated component">
+        <div class="section-title">
+          <span>Animated component</span>
+          <p>Click-through loading behavior for an inline edit action.</p>
+        </div>
+        <div class="demo-strip">
+          <div class="state">
+            <small>Edit flow</small
+            ><button class="btn btn--ghost btn--muted" type="button" data-button-demo>
+              <span class="btn__spinner" aria-hidden="true"></span>
+              <span class="btn__label">Edit</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Ghost button static slices">
+        <div class="section-title">
+          <span>Slices</span>
+          <p>Frozen states for the ghost button component set.</p>
+        </div>
+        <div class="states">
+          <div class="state">
+            <small>Default</small><button class="btn btn--ghost" type="button">Edit</button>
+          </div>
+          <div class="state">
+            <small>Hover</small><button class="btn btn--ghost is-hover" type="button">Edit</button>
+          </div>
+          <div class="state">
+            <small>Focus</small><button class="btn btn--ghost is-focus" type="button">Edit</button>
+          </div>
+          <div class="state">
+            <small>Pressed</small
+            ><button class="btn btn--ghost is-pressed" type="button">Edit</button>
+          </div>
+          <div class="state">
+            <small>Disabled</small
+            ><button class="btn btn--ghost" type="button" disabled>Edit</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      document.querySelectorAll('[data-button-demo]').forEach((button) => {
+        const label = button.querySelector('.btn__label');
+        button.addEventListener('click', () => {
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+          if (label) label.textContent = 'Editing';
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.removeAttribute('aria-busy');
+            if (label) label.textContent = 'Edit';
+          }, 760);
+        });
+      });
+    </script>
+  </body>
+</html>

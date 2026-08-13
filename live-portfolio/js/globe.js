@@ -331,7 +331,13 @@
     // pin the card under whatever opened it
     const place = () => {
       const r = row.getBoundingClientRect();
-      card.style.left = Math.round(r.left) + 'px';
+      // The trigger lives at the strip's RIGHT end now, so hanging the card
+      // off its left edge runs it past the window. Keep it under the trigger
+      // where there is room and tuck it back inside where there is not —
+      // measured off the card's own width, not a guess at it.
+      const w = card.offsetWidth || 208;
+      const edge = document.documentElement.clientWidth - 12;
+      card.style.left = Math.round(Math.max(12, Math.min(r.left, edge - w))) + 'px';
       card.style.top = Math.round(r.bottom + 8) + 'px';
     };
     row.addEventListener('pointerenter', place);

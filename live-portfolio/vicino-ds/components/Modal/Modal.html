@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Modal - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="Modal.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: clamp(28px, 3vw, 48px);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        max-width: 72ch;
+        margin: 0 0 34px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      /* Render the backdrop inline (not fixed) so the open modal is visible in the
+         specimen; in product the backdrop is position:fixed over the viewport. */
+      .modal-specimen .modal-backdrop {
+        position: relative;
+        inset: auto;
+        min-height: 420px;
+        border-radius: var(--r-xl);
+      }
+      .modal-specimen .modal-body p {
+        margin: 0 0 12px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">Modal</h1>
+    <p class="handoff-sub">
+      Overlay shell — a dimmed backdrop centering a dialog with a header (eyebrow / title + close),
+      a scrollable body, and an action footer. Toggle <code>.is-open</code> (or <code>.open</code>)
+      on <code>.modal-backdrop</code> to show it. Body and footer content are consumer-specific; the
+      footer composes the DS Button. Promoted from the signal page's Monitoring Plan and Signal
+      Detail modals.
+    </p>
+
+    <div class="modal-specimen">
+      <div class="modal-backdrop is-open">
+        <div
+          class="modal-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-demo-title"
+        >
+          <div class="modal-header">
+            <div>
+              <div class="modal-eyebrow">Monitoring plan</div>
+              <div class="modal-title" id="modal-demo-title">Create a new plan</div>
+            </div>
+            <button class="modal-close" type="button" aria-label="Close">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M4 4l8 8M12 4l-8 8" />
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body" style="padding: 0 24px 8px">
+            <p>
+              Name the plan and pick the brands, keywords, and platforms Pulse should monitor. The
+              body scrolls when content runs long; the header and footer stay fixed.
+            </p>
+            <p>
+              Pulse will surface risks, suggested actions, and live highlights against this plan in
+              the signal feed.
+            </p>
+            <p>
+              Estimated coverage updates as you add sources, so you can balance breadth against
+              alert volume before you create the plan.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn--secondary" type="button">Cancel</button>
+            <button class="btn btn--primary" type="button">Create plan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -141,7 +141,11 @@ window.Snake = (function () {
 
   function startAttract() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    attract = { cells: ringCells(), i: 0 };
+    // On phones the board is display:none (play.css retires the games), so
+    // the ring comes back empty and attractStep would index past its end.
+    var cells = ringCells();
+    if (!cells.length) return;
+    attract = { cells: cells, i: 0 };
     if (foodEl) foodEl.hidden = true;
     acc = 0;
   }
@@ -205,17 +209,19 @@ window.Snake = (function () {
     requestAnimationFrame(loop);
   }
 
-  // Which board owns the keyboard. This used to compare against the
-  // viewport centre, which was the same thing when the page WAS the
-  // viewport. Inside the shell the card sits right of centre, so the
-  // question is asked of the card instead — literally what it always
-  // meant: does this board straddle the middle of what you are looking at?
+  // Which board owns the keyboard. The decks stack VERTICALLY now: the
+  // board that straddles the middle of the screen answers. Unless the
+  // theater (js/theater.js) has one — then it owns the keys outright — or
+  // an overlay is up, in which case every game stays quiet (inert does not
+  // silence document-level keydown listeners; this check is the real guard).
   function inView() {
+    var html = document.documentElement;
+    if (html.classList.contains('theater-open')) return !!board.closest('#theater-stage');
+    if (html.classList.contains('ai-open') || html.classList.contains('case-open')) return false;
+    if (board.closest('.play-card')) return false;   // parked in its preview tile
     var r = board.getBoundingClientRect();
-    var host = document.getElementById('shell-card');
-    var hr = host ? host.getBoundingClientRect() : null;
-    var mid = hr ? hr.left + hr.width / 2 : window.innerWidth / 2;
-    return r.left < mid && r.right > mid;   // slides travel horizontally
+    var mid = window.innerHeight / 2;
+    return r.top < mid && r.bottom > mid;
   }
 
   function steer(x, y) {
@@ -293,12 +299,11 @@ window.Snake = (function () {
       touchAt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       e.preventDefault();
     }, { passive: false });
-    var scroller = document.getElementById('play-scroll');
-    if (scroller) {
-      scroller.addEventListener('scroll', function () {
-        if (state === 'playing' && !inView()) state = 'paused';
-      }, { passive: true });
-    }
+    // the DOCUMENT scrolls now (the deck's own scroller is plain flow) —
+    // a board scrolled away mid-game pauses rather than playing on unseen
+    window.addEventListener('scroll', function () {
+      if (state === 'playing' && !inView()) state = 'paused';
+    }, { passive: true });
 
     requestAnimationFrame(function (t) {
       lastT = t;
@@ -312,5 +317,26 @@ window.Snake = (function () {
     init();
   }
 
-  return { init: init };
+  // the theater (js/theater.js) is moving the board. Entering mid-run
+  // pauses; LEAVING ends the run outright — back in its tile the court is
+  // inert, so the tile returns to the little snake circling its ring.
+  function setTheater(on) {
+    if (on) {
+      if (state === 'playing') state = 'paused';
+      return;
+    }
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+    state = 'idle';
+    hideMovers();
+    scoreboard.hidden = true;
+    countdownEl.hidden = true;
+    replayEl.hidden = true;
+    playBtnEl.hidden = false;
+    startAttract();
+  }
+
+  return { init: init, setTheater: setTheater };
 })();

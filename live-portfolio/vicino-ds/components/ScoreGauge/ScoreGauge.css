@@ -1,0 +1,92 @@
+/* ScoreGauge — radial score / index badge (e.g. Spending Power Index 74/100).
+   An SVG progress ring with the score in the centre, optionally paired with a
+   descriptive blurb. Token-driven. Visual source: src/tokens.css. */
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ring. */
+.score__ring {
+  position: relative;
+  flex: none;
+  width: 88px;
+  height: 88px;
+}
+.score__ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.score__ring-track {
+  fill: none;
+  stroke: var(--surface-2);
+  stroke-width: 7;
+}
+.score__ring-fill {
+  fill: none;
+  stroke: var(--pulse-cyan);
+  stroke-width: 7;
+  stroke-linecap: round;
+  /* circumference (2·π·34 ≈ 213.6); dashoffset = circ · (1 − score/100). */
+  stroke-dasharray: 213.6;
+  stroke-dashoffset: var(--gap, 0);
+  transition: stroke-dashoffset var(--dur-3) var(--ease-out);
+}
+.score__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.score__num {
+  font-size: var(--fs-7);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.score__den {
+  font-size: 10px;
+  color: var(--text-4);
+} /* token candidate: below --fs-1 */
+
+/* Blurb. */
+.score__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 42ch;
+}
+.score__title {
+  margin: 0;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.006em;
+}
+.score__desc {
+  margin: 0;
+  font-size: var(--fs-3);
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
+/* Compact variant — ring + label below, no blurb. */
+.score--compact {
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+.score--compact .score__label {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-4);
+}

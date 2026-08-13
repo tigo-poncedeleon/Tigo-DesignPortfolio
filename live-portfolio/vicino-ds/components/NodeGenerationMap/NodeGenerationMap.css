@@ -1,0 +1,282 @@
+/* NodeGenerationMap — animated generation DAG (Vicino canvas).
+   Shows what is being generated for a post: a node-graph of prompt/image/video/
+   editor steps that move queued -> running -> done as progress advances, plus a
+   progress bar and a step pipeline. Imports shared variables via ../tokens.css.
+   Note: node label / wait text use 8.5px — the DS-allowed exception for
+   zoomed-out diagram-internal labels, not product UI type. */
+
+.vc-progress {
+  height: 6px;
+  border-radius: var(--r-full);
+  background: rgba(15, 23, 42, 0.07);
+  overflow: hidden;
+}
+.vc-progress__bar {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-full);
+  background: var(--cyan-600);
+  width: 4%;
+  transition: width 0.16s linear;
+}
+.vc-stage {
+  position: relative;
+  height: 412px;
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+  background-size: 17px 17px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Production status (right section). */
+.vc-status__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: var(--fs-2);
+}
+.vc-status__row [data-vc-steps] {
+  color: var(--text-2);
+  font-weight: var(--fw-semibold);
+}
+.vc-status__eta {
+  color: var(--text-4);
+}
+.vc-pipeline {
+  display: grid;
+  gap: 12px;
+}
+.vc-pl-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-3);
+  color: var(--text-3);
+}
+.vc-pl-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  border: 2px solid rgba(15, 23, 42, 0.16);
+  box-sizing: border-box;
+}
+.vc-pl-step--done {
+  color: var(--text-1);
+}
+.vc-pl-step--done .vc-pl-dot {
+  background: var(--success-500);
+  border-color: var(--success-500);
+}
+.vc-pl-step--running {
+  color: var(--text-1);
+  font-weight: var(--fw-semibold);
+}
+.vc-pl-step--running .vc-pl-dot {
+  border-color: var(--cyan-500);
+  background: radial-gradient(var(--cyan-500) 38%, transparent 42%);
+}
+
+/* Stage: edges (SVG) + nodes. */
+.vc-stage > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.vc-edge {
+  fill: none;
+  stroke-width: 1.6;
+  stroke: rgba(15, 23, 42, 0.2);
+  stroke-dasharray: 5 4;
+  opacity: 0.85;
+}
+.vc-edge.is-done {
+  stroke: var(--success-600);
+  stroke-dasharray: none;
+  opacity: 0.8;
+}
+.vc-edge.is-run {
+  stroke: var(--amber-500);
+  opacity: 0.95;
+  animation: vcFlow 0.6s linear infinite;
+}
+.vc-node {
+  position: absolute;
+  border-radius: var(--r-sm);
+  background: var(--canvas);
+  box-shadow:
+    var(--shadow-2),
+    inset 0 0 0 1px var(--surface-edge);
+  padding: 7px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: hidden;
+}
+.vc-node__head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.vc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-full);
+  flex: 0 0 auto;
+  background: var(--indigo-500);
+}
+.vc-node--image .vc-dot {
+  background: var(--blue-600);
+}
+.vc-node--video .vc-dot {
+  background: var(--cyan-700);
+}
+.vc-node.is-running .vc-dot {
+  animation: vcGlow 1.4s ease-in-out infinite;
+}
+.vc-node__label {
+  flex: 1;
+  min-width: 0;
+  font-size: 8.5px; /* diagram-internal label — DS-allowed off-scale exception */
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vc-node__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.vc-skel {
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  margin-top: 1px;
+}
+.vc-skel i {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(15, 23, 42, 0.1);
+}
+.vc-node--prompt .vc-skel {
+  display: flex;
+}
+.vc-wait {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--text-4);
+}
+.vc-node.is-running .vc-wait,
+.vc-node.is-queued .vc-wait {
+  display: flex;
+}
+.vc-node--prompt.is-running .vc-wait,
+.vc-node--prompt.is-queued .vc-wait {
+  display: none;
+}
+.vc-node.is-running .vc-wait {
+  color: var(--amber-600);
+}
+.vc-spin {
+  width: 11px;
+  height: 11px;
+  border-radius: var(--r-full);
+  border: 2px solid rgba(15, 23, 42, 0.18);
+  border-top-color: transparent;
+  animation: vcSpin 0.9s linear infinite;
+}
+.vc-node.is-running .vc-spin {
+  border-color: var(--amber-500);
+  border-top-color: transparent;
+}
+.vc-wait b {
+  font-size: 8.5px; /* diagram-internal */
+  font-weight: var(--fw-semibold);
+  font-style: normal;
+}
+.vc-wait .vc-r,
+.vc-wait .vc-q {
+  display: none;
+}
+.vc-node.is-running .vc-wait .vc-r {
+  display: inline;
+}
+.vc-node.is-queued .vc-wait .vc-q {
+  display: inline;
+}
+.vc-thumb {
+  display: none;
+  flex: 1;
+  position: relative;
+  border-radius: 4px;
+  background: var(--surface-2) center / cover no-repeat;
+}
+.vc-node.is-done .vc-thumb {
+  display: block;
+}
+.vc-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vc-play i {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vc-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40px;
+  background: linear-gradient(to top, var(--canvas), transparent);
+  z-index: 4;
+  pointer-events: none;
+}
+
+@keyframes vcGlow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes vcFlow {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+@keyframes vcSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vc-edge.is-run,
+  .vc-node.is-running .vc-dot,
+  .vc-spin {
+    animation: none;
+  }
+}

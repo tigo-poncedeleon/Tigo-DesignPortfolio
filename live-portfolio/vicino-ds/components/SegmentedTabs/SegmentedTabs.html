@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SegmentedTabs - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="SegmentedTabs.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 34px;
+        max-width: 1040px;
+      }
+
+      .component-intro,
+      .component-set,
+      .section-title,
+      .state-card {
+        display: grid;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 68ch;
+      }
+
+      .component-set {
+        gap: 18px;
+        padding-block: 4px 22px;
+      }
+
+      .component-set + .component-set {
+        border-top: 1px solid rgba(29, 29, 31, 0.07);
+        padding-top: 28px;
+      }
+
+      .section-title {
+        gap: 6px;
+        max-width: 70ch;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h2 {
+        font-size: var(--fs-5);
+        font-weight: var(--fw-semibold);
+      }
+
+      p {
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+
+      .eyebrow,
+      .specimen-label,
+      .state-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .component-demo {
+        display: grid;
+        justify-items: start;
+        gap: 10px;
+      }
+
+      .component-demo-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 24px;
+        width: min(100%, 900px);
+      }
+
+      .component-demo-row .section-title {
+        max-width: 52ch;
+      }
+
+      .component-demo-row .component-demo {
+        justify-self: end;
+      }
+
+      .component-demo--framed {
+        width: fit-content;
+        max-width: 100%;
+        padding: 12px 14px;
+        border: 1.5px dashed rgba(106, 118, 135, 0.34);
+        border-radius: var(--r-lg);
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+        width: min(100%, 900px);
+      }
+
+      .state-card {
+        gap: 12px;
+        align-content: start;
+        justify-items: start;
+        min-width: 0;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+
+      .state-card > .segmented-tabs,
+      .component-demo > .segmented-tabs {
+        max-width: 100%;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 28px;
+        }
+
+        .state-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .component-demo-row {
+          grid-template-columns: 1fr;
+        }
+
+        .component-demo-row .component-demo {
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <span class="eyebrow">Component source</span>
+        <h1>SegmentedTabs</h1>
+        <p>
+          Overview source for Pulse segmented controls. Each animated tab group is paired with its
+          own frozen state slices below, and the placeable variants also live in their own folders
+          for direct preview and later extraction.
+        </p>
+        <p>
+          <strong>Two roles, two looks.</strong> The <strong>white-thumb</strong> family (<code
+            >PageNavTabs</code
+          >
+          / base <code>SegmentedTabs</code>) is the <em>section / view switcher</em> — moving
+          between top-level views of a surface. Give it page-level weight: pair it with a section
+          title (title left, switcher right). The <strong>ink-thumb</strong> family (<code
+            >ReportRangeTabs</code
+          >
+          / <code>ActionRangeTabs</code>,
+          <code>.segmented-thumb { background: var(--ink-900) }</code>) is the compact
+          <em>in-group range / mode</em> toggle — it sits inline above the thing it filters and
+          never gets a section title. Don't use one look for both, or the user can't tell a view
+          switch from a small filter.
+        </p>
+        <p>
+          <strong>Panel behavior:</strong> on tab change the thumb slides under the active label and
+          the associated panel content crossfades as one block — fade the panel out, swap content
+          while it is hidden, then fade it back in (~300ms total). Do not fade rows individually;
+          per-row fades read as a blink. Honor <code>prefers-reduced-motion</code> by swapping
+          instantly.
+        </p>
+      </header>
+
+      <section class="component-set" aria-label="Page tabs component and slices">
+        <div class="component-demo-row">
+          <div class="section-title">
+            <span class="specimen-label">Animated component / PageNavTabs</span>
+            <h2>Page navigation tabs</h2>
+            <p>Use for local page sections such as Overview, Signals, and Reports.</p>
+          </div>
+          <div class="component-demo component-demo--framed">
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Page navigation">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item active" aria-pressed="true">
+                Overview
+              </button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Signals</button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Reports</button>
+            </div>
+          </div>
+        </div>
+        <div class="state-grid" aria-label="Page tab static slices">
+          <div class="state-card">
+            <small>Overview active</small>
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Overview active">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item active" aria-pressed="true">
+                Overview
+              </button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Signals</button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Reports</button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Signals active</small>
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Signals active">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item" aria-pressed="false">Overview</button>
+              <button type="button" class="page-nav-item active" aria-pressed="true">
+                Signals
+              </button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Reports</button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Reports active</small>
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Reports active">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item" aria-pressed="false">Overview</button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Signals</button>
+              <button type="button" class="page-nav-item active" aria-pressed="true">
+                Reports
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Report range tabs component and slices">
+        <div class="section-title">
+          <span class="specimen-label">Animated component / ReportRangeTabs</span>
+          <h2>Report range tabs</h2>
+          <p>Compact numeric period selector with ink thumb active state.</p>
+        </div>
+        <div class="component-demo">
+          <div class="report-range-tabs segmented-tabs" role="tablist" aria-label="Report range">
+            <span class="segmented-thumb" aria-hidden="true"></span>
+            <button type="button" class="report-range-tab" aria-pressed="false">1D</button>
+            <button type="button" class="report-range-tab active" aria-pressed="true">1W</button>
+            <button type="button" class="report-range-tab" aria-pressed="false">2W</button>
+            <button type="button" class="report-range-tab" aria-pressed="false">1M</button>
+          </div>
+        </div>
+        <div class="state-grid" aria-label="Report range static slices">
+          <div class="state-card">
+            <small>1D active</small>
+            <div class="report-range-tabs segmented-tabs" role="tablist" aria-label="1D active">
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="report-range-tab active" aria-pressed="true">1D</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">1W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">2W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">1M</button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>1W active</small>
+            <div class="report-range-tabs segmented-tabs" role="tablist" aria-label="1W active">
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="report-range-tab" aria-pressed="false">1D</button>
+              <button type="button" class="report-range-tab active" aria-pressed="true">1W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">2W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">1M</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Action range tabs component and slices">
+        <div class="section-title">
+          <span class="specimen-label">Animated component / ActionRangeTabs</span>
+          <h2>Action range tabs</h2>
+          <p>Three-choice operational filter for action queues.</p>
+        </div>
+        <div class="component-demo">
+          <div class="action-range-tabs segmented-tabs" role="tablist" aria-label="Action range">
+            <span class="segmented-thumb" aria-hidden="true"></span>
+            <button type="button" class="action-range-tab active" aria-pressed="true">Today</button>
+            <button type="button" class="action-range-tab" aria-pressed="false">This week</button>
+            <button type="button" class="action-range-tab" aria-pressed="false">All</button>
+          </div>
+        </div>
+        <div class="state-grid" aria-label="Action range static slices">
+          <div class="state-card">
+            <small>Today active</small>
+            <div class="action-range-tabs segmented-tabs" role="tablist" aria-label="Today active">
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="action-range-tab active" aria-pressed="true">
+                Today
+              </button>
+              <button type="button" class="action-range-tab" aria-pressed="false">This week</button>
+              <button type="button" class="action-range-tab" aria-pressed="false">All</button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Disabled group</small>
+            <div
+              class="action-range-tabs segmented-tabs is-disabled"
+              role="tablist"
+              aria-label="Disabled action range"
+              aria-disabled="true"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="action-range-tab active" disabled>Today</button>
+              <button type="button" class="action-range-tab" disabled>This week</button>
+              <button type="button" class="action-range-tab" disabled>All</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Analytics subtab component and slices">
+        <div class="section-title">
+          <span class="specimen-label">Animated component / AnalyticsSubtabs</span>
+          <h2>Analytics subtabs</h2>
+          <p>Two-state ink tab for review queues with inline counts.</p>
+        </div>
+        <div class="component-demo">
+          <div
+            class="analytics-subtab-switch segmented-tabs"
+            role="tablist"
+            aria-label="Analytics view"
+          >
+            <span class="segmented-thumb" aria-hidden="true"></span>
+            <button type="button" class="analytics-subtab active" aria-pressed="true">
+              Open <span class="analytics-subtab-count">12</span>
+            </button>
+            <button type="button" class="analytics-subtab" aria-pressed="false">
+              Resolved <span class="analytics-subtab-count">8</span>
+            </button>
+          </div>
+        </div>
+        <div class="state-grid" aria-label="Analytics subtab static slices">
+          <div class="state-card">
+            <small>Open active</small>
+            <div
+              class="analytics-subtab-switch segmented-tabs"
+              role="tablist"
+              aria-label="Open active"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="analytics-subtab active" aria-pressed="true">
+                Open <span class="analytics-subtab-count">12</span>
+              </button>
+              <button type="button" class="analytics-subtab" aria-pressed="false">
+                Resolved <span class="analytics-subtab-count">8</span>
+              </button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Resolved active</small>
+            <div
+              class="analytics-subtab-switch segmented-tabs"
+              role="tablist"
+              aria-label="Resolved active"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="analytics-subtab" aria-pressed="false">
+                Open <span class="analytics-subtab-count">12</span>
+              </button>
+              <button type="button" class="analytics-subtab active" aria-pressed="true">
+                Resolved <span class="analytics-subtab-count">8</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Signal severity tabs component and slices">
+        <div class="section-title">
+          <span class="specimen-label">Animated component / SignalSeverityTabs</span>
+          <h2>Signal severity tabs</h2>
+          <p>Severity-aware filter with stable count badges and semantic active thumb.</p>
+        </div>
+        <div class="component-demo">
+          <div
+            class="signal-tabs segmented-tabs"
+            role="tablist"
+            aria-label="Signal severity"
+            data-active-filter="all"
+          >
+            <span class="segmented-thumb" aria-hidden="true"></span>
+            <button type="button" class="signal-tab active" aria-pressed="true">
+              All <span class="ct">24</span>
+            </button>
+            <button type="button" class="signal-tab severity-watch" aria-pressed="false">
+              Watch <span class="ct">3</span>
+            </button>
+            <button type="button" class="signal-tab severity-warning" aria-pressed="false">
+              Warning <span class="ct">9</span>
+            </button>
+          </div>
+        </div>
+        <div class="state-grid" aria-label="Signal severity static slices">
+          <div class="state-card">
+            <small>All active</small>
+            <div
+              class="signal-tabs segmented-tabs"
+              role="tablist"
+              aria-label="All signals active"
+              data-active-filter="all"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="signal-tab active" aria-pressed="true">
+                All <span class="ct">24</span>
+              </button>
+              <button type="button" class="signal-tab severity-watch" aria-pressed="false">
+                Watch <span class="ct">3</span>
+              </button>
+              <button type="button" class="signal-tab severity-warning" aria-pressed="false">
+                Warning <span class="ct">9</span>
+              </button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Watch active</small>
+            <div
+              class="signal-tabs segmented-tabs"
+              role="tablist"
+              aria-label="Watch signals active"
+              data-active-filter="watch"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="signal-tab" aria-pressed="false">
+                All <span class="ct">24</span>
+              </button>
+              <button type="button" class="signal-tab severity-watch active" aria-pressed="true">
+                Watch <span class="ct">3</span>
+              </button>
+              <button type="button" class="signal-tab severity-warning" aria-pressed="false">
+                Warning <span class="ct">9</span>
+              </button>
+            </div>
+          </div>
+          <div class="state-card">
+            <small>Warning active</small>
+            <div
+              class="signal-tabs segmented-tabs"
+              role="tablist"
+              aria-label="Warning signals active"
+              data-active-filter="warning"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="signal-tab" aria-pressed="false">
+                All <span class="ct">24</span>
+              </button>
+              <button type="button" class="signal-tab severity-watch" aria-pressed="false">
+                Watch <span class="ct">3</span>
+              </button>
+              <button type="button" class="signal-tab severity-warning active" aria-pressed="true">
+                Warning <span class="ct">9</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Overflow behavior">
+        <div class="section-title">
+          <span class="specimen-label">Behavior / OverflowTabs</span>
+          <h2>Overflow — wrap, never clip</h2>
+          <p>
+            When a group is wider than its container it wraps to a second row instead of scrolling
+            off-canvas behind a hidden scrollbar. The thumb is measured on both axes, so it follows
+            the active tab onto the wrapped row. Give the group room on wide layouts; only tight
+            columns wrap.
+          </p>
+        </div>
+        <div class="component-demo component-demo--framed" style="width: min(100%, 460px)">
+          <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Overflow example">
+            <span class="page-nav-thumb" aria-hidden="true"></span>
+            <button type="button" class="page-nav-item active" aria-pressed="true">Overview</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Signals</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Reports</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Audience</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Content</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Campaigns</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Settings</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="SegmentedTabs.js"></script>
+  </body>
+</html>

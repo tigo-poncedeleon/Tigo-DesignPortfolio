@@ -1,0 +1,304 @@
+/* VerticalBarChart — column scaffold for single-series and grouped bar charts.
+   Chart-norm rebuild (owner decision 2026-07-07): bars are thin (≤24px) solid
+   series fills, fully domed at the data end (r = w/2, stylized big-radius
+   marks) and square at the baseline; gridlines are solid hairlines; series
+   colors come from the validated --chart-* palette (slot 1 = brand cyan for
+   single series, slots 1+2 grouped — never rank- or value-colored).
+   Labels/ticks wear text tokens, never the series color. Hover = mark lift +
+   shared .chart-tip readout (also on keyboard focus).
+   Visual source: tokens.css. */
+
+.vbar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 572px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.vbar__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.vbar__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.vbar__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Legend — present only for ≥2 series; swatches mirror the bar mark. */
+.vbar__legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.vbar__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2);
+  color: var(--text-3);
+}
+.vbar__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+.vbar__swatch--a {
+  background: var(--chart-1);
+}
+.vbar__swatch--b {
+  background: var(--chart-2);
+}
+
+/* Plot. */
+.vbar__plot {
+  position: relative;
+  width: 100%;
+}
+.vbar__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.vbar__grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.vbar__baseline {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+.vbar__ticks,
+.vbar__cats {
+  fill: var(--text-4);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+/* Selective direct label — a chip pinned on the peak/extreme mark only
+   (reference-style read-out; ink surface, never the series color as text). */
+.vbar__chip {
+  position: absolute;
+  transform: translate(-50%, -130%);
+  padding: 3px 9px;
+  border-radius: var(--r-full);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  box-shadow: var(--shadow-1);
+}
+/* Annotation naming a segment — quiet ink, uppercase label voice. */
+.vbar__note {
+  fill: var(--text-4);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  font-family: var(--font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.vbar__bar {
+  transition:
+    filter var(--dur-2) var(--ease-out),
+    opacity var(--dur-2) var(--ease-out);
+  outline: none;
+}
+/* Two-series pair reads light/deep on the ONE brand hue (owner decision:
+   charts run light→dark, never a wall of deep fills). */
+.vbar__bar--a {
+  fill: var(--chart-1);
+}
+.vbar__bar--b {
+  fill: var(--chart-2);
+}
+/* Single series: bars wear the sequential ramp BY VALUE (taller = deeper) —
+   the light→dark read is the story; the extreme carries the pinned chip. */
+.vbar__bar--r100 {
+  fill: var(--chart-seq-100);
+}
+.vbar__bar--r200 {
+  fill: var(--chart-seq-200);
+}
+.vbar__bar--r300 {
+  fill: var(--chart-seq-300);
+}
+.vbar__bar--r400 {
+  fill: var(--chart-seq-400);
+}
+.vbar__bar--r500 {
+  fill: var(--chart-seq-500);
+}
+.vbar__bar--r600 {
+  fill: var(--chart-seq-600);
+}
+/* The peak/extreme — the one black anchor, paired with the pinned chip. */
+.vbar__bar--hot {
+  fill: var(--chart-emphasis);
+}
+.vbar__bar:hover {
+  filter: brightness(0.95) saturate(1.15);
+  cursor: pointer;
+}
+.vbar__bar:focus-visible {
+  filter: brightness(0.95) saturate(1.15);
+  stroke: var(--pulse-cyan-line);
+  stroke-width: 3;
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Summary stat row — reference anatomy: series key + label above, big value
+   with an inline delta below, left-aligned on a soft surface. */
+.vbar__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.vbar__stat {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.vbar__stat-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2);
+  color: var(--text-3);
+}
+.vbar__stat-key {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+.vbar__stat-key--a {
+  background: var(--chart-1);
+}
+.vbar__stat-key--b {
+  background: var(--chart-2);
+}
+.vbar__stat-key--muted {
+  background: var(--chart-muted);
+}
+.vbar__stat-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.vbar__stat-num {
+  font-size: var(--fs-8);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.vbar__stat-delta {
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+/* Reference marks (average / target / benchmark): the only DASHED line in a
+   chart — gridlines stay solid so references stand apart. Always labeled. */
+.vbar__ref {
+  stroke: var(--text-4);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.vbar__ref-label {
+  fill: var(--text-3);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Delta whisper (owner decision 922322d): improving numbers stay neutral and
+   only the direction arrow carries green — declines/flats keep their tint so
+   the minority pops. */
+.vbar__stat-delta--up {
+  color: var(--text-3);
+}
+.vbar__stat-delta--up .vbar__stat-delta-arrow {
+  color: var(--success-600);
+}
+.vbar__stat-delta--flat {
+  color: var(--blue-600);
+}
+.vbar__stat-delta--down {
+  color: var(--red-600);
+}
+
+/* Stat-first hero — the widget leads with its number; the chart is evidence
+   (owner-approved reference anatomy: kicker → hero value → chart). */
+.vbar__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: -6px;
+}
+.vbar__hero-value {
+  font-size: var(--fs-9);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.vbar__hero-delta {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--success-600);
+}

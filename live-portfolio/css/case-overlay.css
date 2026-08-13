@@ -1,0 +1,154 @@
+/* ============================================================
+   The case overlay — Work's doors open HERE now.
+
+   Clicking a work thumbnail no longer navigates: the case study rises
+   out of the thumbnail as a frame over the card (js/case-overlay.js)
+   and the story loads inside an iframe, where its own CSS and JS run
+   exactly as they do on the standalone page — the two case stylesheets
+   share forty colliding class names, so isolation is the design.
+
+   The frame covers the CARD only: the chrome strip and the rail stay
+   live, so the tab can carry the case's name and the rail keeps
+   navigating. Everything here is fixed/unscaled — plain viewport px,
+   no ShellFit conversion anywhere.
+   ============================================================ */
+
+/* The overlay stands exactly where .shell-card stands, INCLUDING the band
+   it reaches up behind the chrome strip. That band is the whole trick: the
+   strip's cream is cut away where the active tab is (--strip-clip), and
+   what shows through the hole is whatever lies beneath. On the ordinary
+   page that is the card; with a case up it has to be the CASE, or the tab
+   wears the frozen page behind it instead of the story's own surface.
+
+   Which is why this sits UNDER the chrome strip (20) rather than over it —
+   at 55 the overlay would have painted across the tabs themselves. */
+.case-overlay {
+  position: fixed;
+  top: 0;
+  left: calc(var(--shell-rail, 260px) + 1px);
+  right: 0;
+  bottom: 0;
+  z-index: 15;               /* over the card, under the strip (20) */
+  /* no transition on `left`: the frame is the rail's other edge, and the
+     rail moves in one frame now (css above, js/shell.js toggleRail). An
+     eased edge here would be a second clock for the same motion — which
+     is precisely what used to read as a glitch. */
+}
+html.rail-closed .case-overlay { left: 0; }
+.case-overlay[hidden] { display: none; }
+
+/* the page behind holds still while a case is up */
+html.case-open { overflow: hidden; }
+
+/* the veil frosts the card during the flight; the frame covers it once
+   landed. It does NOT close anything — a page is not dismissed by clicking
+   beside it. */
+.case-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(247, 247, 244, 0.45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.case-overlay.is-open .case-veil { opacity: 1; }
+/* Once the story has landed, the veil is pure waste: it sits fully hidden
+   behind the opaque frame, yet its backdrop-filter makes the compositor
+   re-blur a card-sized region every frame anything moves beneath it —
+   budget stolen from the iframe's scroll. Kill the surface while the doc
+   is up; close() drops is-doc-ready after the fade, so the frosted veil
+   returns exactly for the close transition. */
+.case-overlay.is-open.is-doc-ready .case-veil {
+  visibility: hidden;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* the frame FLIPs: js sets a translate+scale that lays it over the
+   clicked thumbnail, then releases it to fly to rest */
+/* No shadow and no floating card: this IS the page. The same surface the
+   card wears, the same corner, sitting in the same place — and it does not
+   move. Opening is a fade, nothing more. */
+.case-frame {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  border-radius: 10px 0 0 0;    /* the card's own corner */
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.case-overlay.is-open .case-frame { opacity: 1; }
+
+/* The story fills the whole frame, INCLUDING the band behind the strip.
+   It used to start below the strip, so what showed through the tab was the
+   frame's bare surface — a blank white band, no matter how far into the
+   story you had read. The tab is an opening onto the page it names, and a
+   case study is a page like any other: the frame reaches up behind the
+   strip and the story scrolls through it.
+
+   The story still RESTS below the strip — html.is-embed pads the card down
+   by the strip's height (css/shell.css) — so nothing begins life hidden.
+   It fades up on its own load event, so the wait is a blank card rather
+   than a flash. */
+.case-doc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* explicit width AND height: an iframe is a replaced element, so `auto`
+     resolves to its intrinsic 300×150 instead of stretching to inset — the
+     story renders as a 150px sliver and the rest of the frame goes blank */
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.case-overlay.is-doc-ready .case-doc { opacity: 1; }
+
+/* the way back, in the story's top-right corner — clear of the chrome
+   strip, since the frame now reaches up behind it */
+.case-x {
+  position: absolute;
+  top: calc(var(--shell-chrome-h, 40px) + 12px);
+  right: 14px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  /* near-solid, no frost: a backdrop-filter here re-blurred its 32px
+     square on every scrolled frame beneath it, for the whole session */
+  background: rgba(247, 247, 244, 0.94);
+  border: 1px solid var(--shell-line, #cdcdc9);
+  border-radius: 8px;
+  color: #84847e;
+  cursor: pointer;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
+              border-color var(--t-micro) ease;
+}
+.case-x svg { width: 17px; height: 17px; }
+.case-x:hover,
+.case-x:focus-visible {
+  color: var(--ink);
+  background: rgba(38, 37, 30, 0.06);
+  border-color: rgba(38, 37, 30, 0.2);
+}
+
+/* the frame takes focus so the keys scroll the story — not a control */
+.case-doc:focus { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .case-frame { transition: opacity 0.25s ease; }
+  .case-veil { transition: opacity 0.25s ease; }
+}
+
+/* phones navigate for real — the overlay never mounts there (js), and if
+   the class ever leaks the CSS agrees */
+@media (max-width: 700px) {
+  .case-overlay { display: none; }
+}

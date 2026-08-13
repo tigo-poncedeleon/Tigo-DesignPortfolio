@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DateRangeControl - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Field/Field.css" />
+    <link rel="stylesheet" href="DateRangeControl.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1100px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>DateRangeControl</h1>
+        <p>
+          Date and time range editor for Calendar create, edit, reschedule, and slot picking. It
+          owns the range anatomy, all-day mode, quick slot chips, invalid range state, readonly
+          display, and compact wrapping.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Date range control states">
+        <div class="section-title">
+          <span>Default / invalid</span>
+        </div>
+        <div class="grid">
+          <div class="date-range-control" data-date-range-control>
+            <div class="date-range-control__head">
+              <span class="date-range-control__label">
+                <span class="date-range-control__icon" aria-hidden="true">
+                  <svg viewBox="0 0 20 20">
+                    <path
+                      d="M5 4.5h10A1.5 1.5 0 0 1 16.5 6v9A1.5 1.5 0 0 1 15 16.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5Z"
+                    />
+                    <path d="M7 3v3M13 3v3M3.5 8h13" />
+                  </svg>
+                </span>
+                Schedule
+              </span>
+              <span class="date-range-control__summary">Jun 11, 9:00 AM - 10:30 AM</span>
+            </div>
+            <div class="date-range-control__grid">
+              <label class="ds-field ds-field--compact">
+                <span>Start date</span>
+                <input class="ds-input" type="date" value="2026-06-11" aria-label="Start date" />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>Start time</span>
+                <input class="ds-input" type="time" value="09:00" aria-label="Start time" />
+              </label>
+              <span class="date-range-control__dash" aria-hidden="true">-</span>
+              <label class="ds-field ds-field--compact">
+                <span>End date</span>
+                <input class="ds-input" type="date" value="2026-06-11" aria-label="End date" />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>End time</span>
+                <input class="ds-input" type="time" value="10:30" aria-label="End time" />
+              </label>
+            </div>
+            <div class="date-range-control__options">
+              <label class="ds-field ds-field--check">
+                <input class="ds-checkbox" type="checkbox" data-all-day-toggle />
+                <span class="ds-field__label">All day</span>
+              </label>
+            </div>
+            <div class="date-range-control__quick" aria-label="Quick slots">
+              <button
+                class="date-range-control__chip is-selected"
+                type="button"
+                aria-pressed="true"
+              >
+                90 min
+              </button>
+              <button class="date-range-control__chip" type="button" aria-pressed="false">
+                Next day
+              </button>
+              <button class="date-range-control__chip" type="button" aria-pressed="false">
+                Best evening
+              </button>
+            </div>
+            <p class="date-range-control__help">Timezone inherited from workspace calendar.</p>
+            <p class="date-range-control__error">End time must be after start time.</p>
+          </div>
+
+          <div class="date-range-control is-invalid" data-date-range-control>
+            <div class="date-range-control__head">
+              <span class="date-range-control__label">
+                <span class="date-range-control__icon" aria-hidden="true">
+                  <svg viewBox="0 0 20 20">
+                    <path
+                      d="M5 4.5h10A1.5 1.5 0 0 1 16.5 6v9A1.5 1.5 0 0 1 15 16.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5Z"
+                    />
+                    <path d="M7 3v3M13 3v3M3.5 8h13" />
+                  </svg>
+                </span>
+                Schedule
+              </span>
+              <span class="date-range-control__summary">Jun 11, 2:30 PM - 2:00 PM</span>
+            </div>
+            <div class="date-range-control__grid">
+              <label class="ds-field ds-field--compact">
+                <span>Start date</span>
+                <input class="ds-input" type="date" value="2026-06-11" />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>Start time</span>
+                <input class="ds-input is-invalid" type="time" value="14:30" aria-invalid="true" />
+              </label>
+              <span class="date-range-control__dash" aria-hidden="true">-</span>
+              <label class="ds-field ds-field--compact">
+                <span>End date</span>
+                <input class="ds-input" type="date" value="2026-06-11" />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>End time</span>
+                <input class="ds-input is-invalid" type="time" value="14:00" aria-invalid="true" />
+              </label>
+            </div>
+            <p class="date-range-control__help">Timezone inherited from workspace calendar.</p>
+            <p class="date-range-control__error">End time must be after start time.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Date range all-day and compact states">
+        <div class="section-title">
+          <span>All-day / readonly / compact</span>
+        </div>
+        <div class="grid">
+          <div class="date-range-control is-all-day" data-date-range-control>
+            <div class="date-range-control__head">
+              <span class="date-range-control__label">All-day event</span>
+              <span class="date-range-control__summary">Jun 12 - Jun 14</span>
+            </div>
+            <div class="date-range-control__grid">
+              <label class="ds-field ds-field--compact">
+                <span>Start date</span>
+                <input class="ds-input" type="date" value="2026-06-12" />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>Start time</span>
+                <input class="ds-input" type="time" value="09:00" disabled />
+              </label>
+              <span class="date-range-control__dash" aria-hidden="true">-</span>
+              <label class="ds-field ds-field--compact">
+                <span>End date</span>
+                <input class="ds-input" type="date" value="2026-06-14" />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>End time</span>
+                <input class="ds-input" type="time" value="17:00" disabled />
+              </label>
+            </div>
+            <label class="ds-field ds-field--check">
+              <input class="ds-checkbox" type="checkbox" checked data-all-day-toggle />
+              <span class="ds-field__label">All day</span>
+            </label>
+          </div>
+
+          <div class="date-range-control date-range-control--readonly">
+            <div class="date-range-control__head">
+              <span class="date-range-control__label">Readonly</span>
+              <span class="date-range-control__summary">Jun 11, 12:00 PM - 1:30 PM</span>
+            </div>
+            <div class="date-range-control__grid">
+              <label class="ds-field ds-field--compact">
+                <span>Start date</span>
+                <input class="ds-input" type="date" value="2026-06-11" readonly />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>Start time</span>
+                <input class="ds-input" type="time" value="12:00" readonly />
+              </label>
+              <span class="date-range-control__dash" aria-hidden="true">-</span>
+              <label class="ds-field ds-field--compact">
+                <span>End date</span>
+                <input class="ds-input" type="date" value="2026-06-11" readonly />
+              </label>
+              <label class="ds-field ds-field--compact date-range-control__time">
+                <span>End time</span>
+                <input class="ds-input" type="time" value="13:30" readonly />
+              </label>
+            </div>
+          </div>
+
+          <div class="date-range-control date-range-control--compact" data-date-range-control>
+            <div class="date-range-control__head">
+              <span class="date-range-control__label">Compact</span>
+              <span class="date-range-control__summary">Today, 7:00 PM</span>
+            </div>
+            <div class="date-range-control__grid">
+              <label class="ds-field ds-field--compact">
+                <span>Start</span>
+                <input class="ds-input" type="datetime-local" value="2026-06-11T19:00" />
+              </label>
+              <label class="ds-field ds-field--compact">
+                <span>End</span>
+                <input class="ds-input" type="datetime-local" value="2026-06-11T20:00" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.querySelectorAll('[data-date-range-control]').forEach((control) => {
+        control.querySelectorAll('[data-all-day-toggle]').forEach((toggle) => {
+          toggle.addEventListener('change', () => {
+            control.classList.toggle('is-all-day', toggle.checked);
+            control
+              .querySelectorAll('.date-range-control__time input')
+              .forEach((input) => (input.disabled = toggle.checked));
+          });
+        });
+
+        control.querySelectorAll('.date-range-control__chip').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            control.querySelectorAll('.date-range-control__chip').forEach((candidate) => {
+              candidate.classList.remove('is-selected');
+              candidate.setAttribute('aria-pressed', 'false');
+            });
+            chip.classList.add('is-selected');
+            chip.setAttribute('aria-pressed', 'true');
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

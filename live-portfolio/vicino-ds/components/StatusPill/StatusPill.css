@@ -1,0 +1,168 @@
+.status-pill {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 0 11px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--status-neutral-line);
+  background: var(--status-neutral-soft);
+  color: var(--status-neutral);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-pill--compact {
+  min-height: 20px;
+  padding: 0 8px;
+  border-width: 1px;
+  gap: 5px;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+}
+
+.status-pill--disabled {
+  opacity: 0.42;
+}
+
+.status-pill--progress {
+  padding-right: 13px;
+}
+
+.status-pill__progress-track {
+  width: 34px;
+  height: 3px;
+  border-radius: var(--r-full);
+  background: rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+}
+
+.status-pill__progress-fill {
+  display: block;
+  width: var(--pill-progress, 62%);
+  height: 100%;
+  border-radius: inherit;
+  background: currentColor;
+}
+
+.status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-pill--compact::before {
+  width: 5px;
+  height: 5px;
+}
+
+.status-pill--data {
+  background: var(--data-status-action-soft);
+  color: var(--data-status-action);
+}
+
+.status-pill--data::before {
+  display: none;
+}
+
+.status-pill--data-risk {
+  border-color: var(--data-status-risk-line);
+  background: var(--data-status-risk-soft);
+  color: var(--data-status-risk);
+}
+
+.status-pill--data-action {
+  border-color: var(--data-status-action-line);
+  background: var(--data-status-action-soft);
+  color: var(--data-status-action);
+}
+
+.status-pill--data-highlight {
+  border-color: var(--data-status-highlight-line);
+  background: var(--data-status-highlight-soft);
+  color: var(--data-status-highlight);
+}
+
+.status-pill--data-decline {
+  border-color: var(--data-status-decline-line);
+  background: var(--data-status-decline-soft);
+  color: var(--data-status-decline);
+}
+
+.status-pill--live {
+  border-color: var(--status-live-line);
+  background: var(--status-live-soft);
+  color: var(--status-live);
+}
+
+.status-pill--building {
+  border-color: var(--generation-building-line);
+  background: var(--generation-building-soft);
+  color: var(--generation-building);
+}
+
+.status-pill--ready {
+  border-color: var(--generation-ready-line);
+  background: var(--generation-ready-soft);
+  color: var(--generation-ready);
+}
+
+.status-pill--done {
+  border-color: var(--status-success-line);
+  background: var(--status-success-soft);
+  color: var(--status-success);
+}
+
+.status-pill--scheduled {
+  border-color: var(--generation-scheduled-line);
+  background: var(--generation-scheduled-soft);
+  color: var(--generation-scheduled);
+}
+
+.status-pill--onhold,
+.status-pill--blocked,
+.status-pill--failed {
+  border-color: var(--generation-onhold-line);
+  background: var(--generation-onhold-soft);
+  color: var(--generation-onhold);
+}
+
+.status-pill--rendering {
+  border-color: var(--status-rendering-line);
+  background: var(--status-rendering-soft);
+  color: var(--status-rendering);
+}
+
+.status-pill--published {
+  border-color: var(--generation-published-line);
+  background: var(--generation-published-soft);
+  color: var(--generation-published);
+}
+
+/* Draft is a neutral "queued / not-yet-worked" state, NOT a risk — it uses the neutral
+   queued ramp, not the amber on-hold ramp (owner decision 2026-07-01). */
+.status-pill--draft,
+.status-pill--queued {
+  border-color: var(--generation-queued-line);
+  background: var(--generation-queued-soft);
+  color: var(--generation-queued);
+}
+
+.status-pill--severity-warning {
+  border-color: var(--amber-line);
+  background: var(--amber-50);
+  color: var(--amber-500);
+}
+
+.status-pill--severity-info {
+  border-color: var(--blue-200);
+  background: var(--blue-50);
+  color: var(--blue-500);
+}

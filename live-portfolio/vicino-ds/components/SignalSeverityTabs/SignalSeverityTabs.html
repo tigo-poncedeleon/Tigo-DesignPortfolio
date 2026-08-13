@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SignalSeverityTabs - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../SegmentedTabs/SegmentedTabs.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet,
+      .component-intro,
+      .section,
+      .states,
+      .state {
+        display: grid;
+      }
+      .sheet {
+        gap: 30px;
+        max-width: 860px;
+      }
+      .component-intro,
+      .section {
+        gap: 12px;
+      }
+      h1,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        max-width: 64ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .label,
+      .state small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .states {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .state {
+        grid-template-columns: minmax(120px, 170px) auto;
+        align-items: center;
+        gap: 10px;
+        justify-items: start;
+        width: fit-content;
+        max-width: 100%;
+        padding: 14px 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-sizing: border-box;
+      }
+      @media (max-width: 640px) {
+        body {
+          padding: 28px;
+        }
+        .state {
+          grid-template-columns: 1fr;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro">
+        <h1>SignalSeverityTabs</h1>
+        <p>Severity-aware signal filter. Watch and warning use semantic amber states.</p>
+      </header>
+      <section class="section" aria-label="Signal severity tabs animated component">
+        <span class="label">Animated component</span>
+        <div
+          class="signal-tabs segmented-tabs"
+          role="tablist"
+          aria-label="Signal severity"
+          data-active-filter="all"
+        >
+          <span class="segmented-thumb" aria-hidden="true"></span>
+          <button type="button" class="signal-tab active" aria-pressed="true">
+            All <span class="ct">24</span>
+          </button>
+          <button type="button" class="signal-tab severity-watch" aria-pressed="false">
+            Watch <span class="ct">3</span>
+          </button>
+          <button type="button" class="signal-tab severity-warning" aria-pressed="false">
+            Warning <span class="ct">9</span>
+          </button>
+        </div>
+      </section>
+      <section class="section" aria-label="Signal severity tab slices">
+        <span class="label">Slices</span>
+        <div class="states">
+          <div class="state">
+            <small>State: All selected</small>
+            <div
+              class="signal-tabs segmented-tabs"
+              role="tablist"
+              aria-label="All signals active"
+              data-active-filter="all"
+              data-static-slice="true"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="signal-tab active" aria-pressed="true">
+                All <span class="ct">24</span>
+              </button>
+              <button type="button" class="signal-tab severity-watch" aria-pressed="false">
+                Watch <span class="ct">3</span>
+              </button>
+              <button type="button" class="signal-tab severity-warning" aria-pressed="false">
+                Warning <span class="ct">9</span>
+              </button>
+            </div>
+          </div>
+          <div class="state">
+            <small>State: Watch selected</small>
+            <div
+              class="signal-tabs segmented-tabs"
+              role="tablist"
+              aria-label="Watch signals active"
+              data-active-filter="watch"
+              data-static-slice="true"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="signal-tab" aria-pressed="false">
+                All <span class="ct">24</span>
+              </button>
+              <button type="button" class="signal-tab severity-watch active" aria-pressed="true">
+                Watch <span class="ct">3</span>
+              </button>
+              <button type="button" class="signal-tab severity-warning" aria-pressed="false">
+                Warning <span class="ct">9</span>
+              </button>
+            </div>
+          </div>
+          <div class="state">
+            <small>State: Warning selected</small>
+            <div
+              class="signal-tabs segmented-tabs"
+              role="tablist"
+              aria-label="Warning signals active"
+              data-active-filter="warning"
+              data-static-slice="true"
+            >
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="signal-tab" aria-pressed="false">
+                All <span class="ct">24</span>
+              </button>
+              <button type="button" class="signal-tab severity-watch" aria-pressed="false">
+                Watch <span class="ct">3</span>
+              </button>
+              <button type="button" class="signal-tab severity-warning active" aria-pressed="true">
+                Warning <span class="ct">9</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="../SegmentedTabs/SegmentedTabs.js"></script>
+  </body>
+</html>

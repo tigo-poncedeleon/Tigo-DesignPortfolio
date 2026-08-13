@@ -31,6 +31,14 @@
   const sendBtn  = inputBar ? inputBar.querySelector('.ai-send') : null;
   const overlay  = document.getElementById('ai-overlay');
   const card     = document.getElementById('shell-card');
+  // the composer's tools (absent on an older page that predates them)
+  const personaBtn   = document.getElementById('ai-persona');
+  const personaMenu  = document.getElementById('ai-persona-menu');
+  const personaLabel = document.getElementById('ai-persona-label');
+  const micBtn    = document.getElementById('ai-mic');
+  const addBtn    = document.getElementById('ai-add');
+  const fileInput = document.getElementById('ai-file');
+  const attachRow = document.getElementById('ai-attach-row');
   if (!scroll) return;
 
   /* ============================================================
@@ -57,11 +65,7 @@
     document.documentElement.classList.add('ai-open');
     stage.classList.remove('revealed');
     stage.offsetHeight;                       // commit before re-adding
-    requestAnimationFrame(() => {
-      stage.classList.add('revealed');
-      const sc = document.getElementById('ai-scrim');
-      if (sc) sc.classList.add('is-lit');
-    });
+    requestAnimationFrame(() => stage.classList.add('revealed'));
     document.addEventListener('keydown', onKey, true);
     if (input) input.focus({ preventScroll: true });
     if (seed) submitQuestion(seed);
@@ -71,9 +75,9 @@
     if (!overlay || !isOpen) return;
     isOpen = false;
     if (inflight) inflight.abort();
+    stopListening();
+    closePersonaMenu();
     stage.classList.remove('revealed');
-    const sc = document.getElementById('ai-scrim');
-    if (sc) sc.classList.remove('is-lit');
     document.removeEventListener('keydown', onKey, true);
     if (card) card.removeAttribute('inert');
     document.documentElement.classList.remove('ai-open');
@@ -81,12 +85,21 @@
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
 
-  // capture phase, so Escape closes the sheet before any game sees it
+  // capture phase, so Escape closes the sheet before any game sees it —
+  // and the mood menu before the sheet, innermost thing first
   function onKey(e) {
-    if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      if (personaMenu && !personaMenu.hidden) { closePersonaMenu(true); return; }
+      close();
+      return;
+    }
     if (e.key !== 'Tab') return;
-    const f = stage.querySelectorAll(
-      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])');
+    // the trap must not hand focus to what cannot take it: the closed mood
+    // menu's rows, the hidden mic, the file input behind the + button
+    const f = Array.prototype.filter.call(stage.querySelectorAll(
+      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'),
+      (el) => !el.hidden && el.type !== 'file' && el.offsetParent !== null);
     if (!f.length) return;
     const first = f[0], last = f[f.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -103,18 +116,30 @@
      write. Both are clamped into the viewport on every move AND on
      resize, so a sheet dragged to the corner of a wide window cannot
      strand itself off-screen when the window narrows.
+
+     The sheet takes a drag from the header (move) or from any of its
+     eight edges and corners (resize). Below 700px none of it applies:
+     the sheet is full-bleed there, and an inline box would outrank the
+     media query and strand a phone at desktop geometry.
      ============================================================ */
   const GEO_KEY = 'ai.box';
   const MINW = 340, MINH = 320;
+  const GAP = 8;                        // the sheet never touches the edge
+  const isPhone = () => matchMedia('(max-width: 700px)').matches;
 
   const clampBox = (b) => {
-    const w = Math.max(MINW, Math.min(b.w, window.innerWidth - 16));
-    const h = Math.max(MINH, Math.min(b.h, window.innerHeight - 16));
+    const w = Math.max(MINW, Math.min(b.w, window.innerWidth - 2 * GAP));
+    const h = Math.max(MINH, Math.min(b.h, window.innerHeight - 2 * GAP));
     return {
       w: w, h: h,
-      x: Math.max(8, Math.min(b.x, window.innerWidth - w - 8)),
-      y: Math.max(8, Math.min(b.y, window.innerHeight - h - 8)),
+      x: Math.max(GAP, Math.min(b.x, window.innerWidth - w - GAP)),
+      y: Math.max(GAP, Math.min(b.y, window.innerHeight - h - GAP)),
     };
+  };
+
+  const clearBox = () => {
+    ['left', 'top', 'right', 'bottom', 'width', 'height']
+      .forEach((k) => stage.style.removeProperty(k));
   };
 
   const applyBox = (b) => {
@@ -142,55 +167,89 @@
     return { x: r.left, y: r.top, w: r.width, h: r.height };
   };
 
+  // A resize drag grows the sheet from the edge you grabbed: pulling the
+  // north or west side moves that side and pins the opposite one, so the
+  // sheet never creeps across the screen while you size it. Each of those
+  // two is clamped BEFORE the anchor is worked out — at the minimum the
+  // dragged edge simply stops, rather than pushing the far edge along.
+  const resize = (dir, box, dx, dy) => {
+    let x = box.x, y = box.y, w = box.w, h = box.h;
+    // east/south stop at the window edge rather than growing past it and
+    // letting clampBox slide the whole sheet left to compensate
+    if (dir.indexOf('e') > -1) w = Math.min(box.w + dx, window.innerWidth - box.x - GAP);
+    if (dir.indexOf('s') > -1) h = Math.min(box.h + dy, window.innerHeight - box.y - GAP);
+    if (dir.indexOf('w') > -1) {
+      w = Math.max(MINW, Math.min(box.w - dx, box.x + box.w - GAP));
+      x = box.x + box.w - w;                    // the right edge stays put
+    }
+    if (dir.indexOf('n') > -1) {
+      h = Math.max(MINH, Math.min(box.h - dy, box.y + box.h - GAP));
+      y = box.y + box.h - h;                    // the bottom edge stays put
+    }
+    return { x: x, y: y, w: w, h: h };
+  };
+
   const wireDrag = () => {
     const head = stage.querySelector('.ai-sheet-head');
-    const grip = document.createElement('div');
-    grip.className = 'ai-grip';
-    grip.title = 'Drag to resize';
-    stage.appendChild(grip);
 
-    let mode = null, id = null, start = null, box = null;
+    // eight invisible strips straddling the border, plus the header. The
+    // sheet draws no corner mark — the resize cursor is the whole tell.
+    const handles = ['n', 's', 'e', 'w', 'ne', 'nw', 'sw', 'se'].map((d) => {
+      const el = document.createElement('div');
+      el.className = 'ai-resize';
+      el.dataset.dir = d;
+      stage.appendChild(el);
+      return el;
+    });
 
-    const begin = (m) => (e) => {
+    let mode = null, id = null, start = null, box = null, grabbed = null;
+
+    const begin = (el, m) => (e) => {
+      if (isPhone()) return;                    // full-bleed: nothing to drag
       if (e.button !== 0 && e.pointerType === 'mouse') return;
-      if (e.target.closest('.ai-x')) return;      // the close button is not a handle
-      mode = m; id = e.pointerId;
+      if (e.target.closest('.ai-x')) return;    // the close button is not a handle
+      mode = m; id = e.pointerId; grabbed = el;
       box = liveBox();
       start = { x: e.clientX, y: e.clientY };
-      try { (m === 'move' ? head : grip).setPointerCapture(id); }
-      catch (err) { /* no live pointer */ }
+      try { el.setPointerCapture(id); } catch (err) { /* no live pointer */ }
       document.documentElement.classList.add('ai-dragging');
+      // hold the handle's own cursor for the whole drag, wherever the
+      // pointer wanders
+      document.documentElement.style.cursor = getComputedStyle(el).cursor;
       e.preventDefault();
     };
     const move = (e) => {
       if (mode === null || e.pointerId !== id) return;
       const dx = e.clientX - start.x, dy = e.clientY - start.y;
       if (mode === 'move') applyBox({ x: box.x + dx, y: box.y + dy, w: box.w, h: box.h });
-      else applyBox({ x: box.x, y: box.y, w: box.w + dx, h: box.h + dy });
+      else applyBox(resize(mode, box, dx, dy));
     };
-    const end = (e) => {
+    const end = () => {
       if (mode === null) return;
-      try { (mode === 'move' ? head : grip).releasePointerCapture(id); } catch (err) { /* gone */ }
-      mode = null; id = null;
+      try { grabbed.releasePointerCapture(id); } catch (err) { /* gone */ }
+      mode = null; id = null; grabbed = null;
       document.documentElement.classList.remove('ai-dragging');
+      document.documentElement.style.removeProperty('cursor');
     };
 
-    head.addEventListener('pointerdown', begin('move'));
-    grip.addEventListener('pointerdown', begin('size'));
-    [head, grip].forEach((el) => {
+    head.addEventListener('pointerdown', begin(head, 'move'));
+    handles.forEach((el) => el.addEventListener('pointerdown', begin(el, el.dataset.dir)));
+    [head].concat(handles).forEach((el) => {
       el.addEventListener('pointermove', move);
       el.addEventListener('pointerup', end);
       el.addEventListener('pointercancel', end);
     });
     // double-click the header to put the sheet back where it started
     head.addEventListener('dblclick', () => {
-      ['left', 'top', 'right', 'bottom', 'width', 'height']
-        .forEach((k) => stage.style.removeProperty(k));
+      clearBox();
       try { sessionStorage.removeItem(GEO_KEY); } catch (err) { /* fine */ }
     });
-    // a window that narrows must not strand the sheet outside it
+    // a window that narrows must not strand the sheet outside it — and once
+    // it is phone-width the inline box has to go entirely, or it would
+    // outrank the full-bleed media query
     window.addEventListener('resize', () => {
-      if (stage.style.width) applyBox(liveBox());
+      if (!stage.style.width) return;
+      if (isPhone()) clearBox(); else applyBox(liveBox());
     });
   };
 
@@ -201,7 +260,7 @@
     if (x) x.addEventListener('click', close);
     wireDrag();
     const b = savedBox();
-    if (b) applyBox(b);          // where the visitor last left it
+    if (b && !isPhone()) applyBox(b);          // where the visitor last left it
   } else {
     // no shell (or an older page): behave exactly as before
     requestAnimationFrame(() => stage && stage.classList.add('revealed'));
@@ -213,6 +272,197 @@
   const history = [];
   let responding = false;
   let offline = false;
+
+  /* ============================================================
+     The mood toggle — how the assistant answers. Friendly is the
+     house voice; whimsical and suspicious are a reward for whoever
+     opens the toggle. The client only ever sends one of these three
+     words — what each one means lives in the proxy (api/chat.js),
+     next to the system prompt it flavours.
+     ============================================================ */
+  const PERSONAS = ['friendly', 'whimsical', 'suspicious'];
+  const PERSONA_KEY = 'ai.persona';
+  let persona = 'friendly';
+  try {
+    const savedP = sessionStorage.getItem(PERSONA_KEY);
+    if (PERSONAS.indexOf(savedP) > -1) persona = savedP;
+  } catch (err) { /* private mode */ }
+
+  function paintPersona() {
+    if (personaLabel) personaLabel.textContent = persona;
+    if (personaMenu) {
+      personaMenu.querySelectorAll('.persona-row').forEach((row) => {
+        row.classList.toggle('is-active', row.dataset.persona === persona);
+      });
+    }
+  }
+
+  function closePersonaMenu(refocus) {
+    if (!personaMenu || personaMenu.hidden) return;
+    personaMenu.hidden = true;
+    document.removeEventListener('pointerdown', onOutsidePersona, true);
+    if (personaBtn) {
+      personaBtn.setAttribute('aria-expanded', 'false');
+      if (refocus) personaBtn.focus({ preventScroll: true });
+    }
+  }
+
+  function onOutsidePersona(e) {
+    if (e.target.closest('#ai-persona-menu, #ai-persona')) return;
+    closePersonaMenu();
+  }
+
+  if (personaBtn && personaMenu) {
+    paintPersona();
+    personaBtn.addEventListener('click', () => {
+      if (!personaMenu.hidden) { closePersonaMenu(); return; }
+      paintPersona();
+      personaMenu.hidden = false;
+      personaBtn.setAttribute('aria-expanded', 'true');
+      document.addEventListener('pointerdown', onOutsidePersona, true);
+    });
+    personaMenu.addEventListener('click', (e) => {
+      const row = e.target.closest('.persona-row');
+      if (!row) return;
+      persona = row.dataset.persona;
+      try { sessionStorage.setItem(PERSONA_KEY, persona); } catch (err) { /* fine */ }
+      paintPersona();
+      closePersonaMenu();
+      if (input) input.focus({ preventScroll: true });
+    });
+  }
+
+  /* ============================================================
+     Dictation — the browser's own SpeechRecognition where it exists
+     (Chrome, Safari). Where it doesn't, the mic button never appears;
+     typing is the other way in. The transcript lands in the input
+     rather than sending itself: you see what it heard, then decide.
+     ============================================================ */
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const PLACEHOLDER = 'ask me anything!';
+  let rec = null;
+  let listening = false;
+
+  function stopListening() {
+    const r = rec;
+    rec = null;                        // before stop(): its onend re-enters here
+    listening = false;
+    if (r) { try { r.stop(); } catch (err) { /* already stopped */ } }
+    if (micBtn) {
+      micBtn.classList.remove('is-listening');
+      micBtn.setAttribute('aria-pressed', 'false');
+    }
+    if (input) input.placeholder = PLACEHOLDER;
+  }
+
+  if (SR && micBtn) {
+    micBtn.hidden = false;
+    micBtn.addEventListener('click', () => {
+      if (listening) { stopListening(); return; }
+      listening = true;
+      micBtn.classList.add('is-listening');
+      micBtn.setAttribute('aria-pressed', 'true');
+      if (input) input.placeholder = 'listening…';
+      const base = input ? input.value.trim() : '';
+      rec = new SR();
+      rec.lang = document.documentElement.lang || 'en-US';
+      rec.interimResults = true;
+      rec.onresult = (e) => {
+        let heard = '';
+        for (let i = 0; i < e.results.length; i++) heard += e.results[i][0].transcript;
+        if (input) input.value = base ? base + ' ' + heard.trimStart() : heard.trimStart();
+        paintSend();                   // programmatic set fires no input event
+      };
+      rec.onerror = () => stopListening();
+      rec.onend = () => {
+        stopListening();
+        if (isOpen && input) input.focus({ preventScroll: true });
+      };
+      try { rec.start(); } catch (err) { stopListening(); }
+    });
+  }
+
+  /* ============================================================
+     A photo for context. Downscaled on a canvas before it goes
+     anywhere — the proxy forwards messages verbatim, so the image
+     rides as a standard Anthropic image block, and a 12-megapixel
+     phone photo has no business crossing the wire at full size.
+     ============================================================ */
+  let pendingPhoto = null;             // { url, mediaType, data }
+
+  // the send circle answers the bar's state: it only wears the accent when
+  // there is actually something to send (css .ai-inputbar.is-ready)
+  function paintSend() {
+    if (!inputBar) return;
+    const ready = !!pendingPhoto || (input && input.value.trim().length > 0);
+    inputBar.classList.toggle('is-ready', ready);
+  }
+
+  function clearPhoto() {
+    pendingPhoto = null;
+    if (attachRow) { attachRow.innerHTML = ''; attachRow.hidden = true; }
+    if (fileInput) fileInput.value = '';
+    paintSend();
+  }
+
+  function showPhotoChip() {
+    if (!attachRow || !pendingPhoto) return;
+    attachRow.innerHTML = '';
+    const chip = document.createElement('span');
+    chip.className = 'attach-thumb';
+    const img = document.createElement('img');
+    img.src = pendingPhoto.url;
+    img.alt = 'photo waiting to send';
+    const x = document.createElement('button');
+    x.className = 'attach-x';
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Remove photo');
+    x.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" ' +
+      'stroke="currentColor" stroke-width="3" stroke-linecap="round">' +
+      '<path d="M5 5 L19 19" /><path d="M19 5 L5 19" /></svg>';
+    x.addEventListener('click', clearPhoto);
+    chip.append(img, x);
+    attachRow.appendChild(chip);
+    attachRow.hidden = false;
+  }
+
+  function acceptPhoto(file) {
+    if (!file || file.type.indexOf('image/') !== 0) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        // longest side capped at 1200px — plenty to look at, kind to the wire
+        const scale = Math.min(1, 1200 / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        const url = canvas.toDataURL('image/jpeg', 0.85);
+        pendingPhoto = {
+          url: url,
+          mediaType: 'image/jpeg',
+          data: url.slice(url.indexOf(',') + 1),
+        };
+        showPhotoChip();
+        paintSend();
+        if (input) input.focus({ preventScroll: true });
+      };
+      img.src = reader.result;         // a format the browser can't decode
+    };                                 // simply never fires onload — no photo
+    reader.readAsDataURL(file);
+  }
+
+  if (addBtn && fileInput) {
+    addBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => acceptPhoto(fileInput.files[0]));
+  }
+
+  /* a message's readable text, whether it is a plain string or blocks */
+  const msgText = (m) =>
+    typeof m.content === 'string'
+      ? m.content
+      : m.content.filter((b) => b.type === 'text').map((b) => b.text).join(' ');
 
   const OFFLINE_ANSWERS = {
     'tell me your background!':
@@ -258,14 +508,21 @@
     }, 300);
   }
 
-  /* ---- transcript persistence (sessionStorage, like the play tallies) ---- */
+  /* ---- transcript persistence (sessionStorage, like the play tallies).
+     Photos are NOT persisted — base64 would blow the quota for nothing —
+     so a photo message flattens to its words plus an honest note. ---- */
   function saveHistory() {
-    try { sessionStorage.setItem(STORE_KEY, JSON.stringify(history)); } catch {}
+    const flat = history.map((m) => {
+      if (typeof m.content === 'string') return m;
+      const t = msgText(m);
+      return { role: m.role, content: t ? t + '\n(sent a photo)' : '(sent a photo)' };
+    });
+    try { sessionStorage.setItem(STORE_KEY, JSON.stringify(flat)); } catch {}
   }
 
   function askedAlready(text) {
     const t = text.trim().toLowerCase();
-    return history.some((m) => m.role === 'user' && m.content.toLowerCase() === t);
+    return history.some((m) => m.role === 'user' && msgText(m).toLowerCase() === t);
   }
 
   /* ---- the empty-state spark bows out on the first question. It used to
@@ -287,13 +544,27 @@
 
   /* ---- exchange rendering: two chat bubbles per exchange — the question
      right-aligned, the answer left-aligned, same styling (see .ai-msg) ---- */
-  function buildExchange(question) {
+  function buildExchange(question, photoUrl) {
     removeFollowups();
     dismissEmpty(false);
 
     const q = document.createElement('p');
     q.className = 'ai-msg ai-msg-user';
-    q.textContent = question;
+    if (photoUrl) {
+      const img = document.createElement('img');
+      img.className = 'ai-msg-photo';
+      img.src = photoUrl;
+      img.alt = 'photo sent for context';
+      q.appendChild(img);
+      if (question) {
+        const t = document.createElement('span');
+        t.className = 'ai-msg-text';
+        t.textContent = question;
+        q.appendChild(t);
+      }
+    } else {
+      q.textContent = question;
+    }
 
     const answer = document.createElement('p');
     answer.className = 'ai-msg ai-msg-ai';
@@ -433,6 +704,13 @@
   function handleChipSelect(chip) {
     if (responding) return;
     const text = chip.textContent.trim();
+    // a pending photo makes this a photo message — skip the fly (the clone
+    // has no photo in it, so the trick would land on a bubble it doesn't match)
+    if (pendingPhoto) {
+      const all = Array.from(prompts.querySelectorAll('.prompt-chip'));
+      hidePrompts(all, () => submitQuestion(text));
+      return;
+    }
     const others = Array.from(prompts.querySelectorAll('.prompt-chip'))
       .filter((p) => p !== chip);
 
@@ -486,6 +764,18 @@
   /* ---- ask the proxy. A sheet can be closed mid-question, so the request
      is abortable — without it `responding` would stay true and the send
      arrow would still be disabled on reopen. ---- */
+  // the last 20 turns ride along, but images only in the newest few — a
+  // photo asked about three questions ago has been answered, and base64
+  // is far too heavy to re-send with every message after it
+  function apiMessages() {
+    const recent = history.slice(-20);
+    const keepFrom = recent.length - 4;
+    return recent.map((m, i) => {
+      if (typeof m.content === 'string' || i >= keepFrom) return m;
+      return { role: m.role, content: msgText(m) || '(sent a photo)' };
+    });
+  }
+
   async function fetchReply() {
     if (inflight) inflight.abort();
     inflight = new AbortController();
@@ -495,7 +785,7 @@
       res = await fetch(AI_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history.slice(-20) }),
+        body: JSON.stringify({ messages: apiMessages(), persona: persona }),
         signal: inflight.signal,
       });
     } finally {
@@ -514,12 +804,27 @@
 
   async function submitQuestion(text, prebuiltAnswerEl = null) {
     text = text.trim();
-    if (!text || responding) return;
+    const photo = pendingPhoto;             // consumed by THIS send
+    if ((!text && !photo) || responding) return;
     responding = true;
     if (sendBtn) sendBtn.disabled = true;   // the arrow rests while replying
+    stopListening();
+    closePersonaMenu();
 
-    const answerEl = prebuiltAnswerEl || buildExchange(text).answerEl;
-    history.push({ role: 'user', content: text });
+    const answerEl = prebuiltAnswerEl ||
+      buildExchange(text, photo && photo.url).answerEl;
+    if (photo) {
+      // the Anthropic image block, passed through the proxy verbatim
+      const blocks = [{
+        type: 'image',
+        source: { type: 'base64', media_type: photo.mediaType, data: photo.data },
+      }];
+      if (text) blocks.push({ type: 'text', text: text });
+      history.push({ role: 'user', content: blocks });
+      clearPhoto();
+    } else {
+      history.push({ role: 'user', content: text });
+    }
     showThinking(answerEl);
 
     let full = '';
@@ -585,12 +890,16 @@
     });
   }
 
+  if (input) input.addEventListener('input', paintSend);
+  paintSend();
+
   if (inputBar) {
     inputBar.addEventListener('submit', (e) => {
       e.preventDefault();
       const value = input.value.trim();
-      if (!value) return;
+      if (!value && !pendingPhoto) return;  // a photo alone is a fine question
       input.value = '';
+      paintSend();
       const visible = prompts && prompts.style.display !== 'none';
       if (visible) {
         const all = Array.from(prompts.querySelectorAll('.prompt-chip'));
@@ -605,11 +914,11 @@
 
   window.AIChat = { open, close, isOpen: () => isOpen };
 
-  // ai.html is still a real page — every OG card, the nav-touch icon map and
-  // any external link point at it. Landing there opens the sheet straight
-  // away, and ?q=… seeds the first question.
-  if (overlay && document.getElementById('shell') &&
-      document.getElementById('shell').dataset.page === 'ai') {
+  // The AI has no page of its own any more — it is an overlay over whatever
+  // you are reading. ai.html survives as a redirect that arrives with ?ask=1,
+  // so every OG card and external link still opens the sheet on landing, and
+  // ?q=… still seeds the first question.
+  if (overlay && new URLSearchParams(location.search).has('ask')) {
     // no rAF here — open() already waits a frame for its own entrance, and
     // gating the OPEN on a frame means a page that never paints never opens
     open(new URLSearchParams(location.search).get('q') || undefined);

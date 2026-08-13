@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StatusPill - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="StatusPill.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        max-width: 64ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .specimen-label {
+        display: block;
+        margin-bottom: var(--space-3);
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--space-4);
+      }
+      .state-card {
+        display: grid;
+        gap: var(--space-3);
+        align-content: start;
+        min-height: 88px;
+        padding: var(--space-4);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .state-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      /* Specimen-board chrome — moved out of StatusPill.css (2026-07-02) so the
+         app-adopted component CSS ships anatomy only. */
+      .status-specimen {
+        display: grid;
+        gap: var(--space-6);
+        max-width: 920px;
+      }
+
+      .status-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">StatusPill</h1>
+    <p class="handoff-sub">
+      Status labels come in two outlined sizes — default for cards, heros, and popovers, and compact
+      for dense rows (e.g. the production-queue list). Both share one shape and color system: green
+      means positive, active/live, or approved; blue means suggested action or scheduled; amber
+      means risk, negative, or on hold; cyan means ready; purple means in progress. Red is reserved
+      for data-decline only.
+    </p>
+
+    <div class="status-specimen">
+      <section>
+        <span class="specimen-label">Sizes</span>
+        <div class="status-grid" style="align-items: center">
+          <span class="status-pill status-pill--live">Default</span>
+          <span class="status-pill status-pill--live status-pill--compact">Compact</span>
+        </div>
+      </section>
+
+      <section>
+        <span class="specimen-label">Data status labels</span>
+        <div class="status-grid">
+          <span class="status-pill status-pill--data status-pill--data-risk">Risk</span>
+          <span class="status-pill status-pill--data status-pill--data-action"
+            >Suggested action</span
+          >
+          <span class="status-pill status-pill--data status-pill--data-highlight">Active</span>
+          <span class="status-pill status-pill--data status-pill--data-decline">Decline</span>
+        </div>
+      </section>
+
+      <section>
+        <span class="specimen-label">Generation status</span>
+        <div class="status-grid">
+          <span class="status-pill status-pill--queued">Queued</span>
+          <span class="status-pill status-pill--scheduled">Scheduled</span>
+          <span class="status-pill status-pill--live">Live</span>
+          <span class="status-pill status-pill--building">In progress</span>
+          <span class="status-pill status-pill--ready">Ready</span>
+          <span class="status-pill status-pill--draft">Draft</span>
+          <span class="status-pill status-pill--blocked">Blocked</span>
+          <span class="status-pill status-pill--failed">Failed</span>
+          <span class="status-pill status-pill--onhold">Needs attention</span>
+          <span class="status-pill status-pill--rendering">Rendering 62%</span>
+          <span class="status-pill status-pill--published">Published</span>
+        </div>
+      </section>
+
+      <section>
+        <span class="specimen-label">Watch / routing</span>
+        <div class="status-grid">
+          <span class="status-pill status-pill--severity-warning">Adjust soon</span>
+          <span class="status-pill status-pill--severity-info">Reply / route</span>
+        </div>
+      </section>
+
+      <section>
+        <span class="specimen-label">State snapshots</span>
+        <div class="state-grid" aria-label="StatusPill static state snapshots">
+          <div class="state-card">
+            <small>Compact</small>
+            <span class="status-pill status-pill--building status-pill--compact">In progress</span>
+          </div>
+          <div class="state-card">
+            <small>Progress</small>
+            <span
+              class="status-pill status-pill--rendering status-pill--progress"
+              style="--pill-progress: 62%"
+              >Rendering 62%
+              <span class="status-pill__progress-track" aria-hidden="true">
+                <span class="status-pill__progress-fill"></span> </span
+            ></span>
+          </div>
+          <div class="state-card">
+            <small>Disabled</small>
+            <span class="status-pill status-pill--queued status-pill--disabled">Queued</span>
+          </div>
+          <div class="state-card">
+            <small>Data label</small>
+            <span class="status-pill status-pill--data status-pill--data-highlight">Approved</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
