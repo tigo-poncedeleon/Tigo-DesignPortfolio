@@ -77,9 +77,11 @@
     show(at + (e.key === 'ArrowRight' ? 1 : -1));
   });
 
-  // ---- opening. The case overlay listens for clicks on links to the case
-  // pages; these are buttons, so hand it a real link click rather than
-  // reaching into its internals.
+  // ---- opening. A case study is a page, so opening one is a navigation;
+  // these thumbnails are buttons, so they synthesise the link click the
+  // markup would otherwise have made. (This used to be intercepted by the
+  // case overlay, which expanded an iframe instead — see js/case-overlay.js
+  // for why that went away.)
   const HREF = { vicino: 'vicino.html', pantrypal: 'pantrypal.html',
                  nextlevel: 'nextlevel.html' };
   const openCase = (id) => {
@@ -89,7 +91,7 @@
     a.href = href;
     a.style.display = 'none';
     document.body.appendChild(a);
-    a.click();                        // case-overlay.js intercepts and expands
+    a.click();                        // a real navigation, to a real page
     a.remove();
   };
 
@@ -100,7 +102,7 @@
     if (!href || primed.has(href)) return;
     primed.add(href);
     const l = document.createElement('link');
-    l.rel = 'prefetch'; l.as = 'document'; l.href = href + '?embed=1';
+    l.rel = 'prefetch'; l.as = 'document'; l.href = href;   // the URL the click will really go to
     document.head.appendChild(l);
   }, { passive: true }));
 

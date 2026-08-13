@@ -222,14 +222,12 @@ html, body {
 }
 html.rail-closed .ink-field { clip-path: inset(0); }
 html.rail-dragging .ink-field { transition: none; }
-/* The pen already stands down while an overlay is up (js/hero-ink.js BUSY),
-   but standing down is not the same as going away: this is a full-viewport
-   CANVAS appended to body, so its composited layer — about 22MB — outlives
-   the drawing and sits there for the whole time a case study is being read
-   on top of it. It also escapes the parent-page freeze in shell.css, which
-   only reaches inside .shell-card > main. Take the layer away too; the ink
-   keeps its STROKES (not its pixels) and redraws itself on the way back. */
-html:is(.case-open, .theater-open) .ink-field { display: none; }
+/* The pen already stands down while the theater is up (js/hero-ink.js
+   BUSY), but standing down is not the same as going away: this is a
+   full-viewport CANVAS appended to body, so its composited layer — about
+   22MB — outlives the drawing. Take the layer away too; the ink keeps its
+   STROKES (not its pixels) and redraws itself on the way back. */
+html.theater-open .ink-field { display: none; }
 /* explicit, NOT left to the parent's box: a canvas is a replaced element,
    so `width: auto` resolves to its intrinsic 300x150 and the sheet would
    sit in the corner instead of filling the layer */

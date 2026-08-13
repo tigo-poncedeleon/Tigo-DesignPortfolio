@@ -642,45 +642,6 @@ html.rail-dragging .shell-side,
 html.rail-dragging .chrome-left,
 html.rail-dragging .side-grip { transition: none; }
 
-/* While a case study is open (html.case-open — js/case-overlay.js), the
-   PARENT page underneath it goes fully dormant. The overlay covers the
-   stage, yet the games, marquees and hero kept animating behind it — in
-   the same process, on the same vsync as the iframe the reader is
-   actually scrolling. content-visibility: hidden skips all of their
-   style/layout/paint AND zeroes their IntersectionObserver rects, so
-   every IO-gated loop parks itself; the remembered intrinsic size keeps
-   the document's height (and the scroll position under the overlay)
-   exactly where it was for the return. */
-/* While a case study is up, the page under it must also stop COMPOSITING,
-   not merely stop being visible. Two full-viewport layers survived the
-   freeze above and kept claiming tiles for pixels the overlay covers:
-   the card's own surface, and .shell-seam — a fixed, viewport-sized SVG
-   carrying one hairline. Dropping both cut Chrome's "tile memory limits
-   exceeded" warnings during a browser-zoom step by about two thirds,
-   which is the moment the budget is tightest (raster scale = dpr x zoom,
-   so zooming IN costs more memory, not less). The seam's hairline is not
-   missed here — the case frame has its own edge. */
-html.case-open .shell-seam { display: none; }
-html.case-open .shell-card { visibility: hidden; }
-
-html.case-open .shell-card > main {
-  content-visibility: hidden;
-  /* NOT `auto <size>`. The auto keyword remembers the last rendered height
-     — about 6000px — so the parent document stayed six thousand pixels
-     tall behind the overlay, and the compositor kept a scrolling-contents
-     layer that big for a page nobody can see. Two full-height documents
-     in one renderer (this one plus the case study's) put the site over
-     Chrome's TILE MEMORY BUDGET: "tile memory limits exceeded, some
-     content may not draw" — 651 of those warnings on this path against
-     ZERO for the same case study standalone. That is the glitch, in
-     Chrome's own words: not a layout error, a refusal to paint. A fixed
-     tiny intrinsic size collapses the invisible page to nothing, and the
-     budget goes back to one document's worth.
-     (js/case-overlay.js saves and restores the scroll position across
-     the collapse — the height is what carries it.) */
-  contain-intrinsic-size: var(--card-w, 1280px) 1px;
-}
-
 /* Closed means CLOSED — the page gets the whole screen. It SLIDES out
    rather than vanishing: a negative margin equal to its own width, so the
    panel travels left under the card's edge while the card grows into the

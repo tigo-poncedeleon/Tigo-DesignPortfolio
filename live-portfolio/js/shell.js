@@ -519,16 +519,6 @@
         setTimeout(clear, 450);       // transitionend has no delivery guarantee
       }
     }
-    // and a case study open in the overlay, in the same frame — same
-    // origin, so it re-fits itself here rather than a beat later off its
-    // own ResizeObserver (that beat was the "adjusts, then jumps")
-    const caseDoc = document.getElementById('case-doc');
-    if (caseDoc && caseDoc.getAttribute('src')) {
-      try {
-        const w = caseDoc.contentWindow;
-        if (w && w.__shellFit) w.__shellFit();
-      } catch (err) { /* cross-origin or not ready — its own RO covers it */ }
-    }
   };
   try {
     if (localStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-closed');
