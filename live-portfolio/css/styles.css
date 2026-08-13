@@ -261,7 +261,10 @@ html.theater-open .ink-field { display: none; }
                             glyph's centre and ends at the last one's */
   --thread-bot: 14px;
   position: fixed;
-  top: calc(var(--shell-chrome-h, 0px) + 24px);
+  /* clear of the × in the corner above it. The two live at the same right
+     edge, 2px apart, so the rail starts a full × plus air below the strip:
+     32px of button + 12px of top offset + 20px of breathing room. */
+  top: calc(var(--shell-chrome-h, 0px) + 64px);
   right: 16px;
   z-index: 40;
   display: flex;
@@ -274,12 +277,8 @@ html.theater-open .ink-field { display: none; }
   opacity: 0;
   transition: opacity var(--t-glide) ease;
 }
-/* Inside the overlay's iframe the shell is gone but the parent's × is not —
-   fall in under it. The frame reaches up behind the chrome strip now, so
-   this document's origin is the strip's TOP, not its floor: the rail has to
-   carry the strip's height itself or it rides up into the tabs and lands on
-   the × (both live at the top right, 2px apart). */
-html.is-embed .read-rail { top: calc(var(--shell-chrome-h, 40px) + 64px); }
+/* the deep-linked embed has no × and no strip, so it can start higher */
+html.is-embed .read-rail { top: 24px; }
 .read-rail.is-lit { opacity: 1; }
 
 /* ---- the thread, and the read part of it. scaleY, not height: it rides
