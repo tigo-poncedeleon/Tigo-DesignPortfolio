@@ -60,9 +60,10 @@ html.case-open { overflow: hidden; }
    is up; close() drops is-doc-ready after the fade, so the frosted veil
    returns exactly for the close transition. */
 .case-overlay.is-open.is-doc-ready .case-veil {
-  visibility: hidden;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  /* display:none, not visibility:hidden — a hidden element with a
+     backdrop-filter can still hold its composited backdrop root; only
+     taking it out of the box tree reliably returns the layer. */
+  display: none;
 }
 
 /* the frame FLIPs: js sets a translate+scale that lays it over the

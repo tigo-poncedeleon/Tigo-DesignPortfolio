@@ -652,7 +652,20 @@ html.rail-dragging .side-grip { transition: none; }
    exactly where it was for the return. */
 html.case-open .shell-card > main {
   content-visibility: hidden;
-  contain-intrinsic-size: auto var(--card-w, 1280px) auto 6000px;
+  /* NOT `auto <size>`. The auto keyword remembers the last rendered height
+     — about 6000px — so the parent document stayed six thousand pixels
+     tall behind the overlay, and the compositor kept a scrolling-contents
+     layer that big for a page nobody can see. Two full-height documents
+     in one renderer (this one plus the case study's) put the site over
+     Chrome's TILE MEMORY BUDGET: "tile memory limits exceeded, some
+     content may not draw" — 651 of those warnings on this path against
+     ZERO for the same case study standalone. That is the glitch, in
+     Chrome's own words: not a layout error, a refusal to paint. A fixed
+     tiny intrinsic size collapses the invisible page to nothing, and the
+     budget goes back to one document's worth.
+     (js/case-overlay.js saves and restores the scroll position across
+     the collapse — the height is what carries it.) */
+  contain-intrinsic-size: var(--card-w, 1280px) 1px;
 }
 
 /* Closed means CLOSED — the page gets the whole screen. It SLIDES out
@@ -966,9 +979,27 @@ html.intro-run .shell-card {
      letter its label starts on */
   padding-left: 10px;
   border-radius: 8px;
+  /* A 2px channel above and below the FILL, so two lit rows next to each
+     other (the page you are on, plus the one under the cursor) read as two
+     chips rather than one tall block. Transparent borders + a padding-box
+     clip rather than a margin, deliberately: with border-box sizing the
+     row is still exactly 30px and the whole rail's rhythm is untouched —
+     only the paint is inset. A margin would have pushed every row in the
+     column down to solve a problem that only exists at two of them.
+     Whatever paints a chip must use background-COLOR, not the `background`
+     shorthand — the shorthand resets background-clip and closes the
+     channel again. */
+  border-block: 2px solid transparent;
+  background-clip: padding-box;
   font-size: 13.5px;
   line-height: 1;
-  color: #5b5a53;
+  /* Near-ink, not the old mid-grey: the rail is the site's table of
+     contents, and its entries should read as firmly as the words in the
+     card do. The step that used to be drawn between the label and the row
+     is now drawn between the row and its GLYPH (.side-ico, its own grey) — one
+     hierarchy instead of two. Kept a shade off --ink so hover still has
+     somewhere to go. */
+  color: #34332c;
   -webkit-tap-highlight-color: transparent;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
               box-shadow var(--t-micro) ease;
@@ -986,40 +1017,69 @@ html.intro-run .shell-card {
   text-decoration: none;
   border-radius: inherit;
 }
-/* Hover is the ONLY thing that fills. Being on a page colours its text —
-   it does not put a chip under it, because a chip you cannot dismiss reads
-   as a stuck hover state rather than as "you are here". */
+/* Hover fills. background-COLOR, never the `background` shorthand: the
+   shorthand resets background-clip along with everything else, which put
+   the fill back on the border box and quietly undid the channel the row
+   sets up above. Every rule that paints a chip below obeys the same. */
 .side-row:hover,
 .side-row:has(.side-link:focus-visible) {
   color: var(--ink);
-  background: rgba(38, 37, 30, 0.06);
+  background-color: rgba(38, 37, 30, 0.06);
 }
 
-/* you are here: the accent, and nothing else */
+/* You are here: the SAME chip the cursor draws, left standing. The accent
+   used to say it instead — orange text, no fill — but a coloured word in a
+   column of grey ones reads as a link that wants clicking, which is the
+   opposite of "you are already on this". A resting chip is the plainer
+   sentence, and it is the one every sidebar the visitor has used says it
+   in. The ember is spent elsewhere in the rail; here it was noise. */
 .side-row.is-current,
-.side-row.is-here { color: var(--orange); }
+.side-row.is-here {
+  color: var(--ink);
+  background-color: rgba(38, 37, 30, 0.06);
+}
 
 /* The trail is the chain of parents you are inside — Work above PantryPal,
-   Play above Pong. It steps back to the ROW grey: only the deepest thing
-   you are actually looking at earns the accent, and a parent should sit
-   level with its siblings, not a shade darker than them. */
-.side-row.is-trail { color: #5b5a53; }
-/* the page row hands the accent down the moment a section claims it */
-.side-scroll.has-here .side-row.is-current { color: #5b5a53; }
+   Play above Pong. It steps back to the ROW colour: only the deepest thing
+   you are actually looking at wears the chip, and a parent should sit
+   level with its siblings, not a shade apart from them. */
+.side-row.is-trail { color: #34332c; }
+/* One chip at a time: the moment a section claims "here", the page row
+   above it puts the fill down and goes back to being an ordinary row. */
+.side-scroll.has-here .side-row.is-current {
+  color: #34332c;
+  background-color: transparent;
+}
+.side-scroll.has-here .side-row.is-current:hover {
+  color: var(--ink);
+  background-color: rgba(38, 37, 30, 0.06);
+}
 
-/* The glyph sits a step behind its own label. It draws in currentColor, so
-   it still follows every state the row takes — grey, ink, accent — but at
-   0.7 it lands lighter than the words beside it, which is the order you
-   want read: the name first, the shape second. Opacity rather than a fixed
-   grey precisely so the accent and the hover ink still come through. */
+/* The glyph sits a step behind its own label: the name first, the shape
+   second. A real grey, at full strength — NOT a faded currentColor, which
+   is what an opacity here amounts to: it thins whatever colour the row is
+   wearing rather than choosing one. So the glyph carries its own, and only
+   the states that mean something take it back (below). */
 .side-ico {
   flex: none;
   width: 18px;
   height: 18px;
   display: grid;
   place-items: center;
-  opacity: 0.7;
+  color: #8a8981;
+  transition: color var(--t-micro) ease;
 }
+/* under the cursor the whole row lifts together, the glyph by one step */
+.side-row:hover .side-ico,
+.side-row:has(.side-link:focus-visible) .side-ico { color: #5b5a53; }
+/* the row you are on wears the chip at rest, so its glyph sits at the
+   hover step too — the state is one thing, drawn the same way throughout */
+.side-row.is-current .side-ico,
+.side-row.is-here .side-ico { color: #5b5a53; }
+/* ...and when a section further down claims "here", the glyph goes back
+   with the rest of the row (this one outweighs both) */
+.side-scroll.has-here .side-row.is-current .side-ico { color: #8a8981; }
+.side-scroll.has-here .side-row.is-current:hover .side-ico { color: #5b5a53; }
 .side-ico > svg,
 .side-ico > img { display: block; width: 100%; height: 100%; }
 /* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which

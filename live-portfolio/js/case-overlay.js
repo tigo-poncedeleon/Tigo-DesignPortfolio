@@ -50,6 +50,7 @@
   const xBtn = wrap.querySelector('.case-x');
 
   let openId = null;
+  let parkedY = null;          // the page's scroll while it is collapsed
   let pushed = false;             // did WE push the ?case history entry
   let hideTimer = 0;
 
@@ -74,6 +75,12 @@
     wrap.classList.remove('is-doc-ready');
     const want = c.href + '?embed=1' + (opts.chapter ? '#' + opts.chapter : '');
     if (doc.getAttribute('src') !== want) doc.src = want;
+    // The page behind collapses to nothing while the case is up (shell.css
+    // html.case-open) so the compositor is not holding tiles for a
+    // six-thousand-pixel document nobody can see. Its height is what was
+    // carrying the scroll position, so keep that here and hand it back on
+    // close — the reader returns to the same row of the work grid.
+    parkedY = window.scrollY;
     root.classList.add('case-open');
     card.setAttribute('inert', '');
     // the rail lights Work (the cases left the tree); the tab wears the name
@@ -95,6 +102,9 @@
     const c = CASES[openId];
     openId = null;
     root.classList.remove('case-open');
+    // the page has its height back this frame; put the reader back on it
+    // before anything paints
+    if (parkedY != null) { window.scrollTo(0, parkedY); parkedY = null; }
     card.removeAttribute('inert');
     if (window.Shell && window.Shell.setPage) window.Shell.setPage('work', 'Work');
     wrap.classList.remove('is-open');

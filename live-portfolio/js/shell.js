@@ -1299,6 +1299,18 @@
       const card = document.getElementById('shell-card');
       if (card) ro.observe(card);
     }
+    // The corner itself ARRIVES: the card's radius transitions 0 → 10px as the
+    // frame assembles around the name (html.intro-run in shell.css). A resize
+    // is the only thing that re-measures the seam, the rail lands in one frame,
+    // and that frame is the one where the corner is still square — so the seam
+    // read a radius of 0, drew a square corner over a round card, and never
+    // looked again. Measure once more when the corner lands.
+    const card = document.getElementById('shell-card');
+    if (card) {
+      card.addEventListener('transitionend', (e) => {
+        if (/radius/.test(e.propertyName)) fitTabHole();
+      });
+    }
   };
   requestAnimationFrame(watchTabHole);        // after the strip has laid out
   const refitChrome = () => fitTabHole();

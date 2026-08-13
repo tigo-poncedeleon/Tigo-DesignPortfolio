@@ -222,6 +222,14 @@ html, body {
 }
 html.rail-closed .ink-field { clip-path: inset(0); }
 html.rail-dragging .ink-field { transition: none; }
+/* The pen already stands down while an overlay is up (js/hero-ink.js BUSY),
+   but standing down is not the same as going away: this is a full-viewport
+   CANVAS appended to body, so its composited layer — about 22MB — outlives
+   the drawing and sits there for the whole time a case study is being read
+   on top of it. It also escapes the parent-page freeze in shell.css, which
+   only reaches inside .shell-card > main. Take the layer away too; the ink
+   keeps its STROKES (not its pixels) and redraws itself on the way back. */
+html:is(.case-open, .theater-open) .ink-field { display: none; }
 /* explicit, NOT left to the parent's box: a canvas is a replaced element,
    so `width: auto` resolves to its intrinsic 300x150 and the sheet would
    sit in the corner instead of filling the layer */
@@ -569,10 +577,24 @@ html:not(.js) .tw-caret { display: none; }
   background: rgba(247, 247, 244, 0.45);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease;
+  /* HIDDEN, not merely transparent. `inset: 0` inside a case study's stage
+     makes this element as tall as the whole document — nine thousand px —
+     and a backdrop-filter forces a composited backdrop root at that size
+     which the compositor cannot occlusion-cull: one 46-megapixel layer,
+     about 186MB, for something at opacity 0 that only ever lights on
+     `.site-nav:hover` (a nav these shell pages do not even have).
+     It was the single biggest consumer of Chrome's TILE MEMORY BUDGET,
+     and once that budget is gone Chrome stops drawing: "tile memory
+     limits exceeded, some content may not draw". That refusal to paint is
+     what read as a glitch on every toggle, zoom and scroll — visible only
+     on the overlay path, where a second full document tipped the total
+     over. visibility:hidden takes the layer away entirely and gives it
+     back the moment the frost is actually wanted. */
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s;
 }
 .site-nav:hover ~ .nav-frost,
-.site-nav:focus-within ~ .nav-frost { opacity: 1; }
+.site-nav:focus-within ~ .nav-frost { opacity: 1; visibility: visible; }
 
 .site-nav-home {
   width: 61px;
