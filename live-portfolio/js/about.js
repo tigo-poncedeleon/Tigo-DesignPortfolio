@@ -181,7 +181,7 @@
   const fallback = document.querySelector('.about-portrait img');
   if (!view || !view.getContext || !window.Portrait) return;
 
-  window.Portrait.render(view, {
+  const HEDCUT = {
     sampleW: 320,
     texW: 1024,
     nLines: 150,
@@ -190,13 +190,48 @@
     maxThickFrac: 0.92,
     waveAmp: 0.8,
     waveLen: 26,
-  }).then(() => {
-    if (fallback) fallback.style.display = 'none';
+  };
+
+  const bakeFace = () => window.Portrait.render(view, HEDCUT).then((painted) => {
+    // ONLY on a real paint. render() resolves either way, and hiding the
+    // pre-baked webp over a canvas that had no box to draw into leaves a
+    // hole in the letter where the face should be.
+    if (painted && fallback) fallback.style.display = 'none';
   }).catch(() => {
     // a tainted canvas (file://) or a missing source: the pre-baked webp
     // underneath is already showing, so there is nothing to undo
     window.Portrait.kill();
   });
+
+  // ≤700px About is a SCREEN you tap to (js/mobile.js), so unless the
+  // visitor landed on it directly this canvas sits in a display:none
+  // section at load with no pixels to bake into. Bake when there is a box.
+  //
+  // TWO ways of hearing about it, deliberately. The pager's own event is
+  // the one that is guaranteed: it is dispatched synchronously the instant
+  // the screen goes on, so it cannot be throttled and cannot be missed.
+  // The ResizeObserver is the general case behind it — any other way a box
+  // can appear — but it is delivered by the rendering pipeline, which a
+  // backgrounded tab does not run, and the face is not something to make
+  // conditional on the tab being watched.
+  let baked = false;
+  const armFace = () => {
+    if (baked || !view.clientWidth || !view.clientHeight) return baked;
+    baked = true;
+    bakeFace();
+    return true;
+  };
+
+  if (!armFace()) {
+    window.addEventListener('phone:screen', function onScreen() {
+      if (!armFace()) return;
+      window.removeEventListener('phone:screen', onScreen);
+    });
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => { if (armFace()) ro.disconnect(); });
+      ro.observe(view);
+    }
+  }
 
   // click the face and it takes a full spin — one revolution, then back
   // to quietly watching the cursor

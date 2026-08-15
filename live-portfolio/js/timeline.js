@@ -10,6 +10,13 @@
   const track = document.getElementById('tl-track');
   if (!tl || !track) return;
 
+  // ≤700px there is no mechanic to arithmetic. A phone gets the plain ruled
+  // chronology this column degrades to with scripting off (css/mobile.css
+  // unpins it and hides the axis) — an axis measured in months is screens of
+  // nothing between two jobs on a 375px screen, and the inline --h this file
+  // writes would outrank the stylesheet that says so.
+  if (window.matchMedia('(max-width: 700px)').matches) return;
+
   const items = Array.from(track.querySelectorAll('.tl-item'));
   if (!items.length) return;
 

@@ -24,21 +24,30 @@
   position: relative;
   flex: none;
   width: 100%;
-  /* the stepper's own height, shared with .pick-stage below so the panel
-     cannot drift out of step with what it holds */
-  --pick-h: 440px;
+  /* The picture row's height, shared with .pick-stage below so the panel
+     cannot drift out of step with what it holds. It is 380 because that is
+     what the TALLEST shot needs (the monitor is 379), and the row's height
+     is the one number that decides everything else here: the shots centre in
+     it, and the index and the note centre on the shots. At 440 the row was
+     60px taller than anything in it, so the monitor floated 30px below the
+     content step and the words — centred on a line 30px lower still — began
+     155px under the header. Cut to the picture, the tallest shot starts
+     exactly on the step and the words sit on its middle. */
+  --pick-h: 380px;
   /* as tall as its contents and no taller: header rhythm + stepper + the
-     shared floor (styles.css) */
-  height: calc(var(--content-top, 152px) + var(--pick-h) + var(--stage-floor, 150px));
-  /* …but never shorter than one screen of card. Work's own contents come to
-     742, which on a normal window is ~150px short of the reading area — and a
-     section that does not fill the window is CENTRED in it when you navigate
-     to it (js/shell.js restY), which hung a band of empty page above the
-     title. Owning a whole screen puts it back on restY's other branch: a
-     section that already fills the window lands its top edge at the top.
-     --hero-h is the hero's own measurement, one screen of card in card px
-     (js/main.js writes it to the root); the calc is the pre-JS fallback. */
-  min-height: var(--hero-h, calc(100dvh - var(--shell-chrome-h, 40px)));
+     shared floor (styles.css) — the same sum Play's slide is built from, so
+     the two read as siblings when you scroll past them.
+
+     It used to carry `min-height: var(--hero-h)` as well, to own a whole
+     screen: a section shorter than the window is CENTRED when you navigate
+     to it (js/shell.js restY), and that hung a band of empty page over the
+     title. But Play is shorter than the window too and never got the same
+     treatment — so the cure applied to one of a matched pair, and the price
+     was 273px of nothing under the stepper against Play's 152. Between Work
+     and Play the page opened up to 313px of air where every other seam is
+     190. The pair matters more than the arrival: both are sized to their
+     contents now, and both centre the same way when you jump to them. */
+  height: calc(var(--content-top) + var(--pick-h) + var(--stage-floor));
 }
 
 /* ---- title pair, the site's header manner ---- */
@@ -61,7 +70,7 @@
 .work-title p {
   font-size: 28px;
   letter-spacing: -0.015em;
-  color: rgba(38, 37, 30, 0.34);
+  color: rgba(var(--ink-rgb), 0.34);
 }
 
 /* ---- the bento: one hero tile and two companions, centred in the
@@ -76,14 +85,18 @@
   position: absolute;
   /* hung from the title, not centred in the panel — the air under the
      header is the same here as it is under About's (styles.css) */
-  top: var(--content-top, 152px);
+  top: var(--content-top);
   left: 50%;
   transform: translateX(-50%);
-  width: 1112px;
+  width: var(--measure);
   display: grid;
   grid-template-columns: 232px 1fr 268px;
+  /* all three columns on one line — the index and the note read as captions
+     to the picture, so they belong on its middle, not hung off the top of it
+     where they left the whole left side of the row empty. What made this sit
+     too low was the ROW, not the centring; see --pick-h above. */
   align-items: center;
-  gap: 44px;
+  gap: 48px;
 }
 
 /* ---- the index ---- */
@@ -93,7 +106,7 @@
   display: flex;
   align-items: baseline;
   gap: 14px;
-  padding: 11px 14px;
+  padding: 12px 14px;
   background: none;
   border: 0;
   border-radius: 10px;
@@ -101,7 +114,8 @@
   font-size: 19px;
   line-height: 1.2;
   text-align: left;
-  color: rgba(38, 37, 30, 0.48);
+  text-decoration: none;
+  color: rgba(var(--ink-rgb), 0.48);
   cursor: pointer;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
 }
@@ -109,17 +123,22 @@
   flex: none;
   font-size: 12.5px;
   font-variant-numeric: tabular-nums;
-  color: rgba(38, 37, 30, 0.30);
+  color: rgba(var(--ink-rgb), 0.30);
   transition: color var(--t-micro) ease;
 }
 .pick-row:hover { color: var(--ink); }
-/* the one you are on wears the accent on the site's warm chip — the same
-   pairing the case studies use for their own step lists */
+/* the one you are on darkens to full ink on the site's warm chip, and the
+   two you are not on stay ash — the list reads as one lit name among grey
+   ones, which is the same figure/ground the rail and the nav words use.
+   The accent used to do this job here, but the name is the loudest thing
+   in the column and orange on it made the index compete with the picture
+   it is only meant to label. The number stays grey on every row: it is a
+   position marker, not part of the name. */
 .pick-row.is-current {
-  color: var(--orange);
-  background: rgba(38, 37, 30, 0.06);
+  color: var(--ink);
+  background: rgba(var(--ink-rgb), 0.06);
 }
-.pick-row.is-current .pick-n { color: var(--orange); }
+.pick-row.is-current .pick-n { color: var(--muted); }
 .pick-row:focus-visible { outline-offset: 1px; }
 
 /* ---- the stage: all three stacked, only the current one lit, so the swap
@@ -131,9 +150,13 @@
    The three now share one centre, whichever project is up. ---- */
 .pick-stage {
   position: relative;
-  height: var(--pick-h, 440px);
+  height: var(--pick-h);
   display: grid;
   place-items: center;
+  /* the painted size of the shot that is up — the opening one's, until
+     js/work-pick.js measures. Only .pick-open reads it; see there. */
+  --shot-w: 455px;
+  --shot-h: 379px;
 }
 .pick-shot {
   grid-area: 1 / 1;
@@ -151,7 +174,7 @@
 .pick-shot.is-current { opacity: 1; scale: 1; pointer-events: auto; }
 .pick-shot img {
   max-width: 100%;
-  max-height: 440px;
+  max-height: var(--pick-h);
   object-fit: contain;
   border-radius: 14px;
   transition: scale var(--t-lift) var(--ease-lift);
@@ -165,15 +188,25 @@
    the box began at 152 and the monitor began 60px lower. 379 keeps the
    monitor at exactly the size it was drawn at when the margin was in. */
 .work-img-vicino img { max-height: 379px; }   /* a whole screen; give it room */
-.work-img-pantry img { max-height: 440px; }   /* a phone, already tall */
+.work-img-pantry img { max-height: 380px; }   /* a phone, already tall */
 .work-img-drone  img { max-height: 285px; }   /* a mark, not a scene */
 .pick-stage:hover .pick-shot.is-current img { scale: 1.015; }
 
-/* the corner glyph the work cards always wore, kept on the stage */
+/* the corner glyph the work cards always wore, kept on the stage.
+
+   Pinned to the CURRENT PICTURE's corner, not the stage's. The three shots
+   are letterboxed inside one shared box (object-fit: contain), so the box
+   and the picture are only the same thing for a shot that happens to fill
+   it: the monitor paints 455 wide in a 528 box, which put a stage-corner
+   badge 1px ON its rounded corner, and the phone paints 190 wide, which
+   left the badge 130px adrift of it. js/work-pick.js measures the painted
+   box into --shot-w/--shot-h on every switch; the values below are the
+   opening shot's, so the badge is right before a line of script runs. */
 .pick-open {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  /* level with the picture's top edge, and clear of its right by 8 */
+  top: calc((100% - var(--shot-h)) / 2);
+  right: calc((100% - var(--shot-w)) / 2 - 38px);
   z-index: 2;
   display: flex;
   align-items: center;
@@ -181,10 +214,9 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(247, 247, 244, 0.88);
-  border: 1px solid #e6e5e0;
-  color: #7a7974;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+  background: rgba(var(--bg-rgb), 0.88);
+  border: 1px solid var(--g-150);
+  color: var(--muted);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   opacity: 0;
@@ -192,7 +224,7 @@
   transition: opacity 0.22s ease, color var(--t-micro) ease,
               transform var(--t-snap) var(--ease-spring);
 }
-.pick-stage:hover .pick-open { opacity: 1; color: #26251e; transform: translate(1px, -1px); }
+.pick-stage:hover .pick-open { opacity: 1; color: var(--ink); transform: translate(1px, -1px); }
 
 /* ---- the note ---- */
 .pick-note { position: relative; align-self: center; }
@@ -216,22 +248,22 @@
   color: var(--ink);
 }
 .pick-role {
-  margin-top: 5px;
+  margin-top: 6px;
   font-size: 13.25px;
-  color: rgba(38, 37, 30, 0.48);
+  color: rgba(var(--ink-rgb), 0.48);
 }
 .pick-copy {
   margin-top: 14px;
   font-size: 14.5px;
   line-height: 1.55;
-  color: rgba(38, 37, 30, 0.62);
+  color: rgba(var(--ink-rgb), 0.62);
 }
 .pick-hint {
   position: absolute;
   top: 190px;
   left: 0;
   font-size: 12.5px;
-  color: rgba(38, 37, 30, 0.34);
+  color: rgba(var(--ink-rgb), 0.34);
 }
 
 /* ---- entrance: the three parts arrive in turn as the stage reveals ---- */
@@ -262,7 +294,7 @@
   .work-slide {
     height: auto;
     min-height: 0;                 /* the phone has no card to fill a screen of */
-    padding: 68px 20px 120px;      /* the last tile clears the bottom bar */
+    padding: 72px 20px 120px;      /* the last tile clears the bottom bar */
   }
   .work-title {
     position: static;
@@ -272,7 +304,7 @@
     text-align: center;
   }
   .work-title h2 { font-size: 24px; line-height: 30px; }
-  .work-title p { font-size: 15px; color: rgba(38, 37, 30, 0.48); }
+  .work-title p { font-size: 15px; color: rgba(var(--ink-rgb), 0.48); }
 
   /* the stepper unstacks and comes into FLOW — index, shot, note down the
      column — so the section is as tall as what it holds. (It was still
@@ -295,5 +327,5 @@
   .work-img-drone img { max-height: 300px; }
   .pick-note { min-height: 168px; }
   .pick-open { opacity: 0.9; }
-  .pick-row:active { background: rgba(38, 37, 30, 0.06); }
+  .pick-row:active { background: rgba(var(--ink-rgb), 0.06); }
 }

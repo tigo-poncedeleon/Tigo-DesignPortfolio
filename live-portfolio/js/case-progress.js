@@ -147,7 +147,6 @@
   let target = 0;      // where the scroll actually is, 0…1
   let shown = 0;       // where the thread has got to
   let riding = false;
-  let idle = 0;
 
   const paint = () => {
     fill.style.transform = 'scaleY(' + shown.toFixed(4) + ')';
@@ -203,12 +202,9 @@
     if (!rail.contains(e.relatedTarget)) rail.classList.remove('is-open');
   });
 
-  window.addEventListener('scroll', () => {
-    measure();
-    rail.classList.add('is-moving');
-    clearTimeout(idle);
-    idle = setTimeout(() => rail.classList.remove('is-moving'), 900);
-  }, { passive: true });
+  // scrolling moves the thread and the current dot, and says nothing more.
+  // The names are the cursor's business alone.
+  window.addEventListener('scroll', measure, { passive: true });
   window.addEventListener('resize', measure, { passive: true });
   // the story keeps growing as images decode and chapters reflow, and the
   // total is what the fraction is measured against

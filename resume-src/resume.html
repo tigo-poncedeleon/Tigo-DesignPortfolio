@@ -7,17 +7,15 @@
 /* ============================================================
    Resume — the portfolio's design language on Letter paper.
    Everything here is lifted from live-portfolio/css: the --bg /
-   --ink / --orange tokens, SF Pro at weight 400 (hierarchy comes
+   --ink tokens, SF Pro at weight 400 (hierarchy comes
    from SIZE and TONE, never bold), the .xp-ledger's numbered
    rows + hairlines, the .xp-date chip recipe, and the .craft-chip
-   pill. One accent: the portfolio chip wears the sitewide warm
-   wash (the colour the nav gives the page you're on).
+   pill. No accent colour: the page is ink on paper throughout.
    ============================================================ */
 
 :root {
   --bg:     #fdfdfd;
   --ink:    #404040;
-  --orange: #fd8f3b;
   --rule:   #e3e3e3;
   --chip-b: #d9d9d9;
   --co:     #404040;                  /* employer / institution */
@@ -81,8 +79,7 @@ html, body {
   color: var(--body);
 }
 
-/* ---- contact as chips: the .xp-date recipe, with the portfolio wearing
-   the sitewide warm wash so the one link that matters most reads first ---- */
+/* ---- contact as chips: the .xp-date recipe, all three reading alike ---- */
 .contact {
   margin-top: 11px;
   display: flex;
@@ -99,11 +96,6 @@ html, body {
   border-radius: 6.625px;
   text-decoration: none;
   white-space: nowrap;
-}
-.contact a.is-site {
-  background: rgba(253, 143, 59, 0.13);
-  border-color: rgba(253, 143, 59, 0.35);
-  color: var(--orange);
 }
 
 /* ---- section label: lowercase and quiet (.craft-label / .learned-label),
@@ -246,7 +238,7 @@ li::before {
   through to React in production, in service of software that is both useful and pleasurable.</p>
 
   <nav class="contact">
-    <a class="is-site" href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>
+    <a href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>
     <a href="mailto:tigoponcedeleon@uchicago.edu">tigoponcedeleon@uchicago.edu</a>
     <a href="https://linkedin.com/in/tigoponcedeleon">linkedin.com/in/tigoponcedeleon</a>
   </nav>

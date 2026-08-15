@@ -10,22 +10,54 @@
   if (stage) requestAnimationFrame(() => stage.classList.add('revealed'));
 
   // ---- the hero phone leans toward the cursor — the about portrait's
-  // manner, an aluminium slab instead of a face ----
+  // manner, an aluminium slab instead of a face — and the six dishes
+  // hanging around it drift with the same pointer, each by its own --p, so
+  // the near ones travel further than the far ones. One handler, one rAF. ----
   const heroImg = document.querySelector('.case-hero img');
   if (heroImg && !reduceMotion) {
-    let tx = 0, ty = 0, rx = 0, ry = 0;
+    // -1..1 across the window, so a dish's travel is its --p at the corners
+    let nx = 0, ny = 0, tx = 0, ty = 0, rx = 0, ry = 0, leanRaf = 0;
+    const foods = Array.from(document.querySelectorAll('.pa-food')).map((el) => ({
+      el, p: parseFloat(getComputedStyle(el).getPropertyValue('--p')) || 0, x: 0, y: 0,
+    }));
     window.addEventListener('mousemove', (e) => {
       const r = heroImg.getBoundingClientRect();
       tx = ((e.clientX - (r.left + r.width / 2)) / window.innerWidth) * 0.24;
       ty = ((e.clientY - (r.top + r.height / 2)) / window.innerHeight) * 0.14;
+      nx = (e.clientX / window.innerWidth) * 2 - 1;
+      ny = (e.clientY / window.innerHeight) * 2 - 1;
     });
-    (function lean() {
-      rx += (tx - rx) * 0.06;
-      ry += (ty - ry) * 0.06;
-      heroImg.style.transform =
-        'perspective(900px) rotateY(' + rx + 'rad) rotateX(' + -ry + 'rad)';
-      requestAnimationFrame(lean);
-    })();
+    const lean = () => {
+      const dx = tx - rx, dy = ty - ry;
+      if (Math.abs(dx) > 1e-4 || Math.abs(dy) > 1e-4) {
+        rx += dx * 0.06;
+        ry += dy * 0.06;
+        heroImg.style.transform =
+          'perspective(900px) rotateY(' + rx + 'rad) rotateX(' + -ry + 'rad)';
+      }
+      // the dishes lag the phone a little — they are further away
+      foods.forEach((f) => {
+        const gx = nx * f.p, gy = ny * f.p * 0.6;
+        if (Math.abs(gx - f.x) > 0.05 || Math.abs(gy - f.y) > 0.05) {
+          f.x += (gx - f.x) * 0.045;
+          f.y += (gy - f.y) * 0.045;
+          f.el.style.transform =
+            'translate3d(' + f.x.toFixed(2) + 'px,' + f.y.toFixed(2) + 'px,0)';
+        }
+      });
+      leanRaf = requestAnimationFrame(lean);
+    };
+    // the loop belongs to the cover; it should not run for nine chapters
+    // of scrolling below it (the old one never stopped at all)
+    const coverSlide = heroImg.closest('.case-slide');
+    if (coverSlide && 'IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => entries.forEach((en) => {
+        if (en.isIntersecting) { if (!leanRaf) leanRaf = requestAnimationFrame(lean); }
+        else { cancelAnimationFrame(leanRaf); leanRaf = 0; }
+      }), { rootMargin: '20% 0px' }).observe(coverSlide);
+    } else {
+      leanRaf = requestAnimationFrame(lean);
+    }
   }
 
   // ---- every [data-count] number COUNTS UP the first time its chapter

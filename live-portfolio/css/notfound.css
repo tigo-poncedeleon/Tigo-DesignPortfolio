@@ -32,7 +32,7 @@
    dot rests where the trail goes cold ---- */
 .lost-illo .guide {
   fill: none;
-  stroke: #cdcdc9;
+  stroke: var(--g-250);
   stroke-width: 1.2;
   stroke-dasharray: 2 5;
   stroke-linecap: round;
@@ -42,7 +42,7 @@
 .lost-stage.revealed .lost-illo .guide { opacity: 1; }
 .lost-illo .stroke {
   fill: none;
-  stroke: #5b5a53;
+  stroke: var(--g-700);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -80,7 +80,7 @@
 .lost-title p {
   font-size: 28px;
   letter-spacing: -0.015em;
-  color: rgba(38, 37, 30, 0.34);
+  color: rgba(var(--ink-rgb), 0.34);
 }
 
 .lost-copy {
@@ -88,19 +88,19 @@
   max-width: 420px;
   font-size: 17px;
   line-height: 26px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 
 .lost-links {
   display: flex;
   justify-content: center;
-  gap: 46px;
+  gap: 48px;
   margin-top: 26px;
   white-space: nowrap;
 }
 .lost-link {
   font-size: 16px;
-  color: #5b5a53;
+  color: var(--g-700);
   text-decoration: none;
   transition: color var(--t-micro) ease;
 }

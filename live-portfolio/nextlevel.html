@@ -7,7 +7,7 @@
   <meta name="description" content="Next Level Drone Cleaning — a brand identity case study by Tigo Ponce de León. Six essential questions, nine logo iterations, three colorways, and a rollout across web, socials, and apparel for a Belgian drone-cleaning startup." />
 
   <link rel="icon" type="image/png" href="Media/darkcircle.png" />
-  <meta name="theme-color" content="#f7f7f4" />
+  <meta name="theme-color" content="#f6f6f6" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Tigo Ponce de León" />
   <meta property="og:title" content="Tigo Ponce de León — Next Level Drone Cleaning" />
@@ -18,11 +18,11 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=68" />
-  <link rel="stylesheet" href="css/shell.css?v=83" />
-  <link rel="stylesheet" href="css/case-overlay.css?v=14" />
-  <link rel="stylesheet" href="css/ai.css?v=36" />
-  <link rel="stylesheet" href="css/nextlevel.css?v=92" />
+  <link rel="stylesheet" href="css/styles.css?v=80" />
+  <link rel="stylesheet" href="css/shell.css?v=89" />
+  <link rel="stylesheet" href="css/case-overlay.css?v=15" />
+  <link rel="stylesheet" href="css/ai.css?v=39" />
+  <link rel="stylesheet" href="css/nextlevel.css?v=103" />
   <!-- inside the case overlay's iframe the shell stands down — set before
        first paint so no chrome ever flashes (js/case-overlay.js) -->
   <script>
@@ -30,7 +30,7 @@
       document.documentElement.className += ' is-embed';
   </script>
   <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
-  <link rel="stylesheet" href="css/color-lab.css?v=3" />
+  <link rel="stylesheet" href="css/color-lab.css?v=5" />
 </head>
 
 <body>
@@ -57,6 +57,7 @@
              what I did, what shipped. The finished badge beside the
              pitch (solution first; the how comes later). -->
         <section class="case-slide" id="overview" aria-label="Overview">
+
           <header class="case-title">
             <span class="case-num">01</span>
             <h1>Next Level Drone Cleaning</h1>
@@ -91,7 +92,33 @@
             </a>
           </div>
 
+          <!-- The badge is presented the way an identity actually gets
+               presented: on its construction geometry. A ring 19px off the
+               mark, the bounding square's four corner brackets, and a
+               registration tick at each quadrant. (Centre stubs further out
+               on the same axes were tried and cut — they said what the ticks
+               already say, and the left one closed to 4px of the reading
+               column.) They DRAW themselves on arrival (case-redraw,
+               already in nextlevel.css) — a brand-book plate assembling
+               itself. For a drone company the same figure reads twice: a
+               construction grid and a targeting reticle. Nothing crosses the
+               mark; the ring sits at r=222 against the badge's own 203, so
+               the plate frames it and never marks it.
+
+               The guides stay LOCKED while the badge drifts above them —
+               the reticle holds, the drone holds station inside it. -->
           <figure class="case-hero">
+            <svg class="nl-guides" viewBox="0 0 520 520" aria-hidden="true">
+              <circle class="g-ring" cx="260" cy="260" r="222" pathLength="1" />
+              <path class="g-br" d="M38 68 V38 H68" pathLength="1" />
+              <path class="g-br" d="M452 38 H482 V68" pathLength="1" />
+              <path class="g-br" d="M482 452 V482 H452" pathLength="1" />
+              <path class="g-br" d="M68 482 H38 V452" pathLength="1" />
+              <path class="g-tk" d="M260 28 V48" pathLength="1" />
+              <path class="g-tk" d="M260 472 V492" pathLength="1" />
+              <path class="g-tk" d="M28 260 H48" pathLength="1" />
+              <path class="g-tk" d="M472 260 H492" pathLength="1" />
+            </svg>
             <img src="Media/nl-logo-hero.webp" alt="The final Next Level Drone Cleaning badge" width="1044" height="1060" />
           </figure>
 
@@ -129,7 +156,7 @@
                    alt="Street map of central Madrid, centered on the Templo de Debod"
                    loading="lazy" width="720" height="500" />
               <span class="map-pin" aria-hidden="true">
-                <svg width="22" height="30" viewBox="0 0 22 30"><path d="M11 29 C11 29 20 17 20 10 A9 9 0 1 0 2 10 C2 17 11 29 11 29 Z" fill="#f54e00" stroke="#f7f7f4" stroke-width="1.6" /><circle cx="11" cy="10" r="3.3" fill="#f7f7f4" /></svg>
+                <svg width="22" height="30" viewBox="0 0 22 30"><path d="M11 29 C11 29 20 17 20 10 A9 9 0 1 0 2 10 C2 17 11 29 11 29 Z" fill="#f54e00" stroke="#f6f6f6" stroke-width="1.6" /><circle cx="11" cy="10" r="3.3" fill="#f6f6f6" /></svg>
               </span>
             </div>
             <figcaption>Madrid &middot; 40.42&deg;N, 3.72&deg;W<span class="map-attr">&copy; OpenStreetMap</span></figcaption>
@@ -428,12 +455,12 @@
   </nav>
 
   <script src="js/tabs.js?v=15"></script>
-  <script src="js/shell.js?v=79"></script>
+  <script src="js/shell.js?v=81"></script>
   <script src="js/globe.js?v=5"></script>
   <script src="js/stage-fit.js?v=16"></script>
   <script src="js/frame-clock.js?v=3"></script>
   <script src="js/nav-touch.js?v=3"></script>
-  <script src="js/nextlevel.js?v=100"></script>
+  <script src="js/nextlevel.js?v=101"></script>
   <script src="js/case-progress.js?v=10"></script>
   <script src="js/case-overlay.js?v=101"></script>
   <script src="js/ai-chat.js?v=8"></script>

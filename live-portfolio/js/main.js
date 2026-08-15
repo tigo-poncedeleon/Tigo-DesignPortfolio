@@ -39,13 +39,13 @@
     fitHero();
     window.addEventListener('shell:fit', fitHero);
     window.addEventListener('resize', fitHero, { passive: true });
-    // ride the intro assembly frame by frame — the chrome's slide moves the
-    // stage without resizing the card, which no observer reports
-    window.addEventListener('shell:intro-done', () => {
-      let n = 36;
-      const tick = () => { fitHero(); if (n--) requestAnimationFrame(tick); };
-      tick();
-    });
+    // The assembly used to be a layout animation, so the stage moved for a
+    // third of a second without the card ever resizing — nothing observes
+    // that, so this rode it frame by frame. It is a FLIP now
+    // (js/typewriter.js): the layout is final before the first frame of
+    // movement, and this one measurement is the whole of it. It is called
+    // during the dispatch, so it lands in the same frame as the layout.
+    window.addEventListener('shell:intro-done', fitHero);
 
     // ---- the scroll hint arms once the name has typed. For a returning
     // visitor the typewriter has already settled (it runs BEFORE this file

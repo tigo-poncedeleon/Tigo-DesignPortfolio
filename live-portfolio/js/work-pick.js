@@ -16,8 +16,24 @@
   const cards = [...pick.querySelectorAll('.pick-card')];
   if (!rows.length) return;
 
+  const stage = pick.querySelector('.pick-stage');
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   let at = 0;
+
+  // ---- where the picture actually IS. The three shots share one box and
+  // are letterboxed into it (object-fit: contain), so the box says nothing
+  // about the monitor's corner or the phone's. Measure the painted
+  // rectangle and hand it to the CSS, which hangs the open badge off it.
+  // offsetWidth/Height, not getBoundingClientRect: the shell zooms the page
+  // and a client rect would come back in zoomed pixels.
+  const fit = () => {
+    const img = pick.querySelector('.pick-shot.is-current img');
+    if (!stage || !img || !img.naturalWidth) return;
+    const s = Math.min(img.offsetWidth / img.naturalWidth,
+                       img.offsetHeight / img.naturalHeight);
+    stage.style.setProperty('--shot-w', `${Math.round(img.naturalWidth * s)}px`);
+    stage.style.setProperty('--shot-h', `${Math.round(img.naturalHeight * s)}px`);
+  };
 
   const show = (i) => {
     if (i < 0 || i >= rows.length || i === at) return;
@@ -29,18 +45,28 @@
       if (el.hasAttribute('role') && el.getAttribute('role') === 'tab') {
         el.setAttribute('aria-selected', on ? 'true' : 'false');
       }
+      // the name of the case you are looking at, said out loud
+      if (el.classList.contains('pick-row')) el.setAttribute('aria-current', on ? 'true' : 'false');
       // only the shown image is reachable by tab — the other two are decor
       if (el.classList.contains('pick-shot')) el.tabIndex = on ? 0 : -1;
     });
     mark(rows); mark(shots); mark(cards);
+    fit();
   };
 
   rows.forEach((row, i) => {
     row.addEventListener('pointerenter', () => show(i));
     row.addEventListener('focus', () => show(i));
-    // The names only SWITCH. Opening a case study is a bigger move than
-    // browsing the row of them, so it gets its own target — the picture —
-    // and the list stays somewhere you can look around without committing.
+    // Browsing is still free — a pointer over a name, or an arrow key, only
+    // switches the stage. But a name in a list of work is a door as much as
+    // the picture is, and a click on one is a decision, not a look: it opens
+    // the study. You are always already looking at what you click, because
+    // the hover selected it on the way in.
+    //
+    // Nothing here opens anything: the rows are real <a href>s now, so the
+    // browser does the navigating (and gives back the status bar, the
+    // middle click and the context menu the buttons had swallowed). This
+    // only keeps the stage honest for the frame before the page leaves.
     row.addEventListener('click', () => show(i));
     row.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
@@ -105,6 +131,15 @@
     l.rel = 'prefetch'; l.as = 'document'; l.href = href;   // the URL the click will really go to
     document.head.appendChild(l);
   }, { passive: true }));
+
+  // the shots are lazy, so the first measurement of one has to wait for the
+  // pixels; the window can change what "contain" resolves to at any time
+  pick.querySelectorAll('.pick-shot img').forEach((img) => {
+    if (img.complete) return;
+    img.addEventListener('load', fit, { once: true });
+  });
+  addEventListener('resize', fit, { passive: true });
+  fit();
 
   if (reduced()) pick.classList.add('is-plain');
 })();

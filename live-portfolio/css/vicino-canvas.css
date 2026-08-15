@@ -99,6 +99,11 @@
   touch-action: none;
 }
 .vc.is-panning .vc-viewport { background-image: none; }
+/* Parked in the tile the dot grid is what reads the picture as a CANVAS —
+   it's the same floor chapter 01 lights under the display. Opened
+   full-window there is no picture to label: the board IS the window, so
+   the ground goes plain and the graph is the only thing on it. */
+.vc:not(.is-parked) .vc-viewport { background-image: none; }
 .vc.is-hand .vc-viewport { cursor: grab; }
 .vc.is-grabbing .vc-viewport { cursor: grabbing; }
 .vc-world {
@@ -119,7 +124,7 @@
   left: 22px;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   color: var(--p-text-1);
   pointer-events: none;
 }
@@ -153,7 +158,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 8px 14px;
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 600;
@@ -177,75 +182,6 @@
 }
 .vc-pill.is-run:hover:not(:disabled) { background: var(--p-badge); }
 .vc-pill.is-run:disabled { opacity: 0.6; cursor: default; }
-
-/* the action toolbar, floating top-center (BoardToolbar.css: pill,
-   6/10 padding, gap 8, toolbar shadow + inset highlight) */
-.vc-acttool {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  translate: -50% 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  background: #ffffff;
-  border: 1px solid var(--p-border);
-  border-radius: 9999px;
-  box-shadow: var(--p-shadow-toolbar), var(--p-inset-hi);
-  white-space: nowrap;
-  z-index: 5;
-}
-.vc-act-placeholder {
-  padding: 4px 8px;
-  font-size: 12px;
-  color: var(--p-placeholder);
-}
-.vc-act-name {
-  padding: 0 4px 0 8px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--p-text-1);
-}
-.vc-act-sep {
-  width: 1px;
-  height: 20px;
-  background: var(--p-border-strong);
-}
-.vc-act-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 9999px;
-  background: transparent;
-  color: var(--p-ink-hover);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.vc-act-btn svg { width: 15px; height: 15px; }
-.vc-act-btn:hover:not(:disabled) { background: var(--p-inset); }
-.vc-act-btn:disabled { opacity: 0.6; cursor: default; }
-/* action pills tint by POSITION on hover — 1 cyan, 2 lavender, 3 green */
-.vc-act-pill {
-  padding: 6px 13px;
-  border: 1px solid var(--p-border-strong);
-  border-radius: 9999px;
-  background: #ffffff;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--p-ink-hover);
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-.vc-act-pill:disabled { opacity: 0.6; cursor: default; }
-.vc-act-pill.is-1:hover:not(:disabled) { background: #f0fdff; border-color: #b8f3fb; color: #0d7685; }
-.vc-act-pill.is-2:hover:not(:disabled) { background: #f1f1fe; border-color: #c7c9f8; color: #4a48c0; }
-.vc-act-pill.is-3:hover:not(:disabled) { background: #eff9f1; border-color: #abe2b3; color: #1e7a3d; }
 
 /* ============================================================
    the create rail (left) — LeftSidebarToolbar.jsx verbatim:
@@ -446,7 +382,7 @@
 .vc-zoommenu button:hover { background: rgba(15, 23, 42, 0.06); }
 .vc-zoommenu-sep {
   height: 1px;
-  margin: 3px 2px;
+  margin: 4px 2px;
   background: var(--p-border);
 }
 
@@ -458,7 +394,7 @@
   position: absolute;
   left: 24px;
   bottom: 24px;
-  padding: 7px;
+  padding: 8px;
   border-radius: 32px;
   border: 1px solid var(--p-border);
   background: #ffffff;
@@ -652,7 +588,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   height: 278px;
   background: var(--p-inset);
   border: 1px solid var(--p-node-border);
@@ -986,7 +922,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border: 1px solid var(--p-node-border);
   border-radius: var(--p-r-control);
   background: var(--p-inset);
@@ -1002,7 +938,7 @@
 /* segmented control: soft track, white thumb with the inset ring */
 .vc-p-seg {
   display: flex;
-  padding: 3px;
+  padding: 4px;
   gap: 2px;
   background: var(--p-seg-track);
   border-radius: var(--p-r-control);
@@ -1072,7 +1008,7 @@
   align-items: center;
   gap: 10px;
   margin-top: 8px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border: 1px solid var(--p-node-border);
   border-radius: var(--p-r-control);
   background: var(--p-inset);
@@ -1119,7 +1055,7 @@
   background: var(--p-inset);
   border: 1px solid var(--p-node-border);
   border-radius: var(--p-r-well);
-  padding: 9px 11px;
+  padding: 10px 12px;
 }
 .vc-p-meta {
   margin-top: 12px;
@@ -1156,7 +1092,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 8px;
   width: 100%;
   margin-top: 10px;
   border: 0;
@@ -1196,7 +1132,7 @@
   width: 100%;
   border: 0;
   background: none;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   text-align: left;
   font-family: inherit;
@@ -1240,7 +1176,7 @@
 .vc-confirm button {
   border: 1px solid var(--p-border-strong);
   background: none;
-  padding: 5px 13px;
+  padding: 6px 14px;
   border-radius: 9999px;
   font-family: inherit;
   font-size: 12px;
@@ -1274,7 +1210,7 @@
 .vc-chat-head {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   padding: 12px 14px 10px;
   font-size: 12.5px;
   font-weight: 700;
@@ -1307,7 +1243,7 @@
 }
 .vc-msg {
   max-width: 92%;
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 12px;
   font-size: 11.5px;
   line-height: 16px;
@@ -1333,7 +1269,7 @@
   min-width: 0;
   border: 1px solid var(--p-node-border);
   border-radius: 10px;
-  padding: 7px 10px;
+  padding: 8px 10px;
   font-family: inherit;
   font-size: 11.5px;
   color: var(--p-text-1);
@@ -1379,43 +1315,17 @@
 }
 .vc-empty-sub {
   margin-top: 4px;
+  max-width: 34ch;
   font-size: 12px;
+  line-height: 1.45;
   color: var(--p-placeholder);
 }
-.vc-empty-row {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 14px;
-}
-.vc-empty-row button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid var(--p-border-strong);
-  background: #ffffff;
-  padding: 8px 15px;
-  border-radius: 9999px;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--p-ink-hover);
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-.vc-empty-row button:hover {
-  background: var(--p-chip);
-  border-color: rgba(73, 224, 245, 0.42);
-  color: var(--p-teal);
-}
-.vc-empty-row svg { width: 14px; height: 14px; }
-
 .vc-toast {
   position: absolute;
   top: 64px;
   left: 50%;
   translate: -50% -6px;
-  padding: 7px 15px;
+  padding: 8px 16px;
   background: #ffffff;
   border: 1px solid var(--p-border-strong);
   border-radius: 9999px;
@@ -1438,7 +1348,7 @@
 .vc-tile {
   display: block;
   position: absolute;
-  top: 148px;
+  top: var(--after-lede);
   left: var(--ax, 50%);
   transform: translateX(-50%);
   width: fit-content;
@@ -1456,14 +1366,20 @@
   /* the attract loop repaints the board while parked — containment keeps
      those repaints off the rest of the page's compositor budget */
   contain: layout paint;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.18);
-  transition: box-shadow var(--t-micro) ease;
-}
-.vc-tile:hover .vc-seat,
-.vc-tile:focus-visible .vc-seat {
-  box-shadow: 0 8px 22px rgba(6, 58, 66, 0.16);
 }
 .vc-tile:focus-visible { outline: 2px solid var(--vi-ink, #0d7685); outline-offset: 4px; }
+/* the landing: the cover's "try the working canvas" scrolls you down here
+   (js/vicino.js adds .is-landed on the click), and the board says it was
+   the thing you were sent to. A ring, not a jolt — the tile must not move,
+   because the board inside it is live and any transform on the seat would
+   re-rasterize the whole 1920×1080 surface. The 0.55s delay lets the smooth
+   scroll do most of its travelling first. */
+.vc-tile.is-landed { animation: vc-land 1.5s ease-out 0.55s both; }
+@keyframes vc-land {
+  0%   { box-shadow: 0 0 0 0 rgba(73, 224, 245, 0); }
+  22%  { box-shadow: 0 0 0 7px rgba(73, 224, 245, 0.42); }
+  100% { box-shadow: 0 0 0 22px rgba(73, 224, 245, 0); }
+}
 /* the corner glyph — the play cards' manner */
 .vc-tile-open {
   position: absolute;
@@ -1477,7 +1393,6 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(15, 23, 42, 0.1);
-  box-shadow: 0px 4px 14px rgba(15, 23, 42, 0.08);
   color: #2f3135;
   pointer-events: none;
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease,

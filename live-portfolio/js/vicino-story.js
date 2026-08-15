@@ -113,6 +113,7 @@
         const on = t.dataset.mode === mode;
         t.classList.toggle('is-active', on);
         t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
       });
       if (tabsWrap) tabsWrap.classList.toggle('is-hand', mode === 'hand');
       stop();
@@ -153,10 +154,22 @@
       paintDots();
     };
 
-    tabs.forEach((tab) => tab.addEventListener('click', () => {
-      handsOff = false;                  // their toggle now, not the loop's
-      applyMode(tab.dataset.mode);
-    }));
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        handsOff = false;                // their toggle now, not the loop's
+        applyMode(tab.dataset.mode);
+      });
+      // arrows walk the tablist, the sketchbook's manners
+      tab.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        handsOff = false;
+        const n = (i + d + tabs.length) % tabs.length;
+        applyMode(tabs[n].dataset.mode);
+        tabs[n].focus();
+      });
+    });
 
     buildDots();
     if (reduceMotion || !('IntersectionObserver' in window)) {
@@ -198,16 +211,21 @@
       const h = items[idx].offsetHeight;
       if (h) box.style.setProperty('--plq-h', h + 'px');
     };
-    const show = (n) => {
+    const show = (n, dwellMs) => {
       idx = (n + PARTS.length) % PARTS.length;
       const part = PARTS[idx];
       ana.dataset.active = part;
       ana.classList.add('is-touring');
       items.forEach((el, i) => el.classList.toggle('is-on', i === idx));
+      // strip first and force a style flush, so a chip that STAYS the
+      // active one still restarts its dwell fill from zero
+      dots.forEach((d) => d.classList.remove('is-on'));
+      void node.offsetWidth;
       dots.forEach((d, i) => {
-        d.classList.toggle('is-on', i === idx);
-        if (i === idx) d.setAttribute('aria-current', 'true');
-        else d.removeAttribute('aria-current');
+        if (i !== idx) { d.removeAttribute('aria-current'); return; }
+        if (dwellMs) d.style.setProperty('--dw', Math.round(dwellMs) + 'ms');
+        d.classList.add('is-on');
+        d.setAttribute('aria-current', 'true');
       });
       node.querySelectorAll('.is-hot').forEach((el) => el.classList.remove('is-hot'));
       node.querySelectorAll('[data-part="' + part + '"]')
@@ -217,15 +235,15 @@
     const schedule = (ms) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        if (!held) show(idx + 1);
+        if (!held) show(idx + 1, DWELL);
         schedule(DWELL);
       }, ms);
     };
     const stop = () => clearTimeout(timer);
 
-    // the dots page the reading; a jump earns a longer look around
+    // the chips page the reading; a jump earns a longer look around
     dots.forEach((d, i) => d.addEventListener('click', () => {
-      show(i);
+      show(i, reduceMotion ? 0 : DWELL * 1.6);
       if (!reduceMotion) schedule(DWELL * 1.6);
     }));
 
@@ -236,7 +254,7 @@
         held = true;
         clearTimeout(hoverTimer);
         const i = PARTS.indexOf(el.dataset.part);
-        if (i > -1 && i !== idx) hoverTimer = setTimeout(() => show(i), 150);
+        if (i > -1 && i !== idx) hoverTimer = setTimeout(() => show(i, DWELL), 150);
       });
       el.addEventListener('pointerleave', () => {
         held = false;
@@ -256,7 +274,7 @@
     } else {
       // the tour reads only while its chapter is on stage
       const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-        if (en.isIntersecting) { show(idx); schedule(DWELL); }
+        if (en.isIntersecting) { show(idx, DWELL); schedule(DWELL); }
         else stop();
       }), { threshold: 0.15 });
       io.observe(ana.closest('.case-slide'));

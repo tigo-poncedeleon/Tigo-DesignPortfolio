@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap" />
-  <link rel="stylesheet" href="css/vicino-canvas.css?v=11" />
+  <link rel="stylesheet" href="css/vicino-canvas.css?v=16" />
   <style>
     /* THE APP, NOT A PICTURE OF IT. On the case study the board is a
        1920×1080 object scaled into a tile; here it simply IS the window:
@@ -38,38 +38,6 @@
       border-radius: 0;
       box-shadow: none;
     }
-    /* the one thing the product has no reason to carry: a way back. It
-       reads as a crumb under the board's title — the only spot no piece
-       of the board's own chrome ever reaches at any width (the rail is
-       vertically centred, the panel is right, the minimap and toolbar
-       are bottom) — and it stays quiet until you look for it. */
-    .solo-back {
-      position: fixed;
-      left: 22px;
-      top: 56px;
-      z-index: 20;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      height: 32px;
-      padding: 0 13px;
-      border-radius: 9999px;
-      background: #fff;
-      border: 1px solid rgba(15, 23, 42, 0.12);
-      box-shadow: 0px 4px 14px rgba(15, 23, 42, 0.08);
-      font: 500 12px/1 "Manrope", ui-sans-serif, system-ui, -apple-system,
-        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: #44464a;
-      text-decoration: none;
-      opacity: 0.42;
-      transition: opacity 0.2s ease, color 0.2s ease;
-    }
-    .solo-back:hover,
-    .solo-back:focus-visible { opacity: 1; color: #0d7685; }
-    .solo-back svg { width: 12px; height: 12px; }
-    @media (max-width: 700px) {
-      .solo-back { left: 12px; top: 50px; }
-    }
   </style>
 </head>
 
@@ -77,15 +45,7 @@
   <div class="vc" id="vc" role="application"
        aria-label="Canvas — a working replica of Vicino AI's node editor"></div>
 
-  <a class="solo-back" href="vicino.html#canvas">
-    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M7.5 2.5 L4 6 L7.5 9.5" />
-    </svg>
-    the case study
-  </a>
-
-  <script src="js/vicino-canvas.js?v=27"></script>
+  <script src="js/vicino-canvas.js?v=29"></script>
   <script>
     (() => {
       if (!window.VicinoCanvas) return;

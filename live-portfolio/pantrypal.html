@@ -7,7 +7,7 @@
   <meta name="description" content="PantryPal — an AI recipe app case study by Tigo Ponce de León. Research, wireframes, a six-screen hi-fi prototype, and working code with a live Gemini API. +40% task completion across testing rounds." />
 
   <link rel="icon" type="image/png" href="Media/darkcircle.png" />
-  <meta name="theme-color" content="#f7f7f4" />
+  <meta name="theme-color" content="#f6f6f6" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Tigo Ponce de León" />
   <meta property="og:title" content="Tigo Ponce de León — PantryPal" />
@@ -18,11 +18,11 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=68" />
-  <link rel="stylesheet" href="css/shell.css?v=83" />
-  <link rel="stylesheet" href="css/case-overlay.css?v=14" />
-  <link rel="stylesheet" href="css/ai.css?v=36" />
-  <link rel="stylesheet" href="css/pantry.css?v=92" />
+  <link rel="stylesheet" href="css/styles.css?v=80" />
+  <link rel="stylesheet" href="css/shell.css?v=89" />
+  <link rel="stylesheet" href="css/case-overlay.css?v=15" />
+  <link rel="stylesheet" href="css/ai.css?v=39" />
+  <link rel="stylesheet" href="css/pantry.css?v=102" />
   <!-- inside the case overlay's iframe the shell stands down — set before
        first paint so no chrome ever flashes (js/case-overlay.js) -->
   <script>
@@ -30,7 +30,7 @@
       document.documentElement.className += ' is-embed';
   </script>
   <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
-  <link rel="stylesheet" href="css/color-lab.css?v=3" />
+  <link rel="stylesheet" href="css/color-lab.css?v=5" />
 </head>
 
 <body>
@@ -56,6 +56,39 @@
         <!-- 01 · overview — the recruiter's ten seconds: what it is,
              what I did, what moved. Login mock beside the pitch. -->
         <section class="case-slide" id="overview" aria-label="Overview">
+
+          <!-- The pantry, floating. The cover's two outer margins (0→245
+               and 1035→1240 in the slide's own 1280) are the only empty
+               space on the page, and the app's six dishes are the truest
+               thing it owns — so they hang there: they land one at a time
+               like stickers, drift, follow the cursor by depth, and stand
+               up straight when you touch one. The warm pool behind the
+               phone is the brand's own #FFD67E. Every --x is signed from
+               --ax, so the scatter stays welded to the centred cover grid;
+               --p is how far that sticker travels with the pointer, which
+               is what makes them read as near or far (js/pantry.js). -->
+          <div class="pantry-air" aria-hidden="true">
+            <span class="pa-glow"></span>
+            <span class="pa-food" style="--x:-566px; --y:206px; --s:86px; --r:-8deg; --n:0; --d:9.5s; --p:20px">
+              <img decoding="async" src="Media/pantry-food-tuna.webp" alt="" width="300" height="300" />
+            </span>
+            <span class="pa-food" style="--x:422px; --y:158px; --s:80px; --r:7deg; --n:1; --d:8.2s; --p:17px">
+              <img decoding="async" src="Media/pantry-food-steak.webp" alt="" width="300" height="300" />
+            </span>
+            <span class="pa-food" style="--x:-508px; --y:412px; --s:70px; --r:6deg; --n:2; --d:10.5s; --p:12px">
+              <img decoding="async" src="Media/pantry-food-beef.webp" alt="" width="300" height="300" />
+            </span>
+            <span class="pa-food" style="--x:478px; --y:312px; --s:92px; --r:-6deg; --n:3; --d:7.6s; --p:23px">
+              <img decoding="async" src="Media/pantry-food-burger.webp" alt="" width="300" height="300" />
+            </span>
+            <span class="pa-food" style="--x:-584px; --y:578px; --s:82px; --r:9deg; --n:4; --d:9.9s; --p:18px">
+              <img decoding="async" src="Media/pantry-food-philly.webp" alt="" width="300" height="300" />
+            </span>
+            <span class="pa-food" style="--x:410px; --y:486px; --s:72px; --r:-10deg; --n:5; --d:8.8s; --p:13px">
+              <img decoding="async" src="Media/pantry-food-salad.webp" alt="" width="300" height="300" />
+            </span>
+          </div>
+
           <header class="case-title">
             <span class="case-num">01</span>
             <h1>PantryPal</h1>
@@ -334,12 +367,12 @@
   </nav>
 
   <script src="js/tabs.js?v=15"></script>
-  <script src="js/shell.js?v=79"></script>
+  <script src="js/shell.js?v=81"></script>
   <script src="js/globe.js?v=5"></script>
   <script src="js/stage-fit.js?v=16"></script>
   <script src="js/frame-clock.js?v=3"></script>
   <script src="js/nav-touch.js?v=3"></script>
-  <script src="js/pantry.js?v=100"></script>
+  <script src="js/pantry.js?v=101"></script>
   <script src="js/case-progress.js?v=10"></script>
   <script src="js/case-overlay.js?v=101"></script>
   <script src="js/ai-chat.js?v=8"></script>

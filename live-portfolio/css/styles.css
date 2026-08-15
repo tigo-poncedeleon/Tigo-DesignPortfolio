@@ -12,18 +12,71 @@
    ============================================================ */
 
 :root {
-  /* ---- the Cursor palette (2026-08): warm parchment canvas, warm
-     near-black ink, and ONE chromatic accent — ember — that lives on
-     text, links and hover washes, never as a large fill. Every grey in
-     the site is warm-tinted (B sits ~6 under R); pure #000/#fff are
-     banned from surfaces and text. ---- */
-  --bg:     #f7f7f4;                  /* parchment — the page canvas */
-  --ink:    #26251e;                  /* warm ink — name, words, state */
-  --muted:  #7a7974;                  /* ash — role, time */
-  --orange: #f54e00;  /* ember — the single accent; text + washes only,
-                         never a button fill or a surface */
-  --error:  #cf2d56;  /* crimson — form errors only, so failure never
-                         reads like the accent */
+  /* ---- THE PALETTE (2026-08). One palette, every page. It is greyscale:
+     a light canvas, a near-black ink, and eleven greys between them, all
+     of them neutral — R, G and B are equal in every single value below.
+
+     It began as the warm Cursor palette (parchment #f7f7f4, warm ink
+     #26251e, ember on state) and was drained of hue on the home scroll;
+     for one afternoon the two lived side by side, and the SIDEBAR was
+     what killed that idea — the frame is the same object on every page,
+     so a rail that read cool on Home and warm inside a case study was
+     a seam that moved when nothing had moved. Every grey below is
+     luminance-matched to the warm value it replaced, so contrast is
+     exactly what it was; only temperature changed.
+
+     Colour arrives from two places and nowhere else:
+       --ember       four small things that MOVE (see below)
+       --case-accent each case study's own, declared by its sheet
+     A hue that is not one of those two does not belong on this site. ---- */
+  --bg:     #f6f6f6;                  /* the page canvas */
+  --ink:    #1c1c1c;                  /* ink — name, words, state */
+  --muted:  #767676;                  /* ash — role, time */
+  --orange: #000;     /* the accent: emphasis, state and washes. Pure black
+                         is the only value darker than the ink, and that
+                         half-step is what makes a hover, a focus ring, a
+                         current tab or a crown read as louder. */
+  --error:  #000;     /* …and failure, which the copy names anyway */
+
+  /* ---- EMBER, the object colour — and the last hue in the chrome. It is
+     a second token because it is a different JOB from --orange: --orange
+     is state, and state went black with the rest of the palette; --ember
+     belongs to four small things that MOVE and answers to nobody — the
+     caret that types (the hero's name on arrival, and ever after the
+     questions in the rail's blank — one caret, two desks, css/shell.css
+     .ask-caret), the hero's pen, the pong ball, and the snake's food /
+     the bird. All four are the thing you are actually watching, and on a
+     page with no other hue they are the only place the eye is pulled,
+     which is the whole reason to keep any. A fifth ember is not a small
+     decision; it changes what the colour MEANS here. ---- */
+  --ember:     #f54e00;
+  --ember-rgb: 245, 78, 0;
+
+  /* ---- THE GREY RAMP. The hundred-odd greys that used to sit as loose
+     hex literals scattered across the twelve sheets — 5b5a53 alone was
+     written out forty-one times — named once, here. Higher number is
+     darker. Naming them is what made the whole-palette swap a thirteen-
+     line job instead of a two-hundred-and-eighty-line one; write new
+     colour as a rung, never as a literal. ---- */
+  --g-900: #333;      /* the chrome strip — deepest surface grey */
+  --g-700: #5a5a5a;   /* secondary text: the workhorse of the site */
+  --g-550: #848484;
+  --g-500: #898989;
+  --g-400: #a1a1a1;   /* tertiary text, dormant icons */
+  --g-350: #afafaf;
+  --g-250: #cdcdcd;   /* the standard hairline */
+  --g-200: #d8d8d8;   /* scrollbar thumb, the heavier rule */
+  --g-150: #e5e5e5;   /* the quiet rule, panel edges */
+  --g-130: #e8e8e8;
+  --g-100: #efefef;   /* the faintest fill that still reads as a fill */
+  --g-050: #fdfdfd;   /* paper — a surface lifted off the canvas */
+
+  /* …and the four colours that are also spent as translucent washes, kept
+     as bare channels so rgba() can take them: rgba(var(--ink-rgb), 0.06) */
+  --ink-rgb:    28, 28, 28;
+  --bg-rgb:     246, 246, 246;
+  --line-rgb:   229, 229, 229;
+  --orange-rgb: 0, 0, 0;
 
   /* ---- motion tokens — the site's whole vocabulary of movement.
      Durations: micro feedback → snap → glide → lift → pop → entrance.
@@ -38,6 +91,15 @@
   --t-stage: 0.5s;                    /* page stage fade-in */
   --t-fade:  0.55s;                   /* entrance opacity */
   --t-rise:  0.6s;                    /* entrance translate */
+  /* The opening, and only the opening: the frame assembling around the name
+     on a first visit (js/typewriter.js). Longer than a glide because it is
+     a set piece rather than an answer to a click — nobody is waiting on it —
+     and eased with a plain deceleration rather than the glide's overshoot,
+     because three pieces travelling together want to SETTLE. Overshoot at
+     this length reads as wobble; at 0.3s it reads as snap, which is why the
+     rail toggle keeps it. */
+  --t-intro: 0.52s;
+  --ease-intro:  cubic-bezier(0.22, 0.61, 0.24, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
   --ease-glide:  cubic-bezier(0.34, 1.2, 0.5, 1);
   --ease-lift:   cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -45,36 +107,104 @@
   --ease-rise:   cubic-bezier(0.22, 1, 0.36, 1);
   --ease-draw:   cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ---- the header rhythm. Every stage titles itself the same way: the
-     pair sits at --title-top, and whatever it introduces begins at
-     --content-top — the same 79px of air under the words each time.
-     About's "Hello / nice to meet you" set the measure; Work, Play and
-     Contact follow it rather than centring their content in the panel,
-     which made the gap drift with whatever happened to be below. ---- */
-  --title-top:   40px;
-  --content-top: 152px;
-  /* …and the floor every section stands on: the space under its last line
-     before the next one begins. Each panel is now exactly as tall as what
-     it holds plus this, rather than a flat 832 with whatever was left over
-     falling out the bottom (Work carried 240, Play 277). */
-  --stage-floor: 150px;
+  /* ---- THE SPACING LADDER — two rules, and they are the whole thing:
+
+       under 32px, spacing moves in steps of 2.
+       at 32px and over, spacing moves in steps of 8.
+
+     So 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30, then 32 40 48 56 64 …
+     ODD numbers are off the ladder, and so are fractions. That is what
+     this is here to stop: the site had grown 47 different spacing values
+     across its eight sheets, ninety-odd of them landing on 3, 5, 7, 9, 11,
+     13, 27, 3.5, 4.5 — never for a reason, always because a number got
+     nudged once and stayed. A layout reads as designed when the same
+     relationship is always spelled the same way.
+
+     The rungs below are the PREFERRED ones — a 4px spine. Reach for these
+     first; the 2px half-steps (10, 14, 18, 22, 26, 30) are legal where a
+     component's internals genuinely need the finer grain, which at this
+     type size they often do. ---- */
+  --sp-2:    2px;      /* hairline / optical nudge */
+  --sp-4:    4px;
+  --sp-6:    6px;      /* micro tier — inline glyph gaps */
+  --sp-8:    8px;      /* the tight gap: chip internals, icon→label */
+  --sp-12:  12px;      /* the standard gap: rows in a list, cell padding */
+  --sp-16:  16px;      /* the comfortable gap: label→value, card padding */
+  --sp-20:  20px;      /* paragraph leading-out, grid gutters */
+  --sp-24:  24px;      /* block separation inside a component */
+  --sp-32:  32px;      /* component separation */
+  --sp-40:  40px;      /* group separation — also --title-top */
+  --sp-48:  48px;
+  --sp-56:  56px;
+  --sp-64:  64px;      /* chapter-scale air */
+  --sp-80:  80px;
+  --sp-96:  96px;
+
+  /* ---- THE HEADER RHYTHM. Every stage and every case-study chapter
+     titles itself the same way: the pair sits at --title-top, and whatever
+     it introduces begins on ONE of four steps below — chosen by what the
+     thing is, not by what looked right that afternoon. Before this there
+     were twenty-three different starting heights across the four pages
+     (88, 90, 91, 92, 94, 116, 122, 124, 128, 140, 145, 148, 150, 156, 158,
+     165, 168, 170, 172, 178, 190, 196, 204), most of them within a few px
+     of a neighbour and none of them meaning anything different.
+     The steps say what a thing is HANGING FROM, which is the only question
+     that actually decides the number: off the title, or off a paragraph
+     that is itself off the title. ---- */
+  --title-top:   40px;   /* the title pair, on every page */
+  --lede-top:    92px;   /* a paragraph set directly under the title */
+  --content-top: 120px;  /* the body, when it hangs off the TITLE — grids,
+                            covers, exhibits, figures. 47px of air under the
+                            words. It was 79 and read as a gap rather than a
+                            joint; the title and what it introduces are one
+                            unit and should sit like one. (This step absorbed
+                            --panel-top, which was already 120: an exhibit
+                            hung off a title and a grid hung off a title were
+                            never two different things.) */
+  --after-lede:  152px;  /* the body, when a LEDE sits above it. It cannot
+                            come up with --content-top — the paragraph runs
+                            to ~142 and the two would collide. */
+  --figure-top:  200px;  /* a stage under a lede AND a control strip */
+
+  /* …and the floor every section stands on. This is the SEAM between one
+     section and the next, not the other half of the header frame, so it
+     does not follow --content-top down: 152 here plus 40 to the next title
+     is 192 of air at every joint on the home scroll, which is the one
+     measure that says "a new thing starts". Each panel is exactly as tall
+     as what it holds plus this, rather than a flat 832 with whatever was
+     left over falling out the bottom. */
+  --stage-floor: 152px;
+  /* …and how far the small print that ANCHORS to a stage's bottom edge sits
+     off it — the scroll cue, a legend, a closing wish. The scroll cue had
+     settled on 24 everywhere; the legend sat at 20 and the sign-offs at 26,
+     which is three answers to one question. */
+  --edge: 24px;
+
+  /* ---- THE MEASURE — the widest a block of content may run, centred on
+     the stage axis. A ceiling, not a target: a reading column (the bio
+     spread, 1000) or a row of three cards (the metric grid, 786) is welcome
+     to be narrower. What is NOT welcome is two full-bleed blocks that mean
+     to be the same width and miss — Work's stepper ran 1112 and Play's grid
+     1124, so the column edge stepped in and out as you scrolled past the
+     heading between them. Both are drawn from this now. ---- */
+  --measure: 1124px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* The page keeps a scrollbar, but its own: thin, warm, and drawn in the
+/* The page keeps a scrollbar, but its own: thin, quiet, and drawn in the
    shell's greys rather than the browser's. The default gutter was the last
    piece of borrowed chrome on the right edge — this says the same thing in
    the site's voice. The transparent border + background-clip is what makes
    a 10px track carry a 4px thumb, with air around it. */
 html {
   scrollbar-width: thin;                        /* Firefox */
-  scrollbar-color: #d9d8d3 transparent;
+  scrollbar-color: var(--g-200) transparent;
 }
 html::-webkit-scrollbar { width: 10px; height: 10px; }
 html::-webkit-scrollbar-track { background: transparent; }
 html::-webkit-scrollbar-thumb {
-  background: #d9d8d3;
+  background: var(--g-200);
   border: 3px solid transparent;
   background-clip: padding-box;
   border-radius: 5px;
@@ -178,7 +308,7 @@ html, body {
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(38, 37, 30, 0.48);
+  color: rgba(var(--ink-rgb), 0.48);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 0.9s;
@@ -235,6 +365,142 @@ html.theater-open .ink-field { display: none; }
 @media (max-width: 700px) { .ink-field { display: none; } }
 
 /* ============================================================
+   THE CASE-STUDY COVER — one grid, three studies.
+
+   Every case study opens the same way: the pitch on the left, the
+   ledger under it, the piece itself on the right. The three sheets each
+   drew that layout from memory, so the text column was 450 wide on
+   Vicino, 440 on Next Level and 460 on PantryPal; the gutter was 50, 70
+   and 60; the pitch began at 140, 150 and 148; and the whole group sat
+   0, 15 and 35px right of the axis its own title was centred on. Moving
+   between the studies, the words jumped.
+
+   It is one grid now, and it lives here rather than three times over:
+   a 450px text column, a 60px gutter, and an art column as wide as the
+   piece it holds. The GROUP is what centres on the axis, so the text
+   column and the gutter never move relative to the art — only the total
+   width changes, which is the one thing that genuinely differs between a
+   monitor, a logo and a phone. Each study supplies one number,
+   --cover-art, and nothing else about the layout.
+
+   The art column is a BOX, not a hanging point: the piece centres in it
+   on both axes instead of being hand-placed at 190, 170 and 140.
+   ============================================================ */
+.case-slide {
+  --cover-col:    450px;   /* the text column, on every study */
+  --cover-gutter:  60px;
+  --cover-art:    470px;   /* overridden per study — the piece's own width */
+  /* the group's left edge: half its total width, left of the axis */
+  --cover-left: calc(var(--ax) -
+    (var(--cover-col) + var(--cover-gutter) + var(--cover-art)) / 2);
+}
+.case-pitch {
+  position: absolute;
+  top: var(--content-top);
+  left: var(--cover-left);
+  width: var(--cover-col);
+  color: var(--g-700);
+}
+.case-pitch p + p { margin-top: var(--sp-20); }
+
+.case-hero {
+  position: absolute;
+  top: var(--content-top);
+  left: calc(var(--cover-left) + var(--cover-col) + var(--cover-gutter));
+  width: var(--cover-art);
+  /* as tall as the tallest piece (the phone), so all three centre on one
+     line — 432, which is where the text column's own middle falls */
+  height: 560px;
+  display: grid;
+  place-items: center;
+}
+.case-hero img { max-width: 100%; max-height: 100%; }
+
+/* the ledger — labeled facts on a hairline, the pattern every good case
+   study opens with: role · timeline · platform · tools */
+.spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-12) var(--sp-24);
+  margin-top: var(--sp-24);
+  padding-top: var(--sp-16);
+  border-top: 1px solid var(--g-150);
+}
+.spec-cell dt {
+  font-size: 13.25px;
+  color: rgba(var(--ink-rgb), 0.48);
+}
+.spec-cell dd {
+  margin-top: var(--sp-2);
+  font-size: 15px;
+  line-height: 21px;
+  color: var(--g-700);
+}
+
+/* the suggestion-chip recipe, shared by all three studies */
+.case-chip {
+  padding: var(--sp-6) var(--sp-12);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--g-700);
+  background: rgba(var(--line-rgb), 0.48);
+  border: 1px solid var(--g-250);
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* the one number a recruiter should leave with. Each study inks it in
+   its own accent (css/<case>.css); the metrics of the box are shared. */
+.headline-metric {
+  display: inline-block;
+  /* it belongs to the text column and may not hang off it. Vicino's line
+     is the long one — it ran 24px past the ledger's rule above it, which
+     is the only place on any cover where a block broke the column edge. */
+  max-width: 100%;
+  margin-top: var(--sp-20);
+  padding: var(--sp-8) var(--sp-16);
+  font-size: 16px;
+  text-align: center;
+  text-wrap: balance;      /* if it has to take two lines, take two even ones */
+  border: 1px solid transparent;
+  border-radius: 20px;
+}
+
+/* ---- the closing block. It STANDS ON THE FLOOR rather than hanging from
+   the top: a chapter's last word should sit the same distance above the
+   end of the page on every study, and the blocks above it are different
+   heights, so a fixed top could never say that. It was 620 on Vicino, 640
+   on Next Level and 660 on PantryPal — three heights for one idea. ---- */
+.case-outro {
+  position: absolute;
+  bottom: var(--stage-floor);
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--sp-48);
+  white-space: nowrap;
+}
+.case-link {
+  font-size: 16px;
+  color: var(--g-700);
+  text-decoration: none;
+  transition: color var(--t-micro) ease;
+}
+
+/* the live-site link under it */
+.site-link {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--sp-8);
+  margin-top: var(--sp-16);
+  font-size: 16px;
+  color: var(--g-700);
+  text-decoration: none;
+  transition: color var(--t-micro) ease;
+}
+
+/* ============================================================
    The reading rail — a case study's chapters, stacked in the corner
    under the × and threaded together by the progress line
    (js/case-progress.js).
@@ -272,7 +538,7 @@ html.theater-open .ink-field { display: none; }
   align-items: flex-end;
   /* the glyph discs are exactly a row tall, so this gap IS how much thread
      shows between them — too tight and the line reads as specks */
-  gap: 9px;
+  gap: 10px;
   pointer-events: none;           /* only the marks take the cursor */
   opacity: 0;
   transition: opacity var(--t-glide) ease;
@@ -292,7 +558,7 @@ html.is-embed .read-rail { top: 24px; }
   width: 1.5px;
   border-radius: 2px;
 }
-.read-thread { background: rgba(38, 37, 30, 0.12); }
+.read-thread { background: rgba(var(--ink-rgb), 0.12); }
 .read-fill {
   background: var(--ink);
   transform: scaleY(0);
@@ -312,7 +578,7 @@ html.is-embed .read-rail { top: 24px; }
   border: 0;
   pointer-events: auto;
   cursor: pointer;
-  color: rgba(38, 37, 30, 0.30);
+  color: rgba(var(--ink-rgb), 0.30);
   opacity: 0;
   translate: 0 -7px;
   transition: color var(--t-micro) ease,
@@ -367,7 +633,6 @@ html.is-embed .read-rail { top: 24px; }
 .read-mark:hover { color: var(--ink); }
 .read-mark:hover .read-glyph {
   transform: scale(1.3);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
 }
 .read-mark:hover + .read-mark .read-glyph,
 .read-mark:has(+ .read-mark:hover) .read-glyph { transform: scale(1.13); }
@@ -387,13 +652,12 @@ html.is-embed .read-rail { top: 24px; }
   display: flex;
   align-items: baseline;
   white-space: nowrap;
-  padding: 4.5px 8px 5.5px;
+  padding: 4px 8px 6px;
   border-radius: 8px;
-  background: rgba(247, 247, 244, 0.94);
+  background: rgba(var(--bg-rgb), 0.94);
   -webkit-backdrop-filter: blur(12px) saturate(1.3);
   backdrop-filter: blur(12px) saturate(1.3);
-  border: 1px solid rgba(38, 37, 30, 0.09);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.055);
+  border: 1px solid rgba(var(--ink-rgb), 0.09);
   font-size: 11.5px;
   line-height: 1;
   letter-spacing: 0.012em;
@@ -404,7 +668,6 @@ html.is-embed .read-rail { top: 24px; }
   transition: opacity var(--t-glide) ease,
               translate var(--t-glide) var(--ease-glide),
               scale var(--t-snap) var(--ease-spring),
-              box-shadow var(--t-glide) ease,
               border-color var(--t-glide) ease;
 }
 
@@ -420,13 +683,17 @@ html.is-embed .read-rail { top: 24px; }
 .read-rail.is-open .read-mark { width: 100%; }
 .read-rail.is-open .read-tag { pointer-events: auto; }
 
-/* while you are moving, the chapter you are in says its name… */
-.read-rail.is-moving .read-mark.is-current .read-tag,
+/* The names are HOVER-ONLY. Scrolling used to raise the current chapter's
+   chip on its own, and a chip appearing unasked over the story — the
+   process chapters' cards reach to within ~130px of this edge — read as a
+   thing in the way rather than a thing offered. The dot and the thread
+   already say where you are; the name waits to be asked for. Keyboard
+   focus still speaks, because there is no other way to read a row. */
 .read-mark:focus-visible .read-tag {
   opacity: 1;
   translate: 0 0;
 }
-/* …and reaching for the rail deals the whole table of contents out, row by
+/* reaching for the rail deals the whole table of contents out, row by
    row. The delay lives here and not on the base rule, so they leave
    together and only arrive in turn. */
 .read-rail.is-open .read-tag {
@@ -446,8 +713,7 @@ html.is-embed .read-rail { top: 24px; }
                                     against the story's edge like everything
                                     else here — small on purpose */
   scale: 1.02;
-  border-color: rgba(38, 37, 30, 0.11);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+  border-color: rgba(var(--ink-rgb), 0.11);
   transition-delay: 0s;                    /* the one you point at never waits */
 }
 /* the neighbours lean out a little too, which is what makes it read as one
@@ -479,7 +745,7 @@ html.is-embed .read-rail { top: 24px; }
   line-height: 38px;
   font-weight: 400;
   letter-spacing: -0.015em;
-  color: rgba(38, 37, 30, 0.34);
+  color: rgba(var(--ink-rgb), 0.34);
 }
 
 /* ---- the name types itself (js/typewriter.js) ----
@@ -506,10 +772,10 @@ html.is-embed .read-rail { top: 24px; }
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  margin-left: 3px;
+  margin-left: 4px;
   width: 2px;
   height: 1em;
-  background: var(--orange);
+  background: var(--ember);           /* the one hue the home page keeps */
   animation: tw-blink 1.06s steps(1) infinite;
 }
 .tw-caret.is-typing { animation: none; opacity: 1; }  /* real terminals hold */
@@ -551,7 +817,7 @@ html:not(.js) .tw-caret { display: none; }
      sliding under it (work.html's snap scroller) stays hidden behind
      the chip */
   background: #f2f1ed;
-  border: 0.648px solid #cdcdc9;
+  border: 0.648px solid var(--g-250);
   transition: background-color 0.25s ease;
 }
 /* a half-step further down, opaque so the title never bleeds through the
@@ -571,7 +837,7 @@ html:not(.js) .tw-caret { display: none; }
   z-index: 9;                 /* over the page, under .site-nav (z 10) */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(247, 247, 244, 0.45);
+  background: rgba(var(--bg-rgb), 0.45);
   opacity: 0;
   pointer-events: none;
   /* HIDDEN, not merely transparent. `inset: 0` inside a case study's stage
@@ -636,7 +902,7 @@ html:not(.js) .tw-caret { display: none; }
 .site-nav-words {
   display: flex;
   align-items: center;
-  gap: 34px;
+  gap: 32px;
   height: 59px;
   opacity: 0;
   transition: opacity var(--t-micro) ease;
@@ -646,7 +912,7 @@ html:not(.js) .tw-caret { display: none; }
    so the edge margin that gives the first chip's halo room must fall to the
    word AFTER it (about) — else about's ::before is clipped by overflow:hidden */
 .site-nav-word.is-home + .site-nav-word { margin-left: 18px; }
-.site-nav-words > :last-child { margin-right: 27px; }
+.site-nav-words > :last-child { margin-right: 28px; }
 .site-nav:hover .site-nav-words,
 .site-nav:focus-within .site-nav-words {
   opacity: 1;
@@ -661,7 +927,7 @@ html:not(.js) .tw-caret { display: none; }
   font: inherit;
   font-size: 23.5px;                  /* 1380:150's 26px × the 0.9 shrink */
   line-height: 28px;
-  color: #5b5a53;
+  color: var(--g-700);
   text-decoration: none;
   white-space: nowrap;
   transition: color var(--t-micro) ease;
@@ -675,8 +941,8 @@ html:not(.js) .tw-caret { display: none; }
   top: 50%;
   height: 44px;
   transform: translateY(-50%);
-  background: rgba(38, 37, 30, 0.06);   /* the sitewide grey hover wash */
-  border: 1px solid rgba(38, 37, 30, 0.14);
+  background: rgba(var(--ink-rgb), 0.06);   /* the sitewide grey hover wash */
+  border: 1px solid rgba(var(--ink-rgb), 0.14);
   border-radius: 33px;
   opacity: 0;
   transition: opacity var(--t-micro) ease;
@@ -745,16 +1011,15 @@ html:not(.js) .tw-caret { display: none; }
     max-width: calc(100vw - 24px);
     padding: 6px;
     border-radius: 27px;
-    background: rgba(247, 247, 244, 0.85);
-    border: 1px solid #e6e5e0;
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
+    background: rgba(var(--bg-rgb), 0.85);
+    border: 1px solid var(--g-150);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
     backdrop-filter: blur(14px) saturate(1.1);
     z-index: 40;
     animation: nav-rise 0.5s var(--ease-rise) both;
   }
   .site-nav:hover,
-  .site-nav:focus-within { background: rgba(247, 247, 244, 0.85); }
+  .site-nav:focus-within { background: rgba(var(--bg-rgb), 0.85); }
   .site-nav-home { display: none; }        /* the "home" tab is the way home now */
   .nav-frost { display: none; }            /* the expand-menu frost is gone here */
 
@@ -777,13 +1042,13 @@ html:not(.js) .tw-caret { display: none; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    padding: 7px 14px;
+    gap: 4px;
+    padding: 8px 14px;
     border-radius: 21px;
     font-size: 11px;
     line-height: 1;
     letter-spacing: 0.01em;
-    color: #84847e;
+    color: var(--g-550);
   }
   .site-nav-word svg { display: block; width: 23px; height: 23px; }
   .site-nav-word::before {

@@ -89,7 +89,7 @@ window.Portrait = (() => {
 
     // an opaque page-coloured silhouette base, so the ribbons sit on
     // solid ground rather than on whatever is behind the canvas
-    const bg = getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#f7f7f4';
+    const bg = getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#f6f6f6';
     octx.save();
     octx.drawImage(img, 0, 0, TEX_W, TEX_H);
     octx.globalCompositeOperation = 'source-in';
@@ -153,10 +153,16 @@ window.Portrait = (() => {
     return src;
   };
 
+  // Returns whether it actually painted. A canvas with no layout box (its
+  // section is display:none — on a phone About is a SCREEN you tap to, so
+  // that is the normal state at load) has nothing to paint INTO, and the
+  // caller has to be able to tell that apart from a finished portrait:
+  // about.js hides the pre-baked fallback webp on success, and hiding it
+  // over an empty canvas is a hole where the face should be.
   const paint = (canvas, tex, ratio) => {
     const dpr = ratio || Math.min(window.devicePixelRatio || 1, 2);
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return;
+    if (!w || !h) return false;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     const ctx = canvas.getContext('2d');
@@ -165,6 +171,7 @@ window.Portrait = (() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const src = shrink(tex, canvas.width, canvas.height);
     ctx.drawImage(src, 0, 0, src.width, src.height, 0, 0, canvas.width, canvas.height);
+    return true;
   };
 
   /* ============================================================

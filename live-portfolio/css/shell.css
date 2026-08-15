@@ -30,14 +30,14 @@
   /* The furniture: chrome + rail, one continuous L. It has to differ
      from --bg by enough that the join needs no line — bone against
      parchment is exactly the one-considered-step the Cursor surfaces
-     ladder is built on — #f0efea against #f7f7f4, the exact pair
+     ladder is built on — --g-100 against --bg, the exact pair
      cursor.com/docs wears (sidebar bg-card vs content bg-background). */
-  --shell-surface: #f0efea;
-  /* the sitewide rgba(38,37,30,.06) grey hover chip, flattened over
+  --shell-surface: var(--g-100);
+  /* the sitewide rgba(var(--ink-rgb), .06) grey hover chip, flattened over
      the furniture. Computed, not eyeballed. */
   --wash-solid:    #e4e3de;
-  --shell-line:    #cdcdc9;               /* stone — hairline borders */
-  --shell-dim:     #a1a19f;               /* mist — group labels, meta */
+  --shell-line:    var(--g-250);               /* stone — hairline borders */
+  --shell-dim:     var(--g-400);               /* mist — group labels, meta */
 }
 
 /* ---- the window ----
@@ -138,6 +138,23 @@ html.rail-closed .shell-chrome::after { left: 0; }
 .seam-edge { transition: stroke var(--t-micro) ease; }
 .shell:has(.side-grip:hover) .seam-edge,
 html.rail-dragging .seam-edge { stroke: var(--orange); }
+
+/* ---- the reach ----
+   The rest of that column: from the top of the screen down to the foot of the
+   corner arc, where .seam-edge picks up. Drawn on every measure and painted
+   only for the drag. At rest the frame is exactly what it was — the corner is
+   round, the strip is unbroken, and nothing runs up past the tabs. Under the
+   pointer it fills in, and the accent states the whole width you are about to
+   move rather than the part of it that happens to sit below the tab strip.
+
+   `transparent`, not opacity or display: it is the same property the edge
+   animates, on the same curve, so the two halves arrive as one line rather
+   than as a line plus a thing appearing above it. */
+/* `.shell-seam .seam-reach`, not `.seam-reach` — the stroke this has to beat
+   is set on `.shell-seam path`, which a lone class ties with and loses to. */
+.shell-seam .seam-reach { stroke: transparent; transition: stroke var(--t-micro) ease; }
+.shell:has(.side-grip:hover) .seam-reach,
+html.rail-dragging .seam-reach { stroke: var(--orange); }
 html.is-embed .shell-seam { display: none; }
 @media (max-width: 700px) { .shell-seam { display: none; } }
 
@@ -186,8 +203,9 @@ html.is-embed .shell-seam { display: none; }
    when closed. That is what lets the name type dead-centre of the whole
    screen rather than centred in a card that has been pushed 260px right
    by a panel nobody has seen yet. When the class comes off at the end of
-   the typing, the rail slides in on its own transition and the card
-   reflows around it — the same movement as closing, run backwards. */
+   the typing, the layout LANDS — in one frame, rail and strip and zoom
+   together — and js/typewriter.js glides the pieces in over the top of it
+   from where they were. Nothing in here animates; see intro-glide below. */
 html.intro-pending :is(.shell-chrome, .shell-side, .shell-card) { transition: none; }
 
 /* During the intro there is no furniture at all — the card owns the whole
@@ -250,7 +268,6 @@ html.rail-closed .chrome-left { width: 44px; }
   background: var(--bg);
   border: 1px solid var(--shell-line);
   border-radius: 11px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
   opacity: 0;
   translate: 0 -6px;
   transition: opacity var(--t-glide) ease, translate var(--t-glide) var(--ease-glide);
@@ -260,17 +277,17 @@ html.rail-closed .chrome-left { width: 44px; }
 .jump-row {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   height: 32px;
-  padding: 0 9px;
+  padding: 0 10px;
   border-radius: 7px;
   font-size: 13.5px;
   color: var(--ink);
   text-decoration: none;
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
 }
-.jump-row:hover { background: rgba(38, 37, 30, 0.06); color: var(--ink); }
-.jump-ico { flex: none; width: 17px; height: 17px; color: #84847e; }
+.jump-row:hover { background: rgba(var(--ink-rgb), 0.06); color: var(--ink); }
+.jump-ico { flex: none; width: 17px; height: 17px; color: var(--g-550); }
 .jump-ico svg { width: 100%; height: 100%; }
 .jump-row:hover .jump-ico { color: var(--ink); }
 
@@ -286,7 +303,7 @@ html.rail-closed .chrome-left { width: 44px; }
   background: none;
   border: 0;
   border-radius: 7px;
-  color: #84847e;
+  color: var(--g-550);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
@@ -294,10 +311,10 @@ html.rail-closed .chrome-left { width: 44px; }
 .chrome-btn:hover,
 .chrome-btn:focus-visible {
   color: var(--ink);
-  background: rgba(38, 37, 30, 0.06);
+  background: rgba(var(--ink-rgb), 0.06);
 }
 .chrome-btn[disabled] {
-  color: #cdcdc9;
+  color: var(--g-250);
   cursor: default;
   background: none;
 }
@@ -306,7 +323,7 @@ html.rail-closed .chrome-left { width: 44px; }
    reference — not off in the rail's column. They sit on the strip's
    floor with the tabs, so they need lifting to optical centre. */
 .chrome-btn[data-act='back'],
-.chrome-btn[data-act='fwd'] { align-self: center; margin-bottom: 3px; }
+.chrome-btn[data-act='fwd'] { align-self: center; margin-bottom: 4px; }
 .chrome-btn[data-act='back'] { margin-left: 4px; }
 .chrome-btn[data-act='fwd']  { margin-left: 2px; margin-right: 6px; }
 
@@ -325,9 +342,9 @@ html.rail-closed .chrome-left { width: 44px; }
   flex: none;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   height: 26px;
-  padding: 0 9px;
+  padding: 0 10px;
   border: 0;
   border-radius: 7px;
   background: none;
@@ -337,7 +354,7 @@ html.rail-closed .chrome-left { width: 44px; }
      descender on a g or a y falls outside it and the overflow clip below
      shears it off — "Oregon" lost the tail of its g */
   line-height: 1.5;
-  color: #5b5a53;
+  color: var(--g-700);
   white-space: nowrap;
   overflow: hidden;
   cursor: pointer;
@@ -347,7 +364,7 @@ html.rail-closed .chrome-left { width: 44px; }
 .chrome-place:hover,
 .chrome-place:focus-visible {
   color: var(--ink);
-  background: rgba(38, 37, 30, 0.06);
+  background: rgba(var(--ink-rgb), 0.06);
 }
 .chrome-place-city { overflow: hidden; text-overflow: ellipsis; }
 .chrome-place-time {
@@ -402,7 +419,7 @@ html.rail-closed .chrome-left { width: 44px; }
   -webkit-tap-highlight-color: transparent;
   /* transform is added below, for the drag */
 }
-.chrome-tab:hover { background: rgba(38, 37, 30, 0.05); color: #5b5a53; }
+.chrome-tab:hover { background: rgba(var(--ink-rgb), 0.05); color: var(--g-700); }
 
 /* ---- dragging one along the strip (js/tabs.js). The neighbours glide;
    the tab in hand does not, because it is already following the pointer
@@ -431,7 +448,7 @@ html.tab-dragging .chrome-tab.is-dragging {
    cream, one shade down so you can see what you are carrying */
 html.tab-dragging .chrome-tab.is-dragging:not(.is-active) {
   background-color: var(--shell-surface);
-  background-image: linear-gradient(rgba(38, 37, 30, 0.05), rgba(38, 37, 30, 0.05));
+  background-image: linear-gradient(rgba(var(--ink-rgb), 0.05), rgba(var(--ink-rgb), 0.05));
 }
 html.tab-dragging { cursor: grabbing; user-select: none; }
 html.tab-dragging .chrome-tab { cursor: grabbing; }
@@ -447,7 +464,7 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
    colour, and that pill is the only opaque thing in here — see below. */
 .chrome-tab.is-active {
   background: transparent;
-  color: #5b5a53;
+  color: var(--g-700);
   /* the white top-edge highlight retired here: the seam now draws a real
      hairline around this tab, and two lines on one edge is one too many */
 }
@@ -465,7 +482,7 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
 .tab-id {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   min-width: 0;
   max-width: 100%;
   /* EVERY tab carries the pill's padding, active or not — only the fill is
@@ -473,7 +490,7 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
      and name sit 9px right of where an inactive tab's do, so the label jumps
      sideways the moment you switch tabs. The tab's own padding is wound back
      by the same amount, so the icon lands where it always did. */
-  padding: 5px 11px;
+  padding: 6px 12px;
   /* fully round, not a rounded rectangle. The pill has to read as an object
      the page passes BEHIND — a lozenge that ends in two arcs the width of
      its own height does that; an 8px corner reads as a panel welded to the
@@ -563,7 +580,7 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
   background: none;
   border: 0;
   border-radius: 5px;
-  color: #84847e;
+  color: var(--g-550);
   cursor: pointer;
   opacity: 0;
   transition: opacity var(--t-micro) ease, background-color var(--t-micro) ease,
@@ -572,7 +589,7 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
 .tab-close svg { width: 20px; height: 20px; }
 .chrome-tab:hover .tab-close,
 .tab-close:focus-visible { opacity: 1; }
-.tab-close:hover { background: rgba(38, 37, 30, 0.08); color: var(--ink); }
+.tab-close:hover { background: rgba(var(--ink-rgb), 0.08); color: var(--ink); }
 /* you cannot close the window from inside it */
 .tab-list.is-single .tab-close { display: none; }
 /* At the cap the labels stand down and the favicons speak for themselves —
@@ -594,7 +611,7 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
    centred in the strip lands at 18.5 and reads as floating above the row.
    flex-end plus 3 puts its centre at 24 — level with the close buttons
    inside the tabs. */
-.tab-list .chrome-new { align-self: flex-end; margin: 0 0 3px 4px; }
+.tab-list .chrome-new { align-self: flex-end; margin: 0 0 4px 4px; }
 .chrome-new.is-capped { animation: tab-cap-shake 0.18s var(--ease-glide) 2; }
 
 /* ============================================================
@@ -697,27 +714,26 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   inset: 0 -4px;
 }
 
-/* ---- identity ---- */
-.side-id {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  height: 52px;
-  padding: 0 10px;
-  border-radius: 8px;
-  text-decoration: none;
-}
+/* ---- identity ----
+   The letterhead: name and role as plain type on the bone, the top half
+   of .ask-chip (which is a typographic block now, not a surface — see the
+   bottom of this file).
 
-/* it is a link home, so it answers the cursor the way every other row in
-   the rail does — the accent, and nothing more */
-.side-id:hover .side-name { color: var(--ink); }
-.side-name { transition: color var(--t-micro) ease; }
+   THE RAIL'S WHOLE TYPE SCALE lives in three voices, and this block obeys
+   it like everything else:
+     primary      13.5px / --g-900   rows, the status leads, and the name
+                                     (whose ONLY distinction is weight 500)
+     provisional  13px   / --g-550   the blank's rotating question
+     meta         11px   / --g-400   labels, the role, subs, ⌘K
+   The name used to sit at full --ink over a foot whose leads were 12.5px
+   mid-grey, and the column read as one shout over a whisper. One ink for
+   every primary line, one grey for every meta line, and the hierarchy is
+   carried by weight and position instead of by volume. */
 .side-id-text {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   overflow: hidden;
 }
 .side-name,
@@ -726,7 +742,12 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.side-name { font-size: 13px; line-height: 16px; color: var(--ink); }
+.side-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 17px;
+  color: var(--g-900);
+}
 .side-role { font-size: 11px; line-height: 13px; color: var(--shell-dim); }
 
 /* ---- the scrolling middle (groups land here, built by shell.js) ---- */
@@ -736,11 +757,11 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #d8d7d2 transparent;
+  scrollbar-color: var(--g-200) transparent;
 }
 .side-scroll::-webkit-scrollbar { width: 6px; }
 .side-scroll::-webkit-scrollbar-thumb {
-  background: #d8d7d2;
+  background: var(--g-200);
   border-radius: 3px;
 }
 .side-scroll::-webkit-scrollbar-track { background: none; }
@@ -766,19 +787,44 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
    panel they sit in is still travelling right. So they simply come with
    it, and the chrome fades up over the same beat. */
 html.intro-run .side-group { transition: none; }
-/* the chrome travels on the rail's own curve, so the two arrivals are
-   visibly the same gesture */
-html.intro-run .shell-chrome {
-  /* the fade rides the same 0.3s as the slide, so the chrome arrives as
-     one gesture rather than sliding in and then becoming visible */
-  transition: opacity var(--t-glide) ease,
-              margin-top var(--t-glide) var(--ease-glide);
-}
+
+/* ---- the assembly, while it is running (js/typewriter.js puts this class
+   on for exactly the length of the ride).
+
+   Nothing in the arrival is a CSS transition on these two any more. The
+   version this replaces tweened `margin-top` on the strip — a layout
+   property, so every frame relaid the document and re-fit the 1280 stage —
+   while the rail's `margin-left` had no transition at all and simply
+   snapped, taking the card's width, the stage's zoom and the half-typed
+   name with it. One piece oozed, one piece jumped. They are a FLIP now:
+   the layout lands first and a compositor transform carries each piece in
+   from where it was, which is the same lesson the rail toggle learned.
+
+   So the only job left here is to keep CSS out of the way. `transition:
+   none` means the opacity these get from .is-lit lands in the same frame
+   as the layout — which is not a flash, because both pieces are entirely
+   off-screen at that moment — instead of fading up over 0.3s. That matters
+   beyond tidiness: a layer mid-opacity is non-opaque, and both Chrome and
+   Firefox drop subpixel text antialiasing on a non-opaque layer, so every
+   label in the rail used to go thin for the length of the slide and then
+   snap crisp. Opaque from frame one, translating only. ---- */
+html.intro-glide :is(.shell-chrome, .shell-side, .side-grip) { transition: none; }
+
+/* The hairline is measured off the FINAL frame — the card's corner, the
+   tab's mouth, the strip's floor — so it cannot ride in with the pieces it
+   outlines: it would draw the strip's floor as a line hanging in space
+   while the strip itself is still above the window. It waits out the ride
+   and settles onto the assembled frame, which is also the first moment the
+   corner it turns is round. (Written through `.is-lit ~` rather than as a
+   plain descendant because that is the rule it has to beat.) */
+html.intro-glide .shell-chrome.is-lit ~ .shell-seam { opacity: 0; transition: none; }
+
+/* the corner is a detail of the frame, so it arrives on the frame's clock */
 html.intro-run .shell-card {
-  transition: border-radius var(--t-glide) var(--ease-glide);
+  transition: border-radius var(--t-intro) var(--ease-intro);
 }
 .side-label {
-  margin: 14px 0 3px;
+  margin: 14px 0 4px;
   padding: 0 10px;
   font-size: 11px;
   font-weight: 400;
@@ -797,8 +843,8 @@ html.intro-run .shell-card {
    still be spending 24px on the joint at 660px tall, where there is no
    slack to spend and the tree is already scrolling. This gives back nearly
    nothing under ~700px, opens up through the laptop range, and stops at
-   38px — past that it is not spacing any more, it is a second hole. */
-.side-group + .side-group { margin-top: clamp(0px, calc(6vh - 30px), 38px); }
+   40px — past that it is not spacing any more, it is a second hole. */
+.side-group + .side-group { margin-top: clamp(0px, calc(6vh - 30px), var(--sp-40)); }
 
 /* ============================================================
    The globe card — where you are, where he is, and how far apart.
@@ -808,11 +854,10 @@ html.intro-run .shell-card {
   position: fixed;              /* js/globe.js pins it under its trigger */
   z-index: 70;
   width: 208px;
-  padding: 14px 16px 13px;
+  padding: 14px 16px 14px;
   background: var(--bg);
   border: 1px solid var(--shell-line);
   border-radius: 14px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
   opacity: 0;
   translate: -6px 0;
   transition: opacity var(--t-stage) ease, translate var(--t-rise) var(--ease-rise);
@@ -837,7 +882,7 @@ html.intro-run .shell-card {
 /* the site's construction line, and its slow crawl (ai.css's spark-march) */
 .globe .guide {
   fill: none;
-  stroke: #cdcdc9;
+  stroke: var(--g-250);
   stroke-width: 1;
   stroke-dasharray: 2 5;
   stroke-linecap: round;
@@ -847,7 +892,7 @@ html.intro-run .shell-card {
    dotted construction line behind them */
 .globe-land {
   fill: none;
-  stroke: #5b5a53;
+  stroke: var(--g-700);
   stroke-width: 1.1;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -859,7 +904,7 @@ html.intro-run .shell-card {
 .globe-limb,
 .globe-eq {
   fill: none;
-  stroke: #5b5a53;
+  stroke: var(--g-700);
   stroke-width: 1.2;
   stroke-linecap: round;
 }
@@ -879,7 +924,7 @@ html.intro-run .shell-card {
 /* Tigo: a hollow dot, the site's .dot.hollow manner */
 .globe-home circle {
   fill: var(--bg);
-  stroke: #5b5a53;
+  stroke: var(--g-700);
   stroke-width: 1.4;
   opacity: 0;
   transition: opacity 0.3s ease 0.1s;
@@ -887,8 +932,8 @@ html.intro-run .shell-card {
 .globe-card.is-landed .globe-home circle { opacity: 1; }
 
 /* the visitor: the case study's orange teardrop, dropped on arrival */
-.globe-pin path { fill: var(--orange); stroke: #f7f7f4; stroke-width: 1.1; }
-.globe-pin circle { fill: #f7f7f4; }
+.globe-pin path { fill: var(--orange); stroke: var(--bg); stroke-width: 1.1; }
+.globe-pin circle { fill: var(--bg); }
 .pin-drop {
   opacity: 0;
   translate: 0 -14px;
@@ -904,9 +949,9 @@ html.intro-run .shell-card {
               scale var(--t-pop) var(--ease-pop);
 }
 
-.globe-where { font-size: 12.5px; color: rgba(38, 37, 30, 0.48); text-align: center; }
+.globe-where { font-size: 12.5px; color: rgba(var(--ink-rgb), 0.48); text-align: center; }
 .globe-far {
-  margin-top: 3px;
+  margin-top: 4px;
   font-size: 11.5px;
   color: var(--orange);
   text-align: center;
@@ -930,11 +975,16 @@ html.intro-run .shell-card {
   height: 6px;
   margin-left: 4px;
   border-radius: 50%;
-  background: #cdcdc9;
+  background: var(--g-250);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .side-row:hover .side-ico * { animation: none; }
+  /* the pen holds still and the mark does not turn: the ink arrives
+     without the draw, and the asterisk holds its pose (the six-fold
+     symmetry means the banked notches land invisibly anyway) */
+  .ask-blank::before { transition: none; }
+  .ask-blank > svg { transition: none; }
   /* the rail appears; it does not perform */
   html.intro-run .side-group {
     translate: none;
@@ -952,7 +1002,7 @@ html.intro-run .shell-card {
 .side-row {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   height: 30px;
   /* the group label's own inset, so a row's glyph starts on exactly the
      letter its label starts on */
@@ -978,7 +1028,7 @@ html.intro-run .shell-card {
      is now drawn between the row and its GLYPH (.side-ico, its own grey) — one
      hierarchy instead of two. Kept a shade off --ink so hover still has
      somewhere to go. */
-  color: #34332c;
+  color: var(--g-900);
   -webkit-tap-highlight-color: transparent;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
               box-shadow var(--t-micro) ease;
@@ -990,7 +1040,7 @@ html.intro-run .shell-card {
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   padding-right: 10px;
   color: inherit;
   text-decoration: none;
@@ -1003,7 +1053,7 @@ html.intro-run .shell-card {
 .side-row:hover,
 .side-row:has(.side-link:focus-visible) {
   color: var(--ink);
-  background-color: rgba(38, 37, 30, 0.06);
+  background-color: rgba(var(--ink-rgb), 0.06);
 }
 
 /* You are here: the SAME chip the cursor draws, left standing. The accent
@@ -1015,23 +1065,23 @@ html.intro-run .shell-card {
 .side-row.is-current,
 .side-row.is-here {
   color: var(--ink);
-  background-color: rgba(38, 37, 30, 0.06);
+  background-color: rgba(var(--ink-rgb), 0.06);
 }
 
 /* The trail is the chain of parents you are inside — Work above PantryPal,
    Play above Pong. It steps back to the ROW colour: only the deepest thing
    you are actually looking at wears the chip, and a parent should sit
    level with its siblings, not a shade apart from them. */
-.side-row.is-trail { color: #34332c; }
+.side-row.is-trail { color: var(--g-900); }
 /* One chip at a time: the moment a section claims "here", the page row
    above it puts the fill down and goes back to being an ordinary row. */
 .side-scroll.has-here .side-row.is-current {
-  color: #34332c;
+  color: var(--g-900);
   background-color: transparent;
 }
 .side-scroll.has-here .side-row.is-current:hover {
   color: var(--ink);
-  background-color: rgba(38, 37, 30, 0.06);
+  background-color: rgba(var(--ink-rgb), 0.06);
 }
 
 /* The glyph sits a step behind its own label: the name first, the shape
@@ -1045,20 +1095,20 @@ html.intro-run .shell-card {
   height: 18px;
   display: grid;
   place-items: center;
-  color: #8a8981;
+  color: var(--g-500);
   transition: color var(--t-micro) ease;
 }
 /* under the cursor the whole row lifts together, the glyph by one step */
 .side-row:hover .side-ico,
-.side-row:has(.side-link:focus-visible) .side-ico { color: #5b5a53; }
+.side-row:has(.side-link:focus-visible) .side-ico { color: var(--g-700); }
 /* the row you are on wears the chip at rest, so its glyph sits at the
    hover step too — the state is one thing, drawn the same way throughout */
 .side-row.is-current .side-ico,
-.side-row.is-here .side-ico { color: #5b5a53; }
+.side-row.is-here .side-ico { color: var(--g-700); }
 /* ...and when a section further down claims "here", the glyph goes back
    with the rest of the row (this one outweighs both) */
-.side-scroll.has-here .side-row.is-current .side-ico { color: #8a8981; }
-.side-scroll.has-here .side-row.is-current:hover .side-ico { color: #5b5a53; }
+.side-scroll.has-here .side-row.is-current .side-ico { color: var(--g-500); }
+.side-scroll.has-here .side-row.is-current:hover .side-ico { color: var(--g-700); }
 .side-ico > svg,
 .side-ico > img { display: block; width: 100%; height: 100%; }
 /* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which
@@ -1112,7 +1162,7 @@ html.intro-run .shell-card {
   background: none;
   border: 0;
   border-radius: 3px;
-  color: #b0afab;
+  color: var(--g-350);
   cursor: pointer;
   transition: color var(--t-micro) ease, rotate var(--t-micro) var(--ease-glide);
 }
@@ -1136,25 +1186,36 @@ html.intro-run .shell-card {
    has somewhere to come back to if nesting ever earns a gutter again. */
 .side-kids[hidden] { display: none; }
 
-/* ---- the foot: status, then the ask pill ---- */
+/* ...except for a small step in. The disclosure alone said "nested" only
+   while the twisty was on screen; with Work closed by default, a visitor
+   who opens it sees three rows appear in a column that is otherwise flat
+   and has to infer the relationship from the animation. 12px — half the
+   glyph gutter, so the case studies read as belonging to Work without
+   starting a second left edge you can see from across the column. */
+.side-kids .side-row { padding-left: 22px; }
+
+/* ---- the foot: status, and only status now (the ask chip moved up
+   under the name) ---- */
 .side-foot {
   flex: none;
   padding-top: 8px;
 }
 
 /* ---- NOW (see statusHTML in js/shell.js for why it lives down here).
-   Two rows of plain text, no frame: the chip below is the rail's one
-   outlined object and a second box beside it would halve the point of it.
+   Two rows of plain text, no frame: the rail gave up boxes altogether —
+   the letterhead at its head is type on the bone, and the foot matches.
    The label carries the same 11px grey the nav groups use, so the block
-   reads as one more section of the rail rather than a widget bolted on. */
-.side-status { margin-bottom: 10px; }
+   reads as one more section of the rail rather than a widget bolted on.
+   It is the last thing in the column now, so it carries no bottom margin —
+   the rail's own 8px floor is the gap. */
+.side-status { margin-bottom: 0; }
 .side-status .side-label { margin-top: 0; }
 
 .st-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 8px;
   text-decoration: none;
   transition: background-color var(--t-micro) ease;
@@ -1167,7 +1228,12 @@ html.intro-run .shell-card {
 }
 /* Both entries take the SAME two-line shape — a lead and a quieter second
    line — so the block reads as one list rather than a row plus a footnote,
-   and neither string has to wrap at the rail's narrow widths. */
+   and neither string has to wrap at the rail's narrow widths.
+   The leads speak the rail's PRIMARY voice (13.5 / --g-900, the same as
+   every nav row and the name): they used to sit at 12.5 mid-grey, and
+   against the letterhead the whole foot read as the weak end of a column
+   that was supposed to be one column. Hierarchy inside the foot is the
+   subs' job. */
 .st-lead,
 .st-sub {
   white-space: nowrap;
@@ -1175,100 +1241,262 @@ html.intro-run .shell-card {
   text-overflow: ellipsis;
   transition: color var(--t-micro) ease;
 }
-.st-lead { font-size: 12.5px; line-height: 15px; color: #5b5a53; }
+.st-lead { font-size: 13.5px; line-height: 17px; color: var(--g-900); }
 .st-sub { font-size: 11px; line-height: 13px; color: var(--shell-dim); }
 
-.st-row:hover { background: rgba(38, 37, 30, 0.05); }
+.st-row:hover { background: rgba(var(--ink-rgb), 0.05); }
 .st-row:hover .st-lead { color: var(--ink); }
 
-/* The markers carry the tense. FILLED and breathing is what is true right
-   now; the same dot HOLLOW is the thing that has not happened yet, and it
-   holds still. One shape, two states — cheaper than a second glyph, and it
-   is legible at 6px in a way a second glyph would not be. */
+/* The markers carry the tense. FILLED is what is true right now; the same
+   dot HOLLOW is the thing that has not happened yet. One shape, two states
+   — cheaper than a second glyph, and it is legible at 6px in a way a second
+   glyph would not be. Both hold still, in the same grey as the place dot in
+   the chrome (.now-dot): a rail that is already carrying an accent per case
+   study does not need a blinking orange light in its foot. */
 .st-dot {
   flex: none;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--orange);
-  animation: st-breathe 4s var(--ease-lift) infinite;
+  background: var(--g-250);
 }
 .st-row.is-ahead .st-dot {
   background: none;
-  box-shadow: inset 0 0 0 1.5px #cdcdc9;
-  animation: none;
+  box-shadow: inset 0 0 0 1.5px var(--g-250);
   transition: box-shadow var(--t-micro) ease;
 }
 .st-row.is-ahead:hover .st-dot { box-shadow: inset 0 0 0 1.5px var(--ink); }
-@keyframes st-breathe {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245, 78, 0, 0.35); }
-  50%      { opacity: 0.55; box-shadow: 0 0 0 4px rgba(245, 78, 0, 0); }
+/* ============================================================
+   The letterhead — identity and the ask, one typographic object
+
+   Four shapes got us here. A 42px outlined lozenge at the foot of the
+   rail; a bare field under the name; then one filled chip holding both
+   — paper on the rail's bone — and the chip is what taught the rule:
+   it was the ONLY filled surface in a column that is otherwise pure
+   type, and one box in a rail of typography does not read as "the
+   important thing", it reads as a widget from another site. Sore
+   thumb, verbatim.
+
+   So no surface at all, and the rail speaks one material everywhere.
+   Under the name sits the blank: ONE asterisk — the AI's mark, worn
+   exactly once — then the rotating question on a dotted rule. The dots
+   are the site's construction line (the globe's grid, the spark's
+   orbit) doing what dots do on paper: marking the blank you are
+   invited to write in. Proximity ties the halves; a twin asterisk on
+   the name tried to say it too and read as a duplicate.
+
+   The hover is the pencil being INKED, and the mark being STIRRED. A
+   solid line draws itself left→right over the dots on the pen's own
+   curve, the question steps up a grey, and the asterisk TURNS — its
+   own verb, not the glyph redraw the rows do. It also advances one
+   notch per question (js/shell.js banks --ask-spin), so the mark and
+   the question move on the same beat, like the asterisk is stirring
+   the next one up.
+
+   (Still no colour to spend. --orange is black on this site and
+   --ember is spoken for — the blank does its inviting in ink.)
+   ============================================================ */
+.ask-chip {
+  flex: none;
+  /* 10px here + the rail's own 8 lands the name on the exact left edge
+     the group labels and row glyphs share — the letterhead joins the
+     column's one text line instead of floating in its own box. 14 on
+     top so the block clears the strip's floor rather than wedging
+     under it; 12 below, then the first label's own 6. */
+  margin: 14px 10px 12px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .st-dot { animation: none; }
-}
-.ask-pill {
-  width: 100%;
-  height: 42px;
+.ask-line {
+  position: relative;
+  /* 22px of line and 8 of ground under it: the padding keeps the dotted
+     rule inside the pointer's target, so the blank can be clicked ON the
+     blank, not only on the words above it */
+  height: 30px;
+  padding-bottom: 8px;
+  /* the step off the role line — far enough that the question is a second
+     thought rather than a third line of the name, close enough that it is
+     plainly the same object */
+  margin-top: 10px;
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 0 12px;
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 500;
-  /* The rail's own grey, not the accent: at rest the chip is one more
-     quiet row that happens to wear an outline. Orange is what HOVER means
-     everywhere on this site, so the chip earns it the same way the rows
-     do — under the hand, never at rest. */
-  color: #5b5a53;
-  text-decoration: none;
-  background: var(--bg);
-  border: 1px solid var(--shell-line);
-  border-radius: 9px;           /* the tab's corner, not a lozenge */
+  gap: 8px;
+  /* POINTER, not text. The field is a facade — a mouse click here never
+     types, it opens the sheet — and an I-beam promises a caret that a
+     click does not deliver. The arrow-to-hand is the honest story:
+     this line is a door that looks like a blank, not a blank. */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color var(--t-micro) ease,
-              border-color var(--t-micro) ease,
-              box-shadow var(--t-lift) var(--ease-lift),
-              transform var(--t-snap) var(--ease-spring);
-  /* three beckoning beats after arrival, then still — an invitation,
-     not a strobe */
-  animation: ask-beckon 2.8s var(--ease-lift) 1.5s 3;
 }
-/* the beckon is a RING that expands and goes — it exists for three beats on
-   arrival and leaves nothing behind it, which is why it can still be here
-   with the resting glow gone */
-@keyframes ask-beckon {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 78, 0, 0.3); }
-  55%      { box-shadow: 0 0 0 7px rgba(245, 78, 0, 0); }
+
+/* ---- THE BLANK, and its measure.
+   The ruled span is the asterisk plus the writable field, and NOTHING
+   else — the ⌘K is a hint about the blank, so it stands outside the
+   rule. That alone pulls the line in by the width of the shortcut.
+
+   The cap is the important half. The rule used to run the full width of
+   the column: 172px against a name that sets 126 and a role that sets
+   128, so the AI block read a third longer than the letterhead it hangs
+   from — and dragging the rail out to 420 stretched it into a bar three
+   times the name. Type does not stretch, so the blank must not either.
+   138 is the letterhead's own measure plus the few px the longest
+   question (110 at 13px) needs past it — near enough to read as the
+   same column edge, wide enough that no question is ever clipped at the
+   default width. It is a MAX, so a rail dragged narrow still hands the
+   question everything there is (and is-tight spends the ⌘K first). ---- */
+.ask-blank {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 138px;
+  align-self: stretch;           /* so its foot IS the line's content edge */
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-/* the hover is where it warms up — quiet at rest, definite under the hand */
-.ask-pill:hover,
-.ask-pill:focus-visible {
-  color: var(--ink);
-  background: rgba(38, 37, 30, 0.05);
-  border-color: rgba(38, 37, 30, 0.3);
-  transform: translateY(-1px);
+
+/* dots at rest, the pencil's line. A gradient rather than an SVG so the
+   dash pitch holds at any width the rail is dragged to; 2 on, 5 off is
+   the .guide spec the site's construction lines keep. */
+.ask-blank::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: repeating-linear-gradient(90deg,
+              var(--g-250) 0 2px, transparent 2px 7px);
 }
-.ask-pill:active { transform: scale(0.985); }
-@media (prefers-reduced-motion: reduce) { .ask-pill { animation: none; } }
-/* the asterisk keeps the one warm speck — the now-dot's manner, a live
-   thing marked by a point of accent on an otherwise grey object */
-.ask-pill svg { flex: none; width: 18px; height: 18px; color: var(--orange); }
-.ask-pill .ask-label {
+/* …and the ink that draws over it on approach. A dashed line cannot draw
+   itself in, so the ink is a second, solid line scaling open from the
+   left on the pen's curve — over the dots, exactly on top of them. */
+.ask-blank::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  z-index: 1;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.5s var(--ease-draw);
+}
+.ask-line:hover .ask-blank::before,
+.ask-line:focus-within .ask-blank::before { transform: scaleX(1); }
+
+/* the question steps up a grey while the pen is on the line */
+.ask-line:hover .ask-input::placeholder,
+.ask-line:focus-within .ask-input::placeholder { color: var(--g-700); }
+
+/* …and the mark TURNS — the AI's own verb. The rows' glyphs redraw
+   themselves under the pen; the asterisk is not one of the rows, and
+   giving it the same trick made it furniture. It spins instead: half a
+   revolution on approach, sprung on the glide curve so it twirls a hair
+   past and settles. Six-fold symmetry is what makes this free — every
+   60° lands the shape on itself, so the spin reads as life, never as a
+   new pose.
+
+   The rotation STACKS on the notch the question-swap banks into
+   --ask-spin (js/shell.js): a calc over the same var, so hover and the
+   per-question advance can never fight, and letting go unwinds only the
+   half-turn the hand added. */
+.ask-blank > svg {
+  flex: none;
+  /* the rows' 18px glyph box, so the question starts on the exact text
+     edge Home and Resume start on — one vertical through the column */
+  width: 18px;
+  height: 18px;
+  color: var(--orange);
+  rotate: var(--ask-spin, 0deg);
+  transition: rotate 0.55s var(--ease-glide);
+}
+.ask-line:hover .ask-blank > svg,
+.ask-line:focus-within .ask-blank > svg { rotate: calc(var(--ask-spin, 0deg) + 180deg); }
+
+.ask-input {
   flex: 1;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  font: inherit;
+  /* the PROVISIONAL voice of the rail's scale: 13, between the rows'
+     13.5 and the meta 11 — a sample of input, not a line of the column.
+     (13.5 was tried and the longest ASKS string clips at the default
+     rail width; the half-step is what keeps every question whole.) */
+  font-size: 13px;
+  line-height: 1;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  /* pointer with the rest of the line — a mouse press opens the sheet,
+     it never types here (the caret below is the keyboard path's) */
+  cursor: pointer;
+  /* the questions are written to fit the narrowest rail (see ASKS in
+     js/shell.js); this is the seatbelt for a question that one day is not,
+     so it trails off instead of stopping mid-letter */
+  text-overflow: ellipsis;
+  /* the field is a facade (js/shell.js wireAI): a caret shows only on the
+     keyboard path, in the pause between tabbing in and the first letter —
+     the same --orange the sheet's real field writes with (ai.css) */
+  caret-color: var(--orange);
 }
+/* the rail draws its own rule; the browser's focus ring would box a field
+   that has deliberately given up its box */
+.ask-input:focus { outline: none; }
+.ask-input::placeholder {
+  color: var(--g-550);
+  opacity: 1;                         /* Firefox dims placeholders by default */
+}
+/* (the .is-swap crossfade retired with the fade itself — the ghost
+   writer types and erases the question in place, js/shell.js) */
+
+/* ---- the ghost writer's two instruments (js/shell.js wireAI) ----
+   The mirror: an invisible twin of the placeholder-so-far, wearing the
+   input's exact type so its width IS the text's width — measured once
+   per letter to stand the caret after the last character. Absolute, so
+   the flex line never lays it out; pre, so a trailing space measures. */
+.ask-mirror {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  white-space: pre;
+  font-size: 13px;                    /* the input's own voice, exactly */
+  pointer-events: none;
+}
+/* The caret: EMBER, and the only ember the rail ever shows — the
+   palette's first sanctioned ember object is the caret that types the
+   hero's name (styles.css), and this is the same caret at its second
+   desk. It exists only while the writer writes or erases; every hold
+   is plain ink. No fade: a typewriter's caret is either at work or
+   gone, and the mechanical cut is the honest one. */
+.ask-caret {
+  position: absolute;
+  top: 4px;                           /* centres the 14px bar in the 22px line */
+  width: 1.5px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--ember);
+  pointer-events: none;
+}
+.ask-caret[hidden] { display: none; }
+/* the tail: the site's steps(1) blink manner (play.css types this way
+   too) — a beat of presence at the end of the sentence, then gone */
+@keyframes ask-caret-blink { 50% { opacity: 0; } }
+.ask-caret.is-blink { animation: ask-caret-blink 1.06s steps(1) infinite; }
+
 .ask-kbd {
   flex: none;
   font-size: 11px;
   color: var(--shell-dim);            /* the shortcut is furniture, not accent */
   letter-spacing: 0.02em;
 }
+/* a rail dragged towards its minimum spends the hint on the question —
+   see the ResizeObserver in wireAI. ⌘K keeps working either way */
+.ask-line.is-tight .ask-kbd { display: none; }
 
 /* ============================================================
    Content card — the page's own 1280×832 stage, untouched

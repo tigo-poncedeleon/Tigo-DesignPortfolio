@@ -7,27 +7,65 @@
   const stage = document.querySelector('.case-stage');
   if (stage) requestAnimationFrame(() => stage.classList.add('revealed'));
 
-  // ---- the hero laptop leans toward the cursor — the about portrait's
-  // manner, a studio display instead of a face ----
-  const heroImg = document.querySelector('.case-hero img');
-  if (heroImg && !reduceMotion) {
+  // ---- chapter 01's parallax, all three surfaces off ONE pointer and ONE
+  // rAF: the display leans toward the cursor (the about portrait's manner,
+  // a studio display instead of a face), the canvas floor drifts AGAINST
+  // the lean so the grid reads as a surface the display stands on, and a
+  // specular highlight tracks the pointer across the glass. ----
+  const heroStage = document.querySelector('.hero-stage');
+  if (heroStage && !reduceMotion) {
     let tx = 0, ty = 0, rx = 0, ry = 0, leanRaf = 0;
+    const floor = document.querySelector('.canvas-floor');
+    const dots = floor && floor.querySelector('.cf-dots');
+    const spot = floor && floor.querySelector('.cf-spot');
+    const sheen = heroStage.querySelector('.hs-sheen');
     window.addEventListener('mousemove', (e) => {
-      const r = heroImg.getBoundingClientRect();
+      const r = heroStage.getBoundingClientRect();
       tx = ((e.clientX - (r.left + r.width / 2)) / window.innerWidth) * 0.22;
       ty = ((e.clientY - (r.top + r.height / 2)) / window.innerHeight) * 0.12;
+      // the sheen is a paint on a hovered element only, so it costs nothing
+      // to keep current — and it must not wait on the eased lean below
+      if (sheen && r.width) {
+        sheen.style.setProperty('--sx',
+          (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+        sheen.style.setProperty('--sy',
+          (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+      }
+      // the pool of bright dots follows the cursor with no easing at all —
+      // a light you are holding lags nothing. Measured against the spot's
+      // OWN rect so the drift below is already accounted for.
+      if (spot) {
+        const f = floor.getBoundingClientRect();
+        const inside = e.clientX >= f.left && e.clientX <= f.right &&
+                       e.clientY >= f.top && e.clientY <= f.bottom;
+        floor.classList.toggle('is-lit', inside);
+        if (inside) {
+          // the card is drawn under a zoom (js/stage-fit.js), so client
+          // pixels have to be divided back into the element's own units
+          // before they can be handed to a CSS length
+          const s = spot.getBoundingClientRect();
+          const k = spot.offsetWidth ? s.width / spot.offsetWidth : 1;
+          spot.style.setProperty('--mx', Math.round((e.clientX - s.left) / k) + 'px');
+          spot.style.setProperty('--my', Math.round((e.clientY - s.top) / k) + 'px');
+        }
+      }
     });
     const lean = () => {
       // converged and idle = no write. The old loop rewrote the transform
-      // every frame forever (on a mix-blend-mode image, so every write was
-      // a re-blend); and while the page scrolls the lean waits entirely.
+      // every frame forever; and while the page scrolls the lean waits
+      // entirely.
       if (!document.documentElement.classList.contains('is-scrolling')) {
         const dx = tx - rx, dy = ty - ry;
         if (Math.abs(dx) > 1e-4 || Math.abs(dy) > 1e-4) {
           rx += dx * 0.06;
           ry += dy * 0.06;
-          heroImg.style.transform =
+          heroStage.style.transform =
             'perspective(900px) rotateY(' + rx + 'rad) rotateX(' + -ry + 'rad)';
+          // 150px per radian ≈ 16px of travel at the corners of the window
+          if (dots) {
+            dots.style.translate =
+              (-rx * 150).toFixed(2) + 'px ' + (ry * 150).toFixed(2) + 'px';
+          }
         }
       }
       leanRaf = requestAnimationFrame(lean);
@@ -39,7 +77,7 @@
         if (en.isIntersecting) { if (!leanRaf) leanRaf = requestAnimationFrame(lean); }
         else { cancelAnimationFrame(leanRaf); leanRaf = 0; }
       }), { rootMargin: '20% 0px' });
-      leanIO.observe(heroImg.closest('.case-slide') || heroImg);
+      leanIO.observe(heroStage.closest('.case-slide') || heroStage);
     } else {
       leanRaf = requestAnimationFrame(lean);
     }
@@ -87,22 +125,40 @@
     });
   }
 
-  // ---- the design-system exhibits (chapters 06–09) are STILLS THAT ARE
+  // ---- the design-system exhibits (chapters 06–10) are STILLS THAT ARE
   // LINKS: a picture of the real document, and the whole card opens that
   // document in its own tab. No iframes, nothing embedded, nothing to
   // scroll inside a pane — the markup carries the whole behaviour. All
-  // that is left in JS is the tab switching. ----
+  // that is left in JS is the tab switching, and the tabs are the page's
+  // one segmented control (the paths chapter's object): --seg-n sizes
+  // the thumb, --seg-i slides it. Arrows walk the tablist, like the
+  // sketchbook's. ----
   document.querySelectorAll('.exhibit-tabs').forEach((tabset) => {
     const slide = tabset.closest('.case-slide');
     const tabs = Array.from(tabset.querySelectorAll('.ex-tab'));
     const panes = Array.from(slide.querySelectorAll('.ex-pane'));
-    tabs.forEach((tab) => tab.addEventListener('click', () => {
-      tabs.forEach((t) => {
-        t.classList.toggle('is-active', t === tab);
-        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+    tabset.style.setProperty('--seg-n', tabs.length);
+    const show = (idx) => {
+      tabset.style.setProperty('--seg-i', idx);
+      tabs.forEach((t, j) => {
+        t.classList.toggle('is-active', j === idx);
+        t.setAttribute('aria-selected', j === idx ? 'true' : 'false');
+        t.tabIndex = j === idx ? 0 : -1;
       });
-      panes.forEach((p) => p.classList.toggle('is-active', p.id === tab.dataset.pane));
-    }));
+      panes.forEach((p) => p.classList.toggle('is-active', p.id === tabs[idx].dataset.pane));
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => show(i));
+      tab.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        const n = (i + d + tabs.length) % tabs.length;
+        show(n);
+        tabs[n].focus();
+      });
+    });
+    show(Math.max(0, tabs.findIndex((t) => t.classList.contains('is-active'))));
   });
 
   // ---- the skill chapter's card TYPES its frontmatter in when the
@@ -142,6 +198,22 @@
     fitTile();
     window.addEventListener('resize', fitTile, { passive: true });
     window.addEventListener('shell:fit', fitTile, { passive: true });
+
+    // ---- and it ANSWERS when the cover sends you here. shell.js turns the
+    // cover's "try the working canvas" into a smooth scroll; without a
+    // landing the reader arrives at a board that looks like every other
+    // still on the page. The ring blooms once, timed to bloom as the scroll
+    // is settling rather than while it is still travelling. ----
+    const jump = document.querySelector('.case-pitch .site-link[href="#canvas"]');
+    if (jump && !reduceMotion) {
+      jump.addEventListener('click', () => {
+        vcTile.classList.remove('is-landed');
+        void vcTile.offsetWidth;            // restart the animation, not queue it
+        vcTile.classList.add('is-landed');
+      });
+      vcTile.addEventListener('animationend', () =>
+        vcTile.classList.remove('is-landed'));
+    }
   }
 
   // ---- the node marquee laps only while its chapter is on screen —

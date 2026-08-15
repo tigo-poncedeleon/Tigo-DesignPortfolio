@@ -6,10 +6,10 @@
 // /pulse-preview — the backend-free route the real redesign was verified on.
 //
 // It runs in two places off the same file: as a LIVE TILE on the case
-// study (attract mode runs the graph on a loop, exactly like the arcade
-// tiles idle on play — the tile is a plain link), and full-window on
-// canvas.html, which is what that link opens in a new tab. The page it
-// lands in calls setTheater(true) to hand the board the input.
+// study (a finished board — every result already generated, the clip
+// looping, the mesh turning; the tile is a plain link), and full-window
+// on canvas.html, which is what that link opens in a new tab. The page
+// it lands in calls setTheater(true) to hand the board the input.
 //
 // The interaction contract is the shipped one:
 //   · scroll pans (free); ⌘/ctrl+scroll zooms toward the cursor, deltas
@@ -86,7 +86,6 @@
   let engaged = false;                   // true only inside the theater
   let running = false;
   let nid = 0, eid = 0, gid = 0;
-  let clipboard = null;
 
   // ============================================================
   // undo — whole-graph snapshots, pushed BEFORE structural change
@@ -194,11 +193,10 @@
         icon(GLYPH.bolt) + '<span id="vc-cost-n">0</span></button>' +
       '<button type="button" class="vc-pill is-run" id="vc-run">' + icon(GLYPH.play, 1) + '<span>Run</span></button>' +
     '</div>' +
-    // ---- the action toolbar, floating top-center: placeholder when
-    // nothing is selected, the selection's verbs when something is ----
-    '<div class="vc-acttool" id="vc-acttool" role="toolbar" aria-label="Node actions">' +
-      '<span class="vc-act-placeholder">Please select a node</span>' +
-    '</div>' +
+    // (the shipped board floats an action toolbar top-center — every verb
+    // on it is a second copy of the right-click menu's, and with nothing
+    // selected it is a pill that says "Please select a node". Here the
+    // menu and the node's own play chip carry those verbs alone.)
     // ---- the create rail, left — the shipped column: Create, AI
     // Workflow Builder, Asset Library, Community, Auto Arrange, then
     // the divider and the profile initial ----
@@ -206,7 +204,7 @@
     // verbatim (stroke attrs on the children so the shared .vc svg rule
     // can't thin them out)
     '<div class="vc-rail" role="toolbar" aria-label="Create">' +
-      '<button type="button" class="vc-rail-add" id="vc-rail-add" title="Create" aria-haspopup="menu">' +
+      '<button type="button" class="vc-rail-add" id="vc-rail-add" title="Create">' +
         '<svg viewBox="0 0 20 20" aria-hidden="true">' +
           '<line x1="3" y1="10" x2="17" y2="10" stroke-width="2.8" />' +
           '<line x1="10" y1="17" x2="10" y2="3" stroke-width="2.8" /></svg></button>' +
@@ -290,15 +288,13 @@
     '</div>' +
     // ---- the context menu ----
     '<div class="vc-menu" id="vc-menu" role="menu" hidden></div>' +
-    // ---- the empty state ----
+    // ---- the empty state. On the shipped board this is where you pick a
+    // target and a pre-wired pair lands; here nothing mints nodes, so it
+    // points at the one move that brings the demo back ----
     '<div class="vc-empty" id="vc-empty" hidden>' +
-      '<p class="vc-empty-title">What will you create?</p>' +
-      '<p class="vc-empty-sub">pick a target and a pre-wired, runnable pair lands</p>' +
-      '<div class="vc-empty-row">' +
-        '<button type="button" data-start="image">' + icon(GLYPH.image) + 'Image</button>' +
-        '<button type="button" data-start="video">' + icon(GLYPH.video) + 'Video</button>' +
-        '<button type="button" data-start="model3d">' + icon(GLYPH.model3d) + '3D</button>' +
-      '</div>' +
+      '<p class="vc-empty-title">You deleted the board</p>' +
+      '<p class="vc-empty-sub">building new nodes is decorative in this demo — ' +
+        'undo (⌘Z) brings the graph back</p>' +
     '</div>';
 
   const $ = (id) => root.querySelector('#' + id);
@@ -308,7 +304,6 @@
   const edgeSvg = $('vc-edges');
   const bboxEl = $('vc-bbox');
   const lassoEl = $('vc-lasso');
-  const actTool = $('vc-acttool');
   const panel = $('vc-panel');
   const runBtn = $('vc-run');
   const zoomBtn = $('vc-zoom');
@@ -368,10 +363,10 @@
     clip: 'Media/vi-canvas-clip.webp',
     clipPoster: 'Media/vi-canvas-clip-poster.webp',
   };
-  // nothing is fetched until a board is actually RUN — the run IS the
-  // laziness, so the result <img>s carry no loading="lazy": inside the
-  // parked tile's scaled seat that only risks a well that never paints,
-  // and by then the bytes are already in cache anyway
+  // the board opens ALREADY GENERATED — parked or full-window, every
+  // result is on screen from the first frame — so the bytes are wanted
+  // immediately and the result <img>s carry no loading="lazy": inside
+  // the parked tile's scaled seat that only risks a well that never paints
   let warmed = false;
   const warmMedia = () => {
     if (warmed) return;
@@ -384,15 +379,15 @@
       '<img class="vc-photo" src="' + MEDIA.image[seed % 2] + '" alt="' +
       MEDIA.imageAlt[seed % 2] + '" decoding="async" draggable="false" />',
     // the video RESOLVES to the clip, looping the way the real node's
-    // result does; a click parks it on its poster frame
-    // parked in the tile the clip is its poster — a 520×287 animated webp
-    // decodes and repaints at 10fps for as long as it exists on screen,
-    // which taxed every scroll past the chapter. The real animation only
-    // loads when the theater takes the board (setTheater swaps data-clip
-    // in), so the parked page never pays for motion nobody asked for.
+    // result does — parked in the tile too, because a video node that
+    // sits on a still frame reads as another image node. A click parks
+    // it on its poster; reduced motion never starts it at all (an
+    // animated webp has no clock CSS can stop, so the source is the
+    // only honest switch).
     video: (seed, node) =>
       '<div class="vc-gif" title="Click to pause">' +
-        '<img class="vc-clip" src="' + MEDIA.clipPoster + '" data-clip="' +
+        '<img class="vc-clip" src="' +
+          (reduceMotion ? MEDIA.clipPoster : MEDIA.clip) + '" data-clip="' +
           MEDIA.clip + '" alt="Generated clip: the ' +
           'same run, in motion" decoding="async" draggable="false" />' +
         '<img class="vc-clip-still" src="' + MEDIA.clipPoster + '" alt="" ' +
@@ -437,8 +432,8 @@
 
   // ---- the scroll is sacred. While the reader is actually scrolling,
   // every self-running show in here holds its breath — the turntables
-  // park, the attract beat waits, and (via html.is-scrolling + a rule in
-  // vicino.css) every infinite CSS animation in the stage pauses. The
+  // park and (via html.is-scrolling + a rule in vicino.css) every
+  // infinite CSS animation in the stage pauses. The
   // scroll's raster budget comes first; a trailing 160ms of quiet ends
   // the hold and the shows pick up exactly where they stopped. ----
   let pageScrolling = false;
@@ -1051,8 +1046,8 @@
   };
 
   // ============================================================
-  // selection — the shipped contract, and the top-center action
-  // toolbar that narrates it ("Please select a node")
+  // selection — the shipped contract: the bbox, the cyan endpoints,
+  // and the panel that opens for ONE node and never for two
   // ============================================================
   const selected = () => nodes.filter((n) => n.sel);
   const setSel = (list) => {
@@ -1080,12 +1075,11 @@
       bboxEl.hidden = true;
     }
     // dragging repaints per pointermove, but WHO is selected only changes
-    // between gestures — the toolbar and panel rebuild only on membership
+    // between gestures — the panel rebuilds only on membership
     // (running rides the signature: its disabled states must not go stale)
     const sig = (running ? 'R|' : '') + sel.map((n) => n.id).join('|');
     if (sig !== selSig) {
       selSig = sig;
-      paintActTool(sel);
       // the properties panel: ONE node opens it; two closes it — the rule
       // the Cypress suite pins ("multi-select does NOT open the panel")
       if (sel.length === 1) openPanel(sel[0]);
@@ -1093,47 +1087,6 @@
     }
     paintMap();
   };
-
-  const paintActTool = (sel) => {
-    if (!sel.length) {
-      actTool.innerHTML = '<span class="vc-act-placeholder">Please select a node</span>';
-      return;
-    }
-    if (sel.length === 1) {
-      const n = sel[0];
-      actTool.innerHTML =
-        '<span class="vc-act-name">' + TYPES[n.type].name + '</span>' +
-        '<span class="vc-act-sep"></span>' +
-        (TYPES[n.type].runs ? '<button type="button" class="vc-act-btn" data-act="runone" title="Run this node"' +
-          (running ? ' disabled' : '') + '>' + icon(GLYPH.play, 1) + '</button>' : '') +
-        '<button type="button" class="vc-act-btn" data-act="dup" title="Duplicate">' + icon(GLYPH.dup) + '</button>' +
-        '<button type="button" class="vc-act-btn" data-act="copy" title="Copy — ⌘C">' + icon(GLYPH.copy) + '</button>' +
-        '<button type="button" class="vc-act-btn" data-act="del" title="Delete">' + icon(GLYPH.trash) + '</button>';
-      return;
-    }
-    const runnable = sel.filter((n) => TYPES[n.type].runs).length;
-    const grouped = sel.some((n) => groupOf(n.id));
-    actTool.innerHTML =
-      '<button type="button" class="vc-act-pill is-1" data-act="runsel"' +
-        ((!runnable || running) ? ' disabled' : '') + '>Run selected (' + runnable + ')</button>' +
-      (grouped ? '' : '<button type="button" class="vc-act-pill is-2" data-act="group">Create group</button>') +
-      '<button type="button" class="vc-act-pill is-3" data-act="deselect">Deselect</button>' +
-      '<span class="vc-act-sep"></span>' +
-      '<button type="button" class="vc-act-btn" data-act="del" title="Delete selection">' + icon(GLYPH.trash) + '</button>';
-  };
-  actTool.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-act]');
-    if (!b || b.disabled) return;
-    const sel = selected();
-    const act = b.dataset.act;
-    if (act === 'runone' && sel[0]) runScope([sel[0]]);
-    else if (act === 'dup' && sel[0]) duplicate(sel[0]);
-    else if (act === 'copy') copySel();
-    else if (act === 'del') askDelete(sel);
-    else if (act === 'runsel') runScope(sel.filter((n) => TYPES[n.type].runs));
-    else if (act === 'group') createGroup();
-    else if (act === 'deselect') setSel([]);
-  });
 
   // ============================================================
   // the properties panel — the shipped card: title row, eyebrow,
@@ -1258,7 +1211,15 @@
 
   // ============================================================
   // context menus — pane / node / edge / selection / group
+  //
+  // The board a reader meets is a FIXED graph: the five nodes it opens
+  // with are the demo, and nothing here mints new ones. Creating,
+  // duplicating and pasting all keep their place in the vocabulary —
+  // they just say what they are. (Every other verb is real: run,
+  // rewire, move, group, delete, undo.)
   // ============================================================
+  const sayDecor = () =>
+    toast('Adding nodes is decorative here — this board is a fixed demo');
   const closeMenu = () => { menuEl.hidden = true; };
   const showMenu = (items, local) => {
     menuEl.innerHTML = items.map((it) => it === '-' ? '<span class="vc-menu-sep"></span>' :
@@ -1274,20 +1235,15 @@
     menuEl.style.top = Math.min(local.y, root.offsetHeight - mh - 8) + 'px';
   };
   const menuForPane = (wpt) => [
-    { label: 'Add text prompt', act: () => addAt('text', wpt) },
-    { label: 'Add image node', act: () => addAt('image', wpt) },
-    { label: 'Add video node', act: () => addAt('video', wpt) },
-    { label: 'Add 3D node', act: () => addAt('model3d', wpt) },
+    { label: 'Add node', act: sayDecor },
     '-',
-    { label: 'Paste', hint: '⌘V', disabled: !clipboard, act: () => paste(wpt) },
     { label: 'Auto arrange', act: autoArrange },
     { label: 'Zoom to fit', hint: '⌘0', act: fitView },
   ];
   const menuForNode = (n) => [
     { label: 'Run this node', disabled: !TYPES[n.type].runs || running, act: () => runScope([n]) },
     '-',
-    { label: 'Duplicate', act: () => duplicate(n) },
-    { label: 'Copy', hint: '⌘C', act: () => { setSel([n]); copySel(); } },
+    { label: 'Duplicate', act: sayDecor },
     { label: 'Delete', act: () => { push(); removeNodes([n]); } },
   ];
   const menuForSelection = (sel) => [
@@ -1295,7 +1251,6 @@
       disabled: running, act: () => runScope(sel.filter((n) => TYPES[n.type].runs)) },
     { label: 'Create group', disabled: sel.some((n) => groupOf(n.id)), act: createGroup },
     '-',
-    { label: 'Copy', hint: '⌘C', act: copySel },
     { label: 'Delete ' + sel.length + ' nodes', act: () => askDelete(sel) },
   ];
   const menuForGroup = (g) => [
@@ -1312,22 +1267,6 @@
       drawEdges();
     } },
   ];
-  const addAt = (type, wpt) => {
-    push();
-    const n = addNode(type, wpt.x - TYPES[type].w / 2, wpt.y - TYPES[type].h / 2);
-    setSel([n]);
-    drawEdges();
-    paintCost();
-    watchEmpty();
-  };
-  const duplicate = (n) => {
-    push();
-    const copy = addNode(n.type, n.x + 24, n.y + 24,
-      { id: 'n' + (++nid), prompt: n.prompt, model: n.model, aspect: n.aspect,
-        dur: n.dur, res: n.res, status: 'idle' });
-    setSel([copy]);
-    paintCost();
-  };
 
   // ---- the confirm bar: bulk deletes ask first ----
   let confirmAct = null;
@@ -1346,43 +1285,6 @@
     confirmEl.hidden = true;
     confirmAct = null;
   });
-
-  // ============================================================
-  // clipboard — ⌘C keeps every edge whose BOTH ends were copied
-  // ============================================================
-  const copySel = () => {
-    const sel = selected();
-    if (!sel.length) return;
-    const ids = new Set(sel.map((n) => n.id));
-    clipboard = {
-      nodes: sel.map((n) => ({ type: n.type, x: n.x, y: n.y, prompt: n.prompt,
-        model: n.model, aspect: n.aspect, dur: n.dur, res: n.res, ref: n.id })),
-      edges: edges.filter((e) => ids.has(e.from.n) && ids.has(e.to.n))
-        .map((e) => ({ from: e.from, to: e.to })),
-    };
-    toast('Copied ' + sel.length + ' node' + (sel.length === 1 ? '' : 's') +
-      (clipboard.edges.length ? ' + ' + clipboard.edges.length + ' edge' + (clipboard.edges.length === 1 ? '' : 's') : ''));
-  };
-  const paste = (at) => {
-    if (!clipboard) return;
-    push();
-    const map = {};
-    const dx = at ? at.x - Math.min(...clipboard.nodes.map((c) => c.x)) : 32;
-    const dy = at ? at.y - Math.min(...clipboard.nodes.map((c) => c.y)) : 32;
-    const made = clipboard.nodes.map((c) => {
-      const n = addNode(c.type, c.x + dx, c.y + dy,
-        { id: 'n' + (++nid), prompt: c.prompt, model: c.model, aspect: c.aspect,
-          dur: c.dur, res: c.res, status: 'idle' });
-      map[c.ref] = n;
-      return n;
-    });
-    clipboard.edges.forEach((e) =>
-      connect(map[e.from.n], map[e.to.n], e.to.port, true));
-    setSel(made);
-    drawEdges();
-    paintCost();
-    watchEmpty();
-  };
 
   // ============================================================
   // pointer choreography — one dispatcher, one gesture at a time.
@@ -1921,56 +1823,17 @@
     };
     step();
   };
-  const resetRun = () => {
-    runToken++;
-    running = false;
-    root.classList.remove('is-running');
-    runBtn.disabled = false;
-    runBtn.querySelector('span').textContent = 'Run';
-    edges.forEach((e) => { e.running = false; });
-    nodes.forEach((n) => {
-      n.status = 'idle';
-      paintStatus(n);
-      clearArt(n);
-    });
-    drawEdges();
-  };
-
   // ============================================================
-  // ATTRACT MODE — parked in its tile, the board runs itself on a
-  // loop, the way the arcade tiles idle live on the play page. It
-  // retires the moment the board is handed real input.
+  // parked in its tile the board is a FINISHED board, not a demo reel:
+  // every result is already on it (see the boot below), the clip loops
+  // and the turntable turns. There is no attract loop — a run that
+  // wipes the art and re-runs it on a cadence takes the reader's
+  // finished picture away every few seconds. All the tile still needs
+  // from the viewport is whether the turntables are worth turning.
   // ============================================================
-  let attractOn = false, attractTimer = 0, attractRetired = reduceMotion;
-  const attractBeat = () => {
-    if (!attractOn || attractRetired || engaged) return;
-    // never start a stage while the reader is scrolling — the show can
-    // wait 900ms; the scroll's frame budget cannot
-    if (pageScrolling) { attractTimer = setTimeout(attractBeat, 900); return; }
-    if (!running) {
-      const anyDone = nodes.some((n) => n.status === 'done' && TYPES[n.type].runs);
-      if (anyDone) resetRun();
-      else runScope(nodes);
-    }
-    attractTimer = setTimeout(attractBeat, 5200);
-  };
-  const attractStart = () => {
-    if (attractOn || attractRetired) return;
-    attractOn = true;
-    // once a run has completed, re-entry waits the full cadence — a
-    // scroll PAST the tile must never wipe the art and restart the show
-    const anyDone = nodes.some((n) => n.status === 'done' && TYPES[n.type].runs);
-    attractTimer = setTimeout(attractBeat, anyDone ? 5200 : 1400);
-  };
-  const attractStop = () => {
-    attractOn = false;
-    clearTimeout(attractTimer);
-  };
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => entries.forEach((en) => {
       setBoardVisible(en.isIntersecting);
-      if (en.isIntersecting) attractStart();
-      else attractStop();
     }), { threshold: 0.25 }).observe(root);
   }
 
@@ -2051,19 +1914,6 @@
   // empty state — a deleted-bare board asks what's next
   // ============================================================
   const watchEmpty = () => { emptyEl.hidden = nodes.length > 0; };
-  emptyEl.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-start]');
-    if (!b) return;
-    push();
-    const target = b.dataset.start;
-    const t = addNode('text', 60, 120);
-    const made = addNode(target, 60 + TYPES.text.w + 90, 80);
-    connect(t, made, 'prompt', true);
-    drawEdges();
-    paintCost();
-    watchEmpty();
-    fitView();
-  });
 
   // ============================================================
   // rail, toolbar, keyboard
@@ -2083,18 +1933,9 @@
   $('vc-fit').addEventListener('click', fitView);
   $('vc-arrange').addEventListener('click', autoArrange);
   runBtn.addEventListener('click', () => runScope());
-  $('vc-rail-add').addEventListener('click', () => {
-    const r = $('vc-rail-add').getBoundingClientRect();
-    const vr = viewport.getBoundingClientRect();
-    const s = scaleOf();
-    const c = toWorld({ x: viewport.offsetWidth / 2, y: viewport.offsetHeight / 2 });
-    showMenu([
-      { label: 'Text prompt', act: () => addAt('text', c) },
-      { label: 'Image', act: () => addAt('image', c) },
-      { label: 'Video', act: () => addAt('video', c) },
-      { label: '3D model', act: () => addAt('model3d', c) },
-    ], { x: (r.right - vr.left) / s + 10, y: (r.top - vr.top) / s });
-  });
+  // Create keeps its place at the top of the rail — it just says what it
+  // is here, like Share, Publish, Assets and Community above it
+  $('vc-rail-add').addEventListener('click', sayDecor);
   root.querySelectorAll('.vc-pill[data-fake]').forEach((b) =>
     b.addEventListener('click', () =>
       toast(b.dataset.fake === 'share' ? 'Share is decorative here — the demo has no backend' :
@@ -2119,13 +1960,11 @@
     } else if (meta && e.key.toLowerCase() === 'y') {
       e.preventDefault();
       redo();
-    } else if (meta && e.key.toLowerCase() === 'c') {
-      if (String(getSelection()).length) return;
-      e.preventDefault();
-      copySel();
     } else if (meta && e.key.toLowerCase() === 'v') {
+      // ⌘C/⌘V would mint nodes, so the board keeps neither — but a reader
+      // who reaches for paste deserves the reason, not silence
       e.preventDefault();
-      paste();
+      sayDecor();
     } else if (meta && (e.key === '=' || e.key === '+')) {
       e.preventDefault(); zoomTo(view.z * 1.2); applyView();
     } else if (meta && e.key === '-') {
@@ -2179,15 +2018,7 @@
   const setTheater = (on) => {
     engaged = on;
     root.classList.toggle('is-parked', !on);
-    // the looping clip belongs to the theater alone: swap the animation in
-    // when the board is taken, park it back on its poster when it is not
-    root.querySelectorAll('.vc-clip[data-clip]').forEach((img) => {
-      const want = on ? img.dataset.clip : MEDIA.clipPoster;
-      if (img.getAttribute('src') !== want) img.src = want;
-    });
     if (on) {
-      attractRetired = true;             // once handled, never a screensaver
-      attractStop();
       closeMenu();
       requestAnimationFrame(() => {
         fitView();
@@ -2222,6 +2053,19 @@
     { id: 'e3', type: 'image', from: { n: i1.id, port: 'output' }, to: { n: v1.id, port: 'firstFrame' } },
     { id: 'e4', type: 'image', from: { n: i2.id, port: 'output' }, to: { n: m1.id, port: 'image' } });
   eid = 4;
+  // ...and it opens RESOLVED. The board a reader meets is the board
+  // after a run: both frames returned, the clip looping, the mesh
+  // turning. The ladder (queued → running → validating → done) is still
+  // the whole point of pressing Run — it just isn't the price of
+  // admission any more.
+  warmMedia();
+  nodes.forEach((n) => {
+    if (!TYPES[n.type].runs) return;
+    n.status = 'done';
+    paintStatus(n);
+    revealArt(n);
+  });
+  runBtn.querySelector('span').textContent = 'Run again';
   drawEdges();
   paintToolbar();
   paintCost();

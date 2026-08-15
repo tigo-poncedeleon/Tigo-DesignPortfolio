@@ -1,0 +1,219 @@
+/* ============================================================
+   THE PHONE — everything in this file is inside one media query
+   and nothing above 700px can see it.
+
+   The desktop site is one long document you scroll from Home into
+   Work into About. On a phone it is FOUR SCREENS you tap between
+   with the bottom bar (js/mobile.js): only one section is in the
+   document at a time, so there is no scrolling from one into the
+   next and each screen is as tall as what it actually holds.
+
+   Loaded LAST, on purpose: the phone blocks already inside
+   styles.css / work.css / about.css / ai.css are the base, and the
+   overrides here answer for the pager on top of them.
+   ============================================================ */
+@media (max-width: 700px) {
+
+  /* the bottom bar's own band — how much room the floating tab pill
+     takes out of the foot of every screen. One number, so a screen's
+     bottom padding and the chat's composer can never disagree. */
+  :root {
+    --m-nav-h: 68px;                    /* the pill itself */
+    /* …the 12px it floats above the foot, the home indicator under that,
+       and 10px of air so nothing ever rests against it */
+    --m-nav-band: calc(var(--m-nav-h) + 22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ---- the pager. `is-phone` is set on <html> before first paint
+     (the inline script in index.html), so the three screens you are
+     not on are already out of the document on the very first frame —
+     no flash of the whole site stacked up. Before js/mobile.js has
+     named a screen, Home is the one. ---- */
+  html.is-phone .shell-card > main > section { display: none; }
+  html.is-phone .shell-card > main > section.m-on { display: block; }
+  html.is-phone:not(.m-ready) #home.stage { display: block; }
+
+  /* ---- home: one screen exactly, and nothing under it to scroll to.
+     The hint retires with the scroll it used to promise. ---- */
+  html.is-phone #home.stage {
+    height: calc(100dvh - var(--m-nav-band));
+    overflow: hidden;
+  }
+  html.is-phone #home .scroll-hint { display: none; }
+
+  /* ---- every other screen starts under the status bar and ends clear
+     of the tab pill ---- */
+  html.is-phone .work-stage,
+  html.is-phone .about-stage {
+    min-height: calc(100dvh - var(--m-nav-band));
+  }
+
+  /* ============================================================
+     WORK — the three projects, scrolled straight through.
+
+     The desktop stepper (an index of three buttons swapping one big
+     picture) is removed outright on a phone by js/mobile.js and this
+     list is built from its own copy. Picture, then name, then the one
+     line about it; a hairline between; nothing to press but the
+     project itself.
+     ============================================================ */
+  .m-work {
+    max-width: 440px;
+    margin: 28px auto 0;
+    padding: 0 20px;
+  }
+  .m-work-item {
+    display: block;
+    padding: 34px 0;
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .m-work-item + .m-work-item { border-top: 1px solid var(--g-150); }
+  .m-work-item:first-child { padding-top: 6px; }
+  .m-work-item:last-child { padding-bottom: 24px; }
+
+  /* each project rises in as you reach it — the same entrance the
+     desktop stepper has, staggered down the column */
+  .work-slide:not(.revealed) .m-work-item { opacity: 0; translate: 0 18px; }
+  .m-work-item {
+    transition: opacity var(--t-fade) ease calc(var(--n, 0) * 0.08s),
+                translate var(--t-rise) var(--ease-rise) calc(var(--n, 0) * 0.08s);
+  }
+
+  /* the shot: the piece itself, centred, at whatever shape it actually
+     is. NOT boxed to a common height — a 2.7:1 monitor and a 1:2 phone
+     forced into the same band leave one of them the size of a stamp.
+     Each is given the height that makes it read at the same WEIGHT
+     instead, which is the thing that was ever really being matched. */
+  .m-work-shot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 22px;
+  }
+  .m-work-shot img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    transition: scale var(--t-lift) var(--ease-lift);
+  }
+  .m-work-item[data-case="vicino"]    .m-work-shot img { max-height: 220px; }
+  .m-work-item[data-case="pantrypal"] .m-work-shot img { max-height: 320px; }
+  /* the drone mark is a logo, not a screen — it does not want to fill */
+  .m-work-item[data-case="nextlevel"] .m-work-shot img { max-height: 180px; }
+  .m-work-item:active .m-work-shot img { scale: 0.985; }
+
+  .m-work-n {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--g-400);
+    font-variant-numeric: tabular-nums;
+  }
+  .m-work-name {
+    margin-top: 6px;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 30px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .m-work-role {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--g-400);
+  }
+  .m-work-copy {
+    margin-top: 12px;
+    font-size: 16px;
+    line-height: 25px;
+    color: var(--g-700);
+  }
+  .m-work-go {
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--orange);
+  }
+  .m-work-go span { margin-left: 2px; }
+
+  /* the desktop stepper's own furniture, in case it is ever on the page
+     without js (progressive enhancement rather than a broken screen) */
+  .pick-hint { display: none; }
+
+  /* About's own phone layout — and the pin it used to keep from the
+     desktop — lives with the rest of About, in css/about.css. The one
+     thing that belongs to the PAGER is here: the two chapters are one
+     screen now, so the gap between them is spacing, not a page break. */
+  #contact.about-slide { padding-top: 12px; }
+
+  /* ============================================================
+     AI — a page again.
+
+     js/mobile.js lifts the sheet out of its overlay into a section of
+     the document (and deletes the overlay, which is what puts
+     ai-chat.js back on its pre-sheet path). What is left to say is
+     geometry: the sheet was a floating box with a border and a drag
+     handle; the page is the screen.
+     ============================================================ */
+  .ai-page { position: relative; }
+
+  .ai-stage.is-overlay.is-page {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%;
+    height: calc(100dvh - var(--m-nav-band));
+    min-width: 0;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  /* nothing to grab, nothing to drag, nothing to close */
+  .ai-stage.is-page .ai-sheet-head::before { display: none; }
+  .ai-stage.is-page .ai-resize { display: none; }
+
+  /* the head reads as a section title now, not as a window's title bar:
+     the glyph and the name centred on one line, the honesty line under
+     it, no rule beneath */
+  .ai-stage.is-page .ai-sheet-head {
+    height: auto;
+    padding: 26px 20px 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 4px;
+    border-bottom: 0;
+    cursor: default;
+  }
+  .ai-stage.is-page .ai-sheet-title {
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .ai-stage.is-page .ai-sheet-head svg { width: 19px; height: 19px; }
+  .ai-stage.is-page .ai-sheet-head #ai-sub {
+    flex: 0 0 100%;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* the composer sits at the foot of the CHAT, and the chat already
+     stops short of the tab pill — so the phone-sheet's own clearance
+     (which was measured against the viewport) comes back off */
+  .ai-stage.is-page .ai-inputbar { bottom: 14px; }
+
+  /* (the tab bar's own Play tab was already hidden on phones — see the
+     mobile block in css/styles.css. Nothing to add: the sheet's
+     `html.ai-open .site-nav { opacity: 0 }` in css/ai.css is simply
+     never reached now, because a page never opens.) */
+}
+
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .m-work-item { transition: opacity 0.25s ease; translate: none; }
+  .work-slide:not(.revealed) .m-work-item { translate: none; }
+  .m-work-item:active .m-work-shot img { scale: none; }
+}

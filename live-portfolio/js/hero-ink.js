@@ -39,8 +39,11 @@
     layer.appendChild(canvas);
     document.body.appendChild(layer);
     const ctx = canvas.getContext('2d');
+    // --ember, not --orange: the pen keeps its hue on the greyscale home,
+    // where --orange is black. The one thing the cursor leaves behind is
+    // the one thing on the page that is allowed to be warm.
     const ink = getComputedStyle(document.documentElement)
-      .getPropertyValue('--orange').trim() || '#f54e00';
+      .getPropertyValue('--ember').trim() || '#f54e00';
 
     // ---- WHAT IS KEPT IS THE STROKE, NOT THE PIXELS.
     //

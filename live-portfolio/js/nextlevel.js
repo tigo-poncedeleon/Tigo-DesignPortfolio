@@ -31,19 +31,35 @@
   // manner, a coat of arms instead of a face ----
   const heroImg = document.querySelector('.case-hero img');
   if (heroImg && !reduceMotion) {
-    let tx = 0, ty = 0, rx = 0, ry = 0;
+    let tx = 0, ty = 0, rx = 0, ry = 0, leanRaf = 0;
     window.addEventListener('mousemove', (e) => {
       const r = heroImg.getBoundingClientRect();
       tx = ((e.clientX - (r.left + r.width / 2)) / window.innerWidth) * 0.24;
       ty = ((e.clientY - (r.top + r.height / 2)) / window.innerHeight) * 0.14;
     });
-    (function lean() {
-      rx += (tx - rx) * 0.06;
-      ry += (ty - ry) * 0.06;
-      heroImg.style.transform =
-        'perspective(900px) rotateY(' + rx + 'rad) rotateX(' + -ry + 'rad)';
-      requestAnimationFrame(lean);
-    })();
+    const lean = () => {
+      // converged and idle = no write. The badge's station-keeping runs on
+      // `translate`/`rotate` (nextlevel.css), so this owns `transform`
+      // outright and the two compose instead of one silencing the other.
+      const dx = tx - rx, dy = ty - ry;
+      if (Math.abs(dx) > 1e-4 || Math.abs(dy) > 1e-4) {
+        rx += dx * 0.06;
+        ry += dy * 0.06;
+        heroImg.style.transform =
+          'perspective(900px) rotateY(' + rx + 'rad) rotateX(' + -ry + 'rad)';
+      }
+      leanRaf = requestAnimationFrame(lean);
+    };
+    // the loop belongs to the cover, not to seven chapters of scrolling
+    const coverSlide = heroImg.closest('.case-slide');
+    if (coverSlide && 'IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => entries.forEach((en) => {
+        if (en.isIntersecting) { if (!leanRaf) leanRaf = requestAnimationFrame(lean); }
+        else { cancelAnimationFrame(leanRaf); leanRaf = 0; }
+      }), { rootMargin: '20% 0px' }).observe(coverSlide);
+    } else {
+      leanRaf = requestAnimationFrame(lean);
+    }
   }
 
   // ---- every [data-count] number COUNTS UP the first time its chapter

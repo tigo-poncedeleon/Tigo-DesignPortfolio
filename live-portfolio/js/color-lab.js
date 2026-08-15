@@ -32,7 +32,7 @@
   ];
 
   /* where the site starts from — the reset target */
-  var BASE = { bg: '#f7f7f4', furn: '#f0efea' };
+  var BASE = { bg: '#f6f6f6', furn: '#efefef' };
 
   var state = {
     ramp:    RAMP.slice(),
@@ -102,7 +102,7 @@
       /* the sitewide hover chip is rgba(38,37,30,.06); --wash-solid is that
          same chip flattened, and it has to be flattened over whatever the
          furniture is now or the Letterboxd mark goes the wrong way */
-      root.style.setProperty('--wash-solid', over('#26251e', 0.06, furn));
+      root.style.setProperty('--wash-solid', over('#1c1c1c', 0.06, furn));
     } else {
       root.style.removeProperty('--shell-line');
       root.style.removeProperty('--wash-solid');
@@ -286,7 +286,7 @@
         '--shell-surface: ' + furnHex() + ';\n' +
         (state.derive
           ? '--shell-line:    ' + lineOn(furnHex()) + ';\n' +
-            '--wash-solid:    ' + over('#26251e', 0.06, furnHex()) + ';\n'
+            '--wash-solid:    ' + over('#1c1c1c', 0.06, furnHex()) + ';\n'
           : '');
       navigator.clipboard.writeText(css).then(function () {
         a.textContent = 'Copied';

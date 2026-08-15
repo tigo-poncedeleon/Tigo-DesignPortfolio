@@ -23,7 +23,6 @@
   background: #ffffff;
   border: 1px solid #cdcdc9;
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .08);
   overflow: hidden;
   user-select: none;
 }
@@ -69,7 +68,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 .lab-label b { font-weight: 590; }
 .lab-label i {
@@ -116,7 +115,7 @@
 /* ---- the readout: how far apart the two surfaces actually are ---- */
 .lab-gap {
   margin-top: 12px;
-  padding-top: 9px;
+  padding-top: 10px;
   border-top: 1px solid #e6e5e0;
   display: flex;
   align-items: center;
@@ -152,7 +151,7 @@
 /* ---- controls ---- */
 .lab-row {
   display: flex;
-  gap: 5px;
+  gap: 6px;
   margin-top: 10px;
 }
 .lab-btn {
@@ -173,7 +172,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 9px;
+  margin-top: 10px;
   font-size: 10.5px;
   color: #4a4a4a;
   cursor: pointer;
@@ -181,7 +180,7 @@
 .lab-check input { margin: 0; accent-color: #f54e00; }
 
 /* ---- the values drawer: paste the real ramp in ---- */
-.lab-vals { margin-top: 9px; }
+.lab-vals { margin-top: 10px; }
 .lab-vals[hidden] { display: none; }
 .lab-vals textarea {
   width: 100%;
@@ -193,18 +192,18 @@
   background: #fafafa;
   border: 1px solid #e6e5e0;
   border-radius: 5px;
-  padding: 6px 7px;
+  padding: 6px 8px;
   resize: vertical;
   user-select: text;
 }
 .lab-vals p {
-  margin: 5px 0 0;
+  margin: 6px 0 0;
   font-size: 9.5px;
   color: #84847e;
 }
 
 .lab-note {
-  margin-top: 9px;
+  margin-top: 10px;
   font-size: 9.5px;
   line-height: 1.45;
   color: #a1a19f;
@@ -233,8 +232,27 @@ html.lab-dark-furn .chrome-tab,
 html.lab-dark-furn .chrome-btn,
 html.lab-dark-furn .chrome-place-city,
 html.lab-dark-furn .tab-close,
-html.lab-dark-furn .ask-label,
+/* the ask left .side-foot for the top of the rail, so it has to be named
+   here in its own right — and it is a chip now, whose typed ink and
+   resting question are two different greys */
+html.lab-dark-furn .ask-input,
+html.lab-dark-furn .ask-line svg,
 html.lab-dark-furn .side-foot a { color: var(--lab-furn-ink); }
+html.lab-dark-furn .ask-input::placeholder { color: var(--lab-furn-dim); }
+/* The chip's paper slab retired with the chip — the letterhead is type
+   straight on the furniture, so there is no surface to invert any more.
+   What DOES need the mirror is the blank's two lines and the footnote
+   anchor: the pencil dots and the ink draw are struck from --g-250 and
+   --orange, neither of which the mirror swaps. */
+html.lab-dark-furn .ask-blank::after {
+  background: repeating-linear-gradient(90deg,
+              rgba(255, 255, 255, .3) 0 2px, transparent 2px 7px);
+}
+html.lab-dark-furn .ask-blank::before { background: var(--lab-furn-ink); }
+html.lab-dark-furn .ask-line:hover .ask-input::placeholder,
+html.lab-dark-furn .ask-line:focus-within .ask-input::placeholder {
+  color: var(--lab-furn-ink);
+}
 
 html.lab-dark-furn .side-role,
 html.lab-dark-furn .st-sub,

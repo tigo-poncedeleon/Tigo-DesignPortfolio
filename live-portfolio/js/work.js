@@ -53,7 +53,11 @@
       (head ? head.offsetHeight : 0);
     window.scrollTo({ top: Math.max(0, Math.round(y)), behavior: 'instant' });
   };
-  const wanted = location.hash && location.hash.length > 1 &&
+  // …on a laptop. ≤700px Work is a SCREEN you tap to, not a place you
+  // scroll to: js/mobile.js puts it at the top of the document on arrival
+  // and there is no chrome strip to land under, so this poller would spend
+  // eight seconds re-asserting a scroll of zero.
+  const wanted = !MOBILE && location.hash && location.hash.length > 1 &&
     document.querySelector(location.hash);
   if (wanted && slide.contains(wanted) && !window.__pixelRestore) {
     // Re-land on a slow poll rather than every frame. Per-frame is worse

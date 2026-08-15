@@ -1,11 +1,11 @@
 /* ============================================================
    Vicino AI case study — the site's chapter system (pantry.css →
-   nextlevel.css lineage) retold as a seven-chapter, image-first
-   story. Chapter 03 seats a WORKING MINIATURE of the node editor
-   in a live tile; chapters 04–05 seat the REAL design-system
-   documents in framed iframes (vicino-ds/). The board's own skin
-   (and its theater popup) lives in css/vicino-canvas.css, dressed
-   in the shipped Pulse tokens. This file is the STORY's clothes.
+   nextlevel.css lineage) retold as an eleven-chapter, image-first
+   story. Chapter 02 seats a WORKING MINIATURE of the node editor
+   in a live tile; chapters 06–10 show the REAL design-system
+   documents as stills that link out to the files themselves. The
+   board's own skin lives in css/vicino-canvas.css, dressed in the
+   shipped Pulse tokens. This file is the STORY's clothes.
    ============================================================ */
 
 /* inside this case the accents speak PULSE, not the site orange:
@@ -20,7 +20,6 @@
   --vi-deep: #063a42;
   --vi-wash: rgba(73, 224, 245, 0.14);
   --vi-line: rgba(13, 118, 133, 0.32);
-  --vi-mark: rgba(73, 224, 245, 0.38);
   --vi-stage: #eef3f3;          /* Pulse Color/Stage */
 }
 /* the keyboard ring speaks the case's ink here, not the site orange */
@@ -87,11 +86,11 @@ html.is-scrolling .case-stage *::after {
 .case-title p {
   font-size: 28px;
   letter-spacing: -0.015em;
-  color: rgba(38, 37, 30, 0.34);
+  color: rgba(var(--ink-rgb), 0.34);
 }
 .case-num {
   font-size: 13.25px;
-  color: rgba(38, 37, 30, 0.4);
+  color: rgba(var(--ink-rgb), 0.4);
   font-variant-numeric: tabular-nums;
   margin-right: 2px;
 }
@@ -124,58 +123,25 @@ html.is-scrolling .case-stage *::after {
   transition: opacity var(--t-fade) ease calc(var(--n) * 0.08s),
               translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.08s),
               transform var(--t-lift) var(--ease-lift),
-              border-color var(--t-micro) ease, box-shadow var(--t-micro) ease;
+              border-color var(--t-micro) ease;
 }
 .case-slide:not(.revealed) .metric-card {
   opacity: 0;
   translate: 0 18px;
 }
 
-/* the key phrases get a CYAN HIGHLIGHTER sweep — a real marker, drawn
-   left to right behind the ink once the chapter settles */
+/* the key phrases carry emphasis in INK alone — full-strength body
+   colour against the softer grey around them, no marker behind it */
 .case-pitch strong, .canvas-intro strong, .prod-copy strong,
 .paths-copy strong, .ana-copy strong, .dec-copy strong,
 .system-copy strong, .comp-copy strong, .skill-copy strong,
 .onb-copy strong,
 .lesson-lines strong {
   font-weight: 400;                 /* emphasis by INK, not weight */
-  color: #26251e;
-  background: linear-gradient(var(--vi-mark), var(--vi-mark))
-              no-repeat left 78% / 0% 0.58em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  transition: background-size 0.55s var(--ease-draw) var(--ud, 0.6s);
+  color: var(--ink);
 }
-.case-slide.revealed :is(.case-pitch, .canvas-intro, .prod-copy,
-.paths-copy, .ana-copy, .dec-copy,
-.system-copy, .comp-copy, .skill-copy, .onb-copy, .lesson-lines) strong {
-  background-size: 100% 0.58em;
-}
-.case-pitch p:nth-of-type(1) strong:nth-of-type(1) { --ud: 0.6s; }
-.case-pitch p:nth-of-type(2) strong:nth-of-type(1) { --ud: 0.9s; }
-.case-pitch p:nth-of-type(2) strong:nth-of-type(2) { --ud: 1.2s; }
-.case-pitch p:nth-of-type(2) strong:nth-of-type(3) { --ud: 1.5s; }
-.prod-copy strong:nth-of-type(2) { --ud: 0.9s; }
-.ana-copy strong:nth-of-type(2) { --ud: 0.9s; }
-.system-copy strong:nth-of-type(2) { --ud: 0.9s; }
-.system-copy strong:nth-of-type(3) { --ud: 1.2s; }
-.skill-copy strong:nth-of-type(2) { --ud: 0.9s; }
-.skill-copy strong:nth-of-type(3) { --ud: 1.2s; }
-.comp-copy strong:nth-of-type(2) { --ud: 0.9s; }
-.onb-copy strong:nth-of-type(2) { --ud: 0.9s; }
-.onb-copy strong:nth-of-type(3) { --ud: 1.2s; }
 
 /* ---- the shared chip (several chapters wear it) ---- */
-.case-chip {
-  padding: 5px 12px;
-  font-size: 14px;
-  line-height: 1.35;
-  color: #5b5a53;
-  background: rgba(230, 229, 224, 0.48);
-  border: 1px solid #cdcdc9;
-  border-radius: 20px;
-  white-space: nowrap;
-}
 
 /* ---- the plaque: a thin strip naming the file above the picture of
    it. Worn by the screenshots (02) and by the design-system exhibits
@@ -191,7 +157,7 @@ html.is-scrolling .case-stage *::after {
 }
 .shot-url {
   font-size: 11px;
-  color: rgba(38, 37, 30, 0.48);
+  color: rgba(var(--ink-rgb), 0.48);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -203,8 +169,8 @@ html.is-scrolling .case-stage *::after {
   margin-left: auto;
   padding-left: 8px;
   box-sizing: content-box;
-  color: rgba(38, 37, 30, 0.34);
-  transition: color var(--t-micro) ease;
+  color: rgba(var(--ink-rgb), 0.34);
+  transition: color var(--t-micro) ease, translate var(--t-snap) var(--ease-spring);
 }
 .shot-chrome.is-dark {
   background: #20282b;
@@ -216,57 +182,61 @@ html.is-scrolling .case-stage *::after {
 /* ============================================================
    01 · overview — pitch beside the studio-display hero
    ============================================================ */
+/* geometry is the shared cover grid (css/styles.css); this study owns only
+   its own measure of type and the width of the display it opens with */
+/* the studio display. It is the widest art on any of the three covers on
+   purpose: the board inside its screen is the thing being talked about,
+   and at 470 nothing in it could be read — let alone watched. 450 + 60 +
+   580 = 1090, still inside --measure. */
+.case-slide { --cover-art: 580px; }
+/* two sentences can afford to be BIGGER than nine. This is the one cover
+   whose copy is short enough to read as a statement rather than a
+   paragraph, so it gets the larger of the site's two body sizes. */
 .case-pitch {
-  position: absolute;
-  top: 140px;
-  left: calc(var(--ax) - 470px);
-  width: 450px;
-  font-size: 18.5px;
-  line-height: 28px;
-  color: #5b5a53;
+  font-size: 20px;
+  line-height: 31px;
 }
-.case-pitch p + p { margin-top: 18px; }
-
-.spec-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 24px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #e6e5e0;
-}
-.spec-cell dt {
-  font-size: 13.25px;
-  color: rgba(38, 37, 30, 0.48);
-}
-.spec-cell dd {
-  margin-top: 2px;
-  font-size: 15px;
-  line-height: 21px;
-  color: #5b5a53;
-}
-.headline-metric {
-  display: inline-block;
-  margin-top: 16px;
-  padding: 7px 16px;
-  font-size: 16px;
-  color: var(--vi-ink);
-  background: var(--vi-wash);
-  border: 1px solid var(--vi-line);
-  border-radius: 20px;
-  white-space: nowrap;
-}
-.site-link {
+/* Vicino's real mark, the same one the sidebar and the board's own brand
+   corner wear — and the one element on this cover that belonged to no
+   system. Bare, a black monogram floating in a column of grey type reads as
+   an asset someone pasted in. So it is PARKED, like everything else here:
+   the board's node chrome (white card, a 1px rgba(15,23,42,.075) hairline,
+   16px radius — copied literally from --p-node-border and --p-r-node, which
+   are scoped to .vc in vicino-canvas.css and cannot be reached from this
+   file), sitting on the dot grid. It stops being an orphan because the
+   page's own metaphor now contains it — the card is the whole idea, so it
+   carries no port and no other node furniture. */
+.logo-node {
   display: flex;
   width: fit-content;
   align-items: center;
-  gap: 8px;
-  margin-top: 13px;
-  font-size: 16px;
-  color: #5b5a53;
-  text-decoration: none;
-  transition: color var(--t-micro) ease;
+  padding: 13px 15px;
+  margin-bottom: var(--sp-20);
+  background: #fff;
+  /* the board's own value is 0.075, but it draws that on the #eef3f3 canvas
+     wash; against this page's lighter parchment the card had almost no edge,
+     and the site's no-shadow rule means the border is the only thing holding
+     it — so it is opened up just enough to read */
+  border: 1px solid rgba(15, 23, 42, 0.11);
+  border-radius: 16px;
 }
+.pitch-logo {
+  display: block;
+  height: 38px;
+  width: auto;            /* the width/height attrs reserve the ratio only */
+}
+/* The art column is a 560px box because PantryPal's phone is that tall, and
+   it CENTRES its piece in it — which parked this 483px display 38px below
+   the text's first line, on a page where every other block hangs off
+   --content-top. So this one study hangs its art instead of centring it:
+   both columns now start on 120. It closes the pair at the bottom too: the
+   monitor's own body ends at 82.6% of the image (measured off its alpha),
+   i.e. 519, and the copy ends at 534. Only the neck and base run past
+   that, and they are narrow enough to read as a foot. */
+.case-hero { align-items: start; }
+/* no .headline-metric here — this cover's slogan pill said the same three
+   things as the paragraph above it, so it went. The other two studies
+   still wear one (css/styles.css). */
 .site-link-url {
   border-bottom: 1px solid transparent;
   transition: border-color var(--t-micro) ease;
@@ -292,29 +262,296 @@ html.is-scrolling .case-stage *::after {
   100% { box-shadow: 0 0 0 0 rgba(73, 224, 245, 0); }
 }
 
-.case-hero {
+/* ---- the canvas floor: the chapter stands on the product's own surface.
+   The MASK lives on the parent, which is exactly the chapter box, so the
+   light can be aimed at the display in the chapter's own coordinates; the
+   dot layer inside overhangs by 48px so it can drift without showing an
+   edge. --fy is the display's own centre — --content-top plus half the
+   image's rendered height, and 0.4165 is 1706/2048/2, so the light follows
+   --cover-art if it ever changes again. (It is NOT half the art BOX: the
+   art hangs from the top of that box, see .case-hero below.) ---- */
+.canvas-floor {
   position: absolute;
-  top: 190px;
-  left: calc(var(--ax) + 30px);
-  width: 470px;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  --fx: calc(var(--cover-left) + var(--cover-col) +
+             var(--cover-gutter) + var(--cover-art) / 2);
+  --fy: calc(var(--content-top) + var(--cover-art) * 0.4165);
+  -webkit-mask-image: radial-gradient(58% 60% at var(--fx) var(--fy),
+    #000 0%, rgba(0, 0, 0, 0.6) 44%, transparent 78%);
+  mask-image: radial-gradient(58% 60% at var(--fx) var(--fy),
+    #000 0%, rgba(0, 0, 0, 0.6) 44%, transparent 78%);
+  opacity: 0;
+  /* was 1.2s at a 0.1s delay — nearly a second slower than the card and the
+     display's own entrance (--t-fade 0.55s / --t-rise 0.6s). That mismatch
+     is what read as a glitch: the white logo card and copy settle fully
+     opaque almost a full second before the cyan floor catches up around
+     them, so the page looked like it arrived in two disconnected passes.
+     Matched to --t-fade so the whole cover lands as one gesture. */
+  transition: opacity var(--t-fade) ease;
 }
-.case-slide.revealed .case-hero {
-  animation: vi-hero-float 6s ease-in-out 1.2s infinite;
+.case-slide.revealed .canvas-floor { opacity: 1; }
+.cf-dots, .cf-spot, .cf-glow { position: absolute; display: block; }
+.cf-dots, .cf-spot {
+  inset: -48px;
+  background-size: 21px 21px;
 }
-@keyframes vi-hero-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
+.cf-dots {
+  background-image: radial-gradient(circle at center,
+    rgba(13, 118, 133, 0.36) 1.1px, transparent 1.5px);
 }
-.case-hero img {
+/* the same grid, inked harder, shown only in a pool under the cursor — the
+   canvas takes the light where you point it. The two layers carry the same
+   21px step and the same drift, so the bright dots sit exactly on the faint
+   ones; --mx/--my are measured against THIS box's live rect
+   (js/vicino.js), which already includes the drift. */
+.cf-spot {
+  background-image: radial-gradient(circle at center,
+    rgba(13, 118, 133, 0.92) 2px, transparent 2.4px);
+  -webkit-mask-image: radial-gradient(160px 160px at var(--mx, -400px) var(--my, -400px),
+    #000 0%, rgba(0, 0, 0, 0.45) 42%, transparent 72%);
+  mask-image: radial-gradient(160px 160px at var(--mx, -400px) var(--my, -400px),
+    #000 0%, rgba(0, 0, 0, 0.45) 42%, transparent 72%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.canvas-floor.is-lit .cf-spot { opacity: 1; }
+/* the display sits in its own light — a glow, not a shadow */
+.cf-glow {
+  inset: 0;
+  background: radial-gradient(38% 34% at var(--fx) var(--fy),
+    rgba(73, 224, 245, 0.34) 0%, rgba(73, 224, 245, 0.12) 44%, transparent 72%);
+}
+
+/* ---- the display, as an object on that floor ----
+   The float rides the STAGE on `translate` and the cursor-lean writes
+   `transform` (js/vicino.js): two properties, so neither cancels the
+   other — on one property the animation won the cascade and the lean never
+   moved a pixel. The export carries its own alpha, so nothing here needs
+   mix-blend-mode; without it the stage is free to be a transformed group,
+   which is what welds the screen overlay to the picture.
+
+   It is also the cover's biggest target: it goes to the board you can
+   actually drive (chapter 02), the same place the text link beside it
+   goes. It carries NO label — the pointer and the sheen are the whole
+   affordance, and the link beside it already says the words. ---- */
+.hero-stage {
+  position: relative;
   display: block;
   width: 100%;
-  height: auto;
-  mix-blend-mode: multiply;   /* the export's white box melts into the page */
+  aspect-ratio: 2048 / 1706;
+  transition: scale var(--t-rise) var(--ease-rise) 0.1s;
 }
+.case-slide:not(.revealed) .hero-stage { scale: 0.955; }
+.case-slide.revealed .hero-stage {
+  animation: vi-hero-float 6s ease-in-out 1.6s infinite;
+}
+@keyframes vi-hero-float {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -8px; }
+}
+.case-hero img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- the screen: the board in the picture is still RUNNING, and what it
+   runs is the product's one sentence — a pulse leaves the prompt, lands in
+   the video node, the node generates, the node delivers. One 8s cycle,
+   shared by every layer below so the beats land together; the long tail
+   after 45% is the finished frame simply sitting there, which is what the
+   copy beside it promises. ---- */
+.hero-screen {
+  position: absolute;
+  left: 3.857%;
+  top: 4.689%;
+  width: 92.188%;
+  height: 62.368%;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hero-screen > * { position: absolute; display: block; }
+
+/* the wire from the prompt node to the video node, with a comet on it */
+.hs-wire {
+  left: 34.16%;
+  top: 45.49%;
+  width: 11.66%;
+  height: 0;
+}
+.hs-wire i {
+  position: absolute;
+  top: -1.5px;
+  left: 0;
+  width: 36%;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg,
+    rgba(73, 224, 245, 0) 0%, var(--vi-cyan) 72%, #fff 100%);
+  box-shadow: 0 0 8px 2px rgba(73, 224, 245, 0.75);
+  opacity: 0;
+  translate: -110% 0;
+}
+.case-slide.revealed .hs-wire i {
+  animation: hs-run 8s cubic-bezier(0.5, 0, 0.5, 1) 1.9s infinite;
+}
+@keyframes hs-run {
+  0%, 7%  { translate: -110% 0; opacity: 0; }
+  9%      { opacity: 1; }
+  15%     { opacity: 1; }
+  16%     { translate: 292% 0; opacity: 0; }
+  100%    { translate: 292% 0; opacity: 0; }
+}
+
+/* the video node GENERATES: the finished frame is covered by the node's own
+   black, a light sweeps it, a hairline fills — then it clears and the frame
+   underneath is the result. The panel is welded to the thumbnail inside the
+   card, not to the card. */
+.hs-gen {
+  left: 46.87%;
+  top: 39.38%;
+  width: 17.69%;
+  height: 18.33%;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #171b21;
+  opacity: 0;
+}
+.hs-shim, .hs-bar { position: absolute; display: block; }
+.hs-shim {
+  inset: 0;
+  background: linear-gradient(104deg,
+    rgba(73, 224, 245, 0) 34%,
+    rgba(73, 224, 245, 0.42) 50%,
+    rgba(73, 224, 245, 0) 66%);
+  translate: -100% 0;
+}
+.hs-bar {
+  left: 8%;
+  right: 8%;
+  bottom: 12%;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--vi-cyan);
+  transform-origin: left center;
+  scale: 0 1;
+}
+.case-slide.revealed .hs-gen { animation: hs-gen 8s linear 1.9s infinite; }
+.case-slide.revealed .hs-shim { animation: hs-shim 8s linear 1.9s infinite; }
+.case-slide.revealed .hs-bar { animation: hs-bar 8s linear 1.9s infinite; }
+@keyframes hs-gen {
+  0%, 15% { opacity: 0; }
+  17%     { opacity: 1; }
+  41%     { opacity: 1; }
+  45%     { opacity: 0; }
+  100%    { opacity: 0; }
+}
+@keyframes hs-shim {
+  0%, 16% { translate: -100% 0; }
+  28%     { translate: 100% 0; }
+  29%     { translate: -100% 0; }
+  41%     { translate: 100% 0; }
+  100%    { translate: 100% 0; }
+}
+@keyframes hs-bar {
+  0%, 17%  { scale: 0 1; }
+  26%      { scale: 0.42 1; }   /* the honest stall every render has */
+  30%      { scale: 0.48 1; }
+  41%      { scale: 1 1; }
+  44%      { scale: 1 1; }
+  45%, 100% { scale: 0 1; }
+}
+
+/* the node's ring: a tick when the pulse lands, a bloom when it delivers */
+.hs-node {
+  left: 46.19%;
+  top: 34.49%;
+  width: 19.17%;
+  height: 23.97%;
+  border-radius: 5px;
+}
+.case-slide.revealed .hs-node {
+  animation: hs-bloom 8s ease-out 1.9s infinite;
+}
+@keyframes hs-bloom {
+  0%, 14% { box-shadow: 0 0 0 0 rgba(73, 224, 245, 0.5); }
+  22%     { box-shadow: 0 0 0 4px rgba(73, 224, 245, 0); }
+  22.01%, 43% { box-shadow: 0 0 0 0 rgba(73, 224, 245, 0.6); }
+  56%    { box-shadow: 0 0 0 9px rgba(73, 224, 245, 0); }
+  100%   { box-shadow: 0 0 0 0 rgba(73, 224, 245, 0); }
+}
+/* the play button comes back with the frame */
+.hs-play {
+  left: 55.67%;
+  top: 48.59%;
+  width: 7%;
+  aspect-ratio: 1;
+  margin-left: -3.5%;
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(73, 224, 245, 0.55) 0%, rgba(73, 224, 245, 0) 70%);
+  opacity: 0;
+}
+.case-slide.revealed .hs-play {
+  animation: hs-flash 8s ease-out 1.9s infinite;
+}
+@keyframes hs-flash {
+  0%, 44% { opacity: 0; }
+  48%     { opacity: 1; }
+  62%     { opacity: 0; }
+  100%    { opacity: 0; }
+}
+
+/* the screen is OFF when the chapter arrives, and wakes: a black panel the
+   width of the glass slides away to the right, its leading edge a line of
+   the brand's cyan. A sweep of light over an already-white screenshot was
+   invisible; a screen that turns ON is the whole point — the board was
+   there the entire time, waiting. */
+.hs-off {
+  inset: 0;
+  overflow: hidden;
+}
+.hs-off i {
+  position: absolute;
+  top: -8%;
+  bottom: -8%;
+  left: 0;
+  width: 140%;
+  display: block;
+  background: linear-gradient(101deg,
+    rgba(180, 244, 252, 0) 0%,
+    rgba(180, 244, 252, 0.9) 2.2%,
+    #0b0f13 6%, #0b0f13 100%);
+}
+.case-slide.revealed .hs-off i {
+  animation: hs-on 1.35s cubic-bezier(0.44, 0, 0.22, 1) 0.3s both;
+}
+@keyframes hs-on {
+  0%   { translate: 0 0; }
+  100% { translate: 106% 0; }
+}
+
+/* the specular — the glass catches the cursor (js/vicino.js sets --sx/--sy) */
+.hs-sheen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(26% 42% at var(--sx, 50%) var(--sy, 50%),
+    rgba(214, 250, 255, 0.38) 0%, rgba(255, 255, 255, 0.09) 44%, transparent 70%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.hero-stage:hover .hs-sheen { opacity: 1; }
 
 .scroll-hint {
   position: absolute;
-  bottom: 24px;
+  bottom: var(--edge);
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -322,7 +559,7 @@ html.is-scrolling .case-stage *::after {
   align-items: center;
   gap: 1px;
   font-size: 13.25px;
-  color: rgba(38, 37, 30, 0.48);
+  color: rgba(var(--ink-rgb), 0.48);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease 1.4s;
@@ -339,25 +576,25 @@ html.is-scrolling .case-stage *::after {
 }
 
 /* ============================================================
-   02 · product — the real editor, framed; the node vocabulary
+   03 · product — the sketchbook, framed; the node vocabulary
    as a slow lap underneath
    ============================================================ */
 .prod-copy {
   position: absolute;
-  top: 94px;
+  top: var(--lede-top);
   left: var(--ax);
   transform: translateX(-50%);
   width: 880px;
   text-align: center;
   font-size: 16.5px;
   line-height: 25px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 /* the sketchbook: three graph-paper sheets in one stack, binder tabs
    on top. One object, one story — flip the tabs, the paper shuffles. */
 .sketchbook {
   position: absolute;
-  top: 178px;
+  top: calc(var(--after-lede) + var(--sp-24));
   left: var(--ax);
   transform: translateX(-50%);
   width: 860px;
@@ -368,33 +605,38 @@ html.is-scrolling .case-stage *::after {
   display: flex;
   gap: 10px;
   padding: 0 26px;
-  margin-bottom: -2px;
+  /* the tabs sit flush on the sheet's top edge — no overlap to tune. The
+     sheet's own border draws one unbroken line behind all three. */
 }
 .sheet-tab {
+  position: relative;
   font: inherit;
   font-size: 13px;
   line-height: 1;
   color: #7a7a7a;
-  padding: 9px 16px 12px;
+  padding: 10px 16px 12px;
   background: #f6f4f1;
   border: 2px solid #d9d5cf;
   border-bottom: 0;
   cursor: pointer;
-  transition: transform var(--t-snap) var(--ease-spring),
-              color 0.2s ease, background-color 0.2s ease;
+  border-radius: 12px 12px 0 0;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
-/* each tab cut a little differently — nobody cuts three tabs the same */
-.sheet-tab:nth-child(1) { border-radius: 14px 9px 0 0; rotate: -0.7deg; }
-.sheet-tab:nth-child(2) { border-radius: 9px 14px 0 0; rotate: 0.5deg; }
-.sheet-tab:nth-child(3) { border-radius: 12px 11px 0 0; rotate: -0.4deg; }
-.sheet-tab:hover { color: rgba(0, 0, 0, 0.62); transform: translateY(1px); }
+.sheet-tab:hover { color: rgba(0, 0, 0, 0.62); }
 .sheet-tab:focus-visible { outline: 2px solid var(--vi-ink); outline-offset: 2px; }
-.sheet-tab.is-active {
+.sheet-tab.is-active { background: #fff; color: #17171a; }
+/* the open tab erases the sheet's line for exactly its own width — a white
+   lid laid over the border, stopping at the inner edge of the tab's walls so
+   the line still runs under them and the two meet as one stroke. Taller than
+   the line on purpose, so page zoom can round the border however it likes. */
+.sheet-tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 3px;
   background: #fff;
-  color: #17171a;
-  /* sink 2px so the sheet's top border disappears under the tab —
-     the paper and its tab become one piece */
-  transform: translateY(2px);
 }
 .sheet-stack {
   position: relative;
@@ -466,7 +708,7 @@ html.is-scrolling .case-stage *::after {
 }
 
 /* ============================================================
-   03 · paths — one mini-board, two looping stories. All state
+   04 · paths — one mini-board, two looping stories. All state
    lives on #paths-stage's data-mode / data-step; vicino-story.js
    advances the counter, types the brief, and flips the toggle
    itself at the end of every lap until the reader takes over.
@@ -475,54 +717,59 @@ html.is-scrolling .case-stage *::after {
    ============================================================ */
 .paths-copy {
   position: absolute;
-  top: 92px;
+  top: var(--lede-top);
   left: var(--ax);
   transform: translateX(-50%);
-  width: 840px;
+  width: 880px;
   text-align: center;
   font-size: 16.5px;
   line-height: 25px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
-/* the mode switch is a real segmented control — one object, two
-   positions, a thumb that slides so the flip can't be missed */
-.paths-tabs {
+/* the switch is ONE object everywhere on this page: a segmented
+   control — a track, equal stops, a thumb that slides so the flip
+   can't be missed. This chapter flips modes with it; 07 and 08 turn
+   their documents with the same object (js/vicino.js drives --seg-i /
+   --seg-n there). The only tabs NOT drawn like this are the
+   sketchbook's — those are binder tabs ON the paper, part of the
+   drawn artifact, not page chrome. */
+.paths-tabs, .exhibit-tabs {
   position: absolute;
-  top: 150px;
+  top: var(--after-lede);
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
   padding: 4px;
-  background: rgba(230, 229, 224, 0.55);
-  border: 1px solid #e6e5e0;
+  background: rgba(var(--line-rgb), 0.55);
+  border: 1px solid var(--g-150);
   border-radius: 22px;
 }
-.paths-tabs::before {
+.paths-tabs::before, .exhibit-tabs::before {
   content: "";
   position: absolute;
   left: 4px;
   top: 4px;
   bottom: 4px;
-  width: calc(50% - 4px);
+  width: calc((100% - 8px) / var(--seg-n, 2));
   background: #fff;
   border: 1px solid #dcdfdf;
   border-radius: 17px;
-  box-shadow: 0 2px 8px rgba(6, 58, 66, 0.09);
+  translate: calc(var(--seg-i, 0) * 100%) 0;
   transition: translate 0.35s var(--ease-spring);
 }
-.paths-tabs.is-hand::before { translate: 100% 0; }
-.path-tab {
+.paths-tabs.is-hand { --seg-i: 1; }
+.path-tab, .ex-tab {
   position: relative;
   z-index: 1;
   width: 168px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 7px 0;
+  gap: 8px;
+  padding: 8px 0;
   font: inherit;
   font-size: 13.5px;
-  color: #7b7b7b;
+  color: #7a7a7a;
   background: none;
   border: 0;
   border-radius: 17px;
@@ -536,12 +783,15 @@ html.is-scrolling .case-stage *::after {
   opacity: 0.5;
   transition: color var(--t-micro) ease, opacity var(--t-micro) ease;
 }
-.path-tab:hover { color: var(--vi-ink); }
-.path-tab.is-active { color: var(--vi-ink); }
+:is(.path-tab, .ex-tab):hover,
+:is(.path-tab, .ex-tab).is-active { color: var(--vi-ink); }
+/* the ring rides INSIDE the track's 4px padding — at the site's default
+   3px offset it straddled the track's own edge */
+:is(.path-tab, .ex-tab):focus-visible { outline-offset: 1px; }
 .path-tab.is-active svg { color: #27bfd4; opacity: 1; }
 .paths-stage {
   position: absolute;
-  top: 196px;
+  top: var(--figure-top);
   left: var(--ax);
   transform: translateX(-50%);
   width: 1120px;
@@ -549,7 +799,7 @@ html.is-scrolling .case-stage *::after {
   background: var(--vi-stage);
   background-image: radial-gradient(rgba(29, 29, 31, 0.11) 1.1px, transparent 1.1px);
   background-size: 26px 26px;
-  border: 2px solid #e9e8e3;
+  border: 2px solid var(--g-130);
   border-radius: 16px;
   overflow: hidden;
 }
@@ -560,14 +810,13 @@ html.is-scrolling .case-stage *::after {
   left: 30px;
   top: 40px;
   width: 250px;
-  padding: 12px 13px 13px;
+  padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   background: #fff;
   border: 1px solid #e5e9e9;
   border-radius: 14px;
-  box-shadow: 0 6px 16px rgba(6, 58, 66, 0.06);
   opacity: 0;
   translate: 0 8px;
   transition: opacity 0.35s ease, translate 0.35s var(--ease-rise);
@@ -576,7 +825,7 @@ html.is-scrolling .case-stage *::after {
 .ps-chat-head {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 .ps-chat-logo {
   width: 20px;
@@ -597,7 +846,7 @@ html.is-scrolling .case-stage *::after {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 10px;
   color: #8a9296;
 }
@@ -623,7 +872,7 @@ html.is-scrolling .case-stage *::after {
 .ps-chat-plan {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   min-height: 100px;
 }
 .ps-chat-plan em {
@@ -639,9 +888,9 @@ html.is-scrolling .case-stage *::after {
 .ps-chat-plan i {
   font-style: normal;
   font-size: 11.5px;
-  padding: 4px 9px;
+  padding: 4px 10px;
   border-radius: 10px;
-  color: #26251e;
+  color: var(--ink);
   background: #f4f6f6;
   border: 1px solid #eceff0;
   width: fit-content;
@@ -664,7 +913,7 @@ html.is-scrolling .case-stage *::after {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 7px 7px 11px;
+  padding: 8px 8px 8px 12px;
   background: #f4f6f6;
   border: 1px solid #eceff0;
   border-radius: 16px;
@@ -677,7 +926,7 @@ html.is-scrolling .case-stage *::after {
   flex-wrap: wrap;
   font-size: 12px;
   line-height: 17px;
-  color: #26251e;
+  color: var(--ink);
 }
 .ps-input-text::before {
   content: "Ask anything, or @ a node";
@@ -717,11 +966,10 @@ html.is-scrolling .case-stage *::after {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 9px 8px;
+  padding: 10px 8px;
   background: #fff;
   border: 1px solid #e5e9e9;
   border-radius: 15px;
-  box-shadow: 0 6px 16px rgba(6, 58, 66, 0.06);
   opacity: 0;
   translate: 0 8px;
   transition: opacity 0.35s ease, translate 0.35s var(--ease-rise);
@@ -777,7 +1025,6 @@ html.is-scrolling .case-stage *::after {
   background: #fff;
   border: 1px solid #e5e9e9;
   border-radius: 13px;
-  box-shadow: 0 6px 16px rgba(6, 58, 66, 0.06);
   opacity: 0;
   scale: 0.85;
   transition: opacity 0.4s ease, scale 0.4s var(--ease-spring),
@@ -798,7 +1045,7 @@ html.is-scrolling .case-stage *::after {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 11px 6px;
+  padding: 8px 12px 6px;
   font-size: 12px;
   font-weight: 600;
   color: #1d1d1f;
@@ -822,7 +1069,7 @@ html.is-scrolling .case-stage *::after {
 .paths-stage:is([data-mode="agent"][data-step="5"], [data-mode="hand"][data-step="6"]) .ps-check { color: #35c8dd; }
 .ps-node-body {
   display: block;
-  margin: 0 9px 6px;
+  margin: 0 10px 6px;
   padding: 8px 10px;
   font-size: 11.5px;
   line-height: 16px;
@@ -835,7 +1082,7 @@ html.is-scrolling .case-stage *::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 11px 8px;
+  padding: 0 12px 8px;
   font-size: 9.5px;
   color: #9aa2a6;
 }
@@ -905,7 +1152,7 @@ html.is-scrolling .case-stage *::after {
   bottom: 9px;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   font-size: 9.5px;
   color: rgba(255, 255, 255, 0.94);
 }
@@ -938,9 +1185,7 @@ html.is-scrolling .case-stage *::after {
 /* the generating node wears the editor's cyan selection ring */
 .paths-stage:is([data-mode="agent"][data-step="4"], [data-mode="hand"][data-step="5"]) .ps-n2 {
   border-color: rgba(73, 224, 245, 0.8);
-  box-shadow: 0 0 0 2px rgba(73, 224, 245, 0.5),
-              0 0 0 7px rgba(73, 224, 245, 0.14),
-              0 6px 16px rgba(6, 58, 66, 0.06);
+  box-shadow: 0 0 0 2px rgba(73, 224, 245, 0.5), 0 0 0 7px rgba(73, 224, 245, 0.14);
 }
 @keyframes vi-orbit {
   from { transform: rotate(0turn) translateX(11px); }
@@ -1029,7 +1274,6 @@ html.is-scrolling .case-stage *::after {
   border-radius: 4.5px;
   background: var(--pc);
   border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
 }
 .ps-port-r { right: -6px; }
 .ps-port-l { left: -6px; }
@@ -1070,7 +1314,6 @@ html.is-scrolling .case-stage *::after {
   height: 17px;
   opacity: 0;
   transition: left 0.7s ease, top 0.7s ease, opacity 0.3s ease;
-  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.3));
   z-index: 2;
 }
 [data-mode="hand"] .ps-cursor { opacity: 1; }
@@ -1096,7 +1339,6 @@ html.is-scrolling .case-stage *::after {
   background: #fff;
   border: 1px solid #e7eaea;
   border-radius: 14px;
-  box-shadow: 0 6px 16px rgba(6, 58, 66, 0.06);
 }
 .ps-minimap::before {
   content: "";
@@ -1158,7 +1400,6 @@ html.is-scrolling .case-stage *::after {
   background: #fff;
   border: 1px solid #e5e9e9;
   border-radius: 17px;
-  box-shadow: 0 6px 16px rgba(6, 58, 66, 0.07);
 }
 .ps-tool {
   width: 24px;
@@ -1177,7 +1418,7 @@ html.is-scrolling .case-stage *::after {
   background: #e8ebec;
 }
 .ps-tool-zoom {
-  padding: 0 3px;
+  padding: 0 4px;
   font-size: 10.5px;
   color: #556066;
   font-variant-numeric: tabular-nums;
@@ -1202,15 +1443,15 @@ html.is-scrolling .case-stage *::after {
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   height: 28px;
-  padding: 0 12px 0 5px;
+  padding: 0 12px 0 6px;
   overflow: hidden;
   font: inherit;
   font-size: 11.5px;
   color: rgba(0, 0, 0, 0.45);
-  background: rgba(230, 229, 224, 0.48);
-  border: 1px solid #cdcdc9;
+  background: rgba(var(--line-rgb), 0.48);
+  border: 1px solid var(--g-250);
   border-radius: 15px;
   cursor: pointer;
   transition: color var(--t-micro) ease, background var(--t-micro) ease,
@@ -1224,9 +1465,9 @@ html.is-scrolling .case-stage *::after {
   place-items: center;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
-  color: rgba(38, 37, 30, 0.55);
-  background: #fdfdfb;
-  border: 1px solid #cdcdc9;
+  color: rgba(var(--ink-rgb), 0.55);
+  background: var(--g-050);
+  border: 1px solid var(--g-250);
   border-radius: 50%;
   transition: color var(--t-micro) ease, border-color var(--t-micro) ease;
 }
@@ -1259,7 +1500,7 @@ html.is-scrolling .case-stage *::after {
 }
 
 /* ============================================================
-   04 · anatomy — ONE node on the plinth. A single plaque beside
+   05 · anatomy — ONE node on the plinth. A single plaque beside
    it reads the card part by part; the active part glows and
    performs its own job while the rest of the card steps back
    into shadow. vicino-story.js turns the pages; [data-active]
@@ -1270,18 +1511,18 @@ html.is-scrolling .case-stage *::after {
 #anatomy { --card-h: 616px; }
 .ana-copy {
   position: absolute;
-  top: 90px;
+  top: var(--lede-top);
   left: var(--ax);
   transform: translateX(-50%);
-  width: 840px;
+  width: 880px;
   text-align: center;
   font-size: 16.5px;
   line-height: 25px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .ana-stage {
   position: absolute;
-  top: 172px;
+  top: calc(var(--after-lede) + var(--sp-24));
   left: calc(var(--ax) - 470px);
   width: 940px;
   height: 356px;
@@ -1294,7 +1535,6 @@ html.is-scrolling .case-stage *::after {
   background: #fff;
   border: 1px solid #e5e9e9;
   border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(6, 58, 66, 0.09);
   font-family: 'Manrope', var(--font, sans-serif);
 }
 /* the header is INSET from the card (margin + a smaller pad add back
@@ -1303,9 +1543,9 @@ html.is-scrolling .case-stage *::after {
 .ana-head {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   margin: 6px;
-  padding: 8px 10px 5px;
+  padding: 8px 10px 6px;
   font-size: 14px;
   font-weight: 600;
   color: #1d1d1f;
@@ -1371,7 +1611,7 @@ html.is-scrolling .case-stage *::after {
 }
 .ana-model {
   font-size: 12px;
-  padding: 4px 11px;
+  padding: 4px 12px;
   border-radius: 11px;
   color: #44464a;
   background: #f1f3f3;
@@ -1381,7 +1621,7 @@ html.is-scrolling .case-stage *::after {
 .ana-runchip {
   font-size: 12px;
   font-weight: 600;
-  padding: 5px 13px;
+  padding: 6px 14px;
   border-radius: 14px;
   color: #fff;
   background: #141416;
@@ -1397,7 +1637,6 @@ html.is-scrolling .case-stage *::after {
   border-radius: 6px;
   background: var(--pc);
   border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
   transition: box-shadow var(--t-snap) ease, opacity var(--t-lift) ease;
 }
 .ana-p-l1 { left: -8px; top: 128px; }
@@ -1499,47 +1738,59 @@ html.is-scrolling .case-stage *::after {
   font-size: 20px;
   line-height: 28px;
   font-weight: 400;
-  color: #26251e;
+  color: var(--ink);
 }
-/* the page's highlighter, re-inked every time a page turns */
+/* the plaque's key phrase — ink emphasis, no marker behind it */
 .ana-plq-name strong {
   font-weight: 400;
-  color: #26251e;
-  background: linear-gradient(var(--vi-mark), var(--vi-mark))
-              no-repeat left 78% / 0% 0.58em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  transition: background-size 0.55s var(--ease-draw) 0.3s;
+  color: var(--ink);
 }
-.ana-plq-item.is-on .ana-plq-name strong { background-size: 100% 0.58em; }
 .ana-plq-text {
-  margin-top: 9px;
+  margin-top: 10px;
   font-size: 15px;
   line-height: 23px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
-/* the pager — same recipe as the paths chapter's .ps-step dots */
+/* the pager — the same scrubber chips as the paths chapter's
+   .ps-step stops: the part's NAME on a quiet chip (numbers said
+   nothing), and the active one wears the wash plus the dwell line
+   that fills while the tour holds there (vicino-story.js writes
+   --dw), so the self-turning is legible here too */
 .ana-steps {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-top: 20px;
 }
 .ana-step {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  display: grid;
-  place-items: center;
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  overflow: hidden;
+  white-space: nowrap;
   font: inherit;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: rgba(0, 0, 0, 0.4);
-  background: rgba(230, 229, 224, 0.48);
-  border: 1px solid #cdcdc9;
-  border-radius: 50%;
+  font-size: 11.5px;
+  color: rgba(0, 0, 0, 0.45);
+  background: rgba(var(--line-rgb), 0.48);
+  border: 1px solid var(--g-250);
+  border-radius: 15px;
   cursor: pointer;
   transition: color var(--t-micro) ease, background var(--t-micro) ease,
               border-color var(--t-micro) ease;
+}
+.ana-step::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(53, 200, 221, 0.75);
+  transform-origin: left;
+  scale: 0 1;
 }
 .ana-step:hover { border-color: var(--vi-line); color: var(--vi-ink); }
 .ana-step.is-on {
@@ -1547,6 +1798,7 @@ html.is-scrolling .case-stage *::after {
   background: var(--vi-wash);
   border-color: var(--vi-line);
 }
+.ana-step.is-on::after { animation: vi-dwell var(--dw, 5200ms) linear forwards; }
 
 /* ============================================================
    07 · decisions — the studies behind a second tab pair, and
@@ -1554,14 +1806,14 @@ html.is-scrolling .case-stage *::after {
    ============================================================ */
 .dec-copy {
   position: absolute;
-  top: 90px;
+  top: var(--lede-top);
   left: var(--ax);
   transform: translateX(-50%);
   width: 880px;
   text-align: center;
   font-size: 16.5px;
   line-height: 25px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .ex-stage.ex-stage-dec { height: 428px; }
 .dec-loop {
@@ -1577,8 +1829,8 @@ html.is-scrolling .case-stage *::after {
   height: auto;
 }
 .dl-box rect {
-  fill: rgba(230, 229, 224, 0.23);
-  stroke: #e6e5e0;
+  fill: rgba(var(--line-rgb), 0.23);
+  stroke: var(--g-150);
   stroke-width: 1.5;
   transition: translate 0.25s var(--ease-lift), stroke var(--t-micro) ease;
 }
@@ -1600,7 +1852,7 @@ html.is-scrolling .case-stage *::after {
 }
 .dl-t1 {
   font-size: 14px;
-  fill: #26251e;
+  fill: var(--ink);
   text-anchor: middle;
 }
 .dl-t2 {
@@ -1610,7 +1862,7 @@ html.is-scrolling .case-stage *::after {
 }
 .dl-arrow path {
   fill: none;
-  stroke: #b0afab;
+  stroke: var(--g-350);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -1625,19 +1877,19 @@ html.is-scrolling .case-stage *::after {
 .dl-return .dl-t2 { fill: var(--vi-ink); }
 
 /* ============================================================
-   03 · canvas — the tile's seat in the chapter (the tile itself
+   02 · canvas — the tile's seat in the chapter (the tile itself
    and the whole board skin live in vicino-canvas.css)
    ============================================================ */
 .canvas-intro {
   position: absolute;
-  top: 88px;
+  top: var(--lede-top);
   left: var(--ax);
   transform: translateX(-50%);
-  width: 840px;
+  width: 880px;
   text-align: center;
-  font-size: 15.5px;
-  line-height: 23px;
-  color: #5b5a53;
+  font-size: 16.5px;
+  line-height: 25px;
+  color: var(--g-700);
 }
 .canvas-gestures {
   position: absolute;
@@ -1650,11 +1902,11 @@ html.is-scrolling .case-stage *::after {
 }
 .canvas-gestures .case-chip {
   font-size: 12.5px;
-  padding: 4px 11px;
+  padding: 4px 12px;
 }
 .canvas-legend {
   position: absolute;
-  bottom: 20px;
+  bottom: var(--edge);
   left: var(--ax);
   transform: translateX(-50%);
   display: flex;
@@ -1667,20 +1919,19 @@ html.is-scrolling .case-stage *::after {
   align-items: center;
   gap: 6px;
   font-size: 12.5px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .legend-chip i {
   width: 10px;
   height: 16px;
   border-radius: 5px;
   border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
   background: var(--lc);
 }
 .legend-note {
   margin-left: 6px;
   font-size: 12.5px;
-  color: rgba(38, 37, 30, 0.48);
+  color: rgba(var(--ink-rgb), 0.48);
 }
 
 /* ============================================================
@@ -1694,21 +1945,25 @@ html.is-scrolling .case-stage *::after {
   color: inherit;
   text-decoration: none;
   background: #fff;
-  border: 2px solid #e9e8e3;
+  border: 2px solid var(--g-130);
   border-radius: 14px;
   overflow: hidden;
-  transition: border-color var(--t-micro) ease, box-shadow var(--t-micro) ease;
+  transition: border-color var(--t-micro) ease;
 }
 .exhibit-frame:hover,
 .exhibit-frame:focus-visible {
   border-color: rgba(13, 118, 133, 0.28);
-  box-shadow: 0 8px 18px rgba(6, 58, 66, 0.07);
 }
 .exhibit-frame:focus-visible { outline: 2px solid var(--vi-ink); outline-offset: 3px; }
-/* the only affordance: the plaque's arrow warms up. No pill, no
-   overlay, no instructions — the card is a link and reads like one. */
+/* the only affordance: the plaque's arrow warms up and leans out the
+   corner, and the document underneath breathes a little closer. No
+   pill, no overlay, no instructions — the card is a link and reads
+   like one. */
 .exhibit-frame:hover .shot-arrow,
-.exhibit-frame:focus-visible .shot-arrow { color: var(--vi-ink); }
+.exhibit-frame:focus-visible .shot-arrow {
+  color: var(--vi-ink);
+  translate: 1px -1px;
+}
 .exhibit-frame:hover .shot-chrome.is-dark .shot-arrow { color: #fff; }
 .exhibit-still {
   display: block;
@@ -1719,20 +1974,23 @@ html.is-scrolling .case-stage *::after {
   height: calc(100% - 26px);
   object-fit: cover;
   object-position: top;
+  transition: scale 0.9s var(--ease-glide);
 }
+.exhibit-frame:hover .exhibit-still,
+.exhibit-frame:focus-visible .exhibit-still { scale: 1.015; }
 
 /* ============================================================
-   04 · system — Pulse: copy + palette left, the brand book LIVE
-   on the right at half scale (1188px of document in a 594px pane)
+   06 · system — Pulse: copy + palette left, the brand book on
+   the right (a still of the real document, linking out to it)
    ============================================================ */
 .system-copy {
   position: absolute;
-  top: 128px;
+  top: calc(var(--content-top) + var(--sp-4));
   left: calc(var(--ax) - 510px);
   width: 392px;
   font-size: 16.5px;
   line-height: 26px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .principle-chips {
   display: flex;
@@ -1742,30 +2000,35 @@ html.is-scrolling .case-stage *::after {
 }
 .principle-chips .case-chip {
   font-size: 12.5px;
-  padding: 4px 11px;
+  padding: 4px 12px;
 }
 .rail-label {
   margin-top: 22px;
   font-size: 13px;
-  color: rgba(38, 37, 30, 0.48);
+  color: rgba(var(--ink-rgb), 0.48);
 }
+/* a TABLE of tokens, not a ragged wrap: ten chips flowing free left an
+   orphaned tenth alone on a fourth row, and every row broke at a
+   different place. Two even columns × five rows reads as the spec sheet
+   it is — and the fixed cell gives the hex room to reveal on hover
+   without shoving its neighbours. */
 .token-rail {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 10px;
 }
 .tk {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 10px 4px 5px;
+  gap: 8px;
+  padding: 4px 10px 4px 6px;
   background: #fff;
   border: 1px solid #e7e7e5;
   border-radius: 14px;
   font: inherit;
   font-size: 11.5px;
-  color: #5b5a53;
+  color: var(--g-700);
   cursor: default;
   transition: border-color var(--t-micro) ease;
 }
@@ -1781,74 +2044,50 @@ html.is-scrolling .case-stage *::after {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
 }
+/* the hex is parked in the cell's own slack (margin-left: auto), so it
+   fades in where it already stands — nothing slides, nothing reflows */
 .tk-hex {
-  max-width: 0;
-  overflow: hidden;
+  margin-left: auto;
+  padding-left: 8px;
   opacity: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 11px;
   color: rgba(0, 0, 0, 0.4);
   white-space: nowrap;
-  transition: max-width 0.3s ease, opacity 0.3s ease, margin-left 0.3s ease;
+  transition: opacity var(--t-micro) ease;
 }
 .tk:hover, .tk:focus-visible { border-color: var(--vi-line); }
-.tk:hover .tk-hex, .tk:focus-visible .tk-hex {
-  max-width: 64px;
-  opacity: 1;
-  margin-left: 2px;
-}
+.tk:hover .tk-hex, .tk:focus-visible .tk-hex { opacity: 1; }
 
 .ex-brand {
   position: absolute;
-  top: 116px;
+  top: var(--content-top);
   left: calc(var(--ax) - 84px);
   width: 594px;
   height: 648px;
 }
 
 /* ============================================================
-   05 · components — three real pages behind three tabs
+   08 · components — three real pages behind three tabs
    ============================================================ */
 .comp-copy {
   position: absolute;
-  top: 90px;
+  top: var(--lede-top);
   left: var(--ax);
   transform: translateX(-50%);
   width: 880px;
   text-align: center;
   font-size: 16.5px;
   line-height: 25px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
-.exhibit-tabs {
-  position: absolute;
-  top: 156px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-}
-.ex-tab {
-  padding: 6px 16px;
-  font: inherit;
-  font-size: 13.5px;
-  color: #5b5a53;
-  background: rgba(230, 229, 224, 0.48);
-  border: 1px solid #cdcdc9;
-  border-radius: 18px;
-  cursor: pointer;
-  transition: color var(--t-micro) ease, background var(--t-micro) ease,
-              border-color var(--t-micro) ease;
-}
-.ex-tab:hover { border-color: var(--vi-line); color: var(--vi-ink); }
-.ex-tab.is-active {
-  color: var(--vi-ink);
-  background: var(--vi-wash);
-  border-color: var(--vi-line);
-}
+/* .exhibit-tabs / .ex-tab are the page's one segmented control,
+   defined with the paths chapter's (04): same track, same thumb.
+   Wash-pill chips are reserved for the story SCRUBBERS (.ps-step,
+   .ana-step) — a switch and a stop must not wear the same clothes. */
 .ex-stage {
   position: absolute;
-  top: 204px;
+  top: var(--figure-top);
   left: var(--ax);
   transform: translateX(-50%);
   width: 1030px;
@@ -1866,18 +2105,18 @@ html.is-scrolling .case-stage *::after {
 }
 
 /* ============================================================
-   06 · skill — the generation contract: the real file typing
+   09 · skill — the generation contract: the real file typing
    itself in, the forbidden list on flip chips, and the line
    that fails an output
    ============================================================ */
 .skill-copy {
   position: absolute;
-  top: 124px;
+  top: calc(var(--content-top) + var(--sp-4));
   left: calc(var(--ax) - 510px);
   width: 392px;
   font-size: 16.5px;
   line-height: 26px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .skill-sub {
   margin-top: 14px;
@@ -1897,9 +2136,11 @@ html.is-scrolling .case-stage *::after {
 .neg {
   position: relative;
   min-height: 88px;
-  padding: 12px 13px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
   background: #fff;
-  border: 2px solid #e9e8e3;
+  border: 2px solid var(--g-130);
   border-radius: 14px;
   font: inherit;
   text-align: left;
@@ -1912,16 +2153,45 @@ html.is-scrolling .case-stage *::after {
   background: var(--vi-wash);
   transform: translateY(-2px);
 }
+/* the turn affordance, in the exhibits' own language: the frames say
+   "this opens somewhere" with one small arrow that warms to the case
+   ink, so a chip that TURNS says it the same way — a quiet corner
+   glyph, not a pill and not an instruction. Without it these were six
+   white boxes with no sign that a reason was underneath. */
+.neg::after {
+  content: "";
+  position: absolute;
+  right: 11px;
+  bottom: 10px;
+  width: 11px;
+  height: 11px;
+  background: currentColor;
+  color: rgba(var(--ink-rgb), 0.3);
+  -webkit-mask: var(--turn-glyph) center / contain no-repeat;
+  mask: var(--turn-glyph) center / contain no-repeat;
+  transition: color var(--t-micro) ease, rotate var(--t-lift) var(--ease-lift);
+}
+.neg {
+  --turn-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.2 7.2a5.3 5.3 0 1 0-1 4.2'/%3E%3Cpath d='M13.6 3.4v3.9h-3.9'/%3E%3C/svg%3E");
+}
+.neg:hover::after, .neg:focus-visible::after {
+  color: var(--vi-ink);
+  rotate: 130deg;
+}
 .neg-front {
   display: block;
+  padding-right: 16px;      /* the glyph's corner stays the glyph's */
   font-size: 13.5px;
   line-height: 18px;
-  color: #26251e;
+  color: var(--ink);
   transition: opacity 0.22s ease;
 }
 .neg-back {
   position: absolute;
   inset: 12px 13px;
+  display: grid;
+  align-content: center;
+  padding-right: 14px;      /* clear of the turn glyph, like the front */
   font-size: 12px;
   line-height: 16.5px;
   color: var(--vi-ink);
@@ -1933,13 +2203,13 @@ html.is-scrolling .case-stage *::after {
 
 .skill-card {
   position: absolute;
-  top: 116px;
+  top: var(--content-top);
   left: calc(var(--ax) - 60px);
   width: 570px;
   height: 566px;
   margin: 0;
   background: #fff;
-  border: 2px solid #e9e8e3;
+  border: 2px solid var(--g-130);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -2002,20 +2272,22 @@ html.is-scrolling .case-stage *::after {
 }
 .accept-label {
   display: inline-block;
-  padding: 3px 12px;
+  padding: 4px 12px;
   font-size: 11.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--error, #c0392b);
+  /* the site's failure tone — black since the retheme (styles.css says
+     why): state is black here, and the copy names the failure anyway */
+  color: var(--error);
   border: 1.5px solid currentColor;
   border-radius: 12px;
   transform: rotate(-1.4deg);
 }
 .accept-test p {
-  margin-top: 9px;
+  margin-top: 10px;
   font-size: 14.5px;
   line-height: 21px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 
 /* ============================================================
@@ -2026,12 +2298,12 @@ html.is-scrolling .case-stage *::after {
    ============================================================ */
 .onb-copy {
   position: absolute;
-  top: 124px;
+  top: calc(var(--content-top) + var(--sp-4));
   left: calc(var(--ax) - 510px);
   width: 392px;
   font-size: 16.5px;
   line-height: 26px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .onb-tally {
   display: flex;
@@ -2041,7 +2313,7 @@ html.is-scrolling .case-stage *::after {
 }
 .onb-tally .case-chip {
   font-size: 12.5px;
-  padding: 4px 11px;
+  padding: 4px 12px;
 }
 /* the severity chips borrow the review's own ladder: an amber
    blocker, a blue friction, a green polish — one dot each, the
@@ -2051,7 +2323,7 @@ html.is-scrolling .case-stage *::after {
   display: inline-block;
   width: 7px;
   height: 7px;
-  margin-right: 7px;
+  margin-right: 8px;
   border-radius: 50%;
   background: var(--sev, rgba(0, 0, 0, 0.22));
   vertical-align: 1px;
@@ -2067,7 +2339,7 @@ html.is-scrolling .case-stage *::after {
 }
 .ex-pulse {
   position: absolute;
-  top: 116px;
+  top: var(--content-top);
   left: calc(var(--ax) - 84px);
   width: 594px;
   height: 648px;
@@ -2078,21 +2350,20 @@ html.is-scrolling .case-stage *::after {
    ============================================================ */
 .metric-grid {
   position: absolute;
-  top: 140px;
+  top: var(--content-top);
   left: var(--ax);
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
+  gap: var(--sp-16);
   width: 1030px;
 }
 .metric-card {
   height: 168px;
-  padding: 22px 22px;
-  background: rgba(230, 229, 224, 0.23);
-  border: 2px solid #e9e8e3;
+  padding: var(--sp-24);
+  background: rgba(var(--line-rgb), 0.23);
+  border: 2px solid var(--g-130);
   border-radius: 26px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 .metric-card:hover {
   transform: translateY(-3px);
@@ -2108,39 +2379,24 @@ html.is-scrolling .case-stage *::after {
   margin-top: 10px;
   font-size: 13.5px;
   line-height: 19px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .lesson-lines {
   position: absolute;
-  top: 396px;
+  top: 352px;
   left: var(--ax);
   transform: translateX(-50%);
   width: 660px;
   font-size: 17px;
   line-height: 26px;
-  color: #5b5a53;
+  color: var(--g-700);
 }
 .lesson-lines p + p { margin-top: 14px; }
-.case-outro {
-  position: absolute;
-  top: 620px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  display: flex;
-  gap: 46px;
-  white-space: nowrap;
-}
-.case-link {
-  font-size: 16px;
-  color: #5b5a53;
-  text-decoration: none;
-  transition: color var(--t-micro) ease;
-}
 .case-link:hover, .case-link:focus-visible { color: var(--vi-ink); }
 
 /* ============================================================
    reduced motion — entrances become fades, nothing floats,
-   nothing laps, the marker is simply there
+   nothing laps
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .case-title, .case-pitch, .case-hero, .canvas-intro, .canvas-gestures,
@@ -2154,21 +2410,27 @@ html.is-scrolling .case-stage *::after {
     transition: opacity 0.25s ease;
     translate: none;
   }
-  .case-pitch strong, .canvas-intro strong, .prod-copy strong,
-  .paths-copy strong, .ana-copy strong, .dec-copy strong,
-  .system-copy strong, .comp-copy strong, .skill-copy strong,
-  .onb-copy strong,
-  .lesson-lines strong {
-    transition: none;
-    background-size: 100% 0.58em;
+  /* chapter 01: the floor and the display stay, both simply at rest —
+     nothing floats, nothing runs the wire, the screen never sweeps */
+  .case-slide.revealed .hero-stage { animation: none; }
+  .case-slide:not(.revealed) .hero-stage { scale: 1; }
+  .case-slide.revealed :is(.hs-wire i, .hs-gen, .hs-shim, .hs-bar,
+  .hs-node, .hs-play, .hs-off i) {
+    animation: none;
   }
-  .case-slide.revealed .case-hero { animation: none; }
+  .hs-play, .hs-wire i, .hs-gen { opacity: 0; }
+  .hs-off i { translate: 106% 0; }   /* the screen is simply already on */
+  .cf-spot { display: none; }
+  .hs-sheen { transition: none; }
+  .canvas-floor { transition: opacity 0.25s ease; }
   .site-live-dot { animation: none; }
   .site-link:hover .site-link-arrow { transform: none; }
   .scroll-hint { transition: opacity 0.25s ease; }
   .scroll-hint svg { animation: none; }
   .node-track { animation: none; }
   .metric-card:hover, .neg:hover { transform: none; }
+  .neg::after { transition: color 0.25s ease; }
+  .neg:hover::after, .neg:focus-visible::after { rotate: none; }
   .skill-code.is-typing::after { animation: none; }
   /* sheets cut, they don't shuffle */
   .sheet { transition: opacity 0.25s ease, visibility 0s linear 0.25s; transform: none; }
@@ -2181,11 +2443,17 @@ html.is-scrolling .case-stage *::after {
   /* the clip never plays — the poster stands in, paused under the
      play button; loaders, dwell lines and the queued nudge hold still */
   .ps-clip { display: none; }
-  .ps-gen-orbit i, .ps-gen-pct::after, .ps-step.is-on::after { animation: none; }
+  .ps-gen-orbit i, .ps-gen-pct::after, .ps-step.is-on::after,
+  .ana-step.is-on::after { animation: none; }
   .ps-play { opacity: 0.95 !important; scale: none !important; animation: none; }
   .ps-vbar { opacity: 0 !important; }
   .ps-vbar i { animation: none; }
-  .paths-tabs::before { transition: none; }
+  .paths-tabs::before, .exhibit-tabs::before { transition: none; }
+  .exhibit-still { transition: none; }
+  .exhibit-frame:hover .exhibit-still,
+  .exhibit-frame:focus-visible .exhibit-still { scale: none; }
+  .exhibit-frame:hover .shot-arrow,
+  .exhibit-frame:focus-visible .shot-arrow { translate: none; }
   /* micro-demos become plain highlights; nothing walks or pulses,
      and the plaque's pages turn as simple cuts-with-a-fade */
   .ana-port.is-hot, .ana-wire.is-hot path, .ana-prog.is-hot i,
@@ -2225,9 +2493,9 @@ html.is-scrolling .case-stage *::after {
   }
   .case-slide {
     height: auto;
-    padding: 30px 20px 42px;
+    padding: 30px 20px 40px;
   }
-  .case-slide:first-of-type { padding-top: 54px; }
+  .case-slide:first-of-type { padding-top: 56px; }
   /* vicino.js appends this: a slim reading-progress line at the very top,
      the Pulse-cyan sweep filling as you read the seven chapters */
   .read-progress {
@@ -2243,7 +2511,7 @@ html.is-scrolling .case-stage *::after {
       #b8f3fb, var(--vi-cyan) 55%, var(--vi-ink));
     pointer-events: none;
   }
-  .case-slide:last-of-type { padding-bottom: 116px; }
+  .case-slide:last-of-type { padding-bottom: 120px; }
 
   .case-title {
     position: static;
@@ -2269,15 +2537,25 @@ html.is-scrolling .case-stage *::after {
     font-size: 17px;
     line-height: 26px;
   }
-  .headline-metric { white-space: normal; text-align: center; }
   .site-link { margin-left: auto; margin-right: auto; }
+  /* the column centres here, so the card centres with it */
+  .logo-node { margin-left: auto; margin-right: auto; }
+  .pitch-logo { height: 34px; }
   .case-hero {
     position: static;
     width: min(320px, 82vw);
+    /* the 560px art box exists to line three different studies up on one
+       desktop axis; stacked, it was 294px of dead air around a 266px
+       picture, and hanging the art from its top (above) would have put all
+       of that under the display */
+    height: auto;
     margin: 26px auto 0;
   }
+  /* the floor is aimed with the cover grid's own numbers, and the cover
+     grid is gone here — so is the floor */
+  .canvas-floor { display: none; }
 
-  /* 02 · product */
+  /* 03 · product */
   .prod-copy {
     position: static;
     transform: none;
@@ -2295,7 +2573,10 @@ html.is-scrolling .case-stage *::after {
     margin: 22px auto 0;
   }
   .sheet-tabs { padding: 0 14px; gap: 6px; }
-  .sheet-tab { font-size: 12px; padding: 7px 10px 10px; }
+  .sheet-tab {
+    font-size: 12px;
+    padding: 8px 10px 10px;
+  }
   .sheet-stack { box-shadow: 3px 4px 0 -2px #fff, 3px 4px 0 -1px #dcd8d2; }
   .node-strip {
     position: static;
@@ -2312,7 +2593,7 @@ html.is-scrolling .case-stage *::after {
   .node-track .case-chip:nth-child(n + 15) { display: none; }
 
 
-  /* 03 · paths — the stage scales down whole, like the games */
+  /* 04 · paths — the stage scales down whole, like the games */
   .paths-copy {
     position: static;
     transform: none;
@@ -2322,16 +2603,20 @@ html.is-scrolling .case-stage *::after {
     font-size: 16px;
     line-height: 25px;
   }
-  .paths-tabs {
-    /* relative, not static — the sliding thumb (::before) anchors here */
+  /* both segmented controls: relative, not static — the sliding thumb
+     (::before) anchors here. The track takes the column and the stops
+     divide it, so a two-stop switch and a three-stop switch are the
+     same object at the same width instead of two different widths. */
+  .paths-tabs, .exhibit-tabs {
     position: relative;
     top: auto;
     left: auto;
     transform: none;
-    width: fit-content;
+    width: 100%;
+    max-width: 340px;
     margin: 18px auto 0;
   }
-  .path-tab { width: 146px; font-size: 13px; }
+  .path-tab, .ex-tab { width: auto; flex: 1; min-width: 0; font-size: 12.5px; }
   .paths-stage {
     position: relative;
     left: auto;
@@ -2348,11 +2633,11 @@ html.is-scrolling .case-stage *::after {
     margin-top: 14px;
   }
   /* no room for labels — the stops shrink back to numbered coins */
-  .ps-step { padding: 0 5px; gap: 0; }
+  .ps-step { padding: 0 6px; gap: 0; }
   .ps-step span { display: none; }
   .ps-step::after { display: none; }
 
-  /* 04 · anatomy — the node on top, the plaque reading below it */
+  /* 05 · anatomy — the node on top, the plaque reading below it */
   .ana-copy {
     position: static;
     transform: none;
@@ -2384,6 +2669,9 @@ html.is-scrolling .case-stage *::after {
   }
   .ana-plq-items { height: var(--plq-h, 152px); }
   .ana-steps { justify-content: center; }
+  /* the dwell line stands down with the ps-steps' — same scrubber,
+     same small-screen manners */
+  .ana-step::after { display: none; }
 
   /* 07 · decisions */
   .dec-copy {
@@ -2406,15 +2694,15 @@ html.is-scrolling .case-stage *::after {
   }
   .dec-loop svg { min-width: 760px; }
 
-  /* 03 · canvas */
+  /* 02 · canvas */
   .canvas-intro {
     position: static;
     transform: none;
     width: auto;
     max-width: 460px;
     margin: 0 auto;
-    font-size: 14.5px;
-    line-height: 22px;
+    font-size: 16px;
+    line-height: 25px;
   }
   .canvas-gestures {
     position: static;
@@ -2445,7 +2733,7 @@ html.is-scrolling .case-stage *::after {
     object-fit: initial;
   }
 
-  /* 04 · system */
+  /* 06 · system */
   .system-copy {
     position: static;
     width: auto;
@@ -2463,7 +2751,7 @@ html.is-scrolling .case-stage *::after {
     margin: 22px auto 0;
   }
 
-  /* 05 · components */
+  /* 08 · components */
   .comp-copy {
     position: static;
     transform: none;
@@ -2473,13 +2761,7 @@ html.is-scrolling .case-stage *::after {
     font-size: 16px;
     line-height: 25px;
   }
-  .exhibit-tabs {
-    position: static;
-    transform: none;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 18px;
-  }
+  /* (the exhibit tabs are sized with the paths tabs above — one object) */
   .ex-stage {
     position: static;
     transform: none;
@@ -2491,7 +2773,7 @@ html.is-scrolling .case-stage *::after {
   .ex-pane { position: static; }
   .ex-pane .exhibit-frame { height: auto; }
 
-  /* 06 · the AI guide */
+  /* 09 · the AI guide */
   .skill-copy {
     position: static;
     width: auto;
@@ -2573,7 +2855,7 @@ html.is-scrolling .case-stage *::after {
     justify-content: center;
     flex-wrap: wrap;
     white-space: normal;
-    gap: 24px 46px;
+    gap: 24px 48px;
     margin-top: 28px;
   }
 }

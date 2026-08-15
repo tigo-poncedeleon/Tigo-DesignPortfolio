@@ -24,13 +24,115 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const harness = new URLSearchParams(location.search).has('reveal');
 
-  const done = () => {
-    // dropping intro-pending releases the rail: it slides in from behind
-    // the card's edge on its own 0.3s transition while the card reflows
+  // ---- the frame arrives.
+  //
+  // A FLIP, for the reason the rail toggle is one (js/shell.js): the layout
+  // and the stage's zoom LAND first, in a single frame, and the only thing
+  // that moves afterwards is a compositor transform over the top of a page
+  // that is already final. Nothing can fall out of step with anything,
+  // because by the time the first frame of movement runs there is nothing
+  // left to step.
+  //
+  // Three pieces ride it, on one clock: the rail in from the left, the strip
+  // down from the top, and — the part that was missing — the NAME, which is
+  // the only thing the eye is actually on. The rail's arrival narrows the
+  // card, which re-fits the 1280 stage, so the name it just watched being
+  // typed used to change position AND size in a single frame at the exact
+  // moment the furniture started moving. Now it travels with the frame that
+  // is closing around it.
+  //
+  // TRANSFORM ONLY. Never opacity in these transitions: a layer mid-opacity
+  // is non-opaque, and both Chrome and Firefox drop subpixel text
+  // antialiasing on a non-opaque layer — the rail's labels go thin for the
+  // length of the ride and then snap crisp. Nothing needs to fade anyway,
+  // since both pieces of furniture start wholly off-screen.
+  const poses = [];
+  const pose = (el, dx, dy, s) => {
+    if (!el) return;
+    const scaled = s && Math.abs(s - 1) > 0.002;
+    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && !scaled) return;
+    el.getAnimations().forEach((a) => {
+      if (a.transitionProperty === 'transform') a.cancel();
+    });
+    el.style.transition = 'none';
+    el.style.transform = 'translate(' + dx.toFixed(2) + 'px, ' + dy.toFixed(2) + 'px)' +
+      (scaled ? ' scale(' + s.toFixed(4) + ')' : '');
+    poses.push(el);
+  };
+  const release = () => {
+    if (!poses.length) { root.classList.remove('intro-glide'); return; }
+    void root.offsetWidth;              // ONE commit for all of them, so the
+    poses.forEach((el) => {             // three starts are the same instant
+      el.style.transition = 'transform var(--t-intro) var(--ease-intro)';
+      el.style.transform = '';
+    });
+    const secs = parseFloat(
+      getComputedStyle(root).getPropertyValue('--t-intro')) || 0.52;
+    // one shared timer rather than three transitionends: they are on one
+    // clock by construction, and transitionend has no delivery guarantee
+    setTimeout(() => {
+      poses.forEach((el) => { el.style.transition = el.style.transform = ''; });
+      poses.length = 0;
+      root.classList.remove('intro-glide');   // the seam settles onto the frame
+    }, secs * 1000 + 90);
+  };
+
+  // `ride` is passed, not inferred: only the path that actually typed the
+  // name has anything to glide from. Every skip — a returning visitor,
+  // reduced motion, the ?reveal harness — settles synchronously at parse
+  // time, before shell.js has even hung the furniture, and wants the frame
+  // to be simply already there. The phone has no frame to assemble.
+  const done = (ride) => {
+    const side = document.querySelector('.shell-side');
+    const chrome = document.querySelector('.shell-chrome');
+    const stage = document.getElementById('home');
+    const eased = ride && window.innerWidth > 700;
+    const was = eased && {
+      side: side && side.getBoundingClientRect(),
+      stage: stage && stage.getBoundingClientRect(),
+    };
+
+    if (eased) root.classList.add('intro-glide');
     root.classList.remove('intro-pending');
     root.classList.add('intro-run');
     try { sessionStorage.setItem(KEY, '1'); } catch (err) { /* private mode */ }
+    // the zoom in the SAME task as the layout that changed it, before anything
+    // measures: stage-fit's own observer would not run until after this one
+    if (window.__shellFit) window.__shellFit();
+    // …and now the listeners (shell.js lights the furniture, main.js re-measures
+    // the hero's height), still synchronously, so `is` below sees a settled page
     window.dispatchEvent(new CustomEvent('shell:intro-done'));
+    if (!eased) return;
+
+    const is = {
+      side: side && side.getBoundingClientRect(),
+      stage: stage && stage.getBoundingClientRect(),
+    };
+    if (was.side && is.side) pose(side, was.side.left - is.side.left, 0);
+    // The strip is the one piece whose entrance is AUTHORED rather than
+    // measured, because measuring it gives zero. It is position:sticky at
+    // top:0, so the negative margin that holds it out of the intro's layout
+    // is cancelled by the pin — it has been sitting at y=0 the whole time,
+    // merely invisible, and the margin-top transition this replaces spent
+    // 0.3s tweening a number that moved nothing. The strip's whole arrival
+    // was the fade underneath it. Now it really does come down by its own
+    // height, which is what the CSS always claimed: one piece in from the
+    // left, one down from the top, perpendicular, on one clock.
+    if (chrome) pose(chrome, 0, -chrome.offsetHeight);
+    if (was.stage && is.stage && is.stage.width > 0) {
+      // The stage lives inside `main`'s zoom, so a viewport delta has to be
+      // spent in the stage's own grid px or it travels by the scale factor
+      // too far. ShellFit.toLayout answers for the box the node is in.
+      const px = (v) => (window.ShellFit ? window.ShellFit.toLayout(v, stage) : v);
+      // centre to centre, and the size change with it: transform-origin is
+      // the box's middle and the name is centred in it, so one scale about
+      // that point puts the whole hero back where it was typed
+      pose(stage,
+        px((was.stage.left + was.stage.width / 2) - (is.stage.left + is.stage.width / 2)),
+        px((was.stage.top + was.stage.height / 2) - (is.stage.top + is.stage.height / 2)),
+        was.stage.width / is.stage.width);
+    }
+    release();
   };
 
   const settle = () => {                      // every skip path ends here
@@ -38,7 +140,7 @@
     lines.forEach((el) => {                   // "same finished state" is
       el.textContent = el.dataset.text || ''; // literally true and not just
     });                                       // incidentally true
-    done();
+    done(false);
   };
 
   let seen = false;
@@ -79,6 +181,6 @@
     if (caret) caret.classList.add('is-done');
     await wait(220);
     if (caret) caret.remove();
-    done();
+    done(true);
   })();
 })();

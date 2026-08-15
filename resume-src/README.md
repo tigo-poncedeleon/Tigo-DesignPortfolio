@@ -18,7 +18,7 @@ is invented:
 | date chip over location in the right margin | `.xp-date` / `.xp-loc` |
 | name beside role on one baseline | `.about-title` / `.work-title` title pair |
 | skill pills | `.craft-chip` |
-| the one orange chip (the portfolio URL) | the sitewide warm wash — the colour the nav gives the current page |
+| contact chips (all three the same grey) | `.xp-date` |
 
 Two rules worth keeping if you edit it:
 
