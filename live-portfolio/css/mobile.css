@@ -75,7 +75,8 @@
 
   /* each project rises in as you reach it — the same entrance the
      desktop stepper has, staggered down the column */
-  .work-slide:not(.revealed) .m-work-item { opacity: 0; translate: 0 18px; }
+  /* no arrival here either — the phone's work rows are on the screen the
+     moment the tab is (the desktop sections lost theirs too) */
   .m-work-item {
     transition: opacity var(--t-fade) ease calc(var(--n, 0) * 0.08s),
                 translate var(--t-rise) var(--ease-rise) calc(var(--n, 0) * 0.08s);
@@ -214,6 +215,6 @@
 
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) {
   .m-work-item { transition: opacity 0.25s ease; translate: none; }
-  .work-slide:not(.revealed) .m-work-item { translate: none; }
+
   .m-work-item:active .m-work-shot img { scale: none; }
 }

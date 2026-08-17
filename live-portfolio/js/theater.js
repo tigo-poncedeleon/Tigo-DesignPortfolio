@@ -239,7 +239,12 @@
     const a = e.target.closest('a[href]');
     if (!a || a.closest('#theater')) return;
     const url = new URL(a.getAttribute('href'), location.href);
-    if (url.pathname !== location.pathname || !url.hash) return;
+    // '/' and '/index.html' are one document — the test the shell's own
+    // delegate uses (js/shell.js samePage). It has to be the same test here
+    // or, on the site's front door, the shell would scroll a page the court
+    // is still standing on top of.
+    if (url.pathname.replace(/(^|\/)index\.html$/, '$1') !==
+        location.pathname.replace(/(^|\/)index\.html$/, '$1') || !url.hash) return;
     requestClose();
   }, true);
 

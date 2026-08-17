@@ -403,8 +403,9 @@ window.Pong = (function () {
       requestAnimationFrame(loop);
     });
 
-    var stage = document.getElementById('play-stage');
-    requestAnimationFrame(function () { stage.classList.add('revealed'); });
+    // (the stage's own fade-in moved to js/play-pager.js, which is where
+    // Work and About keep theirs — one line per section, in the file that
+    // owns the section, rather than in whichever game happened to boot)
   }
 
   if (document.readyState === 'loading') {

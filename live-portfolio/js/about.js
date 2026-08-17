@@ -1,4 +1,4 @@
-// About page — stage fade-in, plus the hedcut portrait: the EXACT pipeline
+// About page — the hedcut portrait, and the chapter spy. The EXACT pipeline
 // from working-portfolio/js/line-portrait.js. A regular photo
 // (Media/face_cutout.webp) is baked at runtime into an engraving on an
 // offscreen 2D canvas — ~150 roughly-horizontal ink ribbons whose
@@ -7,35 +7,23 @@
 // original's exact motion (no three.js here; the site stays zero-dep, so
 // the old curved-plane renderer becomes a CSS perspective tilt).
 (() => {
+  // the stage is not lit any more, but the thread below still marks it
+  // once you have moved (.is-scrolled retires the bio's scroll hint)
   const stage = document.querySelector('.about-stage');
-  if (stage) requestAnimationFrame(() => stage.classList.add('revealed'));
 
   // ---- the chapter stack: natural scroll down the sections, the
-  // sidebar menu tracking the current one (Figma 1436:260) + a
-  // .revealed class per slide for the entrance ----
+  // sidebar menu tracking the current one (Figma 1436:260). The chapters
+  // have no entrance to arm — they are on the page (css/styles.css) — so
+  // the only thing watching them now is the spy. ----
   const scroller = document.getElementById('about-scroll');
   const slides = Array.from(document.querySelectorAll('.about-slide'));
 
-  // ?reveal=1 — screenshot-harness hook: skip the entrances everywhere
-  if (new URLSearchParams(location.search).has('reveal')) {
-    slides.forEach((s) => s.classList.add('revealed'));
-  }
-
   // ≤700px the chapters unroll into one document scroll (see about.css) —
-  // no sidebar chrome, no thread; the shared site-nav
-  // bottom bar (styles.css) is the mobile nav. Slides reveal via a plain
-  // viewport observer instead.
+  // no sidebar chrome, no thread; the shared site-nav bottom bar
+  // (styles.css) is the mobile nav, and there is nothing here to observe.
   const MOBILE = window.matchMedia('(max-width: 700px)').matches;
 
-  if (MOBILE && slides.length) {
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) e.target.classList.add('revealed');
-      }),
-      { threshold: 0.12 }
-    );
-    slides.forEach((s) => io.observe(s));
-  } else if (slides.length) {
+  if (!MOBILE && slides.length) {
     // ---- the reading thread: map how far down the chapters we are onto
     // --p. The stitch used to ride this page's own hairline; the shell's
     // sidebar owns that drawing now, so this only reports the fraction
@@ -70,10 +58,7 @@
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            setCurrent(e.target.id);
-            e.target.classList.add('revealed');
-          }
+          if (e.isIntersecting) setCurrent(e.target.id);
         });
       },
       {
@@ -95,8 +80,13 @@
     const wanted = location.hash === '#resume' ? '#bio' : location.hash;
     const target = slides.find((s) => '#' + s.id === wanted);
     // a pixel-exact tab restore (js/shell.js) outranks the section jump
+    // …at the rail's own resting place, and HELD there while the page
+    // finishes assembling (Shell.land): block:'start' lands the chapter's top
+    // edge at y=0, which is UNDER the sticky strip, and landing once left it
+    // wherever the intro's last reflow pushed it afterwards.
     if (target && !window.__pixelRestore) {
-      target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      if (window.Shell && window.Shell.land) window.Shell.land(target);
+      else target.scrollIntoView({ behavior: 'instant', block: 'start' });
     }
     setTimeout(() => { window.__hashReady = true; }, 600);
 

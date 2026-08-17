@@ -5,14 +5,9 @@
   const slide = document.getElementById('play');
   if (!slide) return;
 
-  if (new URLSearchParams(location.search).has('reveal')) {
-    slide.classList.add('revealed');
-  }
-
   const io = new IntersectionObserver(
     (entries) => entries.forEach((e) => {
       if (!e.isIntersecting) return;
-      e.target.classList.add('revealed');
       window.dispatchEvent(new CustomEvent('shell:section', { detail: { id: 'play' } }));
       if (window.__hashReady && location.hash !== '#play') {
         history.replaceState(null, '', '#play');
@@ -27,8 +22,13 @@
   // restore (js/shell.js) outranks the section jump.
   const wanted = location.hash && location.hash.length > 1 &&
     document.querySelector(location.hash);
+  // …at the rail's own resting place, and HELD there while the page finishes
+  // assembling (Shell.land). block:'start' put the grid's top edge under the
+  // sticky strip, and landing once left it wherever the intro's last reflow
+  // pushed it — neither is where clicking Play in the rail leaves it.
   if (wanted && slide.contains(wanted) && !window.__pixelRestore) {
-    slide.scrollIntoView({ behavior: 'instant', block: 'start' });
+    if (window.Shell && window.Shell.land) window.Shell.land(slide);
+    else slide.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
   setTimeout(() => { window.__hashReady = true; }, 600);
 })();

@@ -105,9 +105,16 @@ window.ShellTabs = (() => {
      made switching between two tabs on the same page look broken. A real
      browser does not reload in that case either; it just changes which tab
      is lit. So: same URL, no navigation, just repaint. ---- */
+  // '/' and '/index.html' are the same document — every tab's href is
+  // written with the second spelling (see here(), which fills in the empty
+  // last segment) while the site is served as the first, so a raw
+  // comparison read every home tab as "somewhere else" and switching to one
+  // did a full page load. Same fold as js/shell.js samePage.
+  const samePath = (p) => p.replace(/(^|\/)index\.html$/, '$1') ===
+    location.pathname.replace(/(^|\/)index\.html$/, '$1');
   const sameAsHere = (href) => {
     const a = document.createElement('a'); a.href = href;
-    return a.pathname === location.pathname && a.search === location.search
+    return samePath(a.pathname) && a.search === location.search
       && a.hash === location.hash;
   };
   // Before leaving, write down where this tab ACTUALLY is — URL and exact
@@ -141,7 +148,7 @@ window.ShellTabs = (() => {
     if (sameAsHere(href)) { delete rec.want; save(); render(); restore(); return; }
     const a = document.createElement('a');
     a.href = href;
-    if (a.pathname === location.pathname) {
+    if (samePath(a.pathname)) {
       // Same document, different search/hash. A real navigation here would
       // either reload the whole page (search) or smooth-scroll it (hash) —
       // both wrong for a tab switch, which must feel like changing
@@ -153,7 +160,11 @@ window.ShellTabs = (() => {
       delete rec.want;
       save();
       render();
-      history.pushState(null, '', href);
+      // …spelt the way the visitor is already spelling it: on the front door
+      // the path stays '/', not '/index.html'. Same document either way, and
+      // here() folds the empty last segment back to index.html when the
+      // record is written, so the invariant is untouched.
+      history.pushState(null, '', a.search + a.hash || location.pathname);
       restore();
       return;
     }

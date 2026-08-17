@@ -438,6 +438,17 @@
   };
 
   // ---- the rail: closed means CLOSED, and its width belongs to the visitor
+  //
+  // …but the rail ARRIVES OPEN. Collapsed is remembered for the SESSION
+  // only, which is the scope the twisties already use (OPEN_KEY above) and
+  // for the same reason: closing the rail is something you do while you are
+  // reading, not a preference you are setting for good. Kept in
+  // localStorage it outlived the visit — one click, once, and every visit
+  // after it opened the site with no navigation showing at all. Inside a
+  // session it still stays exactly as you left it across every page load,
+  // which is the whole point of a persistent sidebar; a new visit gets the
+  // map. The dragged WIDTH is a different animal — that IS a preference,
+  // and it hides nothing, so it stays in localStorage.
   const RAIL_KEY = 'shell.rail';
   const WIDTH_KEY = 'shell.railw';
   // 150, down from 180: the old floor existed because the place chip shared
@@ -476,7 +487,7 @@
     const from = eased ? side.getBoundingClientRect().left : 0;
 
     root.classList.toggle('rail-closed', next);
-    try { localStorage.setItem(RAIL_KEY, next ? '1' : '0'); } catch (err) { /* private mode */ }
+    try { sessionStorage.setItem(RAIL_KEY, next ? '1' : '0'); } catch (err) { /* private mode */ }
     window.dispatchEvent(new Event('shell:rail'));
     // this document's stage: new scale + the reading-line hold, now
     if (window.__shellFit) window.__shellFit();
@@ -518,7 +529,11 @@
     }
   };
   try {
-    if (localStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-closed');
+    if (sessionStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-closed');
+    // the retired key, swept as we pass: anyone who collapsed the rail while
+    // it lived in localStorage would otherwise carry that one click forever
+    // in storage we no longer read
+    localStorage.removeItem(RAIL_KEY);
     const w = parseFloat(localStorage.getItem(WIDTH_KEY));
     if (w >= MIN && w <= MAX) root.style.setProperty('--shell-rail', w + 'px');
   } catch (err) { /* private mode — the rail just starts at its default */ }
@@ -918,6 +933,20 @@
   const SLIDES = '.about-slide, .case-slide, .work-slide, .play-slide, .work-card, .play-card';
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ---- The home page answers to TWO spellings of one URL: the host serves
+  // index.html at '/', and the rail's hrefs are deliberately full paths
+  // (index.html#work, so the identical tree can be emitted on all nine
+  // documents and every row stays crawlable and cmd-clickable). Comparing
+  // the raw pathnames therefore answered "different document" for every
+  // section link on the site's own front door — '/' is not '/index.html' —
+  // and each click fell straight through to a real page load. That is the
+  // whole of the bug this fixes: no glide and no centring, because nothing
+  // below ever ran; what the visitor got was the browser's own fragment
+  // jump, which parks a section's top edge behind the chrome strip. Fold
+  // the two spellings into one before asking whether they match.
+  const norm = (p) => p.replace(/(^|\/)index\.html$/, '$1');
+  const samePage = (a, b) => norm(a) === norm(b);
+
   // ============================================================
   // Where a section should COME TO REST
   //
@@ -979,6 +1008,55 @@
     return clamp(ink.top + window.scrollY - head - (view - ink.height) / 2);
   };
 
+  // ============================================================
+  // …and STAYING there.
+  //
+  // An arrival — a deep link, or the rail followed from another document —
+  // lands while the page is still assembling. The intro types, the rail
+  // then slides in, which re-scales the card, which re-measures --hero-h,
+  // and the chrome strip takes its place in the flow: every one of those
+  // moves the section out from under the scroll that just aimed at it. So
+  // the landing is re-asserted on a slow poll until the page stops moving,
+  // and the visitor's first real input takes the scroll back for good.
+  //
+  // A tick every 100ms rather than every frame: per-frame races the
+  // browser's own fragment scroll for ids INSIDE the section (#vicino,
+  // #pantrypal, #drone are real elements in the Work grid) and the two
+  // trade the page back and forth. 100ms lands after each has had its say.
+  //
+  // This was js/work.js's alone, which is why arriving at Work put it where
+  // the rail puts it and arriving at Play or About did not — those two
+  // landed once, early, and kept whatever the assembling page did to them
+  // afterwards. One implementation, one resting place.
+  // ============================================================
+  const land = (el) => {
+    if (!el) return;
+    const root = document.documentElement;
+    const put = () => window.scrollTo({ top: restY(el), behavior: 'instant' });
+    const stop = performance.now() + 8000;          // never poll forever
+    let held = true;
+    let until = performance.now() + 1200;
+    // The deadline cannot be a fixed one, and `intro-pending` is the honest
+    // signal for "still moving": it is on the root from before first paint
+    // and comes off when the intro has assembled. A deadline alone expires
+    // seconds early on a cold visit. Each event that can still shift the
+    // page pushes it out.
+    const timer = setInterval(() => {
+      const now = performance.now();
+      const settling = root.classList.contains('intro-pending');
+      if (!held || now > stop || (!settling && now > until)) { release(); return; }
+      put();
+    }, 100);
+    function release() { held = false; clearInterval(timer); }
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((t) =>
+      window.addEventListener(t, release, { once: true, passive: true }));
+    const extend = (ms) => { until = Math.max(until, performance.now() + ms); };
+    window.addEventListener('load', () => extend(400));
+    window.addEventListener('shell:fit', () => extend(400));
+    window.addEventListener('shell:intro-done', () => extend(1600));
+    put();
+  };
+
   const markCurrent = (id) => {
     if (!side) return;
     side.querySelectorAll('.side-row.is-here').forEach((r) => r.classList.remove('is-here'));
@@ -1036,7 +1114,7 @@
       const a = e.target.closest('a[href]');
       if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const url = new URL(a.getAttribute('href'), location.href);
-      if (url.pathname !== location.pathname || !url.hash) return;   // a real navigation
+      if (!samePage(url.pathname, location.pathname) || !url.hash) return;  // a real navigation
       const target = document.querySelector(url.hash);
       if (!target) return;
       e.preventDefault();
@@ -1056,7 +1134,7 @@
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       if (a.target && a.target !== '_self') return;
       const url = new URL(a.getAttribute('href'), location.href);
-      if (url.pathname !== location.pathname || !url.hash) return;
+      if (!samePage(url.pathname, location.pathname) || !url.hash) return;
       const target = document.querySelector(url.hash);
       if (!target || !target.matches(SLIDES)) return;
       e.preventDefault();
@@ -1611,6 +1689,7 @@
   // on the strip's floor — not a rectangle to the top of the screen. The
   // measurement has to happen AFTER the tabs are laid out, which is why the
   // tab itself is observed and not just the strip. ----
+  let lastCut = null;                  // the mouth's radii, for refitSeam below
   const fitTabHole = () => {
     if (!chrome) return;
     const tab = chrome.querySelector('.chrome-tab.is-active');
@@ -1658,7 +1737,28 @@
     // drawn under the tab reaches out by exactly these to meet the cream
     chrome.style.setProperty('--flare-l', fl + 'px');
     chrome.style.setProperty('--flare-r', fr + 'px');
+    lastCut = { r: r, fl: fl, fr: fr };
     drawSeam(c, t, r, fl, fr);
+  };
+
+  // ---- the seam alone, from fresh rects.
+  //
+  // The mouth is cut in the strip's OWN coordinates (x is t.left - c.left,
+  // and so on), so while the strip is merely travelling — the opening's
+  // glide — the cut is identical every frame and only the seam, which is
+  // drawn in viewport coordinates on a fixed overlay, has anything new to
+  // say. Re-running the whole fit would set two custom properties on
+  // .shell-chrome sixty times a second, and .shell-chrome is the element
+  // whose transform is mid-transition: restyling it every frame is what
+  // takes that transition off the compositor and onto the main thread,
+  // which is the difference between the strip gliding and the strip
+  // stuttering. So the ride redraws the SVG and touches nothing else.
+  const refitSeam = () => {
+    if (!chrome) return;
+    const tab = chrome.querySelector('.chrome-tab.is-active');
+    const c = chrome.getBoundingClientRect();
+    if (!tab || !c.width || !lastCut) { drawSeam(c, null); return; }
+    drawSeam(c, tab.getBoundingClientRect(), lastCut.r, lastCut.fl, lastCut.fr);
   };
   // RETIRED. This hit-tested fourteen points across the tab's label on every
   // scroll frame to catch page content sliding behind it, and turned the
@@ -1729,6 +1829,56 @@
   window.addEventListener('shell:fit', refitChrome);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(refitChrome);
 
+  // ============================================================
+  // The opening, frame by frame.
+  //
+  // Every number in the seam is MEASURED — the strip's floor, the tab's
+  // mouth, the card's left edge and the radius of the corner it turns — so
+  // one measurement is only ever true of a still frame. Through the opening
+  // nothing is still: the strip is travelling down on its own transform,
+  // the tab's mouth with it, and the card's corner is rounding from 0 to
+  // its radius on the same clock. Neither of the two things tried before
+  // could work, because both left a still measurement under a moving frame.
+  // Holding the line back and switching it on at the end put it a beat
+  // behind everything else. Fading it up over the ride was worse: the
+  // geometry underneath it was a still frame of the END, so a rounded
+  // corner drew itself over a corner that was still square and a floor drew
+  // itself where the strip had not arrived yet.
+  //
+  // Re-cut it every frame instead. Then there is nothing to hide and
+  // nothing to fade — the hairline is around the pieces from the first
+  // frame BECAUSE it is around wherever they are: the floor rides down with
+  // the strip, the mouth travels with the tab, the corner rounds as the
+  // corner rounds. This is the answer js/tabs.js reaches for when a tab is
+  // dragged (its `chase`), for exactly the same reason.
+  //
+  // The tail is the radius': the card's border-radius runs on --t-intro
+  // too, and transitionend has no delivery guarantee, so the loop outlives
+  // the ride by a few frames rather than trusting the event.
+  // ============================================================
+  window.addEventListener('shell:intro-done', () => {
+    // only the ride needs this. Every other arrival — a returning visitor,
+    // reduced motion, any page but the home one — settles the frame without
+    // a glide, and there is nothing to chase.
+    if (!root.classList.contains('intro-glide')) return;
+    const secs = parseFloat(
+      getComputedStyle(root).getPropertyValue('--t-intro')) || 0.52;
+    const until = performance.now() + secs * 1000 + 140;
+    const step = () => {
+      refitSeam();
+      if (performance.now() < until) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+
+  // restY and land are published for the same reason markCurrent is: a
+  // section has ONE resting place, and the three pages that land their own
+  // deep links (work.js, about.js, play-pager.js) were each doing their own
+  // arithmetic for it. They agreed with the rail once and then quietly
+  // stopped, so arriving at Work from a case study parked it at the top of
+  // the reading area while clicking Work from the rail centred it. One
+  // function, one answer — and one poll that holds it there.
   window.Shell = { get page() { return page; }, get title() { return title; },
-                   lightUp, toggleRail, markCurrent, fitTabHole, setPage };
+                   lightUp, toggleRail, markCurrent, fitTabHole, setPage,
+                   restY, land };
 })();

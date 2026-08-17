@@ -810,14 +810,13 @@ html.intro-run .side-group { transition: none; }
    snap crisp. Opaque from frame one, translating only. ---- */
 html.intro-glide :is(.shell-chrome, .shell-side, .side-grip) { transition: none; }
 
-/* The hairline is measured off the FINAL frame — the card's corner, the
-   tab's mouth, the strip's floor — so it cannot ride in with the pieces it
-   outlines: it would draw the strip's floor as a line hanging in space
-   while the strip itself is still above the window. It waits out the ride
-   and settles onto the assembled frame, which is also the first moment the
-   corner it turns is round. (Written through `.is-lit ~` rather than as a
-   plain descendant because that is the rule it has to beat.) */
-html.intro-glide .shell-chrome.is-lit ~ .shell-seam { opacity: 0; transition: none; }
+/* Nothing here holds the hairline back any more, and nothing fades it in.
+   It is simply on from the frame the strip lights (.is-lit, which
+   js/shell.js hands to the same event that starts the ride) — because by
+   then it is being re-cut every frame around wherever the pieces actually
+   are (js/shell.js, "the opening, frame by frame"). A line measured once
+   off the finished frame had to be hidden; a line that is remeasured has
+   nothing to hide from. */
 
 /* the corner is a detail of the frame, so it arrives on the frame's clock */
 html.intro-run .shell-card {
@@ -979,9 +978,7 @@ html.intro-run .shell-card {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .side-row:hover .side-ico * { animation: none; }
-  /* the pen holds still and the mark does not turn: the ink arrives
-     without the draw, and the asterisk holds its pose (the six-fold
+  /* the mark does not turn: the asterisk holds its pose (the six-fold
      symmetry means the banked notches land invisibly anyway) */
   .ask-blank::before { transition: none; }
   .ask-blank > svg { transition: none; }
@@ -1111,21 +1108,9 @@ html.intro-run .shell-card {
 .side-scroll.has-here .side-row.is-current:hover .side-ico { color: var(--g-700); }
 .side-ico > svg,
 .side-ico > img { display: block; width: 100%; height: 100%; }
-/* ---- on hover the glyph REDRAWS itself — the chapter rails' pen, which
-   retired with the rails, now serving the tree that replaced them. The
-   cascade is tighter than the rails' .1/.2/.3 because a 30px row wants a
-   quicker beat than a 160px illustration did. ---- */
-@keyframes side-redraw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
-}
-.side-row:hover .side-ico svg :is(path, circle, rect, line, ellipse, polyline) {
-  stroke-dasharray: 1;
-  animation: side-redraw 0.62s var(--ease-draw) both;
-}
-.side-row:hover .side-ico svg > :nth-child(2) { animation-delay: 0.08s; }
-.side-row:hover .side-ico svg > :nth-child(3) { animation-delay: 0.16s; }
-.side-row:hover .side-ico svg > :nth-child(4) { animation-delay: 0.24s; }
+/* The glyph does not redraw on hover — the pen retired with the chapter
+   rails and stays retired. A row lifts by colour alone; the shape holds
+   still. Colour is the only thing that moves in this rail. */
 
 .side-text {
   flex: 1;

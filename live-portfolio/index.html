@@ -25,21 +25,21 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=80" />
-  <link rel="stylesheet" href="css/shell.css?v=89" />
+  <link rel="stylesheet" href="css/styles.css?v=82" />
+  <link rel="stylesheet" href="css/shell.css?v=92" />
   <link rel="stylesheet" href="css/ai.css?v=39" />
-  <link rel="stylesheet" href="css/about.css?v=75" />
-  <link rel="stylesheet" href="css/work.css?v=118" />
+  <link rel="stylesheet" href="css/about.css?v=78" />
+  <link rel="stylesheet" href="css/work.css?v=120" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
        of the document below 700px), so its 26KB of court geometry is 26KB
        a phone would parse and render-block on for nothing. `media` says so:
        above 700 this is exactly the sheet it always was; below it the
        browser fetches at low priority and never applies it. -->
-  <link rel="stylesheet" href="css/play.css?v=123" media="(min-width: 701px)" />
+  <link rel="stylesheet" href="css/play.css?v=125" media="(min-width: 701px)" />
   <link rel="stylesheet" href="css/case-overlay.css?v=16" />
   <!-- LAST: the phone re-casts the one document as four tapped screens, so
        its overrides answer for the blocks in every sheet above -->
-  <link rel="stylesheet" href="css/mobile.css?v=2" />
+  <link rel="stylesheet" href="css/mobile.css?v=3" />
   <!-- set before first paint so the chrome and sidebar are already held at
        opacity 0 when they are built — the intro has no flash to hide.
        `is-phone` goes on in the same breath: css/mobile.css hides the three
@@ -226,7 +226,7 @@
 
           <div class="play-grid">
             <div class="play-card" id="pong" data-game="pong" role="button"
-                 tabindex="0" style="--n:0" aria-label="Play Pong fullscreen">
+                 tabindex="0" style="--n:1" aria-label="Play Pong fullscreen">
               <div class="play-holder">
               <div class="board" id="board">
                 <div class="board-wall" id="board-wall" aria-hidden="true"></div>
@@ -270,7 +270,7 @@
             </div>
 
             <div class="play-card" id="snake" data-game="snake" role="button"
-                 tabindex="0" style="--n:1" aria-label="Play Snake fullscreen">
+                 tabindex="0" style="--n:2" aria-label="Play Snake fullscreen">
               <div class="play-holder">
               <div class="board" id="snake-board">
                 <div class="board-wall" id="snake-wall" aria-hidden="true"></div>
@@ -311,7 +311,7 @@
             </div>
 
             <div class="play-card" id="flappy" data-game="flappy" role="button"
-                 tabindex="0" style="--n:2" aria-label="Play Flappy Bird fullscreen">
+                 tabindex="0" style="--n:3" aria-label="Play Flappy Bird fullscreen">
               <div class="play-holder">
               <div class="board" id="flappy-board">
                 <div class="board-wall" id="flappy-wall" aria-hidden="true"></div>
@@ -415,7 +415,7 @@
                       <span class="tl-year" data-year="2025">2025</span>
                     </div>
                     <ol class="tl-list">
-                      <li class="tl-item" style="--n:0" data-start="2026-06" data-end="now">
+                      <li class="tl-item" style="--n:2" data-start="2026-06" data-end="now">
                         <div class="tl-rule" aria-hidden="true"></div>
                         <div class="tl-body">
                           <p class="tl-role">UX Engineer Intern</p>
@@ -424,7 +424,7 @@
                           <p class="tl-sum">Agentic generation and analytics for an AI marketing platform; a Figma-to-React component library.</p>
                         </div>
                       </li>
-                      <li class="tl-item" style="--n:1" data-start="2025-11" data-end="2026-02">
+                      <li class="tl-item" style="--n:3" data-start="2025-11" data-end="2026-02">
                         <div class="tl-rule" aria-hidden="true"></div>
                         <div class="tl-body">
                           <p class="tl-role">Product Designer &amp; Developer</p>
@@ -433,7 +433,7 @@
                           <p class="tl-sum">End-to-end AI recipe app; task completion up 40% across testing rounds.</p>
                         </div>
                       </li>
-                      <li class="tl-item" style="--n:2" data-start="2025-11" data-end="2025-12">
+                      <li class="tl-item" style="--n:4" data-start="2025-11" data-end="2025-12">
                         <div class="tl-rule" aria-hidden="true"></div>
                         <div class="tl-body">
                           <p class="tl-role">UX Researcher</p>
@@ -442,7 +442,7 @@
                           <p class="tl-sum">Studied interface homogenization across six AI-generated web apps.</p>
                         </div>
                       </li>
-                      <li class="tl-item" style="--n:3" data-start="2025-08" data-end="2025-09">
+                      <li class="tl-item" style="--n:5" data-start="2025-08" data-end="2025-09">
                         <div class="tl-rule" aria-hidden="true"></div>
                         <div class="tl-body">
                           <p class="tl-role">Founding Visual Designer</p>
@@ -588,8 +588,8 @@
   </nav>
 
   <script src="js/portrait.js?v=10"></script>
-  <script src="js/tabs.js?v=15"></script>
-  <script src="js/shell.js?v=81"></script>
+  <script src="js/tabs.js?v=16"></script>
+  <script src="js/shell.js?v=85"></script>
   <!-- ≤700px only, and the position in this list is load-bearing: AFTER
        shell.js (whose AI sheet it turns back into a page), BEFORE every
        file below that would otherwise wire itself to the stepper, the
@@ -603,16 +603,16 @@
   <script src="js/main.js?v=9"></script>
   <script src="js/hero-ink.js?v=16"></script>
   <script src="js/timeline.js?v=21"></script>
-  <script src="js/about.js?v=11"></script>
-  <script src="js/work.js?v=111"></script>
+  <script src="js/about.js?v=13"></script>
+  <script src="js/work.js?v=113"></script>
   <script src="js/work-pick.js?v=4"></script>
   <script src="js/records.js?v=3"></script>
-  <script src="js/pong.js?v=6"></script>
+  <script src="js/pong.js?v=7"></script>
   <script src="js/snake.js?v=102"></script>
   <script src="js/flappy.js?v=5"></script>
-  <script src="js/play-pager.js?v=103"></script>
+  <script src="js/play-pager.js?v=106"></script>
   <script src="js/case-overlay.js?v=101"></script>
-  <script src="js/theater.js?v=7"></script>
+  <script src="js/theater.js?v=8"></script>
   <script src="js/ai-chat.js?v=8"></script>
   <script src="js/color-lab.js?v=3"></script>
 </body>

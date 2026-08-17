@@ -7,13 +7,11 @@
    stage, desktop only.
    ============================================================ */
 
+/* No entrance. The section is simply THERE — see the note in styles.css. */
 .work-stage {
   position: relative;
   width: 100%;
-  opacity: 0;
-  transition: opacity var(--t-stage) ease;
 }
-.work-stage.revealed { opacity: 1; }
 
 .work-scroll {
   position: relative;
@@ -266,16 +264,12 @@
   color: rgba(var(--ink-rgb), 0.34);
 }
 
-/* ---- entrance: the three parts arrive in turn as the stage reveals ---- */
-.work-slide:not(.revealed) .work-pick { opacity: 0; translate: 0 18px; }
-.work-pick {
-  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
-}
+/* No entrance — the title and the stepper are simply on the page when you
+   reach them (styles.css). The stepper's own hover and browse transitions
+   are untouched; only the arrival is gone. */
 .work-pick.is-plain * { transition: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
-  .work-card { transition: opacity 0.25s ease; }
-  .work-slide:not(.revealed) .work-card { translate: none; }
   .work-card:hover .work-card-art img { scale: none; }
 }
 

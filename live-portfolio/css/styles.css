@@ -91,6 +91,17 @@
   --t-stage: 0.5s;                    /* page stage fade-in */
   --t-fade:  0.55s;                   /* entrance opacity */
   --t-rise:  0.6s;                    /* entrance translate */
+
+  /* ---- THE SECTIONS DO NOT ARRIVE. Work, Play and About are simply on the
+     page: no fade, no rise, no stagger, nothing gated on scrolling to them.
+     Each of the three used to run its own version of an entrance and no two
+     agreed, and the answer to that is not a better-tuned entrance — it is
+     none. The only motion left on the way down the page belongs to the
+     OPENING (js/typewriter.js, the frame assembling around the name) and to
+     the pointer: hovers, lifts, the redraws under a cursor.
+
+     So: no --rise-y and no --rise-step. If an entrance ever comes back it
+     belongs here, in one place, and not three times over. ---- */
   /* The opening, and only the opening: the frame assembling around the name
      on a first visit (js/typewriter.js). Longer than a glide because it is
      a set piece rather than an answer to a click — nobody is waiting on it —
