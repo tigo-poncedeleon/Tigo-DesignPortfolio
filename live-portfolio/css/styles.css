@@ -311,69 +311,49 @@ html, body {
    typewriter finishes (js/main.js), bows out on the first scroll. ---- */
 #home .scroll-hint {
   position: absolute;
-  bottom: 24px;
+  bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1px;
+  /* the padding is hit area, not air: 24px of gap under the words is the
+     look, so the box grows upward/outward from a 18px foot instead */
+  padding: 6px 14px;
   font-size: 13.25px;
   color: rgba(var(--ink-rgb), 0.48);
+  text-decoration: none;
+  cursor: pointer;
+  /* unclickable until it is armed, and again once you have moved — an
+     invisible link that still takes the pointer is a trap */
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.6s ease 0.9s;
+  transition: opacity 0.6s ease 0.9s, color var(--t-micro) ease;
 }
-#home.hint-ready:not(.is-scrolled) .scroll-hint { opacity: 1; }
+#home.hint-ready:not(.is-scrolled) .scroll-hint {
+  opacity: 1;
+  pointer-events: auto;
+}
 #home.is-scrolled .scroll-hint { opacity: 0; transition: opacity 0.3s ease; }
+#home .scroll-hint:hover,
+#home .scroll-hint:focus-visible { color: rgba(var(--ink-rgb), 0.78); }
 #home .scroll-hint svg { animation: hint-bob 2.2s ease-in-out infinite; }
+/* under the pointer the arrow stops nodding and simply leans down, so the
+   hover reads as "this goes there" rather than as a faster idle */
+#home .scroll-hint:hover svg {
+  animation: none;
+  translate: 0 3px;
+  transition: translate var(--t-micro) ease;
+}
 @keyframes hint-bob {
   0%, 100% { translate: 0 0; }
   50%      { translate: 0 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
   #home .scroll-hint svg { animation: none; }
+  #home .scroll-hint:hover svg { translate: none; }
 }
-
-/* ---- hero ink — the hairline of orange the cursor draws behind itself
-   and leaves there (js/hero-ink.js). The pen is ASLEEP until a click wakes
-   it, so this layer is usually empty; it is here for the visitor who tries
-   the door. The layer belongs to the PAGE: absolute at the document's
-   origin, one screen tall, so the drawing rides the hero and scrolls away.
-
-   z-14: above the card's own content (z-auto) but BELOW the chrome strip
-   (20), so the strip's cream covers whatever rises into that band — except
-   at the tab's opening, where ink travels through like everything else the
-   page carries. Below the case overlay (15) and the theater (16), so
-   neither ever wears it.
-
-   The rail is CLIPPED out rather than sized around: the backing store then
-   only ever changes on a window resize, so sliding the rail or dragging the
-   seam cannot erase the drawing. ---- */
-.ink-field {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;                /* the hero screen: chrome strip + card */
-  z-index: 14;
-  pointer-events: none;
-  clip-path: inset(0 0 0 var(--shell-rail));
-  transition: clip-path var(--t-glide) var(--ease-glide);
-}
-html.rail-closed .ink-field { clip-path: inset(0); }
-html.rail-dragging .ink-field { transition: none; }
-/* The pen already stands down while the theater is up (js/hero-ink.js
-   BUSY), but standing down is not the same as going away: this is a
-   full-viewport CANVAS appended to body, so its composited layer — about
-   22MB — outlives the drawing. Take the layer away too; the ink keeps its
-   STROKES (not its pixels) and redraws itself on the way back. */
-html.theater-open .ink-field { display: none; }
-/* explicit, NOT left to the parent's box: a canvas is a replaced element,
-   so `width: auto` resolves to its intrinsic 300x150 and the sheet would
-   sit in the corner instead of filling the layer */
-.ink-sheet { display: block; width: 100%; height: 100%; }
-@media (max-width: 700px) { .ink-field { display: none; } }
 
 /* ============================================================
    THE CASE-STUDY COVER — one grid, three studies.

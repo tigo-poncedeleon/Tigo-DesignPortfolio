@@ -2,5 +2,6 @@ old-portfolio
 .claude
 node_modules
 resume-src
+og-src
 live-portfolio/rollout-options.html
 live-portfolio/css/rollout-concepts.css

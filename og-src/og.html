@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>og source — 1200×630</title>
+<style>
+  /* The link preview card. 1200×630 is the size every unfurler wants
+     (og:image:width/height say so in every page head), and `summary_large_image`
+     means LinkedIn, iMessage, Slack and X all show the whole frame — nothing
+     here is a centre crop, so the margins are real margins.
+
+     Everything below is the site's own base sheet: the #f6f6f6 canvas, SF Pro
+     at weight 400, the name-over-role pair with the role dropped to 34% ink
+     (.frame-name / .frame-role in css/styles.css), and one ember caret. */
+  :root {
+    --bg:      #f6f6f6;
+    --ink:     #1c1c1c;
+    --ink-rgb: 28, 28, 28;
+    --g-500:   #898989;
+    --ember:   #f54e00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1200px;
+    height: 630px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+                 system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    padding: 96px 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* the pair, at the frame's scale: same size, same weight, the role
+     told apart by tone alone — never by weight, never by size */
+  .name, .role {
+    font-size: 74px;
+    line-height: 96px;
+    letter-spacing: -0.022em;         /* tracking tightens as type grows */
+  }
+  .name { color: var(--ink); }
+  .role { color: rgba(var(--ink-rgb), 0.34); }
+
+  /* the one hue on the card. Ember is the site's object colour — the four
+     small things that MOVE — and the first of them is the caret that types
+     the header on arrival. Frozen at the end of the role, it is the
+     typewriter at rest: the whole identity in 5×58px. */
+  .caret {
+    display: inline-block;
+    width: 5px;
+    height: 58px;
+    margin-left: 14px;
+    vertical-align: -9px;
+    background: var(--ember);
+  }
+
+  /* the address, quiet, a full line of air below the pair */
+  .url {
+    margin-top: 46px;
+    font-size: 23px;
+    line-height: 28px;
+    letter-spacing: 0.01em;
+    color: var(--g-500);
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="name">Tigo Ponce de León</div>
+    <div class="role">product design engineer<span class="caret"></span></div>
+    <div class="url">tigoponcedeleon.com</div>
+  </div>
+</body>
+</html>
