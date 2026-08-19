@@ -16,9 +16,31 @@
 :root {
   --shell-chrome-h: 40px;
   /* The rail asks for only what its widest row needs. It lost the twisty
-     gutter and the progress thread, so 260 was carrying air. */
-  --shell-rail:     208px;       /* the visitor owns this — drag the seam */
-  --shell-rail-min: 180px;
+     gutter and the progress thread, so 260 was carrying air — and 208
+     still was: it left 64px of nothing to the right of the name, so the
+     column read as a panel with a margin rather than as a column.
+
+     168 is the seam landing just past the name — and it is a MEASURED
+     floor, not a round number: it is the narrowest the column goes with
+     nothing in it ellipsising. Walked in 2px steps and verified against
+     every text node in the rail: at 167 "UX Engineer Intern" clips, at
+     166 it still clips, at 164 the status sub goes, at 162 the role goes
+     too. 168 is the first width where the list of clipped lines is
+     empty.
+
+     The NAME is not what sets it, which is the surprise here. The name
+     measures 125.66 and ends at 143.66; the role sets 128.3 and the
+     status foot's longest line 117.8 from its own 32px indent — 149.8
+     absolute — so the letterhead's widest line is the ROLE, and the
+     column's is the foot. A rail cut at the name's exact end would
+     ellipsise both. 168 leaves 18px past the foot, 24 past the name:
+     tight enough that the column reads as the width of its own type,
+     wide enough that nothing is cut.
+
+     The ⌘K is the one casualty — is-tight drops it below a 170px line,
+     which is exactly the trade that rule was written for. */
+  --shell-rail:     168px;       /* the visitor owns this — drag the seam */
+  --shell-rail-min: 150px;       /* the record of js/shell.js's MIN */
   --shell-rail-max: 420px;
   --card-w:         1280px;
   --card-h:         832px;
@@ -1283,6 +1305,15 @@ html.intro-run .shell-card {
    ============================================================ */
 .ask-chip {
   flex: none;
+  /* ONE target, one cursor. Name, role and blank are a single control, so
+     the pointer must never change shape crossing between them — a cursor
+     that flickers arrow-hand-arrow on the way down the block is the block
+     confessing it is really three things. It is set here, on the whole
+     letterhead, rather than on each half, so the gaps between them
+     (.ask-line's 10px step, the 2px between name and role) belong to the
+     button too. js/shell.js binds the press here for the same reason. */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   /* 10px here + the rail's own 8 lands the name on the exact left edge
      the group labels and row glyphs share — the letterhead joins the
      column's one text line instead of floating in its own box. 14 on
@@ -1319,20 +1350,31 @@ html.intro-run .shell-card {
    rule. That alone pulls the line in by the width of the shortcut.
 
    The cap is the important half. The rule used to run the full width of
-   the column: 172px against a name that sets 126 and a role that sets
-   128, so the AI block read a third longer than the letterhead it hangs
-   from — and dragging the rail out to 420 stretched it into a bar three
-   times the name. Type does not stretch, so the blank must not either.
-   138 is the letterhead's own measure plus the few px the longest
-   question (110 at 13px) needs past it — near enough to read as the
-   same column edge, wide enough that no question is ever clipped at the
-   default width. It is a MAX, so a rail dragged narrow still hands the
-   question everything there is (and is-tight spends the ⌘K first). ---- */
+   the column: 172px against a name that sets 126, so the AI block read a
+   third longer than the letterhead it hangs from — and dragging the rail
+   out to 420 stretched it into a bar three times the name. Type does not
+   stretch, so the blank must not either.
+
+   It is now EXACTLY the name's own measure. 138 was a near-miss (the
+   name plus the dozen px the longest question wanted), and a rule that
+   ends a dozen px past the word above it does not read as a near-miss —
+   it reads as a mistake. So the width comes from the name itself:
+   js/shell.js measures the rendered text with a Range and banks it in
+   --blank-w, which means the two edges line up under any font the
+   visitor actually gets, not just under SF Pro. 126px is the fallback
+   for the one frame before the measure lands.
+
+   The questions pay for this, not the rule: the blank's room for text is
+   the name minus the asterisk's 18 and its 8 gap — about 100px — and
+   every string in ASKS is written to that budget (see js/shell.js).
+
+   It is a MAX, so a rail dragged narrow still hands the question
+   everything there is (and is-tight spends the ⌘K first). ---- */
 .ask-blank {
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
-  max-width: 138px;
+  max-width: var(--blank-w, 126px);
   align-self: stretch;           /* so its foot IS the line's content edge */
   display: flex;
   align-items: center;
@@ -1368,11 +1410,15 @@ html.intro-run .shell-card {
   transform-origin: 0 50%;
   transition: transform 0.5s var(--ease-draw);
 }
-.ask-line:hover .ask-blank::before,
+/* …and the hover is the CHIP's, not the line's. Name, role and blank are
+   one object — the letterhead — so bringing the pointer to the name inks
+   the pen and wakes the writer exactly as landing on the blank does. Two
+   halves of one thing that lit separately read as two controls. */
+.ask-chip:hover .ask-blank::before,
 .ask-line:focus-within .ask-blank::before { transform: scaleX(1); }
 
 /* the question steps up a grey while the pen is on the line */
-.ask-line:hover .ask-input::placeholder,
+.ask-chip:hover .ask-input::placeholder,
 .ask-line:focus-within .ask-input::placeholder { color: var(--g-700); }
 
 /* …and the mark TURNS — the AI's own verb. The rows' glyphs redraw
@@ -1397,7 +1443,7 @@ html.intro-run .shell-card {
   rotate: var(--ask-spin, 0deg);
   transition: rotate 0.55s var(--ease-glide);
 }
-.ask-line:hover .ask-blank > svg,
+.ask-chip:hover .ask-blank > svg,
 .ask-line:focus-within .ask-blank > svg { rotate: calc(var(--ask-spin, 0deg) + 180deg); }
 
 .ask-input {

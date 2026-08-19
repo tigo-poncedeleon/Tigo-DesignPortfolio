@@ -668,16 +668,26 @@
   // to begin and restores when you leave, so typing it would be the line
   // announcing what it already says.
   //
-  // Every one of them is under nineteen characters, and that is a hard
-  // constraint rather than a style: the rail is 208px by default and can
-  // be dragged down to 150, and the blank is capped at the letterhead's
-  // own measure (css/shell.css .ask-blank). "what did he build at
-  // Vicino?" was the first draft and it clipped mid-word, which does not
-  // read as a long question — it reads as a broken one.
+  // Every one of them is written to a MEASURED budget, and that is a hard
+  // constraint rather than a style. The blank is exactly as wide as the
+  // name above it (css/shell.css .ask-blank, --blank-w), the asterisk and
+  // its gap take 26 of that, and what is left is ~100px at 13px — so a
+  // question must set under 100px, not under some number of characters.
+  // Measured at the default rail: 'what did he do?' 96, 'is he
+  // available?' 91, "what's he use?" 90, 'who is Tigo?' 75, and REST
+  // itself 99 (the widest string the blank ever holds).
+  //
+  // Two of these were longer before the rule was pinned to the name:
+  // 'what did he build?' sets 110 and "what's his stack?" 104, both past
+  // the edge. Shortening the copy is the right side of that trade — the
+  // rule matching the name is structural, and a question is just words.
+  // ("what did he build at Vicino?" was the very first draft and it
+  // clipped mid-word, which does not read as a long question — it reads
+  // as a broken one.)
   const ASKS = [
-    'what did he build?',
+    'what did he do?',
     'is he available?',
-    "what's his stack?",
+    "what's he use?",
     'who is Tigo?',
   ];
 
@@ -1263,13 +1273,16 @@
     // typeable is the entire point, and the instant you treat it as one it
     // hands the sentence to the sheet, which has the room.
     //
-    // The LINE is the target, no longer the whole block. When the two
-    // halves shared one filled surface, one surface meant one target and
-    // the name opened the sheet too. The surface is gone (see buildSide —
-    // the block is a letterhead now, plain type on the bone), and a name
-    // set as plain type must not be a trapdoor: nobody expects a dialog
-    // from clicking a word that looks like a word. The blank under it is
-    // the thing that looks writable, so it is the thing that opens.
+    // The WHOLE LETTERHEAD is the target — name, role and blank. It was
+    // the line alone for a while, on the theory that a name set as plain
+    // type must not be a trapdoor; in practice the name is the first
+    // thing a visitor's pointer lands on in the rail, and landing there
+    // to find the blank underneath dead is the worse surprise. The two
+    // halves are one object, so they answer as one: hovering the name
+    // inks the pen and wakes the ghost writer, and clicking it opens the
+    // sheet exactly as clicking the blank does, and one cursor covers the
+    // whole block so the pointer never changes shape inside it (see
+    // .ask-chip).
     //
     // Pointer and keyboard are split on purpose. A pointer press means
     // "now", so it opens on pointerdown with focus never landing here at
@@ -1284,14 +1297,42 @@
     const field = document.getElementById('ask-input');
     if (!chip || !line || !field) return;
 
-    line.addEventListener('pointerdown', (e) => {
-      // a modified click is someone asking for a new tab; the line is not
-      // an anchor and has nowhere to put one, so it does nothing rather
-      // than something surprising
+    // ONE listener, on the CHIP — not one per half. Two listeners meant
+    // two controls that happened to agree, and the seam showed: the gaps
+    // between them (the 10px step down to the blank, the 2px between name
+    // and role) belonged to neither, so the pointer crossed a dead strip
+    // on its way from the name to the line. The whole letterhead is the
+    // button, so there is nothing between its parts to fall through.
+    //
+    // A modified click is someone asking for a new tab; the letterhead is
+    // not an anchor and has nowhere to put one, so it does nothing rather
+    // than something surprising.
+    chip.addEventListener('pointerdown', (e) => {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
       openAsk('');
     });
+
+    // ---- and the rule is the name's own length.
+    // Measured rather than declared: the name is system type, so its
+    // width is whatever the visitor's machine renders it at, and a number
+    // hard-coded off SF Pro would be a near-miss on every other font. A
+    // Range over the text node gives the ink's true width — the element's
+    // own box is the full column, ellipsis and all — and it is banked at
+    // full precision so the two edges land on the same subpixel.
+    const fitBlank = () => {
+      const name = chip.querySelector('.side-name');
+      if (!name || !name.firstChild) return;
+      const r = document.createRange();
+      r.selectNodeContents(name);
+      const w = r.getBoundingClientRect().width;
+      // guard the frame before layout: a 0 here would collapse the rule
+      if (w > 1) chip.style.setProperty('--blank-w', w + 'px');
+    };
+    fitBlank();
+    // …and again when the real face lands, because the fallback font's
+    // measure is not the one the visitor ends up reading
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBlank);
 
     field.addEventListener('keydown', (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;   // ⌘K still gets through
@@ -1350,11 +1391,12 @@
     // matter how well it is drawn.
     //
     // So the blank rests on one calm label — "ask me anything" — and
-    // holds perfectly still. Bring the pointer to it and the writer
-    // wakes: it erases the label and ghost-writes the questions a
-    // stranger actually arrives with, one after another, for exactly as
-    // long as you are looking. Take the pointer away and the line puts
-    // its label back and goes quiet. The rail is still at rest and alive
+    // holds perfectly still. Bring the pointer to the LETTERHEAD — the
+    // name, the role, or the blank itself, since they are one object and
+    // the chip is one zone — and the writer wakes: it erases the label
+    // and ghost-writes the questions a stranger actually arrives with,
+    // one after another, for exactly as long as you are looking. Take
+    // the pointer away and the line puts its label back and goes quiet. The rail is still at rest and alive
     // under the hand, which is the right way round.
     //
     // It is the same gesture that opens the site — the hero name types
@@ -1463,13 +1505,17 @@
       field.placeholder = REST;
     };
 
-    line.addEventListener('pointerenter', wake);
-    line.addEventListener('pointerleave', sleep);
+    // the CHIP, not the line: the pointer crossing from the name down to
+    // the blank must not read as a leave-then-enter, or the writer would
+    // reset the question mid-sentence on the way to the thing it is
+    // advertising
+    chip.addEventListener('pointerenter', wake);
+    chip.addEventListener('pointerleave', sleep);
     // a keyboard visitor gets the resting label and their OWN caret —
     // the ghost stands down rather than typing over what they came to
     // write, and picks up again only if the pointer is still resting here
     field.addEventListener('focus', sleep);
-    field.addEventListener('blur', () => { if (line.matches(':hover')) wake(); });
+    field.addEventListener('blur', () => { if (chip.matches(':hover')) wake(); });
     // closing the rail takes the whole line off screen, pointer or not
     window.addEventListener('shell:rail', sleep);
   };

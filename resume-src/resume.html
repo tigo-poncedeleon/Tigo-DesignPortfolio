@@ -3,14 +3,49 @@
 <head>
 <meta charset="UTF-8" />
 <title>Santiago (Tigo) Ponce de León — Resume</title>
+<meta name="author" content="Santiago (Tigo) Ponce de León" />
+<script>
+  /* Two builds come out of this one file — see resume-src/README.md.
+     default        -> the applications copy: Inter, embedded, machine-readable
+     ?v=sf          -> the copy the website links: SF Pro, for human eyes only */
+  if (location.search.indexOf('sf') !== -1)
+    document.documentElement.setAttribute('data-variant', 'sf');
+</script>
+<meta name="description" content="A designer who ships the code — research and product thinking through to React in production, in service of software that is both useful and pleasurable." />
 <style>
 /* ============================================================
    Resume — the portfolio's design language on Letter paper.
    Everything here is lifted from live-portfolio/css: the --bg /
-   --ink tokens, SF Pro at weight 400 (hierarchy comes
-   from SIZE and TONE, never bold), the .xp-ledger's numbered
-   rows + hairlines, the .xp-date chip recipe, and the .craft-chip
-   pill. No accent colour: the page is ink on paper throughout.
+   --ink tokens, weight 400 throughout (hierarchy comes from SIZE
+   and TONE, never bold), the .xp-ledger's numbered rows +
+   hairlines, the .xp-date chip recipe, and the .craft-chip pill.
+   No accent colour: the page is ink on paper throughout.
+
+   ATS NOTES — read before editing. This page is parsed by resume
+   scanners, and three rules keep it machine-readable. They are
+   verified by resume-src/verify.sh, which extracts the text back
+   out of the rendered PDF. Run it after any edit.
+
+   1. NEVER set font-family to system-ui / -apple-system / SF Pro.
+      Apple's fonts refuse embedding, so Chrome exports them as
+      Type 3 *drawn glyph procedures* — the PDF has no real font and
+      many scanners read nothing at all. This is true of the SF Pro
+      .otf files in /Library/Fonts too, not just the system alias:
+      all of them were measured, all of them came out Type 3. The
+      page therefore ships its own Inter (SIL OFL) in fonts/, which
+      exports as an embedded Type 0 font with proper text. This one
+      rule is the difference between a readable resume and a blank
+      one — verify.sh asserts both the subtype and the font name.
+   2. NEVER give a text element `position: relative/absolute` or a
+      flex `order`. Positioned boxes paint after everything else,
+      and PDF text comes out in PAINT order — a positioned <li>
+      moves every bullet to the end of the document, away from the
+      job it belongs to. That is why the bullet dot below is an
+      in-flow inline-block and not an absolute one.
+   3. Boxes separated only by gap/padding touch in the text stream
+      ("...com" + "tigo@..." => one unreadable token, no email
+      found). Every such seam carries a literal &nbsp; so a real
+      space lands in the PDF. Keep them.
    ============================================================ */
 
 :root {
@@ -32,12 +67,39 @@
   margin: 0;
 }
 
+/* Inter, vendored so the render is self-contained and reproducible offline.
+   SIL Open Font License; latin subset pulled from Google Fonts. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/Inter-Regular.woff2') format('woff2');
+}
+
+/* ---- the website copy: SF Pro, matching the rest of the site. Chrome
+   CANNOT embed Apple's fonts, so this build has NO extractable text layer at
+   all — every glyph is a Type 3 drawing. That is fine here and only here,
+   because a person reads this one. Never send it to an employer's scanner. ---- */
+:root[data-variant="sf"],
+:root[data-variant="sf"] body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+               system-ui, sans-serif;
+}
+/* ---- the applications copy: standard-cased section headings and a
+   standard-cased city, which is what a parser's section dictionary and
+   location gazetteer expect. text-transform changes the glyphs that get
+   painted, so whichever casing is chosen lands in the text stream too. ---- */
+:root:not([data-variant="sf"]) .label { text-transform: capitalize; }
+
 html, body {
   background: var(--bg);
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-               system-ui, sans-serif;
+  /* a real font FILE — see ATS note 1. */
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   font-weight: 400;
+  /* ATS: ligatures export as U+FB01/FB02 — "workflows" comes back out of the
+     PDF as "workﬂows" and stops matching the keyword. Off. */
+  font-variant-ligatures: none;
   -webkit-font-smoothing: antialiased;
   /* chips and hairlines are the structure here, not decoration — they have
      to survive the print pipeline */
@@ -47,7 +109,7 @@ html, body {
 
 .sheet {
   width: 8.5in;
-  padding: 44px 56px 34px;
+  padding: 42px 56px 28px;
   display: flex;
   flex-direction: column;
 }
@@ -57,7 +119,7 @@ html, body {
 .head {
   display: flex;
   align-items: baseline;
-  gap: 11px;
+  gap: 7px;                 /* + the &nbsp; between them ≈ the old 11px */
   white-space: nowrap;
 }
 .head h1 {
@@ -70,10 +132,14 @@ html, body {
   font-size: 16px;
   color: rgba(0, 0, 0, 0.3);
 }
+/* NOTE: the location is not its own object — it is the tail of this phrase,
+   joined by the same em dash that binds every other entity to its qualifier
+   on this page ("Vicino AI — UX Engineer Intern"), so the header reads as one
+   breath instead of leaving a chunk stranded in the corner. */
 
 .summary {
-  margin-top: 10px;
-  max-width: 600px;
+  margin-top: 9px;
+  max-width: 690px;
   font-size: 12.4px;
   line-height: 18px;
   color: var(--body);
@@ -81,12 +147,17 @@ html, body {
 
 /* ---- contact as chips: the .xp-date recipe, all three reading alike ---- */
 .contact {
-  margin-top: 11px;
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 2px;
+  /* the &nbsp; separators are anonymous flex items, so they are the only
+     thing this font-size reaches — the chips set their own. Keeps the real
+     space in the text stream (ATS note 3) while costing ~2px instead of ~6. */
+  font-size: 9px;
 }
-.contact a {
+.contact a,
+.contact span {
   display: inline-block;
   padding: 4px 10px;
   font-size: 11.6px;
@@ -100,7 +171,7 @@ html, body {
 
 /* ---- section label: lowercase and quiet (.craft-label / .learned-label),
    over the ledger's drawn hairline ---- */
-.section { margin-top: 15px; }
+.section { margin-top: 11px; }
 .label {
   font-size: 12.4px;
   color: var(--meta);
@@ -114,7 +185,7 @@ html, body {
   display: flex;
   align-items: flex-start;
   gap: 18px;
-  padding: 9px 2px 10px;
+  padding: 7px 2px 8px;
   border-bottom: 1px solid var(--rule);
 }
 .section .row:last-child { border-bottom: 0; padding-bottom: 4px; }
@@ -150,23 +221,25 @@ html, body {
 
 ul { margin-top: 5px; list-style: none; }
 li {
-  position: relative;
   padding-left: 13px;
   font-size: 12.2px;
   line-height: 17.6px;
   color: var(--body);
 }
-li + li { margin-top: 4px; }
-/* the site's resting dot — 3px, quiet, never a glyph bullet */
+li + li { margin-top: 3px; }
+/* the site's resting dot — 3px, quiet, never a glyph bullet. IN FLOW
+   (see ATS note 2): the negative margin pulls it into the padding, and
+   its own width + margin puts the text back on the 13px indent. */
 li::before {
   content: '';
-  position: absolute;
-  left: 1px;
-  top: 7px;
+  display: inline-block;
   width: 3.4px;
   height: 3.4px;
+  margin-left: -13px;
+  margin-right: 9.6px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.28);
+  vertical-align: 0.28em;
 }
 
 /* right margin: date chip over location (.xp-when) */
@@ -198,8 +271,8 @@ li::before {
 .craft {
   display: flex;
   align-items: baseline;
-  gap: 14px;
-  padding: 5.5px 2px;
+  gap: 10px;                /* + the &nbsp; ≈ the old 14px */
+  padding: 5px 2px;
   border-bottom: 1px solid var(--rule);
 }
 .craft:last-child { border-bottom: 0; }
@@ -212,7 +285,7 @@ li::before {
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 2px;                 /* + the &nbsp; between chips ≈ the old 6px */
 }
 .chip {
   padding: 3.5px 10px;
@@ -230,17 +303,14 @@ li::before {
 <div class="sheet">
 
   <header class="head">
-    <h1>Santiago (Tigo) Ponce de León</h1>
-    <p>product design engineer</p>
+    <h1>Santiago (Tigo) Ponce de León</h1>&nbsp;<p>Product Design Engineer &mdash; Chicago, Illinois</p>
   </header>
 
   <p class="summary">A designer who ships the code &mdash; research and product thinking
   through to React in production, in service of software that is both useful and pleasurable.</p>
 
   <nav class="contact">
-    <a href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>
-    <a href="mailto:tigoponcedeleon@uchicago.edu">tigoponcedeleon@uchicago.edu</a>
-    <a href="https://linkedin.com/in/tigoponcedeleon">linkedin.com/in/tigoponcedeleon</a>
+    <a href="tel:+15037067254">+1 503-706-7254</a>&nbsp;<a href="mailto:tigoponcedeleon@uchicago.edu">tigoponcedeleon@uchicago.edu</a>&nbsp;<a href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>&nbsp;<a href="https://linkedin.com/in/tigoponcedeleon">linkedin.com/in/tigoponcedeleon</a>
   </nav>
 
   <section class="section">
@@ -249,18 +319,18 @@ li::before {
     <div class="row">
       <span class="num">01</span>
       <div class="main">
-        <p class="co">Vicino AI <span>UX Engineer Intern</span></p>
+        <p class="co">Vicino AI <span>&mdash; UX Engineer Intern</span></p>
         <ul>
           <li>Designing product experiences across key workflows for an AI-powered video and
           marketing platform, turning agentic creative concepts into user-centered interfaces.</li>
           <li>Building front-end UI components in React, bridging Figma designs and production
           code to accelerate design-to-engineer handoff.</li>
-          <li>Shaping and documenting the platform&rsquo;s visual language and interaction patterns
+          <li>Shaping and documenting the platform's visual language and interaction patterns
           into a scalable component library used across feature pages.</li>
         </ul>
       </div>
       <div class="when">
-        <span class="date">Jun &ndash; Aug 2026</span>
+        <span class="date">Jun 2026 - Aug 2026</span>
         <span class="loc">Bellevue, WA</span>
       </div>
     </div>
@@ -268,18 +338,20 @@ li::before {
     <div class="row">
       <span class="num">02</span>
       <div class="main">
-        <p class="co">PantryPal <span>Digital Product Designer</span></p>
+        <p class="co">PantryPal <span>&mdash; Product Designer and iOS Developer</span></p>
         <ul>
-          <li>Owned end-to-end design of an AI mobile app generating personalized recipes from
-          household ingredients, cutting food waste through intelligent inventory reuse.</li>
-          <li>Led user research across interviews and usability tests, synthesizing findings into
-          design decisions that improved task completion 40% between testing rounds.</li>
-          <li>Shipped a production-ready Figma prototype &mdash; wireframes through high-fidelity
-          UI, a documented component library, responsive layouts, and interaction patterns.</li>
+          <li>Designing and building an AI mobile app that turns the ingredients a household
+          already owns into personalized recipes, cutting food waste through inventory reuse.</li>
+          <li>Writing the production iOS app in Swift and SwiftUI &mdash; designing and coding the
+          same screens &mdash; with an App Store release targeted for August 2026.</li>
+          <li>Ran user interviews and moderated usability tests between design rounds, rebuilding
+          ingredient entry and recipe matching around where people actually got stuck.</li>
+          <li>Built the design system behind the app: wireframes through high-fidelity UI, a
+          documented component library, and interaction patterns now implemented in SwiftUI.</li>
         </ul>
       </div>
       <div class="when">
-        <span class="date">Nov 2025 &ndash; Feb 2026</span>
+        <span class="date">Nov 2025 - Present</span>
         <span class="loc">Chicago, IL</span>
       </div>
     </div>
@@ -287,7 +359,7 @@ li::before {
     <div class="row">
       <span class="num">03</span>
       <div class="main">
-        <p class="co">University of Chicago <span>UX Researcher</span></p>
+        <p class="co">University of Chicago <span>&mdash; UX Researcher</span></p>
         <ul>
           <li>Ran an empirical study of visual and interaction patterns across six AI-generated
           recipe web apps to measure interface homogenization.</li>
@@ -296,7 +368,7 @@ li::before {
         </ul>
       </div>
       <div class="when">
-        <span class="date">Nov &ndash; Dec 2025</span>
+        <span class="date">Nov 2025 - Dec 2025</span>
         <span class="loc">Chicago, IL</span>
       </div>
     </div>
@@ -304,7 +376,7 @@ li::before {
     <div class="row">
       <span class="num">04</span>
       <div class="main">
-        <p class="co">Next Level Drone Cleaning <span>Founding Visual Designer</span></p>
+        <p class="co">Next Level Drone Cleaning <span>&mdash; Founding Visual Designer</span></p>
         <ul>
           <li>Designed the complete visual identity for an early-stage drone-tech startup from
           scratch: brand guidelines, logo suite, and collateral across web, print, and pitch.</li>
@@ -313,7 +385,7 @@ li::before {
         </ul>
       </div>
       <div class="when">
-        <span class="date">Jul &ndash; Sep 2025</span>
+        <span class="date">Jul 2025 - Sep 2025</span>
         <span class="loc">Kortrijk, Belgium</span>
       </div>
     </div>
@@ -324,13 +396,12 @@ li::before {
     <div class="row">
       <span class="num">&mdash;</span>
       <div class="main">
-        <p class="co">University of Chicago <span>B.A. Media Arts &amp; Design and Computer Science</span></p>
-        <p class="detail">Coursework: Human-Computer Interaction, Internet Art &amp; Web Design,
-        Branding &amp; Visual Systems<br />
-        Honors: Spain Foreign Language Acquisition Grant &mdash; immersive study in Madrid, Summer 2025</p>
+        <p class="co">University of Chicago <span>&mdash; B.A. Media Arts &amp; Design and Computer Science</span></p>
+        <p class="detail">Coursework: Human-Computer Interaction, Internet Art &amp; Web Design, Visual Systems<br />
+        Honors: Spain Foreign Language Acquisition Grant &mdash; study in Madrid, Summer 2025</p>
       </div>
       <div class="when">
-        <span class="date">May 2027</span>
+        <span class="date">Expected May 2027</span>
         <span class="loc">Chicago, IL</span>
       </div>
     </div>
@@ -339,27 +410,23 @@ li::before {
   <section class="section">
     <p class="label">skills</p>
     <div class="craft">
-      <span class="craft-label">product</span>
-      <div class="chips">
-        <span class="chip">User Research</span><span class="chip">Wireframing</span><span class="chip">Interaction Design</span><span class="chip">MVP Scoping</span><span class="chip">Usability Testing</span>
+      <span class="craft-label">product</span>&nbsp;<div class="chips">
+        <span class="chip">User Research</span>&nbsp;<span class="chip">Wireframing</span>&nbsp;<span class="chip">Interaction Design</span>&nbsp;<span class="chip">Design Systems</span>&nbsp;<span class="chip">Usability Testing</span>
       </div>
     </div>
     <div class="craft">
-      <span class="craft-label">frontend</span>
-      <div class="chips">
-        <span class="chip">React</span><span class="chip">HTML / CSS / JS</span><span class="chip">Python</span><span class="chip">C#</span><span class="chip">Git</span>
+      <span class="craft-label">engineering</span>&nbsp;<div class="chips">
+        <span class="chip">Swift</span>&nbsp;<span class="chip">SwiftUI</span>&nbsp;<span class="chip">React</span>&nbsp;<span class="chip">HTML / CSS / JavaScript</span>&nbsp;<span class="chip">Python</span>&nbsp;<span class="chip">C#</span>&nbsp;<span class="chip">Git</span>&nbsp;<span class="chip">Xcode</span>
       </div>
     </div>
     <div class="craft">
-      <span class="craft-label">design</span>
-      <div class="chips">
-        <span class="chip">Figma</span><span class="chip">Adobe Creative Cloud</span>
+      <span class="craft-label">design</span>&nbsp;<div class="chips">
+        <span class="chip">Figma</span>&nbsp;<span class="chip">Prototyping</span>&nbsp;<span class="chip">Adobe Creative Cloud</span>
       </div>
     </div>
     <div class="craft">
-      <span class="craft-label">languages</span>
-      <div class="chips">
-        <span class="chip">Spanish &mdash; professional working</span><span class="chip">English &mdash; fluent</span>
+      <span class="craft-label">languages</span>&nbsp;<div class="chips">
+        <span class="chip">Spanish &mdash; professional working</span>&nbsp;<span class="chip">English &mdash; fluent</span>
       </div>
     </div>
   </section>

@@ -249,7 +249,7 @@ html.lab-dark-furn .ask-blank::after {
               rgba(255, 255, 255, .3) 0 2px, transparent 2px 7px);
 }
 html.lab-dark-furn .ask-blank::before { background: var(--lab-furn-ink); }
-html.lab-dark-furn .ask-line:hover .ask-input::placeholder,
+html.lab-dark-furn .ask-chip:hover .ask-input::placeholder,
 html.lab-dark-furn .ask-line:focus-within .ask-input::placeholder {
   color: var(--lab-furn-ink);
 }
