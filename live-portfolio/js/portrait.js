@@ -12,6 +12,12 @@
 //
 // The sampler is resolution-independent, so one pass over the source feeds
 // any number of bakes at any size.
+//
+// Every geometry knob a caller passes in is in CSS PIXELS OF THE FINISHED
+// FACE, not in texture px. That is what lets the engraving survive a big
+// monitor: the texture is sized from the box it is going into, so a knob
+// meaning "a quarter-pixel hairline" means that at every size, instead of
+// meaning it only at the one fixed texture width it was tuned against.
 window.Portrait = (() => {
   const SRC = 'Media/face_cutout.webp';
   const SRC_W = 930, SRC_H = 1185;
@@ -20,6 +26,20 @@ window.Portrait = (() => {
   const TONE_LOW_PCT = 0.04;
   const TONE_HIGH_PCT = 0.97;
   const INK = '#141414';
+
+  // Bake at twice the canvas and box-filter down exactly once. Drawing the
+  // ribbons near their final size and halving is what antialiases them; the
+  // old fixed 1024px texture resampled 5:1 into a 185px box, and a ribbon
+  // thinner than the output pixel it lands in is where the beating came from.
+  const SS = 2;
+  const MAX_TEX = 2400;      // a ceiling for memory, never reached at these sizes
+  const MAX_SCALE = 4;       // device px per layout px: dpr x stage zoom, capped
+  // CSS px per ribbon. 1.8 rather than a round 2 so that the snap below lands
+  // on a TWO device-pixel pitch at both of the stage's scales (1.0 and 1.25)
+  // and on four at 2x — the density the face reads softest and most
+  // photographic at. Three device px is a legible engraving too, but a harder,
+  // more ruled one, and the art direction here is friendly.
+  const PITCH = 1.8;
 
   let img = null;                 // the decoded source, once
   let loading = null;             // the in-flight promise, so nine callers share one fetch
@@ -78,14 +98,73 @@ window.Portrait = (() => {
     return Math.pow(t, TONE_GAMMA);
   };
 
+  /* ---- how many real pixels this canvas actually gets ----
+
+     `zoom` is the trap. css/shell.css scales the whole stage with
+     `zoom: var(--card-scale)` — up to 1.25 on a wide monitor — and zoom does
+     NOT show up in clientWidth, which stays in the element's own unscaled
+     grid px. Sizing the buffer off clientWidth alone therefore paints 148px
+     of pixels into a 185px box on every large screen, and on a 1x display
+     (which is what most big external monitors are) that lands under one
+     device pixel per ribbon.
+
+     getBoundingClientRect WOULD carry the zoom, but this canvas wears the
+     look-at-cursor transform, so its rect is a rotated bounding box rather
+     than the box we paint into. Walking the ancestors and multiplying their
+     zooms is the reading that stays true while the head is turned. */
+  const zoomOf = (el) => {
+    let z = 1;
+    for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+      const v = parseFloat(getComputedStyle(n).zoom);
+      if (v && v !== 1) z *= v;
+    }
+    return z;
+  };
+
+  const measure = (canvas, o) => {
+    if (!canvas.clientWidth || !canvas.clientHeight) return null;
+    // EXACTLY the device pixels this canvas covers — dpr through the stage's
+    // zoom. Not the old min(dpr, 2): any mismatch between the buffer and the
+    // box hands the browser a rescale on the way to the screen, and rescaling
+    // ribbons is the one thing this whole file is arranged to avoid.
+    const scale = Math.min((window.devicePixelRatio || 1) * zoomOf(canvas), MAX_SCALE);
+    const w = Math.round(canvas.clientWidth * scale);
+    const h = Math.round(canvas.clientHeight * scale);
+
+    // THE FIX. The ribbon pitch is a WHOLE NUMBER OF DEVICE PIXELS. Left
+    // fractional, every ribbon lands on a different sub-pixel phase, the
+    // phases drift against the pixel grid, and the drift shows up as bands of
+    // alternating heavy and light lines rolling down the face — the moire
+    // that made this look dirty on a big monitor. Snapped, every ribbon
+    // rasterises identically and tone is carried by thickness alone, which is
+    // what a hedcut is. It also means the count follows the box: a face given
+    // more pixels gets more lines, never finer ones than it can show.
+    // Two device px is the floor: one is a ribbon that cannot vary its
+    // thickness at all, which is a stripe, not an engraving.
+    const pitch = Math.max(2, Math.round((o.pitch || PITCH) * scale));
+    const nLines = Math.max(1, Math.floor(h / pitch));
+    return {
+      w: w, h: h, scale: scale, pitch: pitch, nLines: nLines,
+      top: Math.round((h - nLines * pitch) / 2),   // the remainder, split evenly
+    };
+  };
+
   /* ---- the baker ---- */
-  const bake = (o) => {
+  const bake = (o, g) => {
     const S = sample(o.sampleW);
-    const TEX_W = o.texW;
-    const TEX_H = Math.round(TEX_W * (SRC_H / SRC_W));
+    // The texture is an exact WHOLE multiple of the buffer — not a fixed
+    // 1024px sheet resampled 5:1 into a 185px box, which is how ribbons
+    // thinner than the pixel they landed in used to get mangled. Whole, so
+    // the snapped pitch above stays snapped all the way down.
+    const ss = g.w * SS <= MAX_TEX ? SS : 1;
+    const TEX_W = g.w * ss, TEX_H = g.h * ss;
     const off = document.createElement('canvas');
     off.width = TEX_W; off.height = TEX_H;
     const octx = off.getContext('2d');
+
+    // CSS px → texture px. Every knob crosses this on the way in, which is
+    // what makes the engraving size-independent.
+    const u = g.scale * ss;
 
     // an opaque page-coloured silhouette base, so the ribbons sit on
     // solid ground rather than on whatever is behind the canvas
@@ -98,13 +177,17 @@ window.Portrait = (() => {
     octx.restore();
 
     octx.fillStyle = INK;
-    const spacing = TEX_H / o.nLines;
+    const spacing = g.pitch * ss;        // whole device px x whole supersample
+    const topPad = g.top * ss;
     const maxThick = spacing * o.maxThickFrac;
-    const k = (2 * Math.PI) / o.waveLen;
+    const minThick = o.minThick * u;
+    const waveAmp = o.waveAmp * u;
+    const step = Math.max(1, o.step * u);
+    const k = (2 * Math.PI) / (o.waveLen * u);
 
-    for (let li = 0; li < o.nLines; li++) {
-      const baseY = (li + 0.5) * spacing;
-      const v = (li + 0.5) / o.nLines;
+    for (let li = 0; li < g.nLines; li++) {
+      const baseY = topPad + (li + 0.5) * spacing;
+      const v = baseY / TEX_H;      // where the ribbon actually sits, not its index
       const phase = li * 0.9;
       let top = null, bot = null;
 
@@ -119,11 +202,11 @@ window.Portrait = (() => {
         top = bot = null;
       };
 
-      for (let x = 0; x <= TEX_W; x += o.step) {
+      for (let x = 0; x <= TEX_W; x += step) {
         const t = toneAt(S, x / TEX_W, v);
         if (t < 0) { flush(); continue; }
-        const cy = baseY + o.waveAmp * Math.sin(x * k + phase);
-        const half = (o.minThick + t * (maxThick - o.minThick)) / 2;
+        const cy = baseY + waveAmp * Math.sin(x * k + phase);
+        const half = (minThick + t * (maxThick - minThick)) / 2;
         if (!top) { top = []; bot = []; }
         top.push([x, cy - half]);
         bot.push([x, cy + half]);
@@ -133,14 +216,15 @@ window.Portrait = (() => {
     return off;
   };
 
-  // Downscaling 1024px of ribbons straight into 120px in one drawImage
-  // throws away most of the samples between output pixels — that is what
-  // turns an engraving into stripes. Halving repeatedly averages every
-  // source pixel into the result instead, which is the difference between
-  // "shrunk" and "resampled".
+  // Halving repeatedly averages every source pixel into the result instead of
+  // throwing away the ones between output pixels. The texture is baked at
+  // exactly SS x the canvas, so in the normal case this runs once and lands
+  // on the buffer's own size — a clean box filter, and the drawImage after it
+  // is 1:1. The >= is what makes that exact case halve rather than fall
+  // through to a smoothed 2:1 resample.
   const shrink = (tex, w, h) => {
     let src = tex;
-    while (src.width > w * 2 && src.height > h * 2) {
+    while (src.width >= w * 2 && src.height >= h * 2 && src.width > w) {
       const half = document.createElement('canvas');
       half.width = Math.max(w, Math.round(src.width / 2));
       half.height = Math.max(h, Math.round(src.height / 2));
@@ -159,18 +243,16 @@ window.Portrait = (() => {
   // caller has to be able to tell that apart from a finished portrait:
   // about.js hides the pre-baked fallback webp on success, and hiding it
   // over an empty canvas is a hole where the face should be.
-  const paint = (canvas, tex, ratio) => {
-    const dpr = ratio || Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return false;
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
+  const paint = (canvas, tex, g) => {
+    if (!g || !g.w || !g.h) return false;
+    canvas.width = g.w;
+    canvas.height = g.h;
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const src = shrink(tex, canvas.width, canvas.height);
-    ctx.drawImage(src, 0, 0, src.width, src.height, 0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, g.w, g.h);
+    const src = shrink(tex, g.w, g.h);
+    ctx.drawImage(src, 0, 0, src.width, src.height, 0, 0, g.w, g.h);
     return true;
   };
 
@@ -239,7 +321,44 @@ window.Portrait = (() => {
 
   /* ---- render a baked texture into a canvas, loading the source first ---- */
   const render = (canvas, opts) =>
-    load().then(() => paint(canvas, bake(opts)));
+    load().then(() => {
+      const g = measure(canvas, opts);
+      if (!g) return false;                       // no box yet — nothing to paint into
+      return paint(canvas, bake(opts, g), g);
+    });
+
+  /* ---- and keep it that way. The stage rescales on every window resize
+     (js/stage-fit.js) and the dpr changes when the window is dragged to a
+     second monitor; both leave the buffer sized for a face that is no longer
+     there. Re-bake when the size it WOULD get differs from the size it has,
+     debounced so a drag is one bake at the end and not sixty on the way. ---- */
+  const watched = [];
+  let watching = false;
+  let refitTimer = 0;
+
+  const refit = () => {
+    refitTimer = 0;
+    watched.forEach((entry) => {
+      if (!entry.el.isConnected) return;
+      const g = measure(entry.el, entry.opts);
+      if (!g || (g.w === entry.el.width && g.h === entry.el.height)) return;
+      paint(entry.el, bake(entry.opts, g), g);
+    });
+  };
+
+  const watch = (canvas, opts) => {
+    watched.push({ el: canvas, opts: opts });
+    if (watching) return;
+    watching = true;
+    const schedule = () => {
+      clearTimeout(refitTimer);
+      refitTimer = setTimeout(refit, 150);
+    };
+    window.addEventListener('resize', schedule);
+    // the stage's own scale step — it lands after the resize settles, and a
+    // rail drag changes it with no resize at all
+    window.addEventListener('shell:fit', schedule);
+  };
 
   // The rail's face is DRAWN now, not rendered (see FACE_SVG in
   // js/shell.js) — but it watches the cursor on these, the about page's
@@ -261,7 +380,7 @@ window.Portrait = (() => {
   return {
     isDead: () => dead,
     kill: () => { dead = true; },
-    load, sample, bake, paint, render, look,
+    load, sample, measure, bake, paint, render, watch, look,
     MINI_LOOK: MINI_LOOK,
   };
 })();

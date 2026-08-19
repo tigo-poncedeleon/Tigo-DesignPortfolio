@@ -171,22 +171,33 @@
   const fallback = document.querySelector('.about-portrait img');
   if (!view || !view.getContext || !window.Portrait) return;
 
+  // In CSS PIXELS OF THE FINISHED FACE, not texture px — these used to be
+  // measured against a fixed 1024px sheet, which meant they only meant what
+  // they were tuned to mean at one size, and a wide monitor (which scales the
+  // whole stage with zoom) is not that size. The line COUNT is no longer here
+  // at all: portrait.js derives it from the pixels the box actually gets, so
+  // the engraving is never finer than the screen can draw it.
   const HEDCUT = {
     sampleW: 320,
-    texW: 1024,
-    nLines: 150,
-    step: 2,
-    minThick: 0.7,
-    maxThickFrac: 0.92,
-    waveAmp: 0.8,
-    waveLen: 26,
+    pitch: 1.8,          // CSS px between ribbons, snapped to whole device px
+    step: 0.36,          // how often a ribbon re-reads the tone beneath it
+    minThick: 0.16,      // the hairline it thins to on lit skin
+    maxThickFrac: 0.92,  // and the share of the gap the darkest ink fills
+    waveAmp: 0.15,       // the hand-wobble that keeps it from reading printed
+    waveLen: 4.7,
   };
 
   const bakeFace = () => window.Portrait.render(view, HEDCUT).then((painted) => {
     // ONLY on a real paint. render() resolves either way, and hiding the
     // pre-baked webp over a canvas that had no box to draw into leaves a
     // hole in the letter where the face should be.
-    if (painted && fallback) fallback.style.display = 'none';
+    if (!painted) return;
+    if (fallback) fallback.style.display = 'none';
+    // and from here on it re-bakes itself: the stage rescales on every window
+    // resize, and the dpr changes the moment the window is dragged onto a
+    // second monitor. Either leaves the buffer sized for a face that is no
+    // longer the one on screen.
+    window.Portrait.watch(view, HEDCUT);
   }).catch(() => {
     // a tainted canvas (file://) or a missing source: the pre-baked webp
     // underneath is already showing, so there is nothing to undo
