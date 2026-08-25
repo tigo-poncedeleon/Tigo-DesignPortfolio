@@ -45,15 +45,31 @@ window.FrameClock = (function () {
     if (!timeEls.length) return;
 
     let fmt;
-    const opts = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+    // ---- NO SECONDS, and this is a measurement rather than a taste.
+    //
+    // The pair lives in the rail's head now, sharing a 168px row with the
+    // sidebar toggle. That leaves 103px for both strings, and
+    // "12:49:55 PM" alone wants 69 of it — so the region beside it got 28
+    // for a word that needs 39 and read "Oreg…". Without the seconds the
+    // clock is 49 and everything fits with room to spare.
+    //
+    // `hour: 'numeric'` rather than '2-digit' for the same reason: a
+    // sidebar clock says "9:49 PM", not "09:49 PM".
+    const opts = { hour: 'numeric', minute: '2-digit', hour12: true };
     try {
       fmt = new Intl.DateTimeFormat('en-US', Object.assign({ timeZone: timezone }, opts));
     } catch (err) {
       // bad/unknown timezone — fall back to the browser's local time
       fmt = new Intl.DateTimeFormat('en-US', opts);
     }
+    // …which also means the string only changes once a minute. The
+    // interval stays at a second so the flip lands on time; the write is
+    // what is skipped.
+    let last = '';
     const tick = () => {
       const now = fmt.format(new Date());
+      if (now === last) return;
+      last = now;
       timeEls.forEach((el) => { el.textContent = now; });
     };
     tick();

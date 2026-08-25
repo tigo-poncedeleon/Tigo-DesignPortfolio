@@ -1,11 +1,20 @@
-// The shell — populates the mini-browser chrome and sidebar.
+// The shell — populates the sidebar, and the sidebar is the whole frame.
 //
-// Every page ships the same six-element skeleton (see css/shell.css for
-// the frame math); the skeleton is sized by CSS alone, so the window is
-// already the right shape on the very first paint and only its CONTENTS
-// arrive a frame later. That one-frame gap is not a flash to hide — it
-// is frame zero of the entrance (js/typewriter.js drives the timing on
-// the home page; everywhere else the chrome and sidebar just light up).
+// THE STRIP IS GONE. The site wore a mini-browser for a while: a chrome
+// strip of tabs above an L of furniture, with back/forward, a tab per
+// place you had been, and the location chip at its far end. Every one of
+// those was a second copy of something the browser already draws two
+// centimetres higher — its own tabs, its own back button, its own address
+// — and the strip's whole cost was paid in the machinery under it: a clip
+// path re-cut on every mutation, a seam drawn in SVG because a hole in a
+// strip cannot take a border, a per-tab scroll record in sessionStorage,
+// and an entire second history model (the trail) built because the scroll
+// spies had to replaceState. All of it is deleted.
+//
+// What is left is the thing that was carrying the site anyway: ONE RAIL.
+// It holds identity, the tree, what is happening now, and — at its foot —
+// where the visitor is, on a globe (js/globe.js) that used to be a
+// popover hanging off the strip and is simply part of the column now.
 //
 // The sidebar absorbs BOTH of the site's old nav levels: the five-word
 // site-nav and the per-page chapter rails (.about-menu / .case-menu).
@@ -19,22 +28,49 @@
   if (!shell) return;
 
   const root = document.documentElement;
-  const chrome = document.getElementById('shell-chrome');
   const side = document.getElementById('shell-side');
   let page = shell.dataset.page || 'home';
   let title = shell.dataset.title || 'Home';
 
   // ---- embed mode: this document is inside the case overlay's iframe on
   // index.html (?embed=1 → html.is-embed, set pre-paint in <head>). The
-  // page is CONTENT there, not a window: no chrome, no rail, no AI sheet.
-  // Load-bearing, not cosmetic — the iframe shares sessionStorage with its
-  // parent, so if tabs.js mounted here its reconcile() would overwrite the
-  // parent's active-tab record with this frame's URL and corrupt the strip.
+  // page is CONTENT there, not a window: no rail, no AI sheet, no dock.
   const EMBED = root.classList.contains('is-embed');
 
-  // scroll restoration is OURS: the tab records carry the exact pixel
-  // (js/tabs.js state.y) and the browser's own restore would race it
+  // ---- scroll restoration is OURS, and it rides HISTORY.STATE now.
+  //
+  // It used to ride the tab strip: each tab banked its own scrollY and the
+  // shell put you back on it. That was always the wrong place for it — the
+  // pixel belongs to the history ENTRY, not to a strip of our own drawing —
+  // and with the strip gone the right answer is also the shorter one. The
+  // browser's automatic restore cannot be left on: the scroll spies
+  // replaceState the hash constantly, and the three pages that land their
+  // own deep links (work.js, about.js, play-pager.js) would race it.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  // ---- Bank the pixel into the current entry.
+  //
+  // Throttled to twice a second, and that number is not taste: Safari
+  // throws a SecurityError after ~100 history writes in 30 seconds, and the
+  // five scroll-spies are ALREADY replaceState-ing the hash as you read. A
+  // per-frame bank would spend the whole allowance in under two seconds and
+  // take the spies down with it. Half a second is finer than anyone can
+  // notice on a restore and costs 60 writes a minute.
+  const write = () => {
+    if (window.__restoring) return;
+    try {
+      history.replaceState(Object.assign({}, history.state, { y: window.scrollY }),
+                           '', location.href);
+    } catch (err) { /* rate-limited, or private mode — skip this one */ }
+  };
+  let bankT = 0;
+  const bank = () => {
+    if (bankT) return;
+    bankT = setTimeout(() => { bankT = 0; write(); }, 500);
+  };
+  window.addEventListener('scroll', bank, { passive: true });
+  // …and outright on the way out, because there is no later
+  window.addEventListener('pagehide', () => { clearTimeout(bankT); bankT = 0; write(); });
 
   // ---- the icon vocabulary: the site's own 26-box line glyphs, lifted
   // from js/nav-touch.js, about.html and the two case studies so the rail
@@ -54,9 +90,6 @@
     // chrome
     rail: '<rect x="3.5" y="4.5" width="19" height="17" rx="3.5" />' +
           '<path d="M10.5 4.5 V21.5" />',
-    back: '<path d="M15.5 5.5 L8 13 L15.5 20.5" />',
-    fwd:  '<path d="M10.5 5.5 L18 13 L10.5 20.5" />',
-    plus: '<path d="M13 6 V20" /><path d="M6 13 H20" />',
     twist: '<path d="M10 6.5 L16.5 13 L10 19.5" />',
     // pages (js/nav-touch.js)
     home: '<path d="M4 12.5 L13 5 L22 12.5" /><path d="M6.5 11 V20.5 H19.5 V11" />' +
@@ -198,23 +231,9 @@
     ] },
   ];
 
-  // A page's tab favicon is the glyph it already wears in the rail. Derived
-  // from TREE rather than hand-listed, so a new page cannot end up with a
-  // sidebar icon and a different tab icon.
-  const flatten = (rows) => rows.reduce((acc, r) =>
-    acc.concat([r], r.kids ? flatten(r.kids) : []), []);
-  let ROWS = null;
-  const FAVICON = {};                    // built once, not on every repaint
-  const rows = () => {
-    if (!ROWS) ROWS = TREE.reduce((acc, g) => acc.concat(flatten(g.rows || [])), []);
-    return ROWS;
-  };
-  const faviconFor = (id) => {
-    if (FAVICON[id]) return FAVICON[id];
-    const r = rows().find((x) => x.id === id);
-    FAVICON[id] = svg(G[(r && r.icon) || 'link'], 2.1);
-    return FAVICON[id];
-  };
+  // (faviconFor retired with the tab strip: it turned a page id into the
+  // glyph a tab wore, and nothing but a tab ever asked for that. The rail
+  // builds its own glyphs straight off TREE in rowHTML.)
 
   // the chain of ids that must be open for the current page to be visible
   const ANCESTORS = { vicino: ['work'], pantrypal: ['work'], nextlevel: ['work'] };
@@ -243,199 +262,30 @@
 
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-  // ============================================================
-  // Chrome
-  // ============================================================
-  const buildChrome = () => {
-    if (!chrome) return;
-    chrome.innerHTML =
-      '<div class="chrome-left">' +
-        '<button class="chrome-btn" type="button" data-act="rail" ' +
-          'aria-label="Toggle sidebar">' + svg(G.rail) + '</button>' +
-      '</div>' +
-      '<div class="chrome-tabs" id="chrome-tabs">' +
-        '<button class="chrome-btn" type="button" data-act="back" ' +
-          'aria-label="Back">' + svg(G.back) + '</button>' +
-        '<button class="chrome-btn" type="button" data-act="fwd" ' +
-          'aria-label="Forward">' + svg(G.fwd) + '</button>' +
-        '<span class="tab-list" id="tab-list"></span>' +
-      '</div>' +
-      // where the visitor is, and the time there, at the strip's far end —
-      // a button, because it opens the globe (js/globe.js)
-      '<div class="chrome-right">' +
-        '<button class="chrome-place" type="button" data-globe ' +
-          'aria-label="Where you are">' +
-          '<span class="now-dot" aria-hidden="true"></span>' +
-          '<span class="chrome-place-city" data-clock="state">Oregon</span>' +
-          '<span class="chrome-place-time" data-clock="time">--:--:-- --</span>' +
-        '</button>' +
-      '</div>';
-
-    // the strip's own contents belong to js/tabs.js
-    if (window.ShellTabs) {
-      window.ShellTabs.mount(document.getElementById('tab-list'),
-        { page: page, title: title, icon: faviconFor, plus: svg(G.plus) });
-    }
-
-    // back is honest about whether there is anywhere to go; forward has no
-    // API to ask, so it stays live and simply does nothing at the end
-    // (Trail.wire below owns both buttons' enabled state now — it knows
-    // about the page's own trail as well as the browser's history.)
-
-    chrome.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      if (btn.dataset.act === 'back') Trail.back();
-      else if (btn.dataset.act === 'fwd') Trail.fwd();
-      else if (btn.dataset.act === 'rail') toggleRail();
-      // NOT the + — it lives inside the tab strip, and js/tabs.js owns
-      // every click in there. Handling it here too opened two tabs.
-    });
-
-    buildJump();
-    Trail.wire();
-  };
 
   // ============================================================
-  // The trail — the shell's own back and forward.
+  // RETIRED WITH THE STRIP — the trail, and the jump menu.
   //
-  // The browser's history cannot answer "the last section I was in", and it
-  // is not supposed to: the scroll spies move the hash with replaceState on
-  // purpose, because pushing an entry per section would fill the history
-  // with a hundred stops on one scroll and make the browser's own Back
-  // useless. So the two chrome buttons walk a trail of their OWN — the
-  // places you have actually been on this page — and hand off to real
-  // history only at its ends, where a case study or another tab lives.
+  // The TRAIL was the shell's own back and forward: a list of the sections
+  // you had actually HELD for 700ms, walked by two buttons in the strip,
+  // handing off to real history at either end. It existed because the
+  // scroll spies replaceState the hash on purpose (an entry per section
+  // would put a hundred stops in the browser's history on one scroll), so
+  // the browser's Back could not answer "the last section I was in".
   //
-  // A place is recorded once it has been HELD, not the instant it is
-  // touched: scrolling from Home to About passes through Work and Play, and
-  // a trail that logged the fly-past would make Back a stutter through
-  // sections nobody stopped at.
+  // It is gone with the buttons that drove it. Nothing is lost that the
+  // browser does not already do better one row higher: Back still leaves a
+  // case study, still leaves the game theater, still walks between pages —
+  // and within the one page, "back" was never a question anyone asked of a
+  // scroll. What the trail cost was a second, invisible history model that
+  // had to be kept in step with the real one.
+  //
+  // The JUMP MENU was the pages, hung off the + while the rail was shut —
+  // an affordance that only existed because closing the rail left the site
+  // with no visible navigation at all. The rail's own reopen button
+  // (.rail-open, below) answers that in one click instead of teaching a
+  // second navigation system that appears under one condition.
   // ============================================================
-  const Trail = (() => {
-    const HOLD = 700;                  // ms a section must be held to count
-    let list = [];                     // [{ id, y }]
-    let at = -1;                       // where in the trail we are
-    let pending = 0, walking = false;
-
-    const back = chrome && chrome.querySelector('[data-act="back"]');
-    const fwd = chrome && chrome.querySelector('[data-act="fwd"]');
-
-    const paint = () => {
-      // Back is honest: live when the trail has somewhere behind it, or
-      // when real history does. Forward the same, plus its own end.
-      if (back) back.disabled = !(at > 0 || history.length > 1);
-      if (fwd) fwd.disabled = at < 0 || at >= list.length - 1;
-    };
-
-    // record a place, once it has been held
-    const note = (id) => {
-      if (walking) return;
-      clearTimeout(pending);
-      pending = setTimeout(() => {
-        const here = { id: id, y: window.scrollY };
-        if (at >= 0 && list[at] && list[at].id === id) { list[at] = here; return; }
-        // a new place taken from the middle of the trail truncates the
-        // forward half, exactly as a browser does
-        list = list.slice(0, at + 1);
-        list.push(here);
-        at = list.length - 1;
-        paint();
-      }, HOLD);
-    };
-
-    const goTo = (entry) => {
-      const el = document.getElementById(entry.id);
-      walking = true;
-      if (el) {
-        window.scrollTo({ top: restY(el), behavior: reduced() ? 'auto' : 'smooth' });
-      } else {
-        window.scrollTo({ top: entry.y, behavior: reduced() ? 'auto' : 'smooth' });
-      }
-      // let the spies settle before the trail listens again, or the arrival
-      // records itself as a new place and Back walks in circles
-      setTimeout(() => { walking = false; paint(); }, 900);
-    };
-
-    return {
-      wire: () => {
-        window.addEventListener('shell:section', (e) => {
-          if (window.__restoring) return;
-          note(e.detail.id);
-        });
-        paint();
-      },
-      back: () => {
-        // a case study or a game is an overlay on TOP of the page: leaving
-        // it is what Back means while one is up, and that is real history
-        if (root.className.match(/case-open|theater-open/)) { history.back(); return; }
-        if (at > 0) { at -= 1; goTo(list[at]); paint(); return; }
-        history.back();                // off the end of our trail: the browser's
-      },
-      fwd: () => {
-        if (at >= 0 && at < list.length - 1) { at += 1; goTo(list[at]); paint(); return; }
-        history.forward();
-      },
-    };
-  })();
-
-  // ---- With the rail closed the site has no visible nav at all, so the +
-  // grows one: hover it and the pages drop down, ready to be scrolled to.
-  // ONLY with the rail closed — open, the rail is right there saying the
-  // same thing, and a second copy of it under the + would be clutter
-  // answering a question nobody has.
-  //
-  // The rows are real links to the same hrefs the rail uses, so the shell's
-  // own click delegation scrolls them; this menu adds an affordance, not a
-  // second navigation system.
-  const buildJump = () => {
-    if (!chrome || chrome.querySelector('.chrome-jump')) return;
-    const pages = TREE.find((g) => g.label === 'pages');
-    if (!pages) return;
-
-    const menu = document.createElement('div');
-    menu.className = 'chrome-jump';
-    menu.hidden = true;
-    menu.innerHTML = pages.rows.map((r) =>
-      '<a class="jump-row" href="' + esc(r.href) + '" data-page="' + esc(r.id) + '">' +
-        '<span class="jump-ico">' + svg(G[r.icon] || G.home) + '</span>' +
-        '<span>' + esc(r.text) + '</span>' +
-      '</a>').join('');
-    chrome.appendChild(menu);
-
-    let hideT = 0;
-    const show = () => {
-      if (!root.classList.contains('rail-closed')) return;
-      clearTimeout(hideT);
-      const plus = chrome.querySelector('.chrome-new');
-      if (!plus) return;
-      const p = plus.getBoundingClientRect();
-      const c = chrome.getBoundingClientRect();
-      menu.hidden = false;
-      // hang it off the + and keep it inside the window
-      const w = menu.offsetWidth || 176;
-      const x = Math.min(p.left - c.left, c.width - w - 10);
-      menu.style.left = Math.max(8, x) + 'px';
-      requestAnimationFrame(() => menu.classList.add('is-lit'));
-    };
-    const hide = () => {
-      clearTimeout(hideT);
-      hideT = setTimeout(() => {
-        menu.classList.remove('is-lit');
-        setTimeout(() => { menu.hidden = true; }, 180);
-      }, 120);
-    };
-
-    chrome.addEventListener('pointerover', (e) => {
-      if (e.target.closest('.chrome-new')) show();
-      else if (!e.target.closest('.chrome-jump')) hide();
-    });
-    chrome.addEventListener('pointerleave', hide);
-    menu.addEventListener('pointerenter', () => clearTimeout(hideT));
-    menu.addEventListener('click', hide);
-    // opening the rail takes the menu's reason for existing away with it
-    window.addEventListener('shell:rail', hide);
-  };
 
   // ---- the rail: closed means CLOSED, and its width belongs to the visitor
   //
@@ -487,6 +337,11 @@
     const from = eased ? side.getBoundingClientRect().left : 0;
 
     root.classList.toggle('rail-closed', next);
+    const tool = document.querySelector('.side-tool[data-act="rail"]');
+    if (tool) {
+      tool.setAttribute('aria-label', next ? 'Show sidebar' : 'Hide sidebar');
+      tool.title = tool.getAttribute('aria-label');
+    }
     try { sessionStorage.setItem(RAIL_KEY, next ? '1' : '0'); } catch (err) { /* private mode */ }
     window.dispatchEvent(new Event('shell:rail'));
     // this document's stage: new scale + the reading-line hold, now
@@ -674,6 +529,43 @@
       '</section>').join('');
 
     side.innerHTML =
+      // ---- the toggle, and it sits ABOVE the letterhead rather than
+      // beside it. Beside it was the obvious place and it does not fit:
+      // the rail's 168 is a MEASURED floor (see the top of css/shell.css)
+      // — the width at which nothing in the column ellipsises — so a
+      // button on the name's row would cut the name. On its own row it
+      // costs nothing but 28px of height, and it lands on the same left
+      // inset every glyph in the rail uses.
+      //
+      // It is also the same PLACE the reopen button takes when the rail is
+      // shut (.rail-open, appended to the shell below). Open or closed,
+      // the toggle is in the top-left corner of the frame and does not
+      // move; only the surface behind it changes.
+      // …and the toggle shares its row with WHERE YOU ARE: the region the
+      // visitor is reading from and the local time there, which opens the
+      // globe on hover (js/globe.js) out into the page beside the rail.
+      //
+      // It has been three places in a day — the far end of the chrome
+      // strip, the foot of this column drawn permanently, and a floating
+      // pill over the hero — and this is the one that costs nothing. The
+      // head row already existed for the toggle and was 120px of empty
+      // cream to its right; the clock is the only thing on the site quiet
+      // enough to sit in it. No dot: that was the strip's "you are here"
+      // marker, and a ticking clock does not need one.
+      //
+      // `data-clock` is an attribute contract, not an id — js/frame-clock.js
+      // finds its targets by attribute precisely so this pair can move
+      // between the strip, the corner and this row without the clock ever
+      // knowing that it has.
+      '<div class="side-tools">' +
+        '<button class="side-tool" type="button" data-act="rail" ' +
+          'aria-label="Hide sidebar" title="Hide sidebar">' + svg(G.rail, 1.9) + '</button>' +
+        '<button class="side-place" type="button" data-globe ' +
+          'aria-label="Where you are">' +
+          '<span class="side-place-city" data-clock="state">&nbsp;</span>' +
+          '<span class="side-place-time" data-clock="time">--:--</span>' +
+        '</button>' +
+      '</div>' +
       // ============================================================
       // The letterhead — a name and a role, and nothing else.
       //
@@ -726,6 +618,8 @@
 
     // twisties toggle without navigating; everything else is a real link
     side.addEventListener('click', (e) => {
+      const tool = e.target.closest('.side-tool');
+      if (tool && tool.dataset.act === 'rail') { toggleRail(); return; }
       const tw = e.target.closest('.side-tw');
       if (!tw || tw.classList.contains('is-empty')) return;
       e.stopPropagation();
@@ -970,14 +864,16 @@
   // section's own children (its title pair and whatever it introduces),
   // and it is that union we put in the middle of the reading area.
   //
-  // Two things stay honest: the reading area starts under the sticky chrome
-  // strip, not at y=0, and a section that already fills the window has no
-  // middle to find, so it lands its top edge at the top instead. That
-  // second rule is what keeps Home and About where they belong — the hero
-  // is a full screen that centres itself, and its "scroll" cue sits on the
-  // floor on purpose, so reading it as ink would drag the whole page down.
+  // One thing stays honest: a section that already fills the window has no
+  // middle to find, so it lands its top edge at the top instead. That rule
+  // is what keeps Home and About where they belong — the hero is a full
+  // screen that centres itself, and its "scroll" cue sits on the floor on
+  // purpose, so reading it as ink would drag the whole page down.
+  //
+  // (The reading area used to START below the sticky strip, so every
+  // measurement here carried a `head` of 40. The strip is gone and the card
+  // runs to y=0, so the reading area is simply the window.)
   // ============================================================
-  const chromeH = () => (chrome ? chrome.getBoundingClientRect().height : 0);
 
   const inkOf = (el) => {
     const box = el.getBoundingClientRect();
@@ -1000,8 +896,7 @@
   };
 
   const restY = (el) => {
-    const head = chromeH();
-    const view = window.innerHeight - head;           // the reading area
+    const view = window.innerHeight;                  // the reading area
     const box = el.getBoundingClientRect();
     const clamp = (y) => Math.round(Math.min(Math.max(y, 0),
       Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
@@ -1009,10 +904,10 @@
     // the 1px slack matters: a stage sized to exactly one screen of card
     // (--hero-h, scaled back up by zoom) can measure 859.99 against a 860
     // reading area, and a hair's rounding must not flip it to "centre me"
-    if (box.height >= view - 1) return clamp(box.top + window.scrollY - head);
+    if (box.height >= view - 1) return clamp(box.top + window.scrollY);
 
     const ink = inkOf(el);
-    return clamp(ink.top + window.scrollY - head - (view - ink.height) / 2);
+    return clamp(ink.top + window.scrollY - (view - ink.height) / 2);
   };
 
   // ============================================================
@@ -1021,7 +916,6 @@
   // An arrival — a deep link, or the rail followed from another document —
   // lands while the page is still assembling. The intro types, the rail
   // then slides in, which re-scales the card, which re-measures --hero-h,
-  // and the chrome strip takes its place in the flow: every one of those
   // moves the section out from under the scroll that just aimed at it. So
   // the landing is re-asserted on a slow poll until the page stops moving,
   // and the visitor's first real input takes the scroll back for good.
@@ -1076,12 +970,6 @@
     // lit the page row steps back to plain accent text
     const scroll = document.getElementById('side-scroll');
     if (scroll) scroll.classList.toggle('has-here', !!link);
-    const label = document.querySelector('.chrome-tab.is-active .tab-label');
-    if (label) {
-      label.innerHTML = esc(title) +
-        (link ? ' <span class="tab-sec">/ ' + esc(link.querySelector('.side-text').textContent) +
-          '</span>' : '');
-    }
   };
 
   const goToSection = (target, hash) => {
@@ -1166,44 +1054,11 @@
       // they must not clobber the record we just restored FROM
       if (window.__restoring) return;
       markCurrent(e.detail.id);
-      // the spy has just moved the hash with replaceState; let the tab
-      // record follow, so leaving and coming back lands where you were
-      if (window.ShellTabs && window.ShellTabs.remember) window.ShellTabs.remember();
+      // the spy has just moved the hash with replaceState, which drops the
+      // banked pixel with the old entry's state — put it back
+      bank();
     });
 
-    // ---- a tab switch lands here (js/tabs.js go): reconcile the overlays
-    // to the URL and jump to the tab's exact scroll, INSTANTLY — switching
-    // tabs must feel like switching documents, never like navigating one.
-    window.addEventListener('shell:restore', (e) => {
-      window.__restoring = true;
-      window.__hashReady = true;
-      if (window.CaseOverlay) window.CaseOverlay.sync();
-      if (window.Theater) window.Theater.sync();
-      const t = e.detail && e.detail.tab;
-      const y = t && t.state && typeof t.state.y === 'number' ? t.state.y : null;
-      if (y !== null) {
-        window.scrollTo({ top: y, behavior: 'instant' });
-      } else {
-        const el = location.hash && document.querySelector(location.hash);
-        // the same resting place a click would have chosen (restY), so a tab
-        // with no remembered scroll opens on the section, not near it
-        const top = el ? restY(el) : 0;
-        window.scrollTo({ top: top < 100 ? 0 : top, behavior: 'instant' });
-      }
-      // re-derive the page from where we LANDED, synchronously — the stage
-      // observer will confirm later, but markCurrent below writes the tab
-      // label from `title`, which is stale until setPage runs
-      const mid = window.innerHeight / 2;
-      const hit = stages.find(([, el]) => {
-        const r = el.getBoundingClientRect();
-        return r.top <= mid && r.bottom >= mid;
-      });
-      // …unless a case overlay just claimed the page for its own row
-      if (hit && !(window.CaseOverlay && window.CaseOverlay.openId)) setPage(hit[0], hit[2]);
-      markCurrent(location.hash ? location.hash.slice(1) : null);
-      clearTimeout(window.__restoreTimer);
-      window.__restoreTimer = setTimeout(() => { window.__restoring = false; }, 180);
-    });
     window.addEventListener('shell:progress', (e) => {
       const kids = side.querySelector('.side-row.is-current')
         && side.querySelector('.side-row.is-current').closest('.side-node')
@@ -1354,12 +1209,10 @@
     };
 
     const read = () => {
-      const head = chromeH();
-      const view = Math.max(1, window.innerHeight - head);
+      const view = Math.max(1, window.innerHeight);
       const r = hero.getBoundingClientRect();
       // the share of the reading area the hero still holds
-      const vis = (Math.min(r.bottom, window.innerHeight) -
-                   Math.max(r.top, head)) / view;
+      const vis = (Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0)) / view;
       apply(clamp((IN - vis) / (IN - OUT)));
     };
 
@@ -1379,7 +1232,6 @@
   };
 
   if (!EMBED) {
-    buildChrome();
     buildSide();
     buildAI();
     // …but NOT inside a case study. A story is somewhere you have gone to
@@ -1389,6 +1241,20 @@
     // stops asking. (Cases are real documents now, not the old ?case=
     // overlay, so the test is simply whether this page IS one.)
     if (!document.querySelector('.case-stage')) buildDock();
+
+    // ---- and the way back in. With the rail shut the site has no visible
+    // navigation at all, which is exactly the hole the strip's jump menu
+    // used to paper over; this is the one-click answer instead. It stands
+    // where the rail's own toggle stands, so the button does not move when
+    // the column goes — the surface behind it does.
+    const reopen = document.createElement('button');
+    reopen.type = 'button';
+    reopen.className = 'rail-open';
+    reopen.setAttribute('aria-label', 'Show sidebar');
+    reopen.title = 'Show sidebar';
+    reopen.innerHTML = svg(G.rail, 1.9);
+    reopen.addEventListener('click', toggleRail);
+    shell.appendChild(reopen);
 
     const grip = document.createElement('div');
     grip.className = 'side-grip';
@@ -1400,22 +1266,22 @@
     wireNav();
     wireAI();
 
-    // ---- a real page load: land on the exact pixel this tab remembered
-    // (banked by pagehide / remember in js/tabs.js). Runs before the reveal
+    // ---- a real page load: land on the exact pixel this HISTORY ENTRY
+    // banked (see `bank` at the top of this file). Runs before the reveal
     // rAFs, so there is no flash of the top of the page; the deep-link
     // section jumps in the scroll spies stand down when they see the flag.
     // …on a laptop. ≤700px the page is not one document any more — it is
     // four screens you tap between (js/mobile.js), and a pixel banked on
     // one of them means nothing on another. The pager owns the scroll
     // there, and it remembers each screen's place itself.
-    const t0 = !matchMedia('(max-width: 700px)').matches &&
-      window.ShellTabs && window.ShellTabs.activeTab && window.ShellTabs.activeTab();
-    if (t0 && t0.state && typeof t0.state.y === 'number' && t0.state.y > 0) {
+    const y0 = !matchMedia('(max-width: 700px)').matches &&
+      history.state && typeof history.state.y === 'number' ? history.state.y : 0;
+    if (y0 > 0) {
       window.__pixelRestore = true;
-      window.scrollTo(0, t0.state.y);
+      window.scrollTo(0, y0);
       // scripts after this one (timeline.js) re-lay the bio spread and can
       // shift the target — assert the pixel once more on the first frame
-      requestAnimationFrame(() => window.scrollTo(0, t0.state.y));
+      requestAnimationFrame(() => window.scrollTo(0, y0));
     }
 
     // LAST, and after the pixel restore on purpose: this reads the hero's
@@ -1452,7 +1318,6 @@
   // ---- light up. The home page hands this to the typewriter so the name
   // types before the furniture arrives; every other page just appears.
   const lightUp = () => {
-    if (chrome) chrome.classList.add('is-lit');
     if (side) side.classList.add('is-lit');
     // the dock arrives with the furniture — on Home that means after the
     // name has finished typing, so the set piece is never interrupted by a
@@ -1471,6 +1336,9 @@
   // its section row already does. Each top-level stage reports itself; the
   // accent and the tab label follow. On the case studies, which are still
   // their own files, there is only one stage and this never fires. ----
+  // the document's own name, before anything starts appending to it
+  const BASE = document.title;
+
   const setPage = (id, label) => {
     if (id === page && label === title) return;
     page = id;
@@ -1482,22 +1350,17 @@
       cur.setAttribute('aria-current', 'page');
       cur.closest('.side-row').classList.add('is-current');
     }
-    const lbl = document.querySelector('.chrome-tab.is-active .tab-label');
-    if (lbl) lbl.textContent = title;
-    // the favicon is half the name. The strip already re-letters itself as
-    // the document scrolls from Home to Work to About; leaving the house
-    // glyph sitting beside "Work" said the tab was still on Home. Same
-    // source as the rail's row and the tab's own render (faviconFor), so
-    // scrolling into a stage and opening that stage in a fresh tab can
-    // never disagree about what it looks like.
-    const tab = document.querySelector('.chrome-tab.is-active');
-    const ico = tab && tab.querySelector('.tab-ico');
-    if (ico) ico.innerHTML = faviconFor(id);
-    if (tab) {
-      tab.title = title;
-      const x = tab.querySelector('.tab-close');
-      if (x) x.setAttribute('aria-label', 'Close ' + title);
-    }
+    // ---- and the document says which page it is on.
+    //
+    // The strip used to do this: the active tab re-lettered itself as you
+    // scrolled from Home to Work to About, which was the one genuinely
+    // good reason to draw a tab of our own. The browser has a tab too, and
+    // this is the line it reads — so the behaviour survives its cause.
+    //
+    // PAGE only, never the section: the tab appended "/ Discovery" as
+    // well, and a browser tab is 200px wide with a favicon in it. And
+    // Home is the document's own name, so it says nothing extra.
+    document.title = (title && title !== 'Home') ? title + ' — ' + BASE : BASE;
   };
 
   const STAGES = [['home', '#home', 'Home'], ['work', '.work-stage', 'Work'],
@@ -1515,283 +1378,22 @@
     stages.forEach(([, el]) => io.observe(el));
   }
 
-  // ---- the seam: ONE hairline along everything the card's edge does.
-  // It runs in from the right along the strip's floor, climbs the active tab,
-  // comes back down, turns the card's corner and carries on to the foot of the
-  // window — because the tab is a HOLE in the cream, and no border can follow
-  // a hole.
+  // ---- THE SEAM IS A BORDER AGAIN.
   //
-  // Both halves are strokes in the same SVG, and that is the point. The
-  // vertical run was a 1px box on the grip for a while, and a CSS box and an
-  // SVG stroke are two different renderings of the same intention: the box
-  // began half a pixel below where the arc's cap ended, and painted crisp
-  // where the arc was antialiased. Two strokes from one measurement meet at a
-  // single coordinate instead — the arc's last point IS the edge's first.
-  // It stays a separate path only so the stretch you can actually drag can
-  // answer the pointer on its own.
+  // It was drawn in SVG, in viewport coordinates, re-cut every frame — and
+  // it had to be, because it ran in along the strip's floor, climbed the
+  // active TAB (a hole in the cream, and no border can follow a hole), came
+  // back down, turned the card's corner and carried on to the foot of the
+  // window. Four measurements, a MutationObserver on the tab list, two
+  // ResizeObservers and a rAF chase through the intro, all to draw one
+  // hairline that a border could not.
   //
-  // And a third, drawn but not painted: the REACH, the last 40-odd pixels of
-  // the rail's column, from the top of the screen down to where the edge picks
-  // up. At rest it is not there — the frame is the frame, the corner is round,
-  // and nothing crosses the strip. It appears only while you are on the grip
-  // or dragging it, in the same accent the edge takes, and what it says is
-  // that the column you are moving runs the WHOLE window, not just the part
-  // below the tabs. It goes again when you let go. ----
-  let seamPath = null;
-  let seamEdge = null;
-  let seamReach = null;
-  const drawSeam = (c, t, r, fl, fr) => {
-    if (!chrome || !shell) return;
-    if (!seamPath) {
-      const NS = 'http://www.w3.org/2000/svg';
-      const svg = document.createElementNS(NS, 'svg');
-      svg.setAttribute('class', 'shell-seam');
-      svg.setAttribute('aria-hidden', 'true');
-      seamPath = document.createElementNS(NS, 'path');
-      seamEdge = document.createElementNS(NS, 'path');
-      seamReach = document.createElementNS(NS, 'path');
-      seamEdge.setAttribute('class', 'seam-edge');
-      seamReach.setAttribute('class', 'seam-reach');
-      svg.appendChild(seamPath);
-      svg.appendChild(seamEdge);
-      svg.appendChild(seamReach);
-      chrome.insertAdjacentElement('afterend', svg);
-    }
-    const card = document.getElementById('shell-card');
-    if (!card || !c.width) {
-      seamPath.removeAttribute('d');
-      seamEdge.removeAttribute('d');
-      seamReach.removeAttribute('d');
-      return;
-    }
-    const k = card.getBoundingClientRect();
-    // half-pixel offsets: a 1px stroke centred ON the boundary would straddle
-    // two pixel columns and render as a 2px smudge
-    const F = Math.round(c.bottom) - 0.5;        // the strip's floor
-    const L = Math.round(k.left) + 0.5;          // the card's left edge
-    const R = Math.max(0, parseFloat(getComputedStyle(card).borderTopLeftRadius) || 0);
-    // the far right edge, in along the floor, over the tab, round the corner.
-    // With no tab to climb it is simply the floor.
-    let d = 'M' + Math.round(c.right) + ' ' + F;
-    if (t) {
-      const tl = Math.round(t.left) + 0.5;
-      const tr = Math.round(t.right) - 0.5;
-      const tt = Math.round(t.top) + 0.5;
-      // the clip's own silhouette, traversed right-to-left — which is why
-      // every sweep flag here is the opposite of the one above
-      d += ' H' + (tr + fr) +
-           ' A' + fr + ' ' + fr + ' 0 0 1 ' + tr + ' ' + (F - fr) +
-           ' V' + (tt + r) +
-           ' A' + r + ' ' + r + ' 0 0 0 ' + (tr - r) + ' ' + tt +
-           ' H' + (tl + r) +
-           ' A' + r + ' ' + r + ' 0 0 0 ' + tl + ' ' + (tt + r) +
-           ' V' + (F - fl) +
-           ' A' + fl + ' ' + fl + ' 0 0 1 ' + (tl - fl) + ' ' + F;
-    }
-    d += ' H' + (L + R);
-    if (R > 0) d += ' A' + R + ' ' + R + ' 0 0 0 ' + L + ' ' + (F + R);
-    seamPath.setAttribute('d', d);
-    // …and on down the rail's edge from the exact point the arc landed on.
-    // Only while there IS a rail: closed, the card's left edge is the window's,
-    // and a hairline drawn along the outside of the screen means nothing.
-    // The reach is the same column carried back up to the top of the screen,
-    // measured here and hidden in CSS until the grip is under the pointer.
-    if (k.left > 1) {
-      seamEdge.setAttribute('d', 'M' + L + ' ' + (F + R) +
-                                 ' V' + Math.ceil(window.innerHeight));
-      seamReach.setAttribute('d', 'M' + L + ' 0 V' + (F + R));
-    } else {
-      seamEdge.removeAttribute('d');
-      seamReach.removeAttribute('d');
-    }
-  };
+  // With no strip and no tab there is no hole: the seam is the rail's own
+  // right edge, top to bottom, and `border-right` on .shell-side says it in
+  // one line (css/shell.css). The accent on grip-hover goes with it, as
+  // does the "reach" — the stretch of column that used to run up past the
+  // tabs, which is now simply part of the edge.
 
-  // ---- the hole in the strip: the tab's own silhouette, cut out of the
-  // cream so the card behind shows through it. Rounded top corners, standing
-  // on the strip's floor — not a rectangle to the top of the screen. The
-  // measurement has to happen AFTER the tabs are laid out, which is why the
-  // tab itself is observed and not just the strip. ----
-  let lastCut = null;                  // the mouth's radii, for refitSeam below
-  const fitTabHole = () => {
-    if (!chrome) return;
-    const tab = chrome.querySelector('.chrome-tab.is-active');
-    const c = chrome.getBoundingClientRect();
-    if (!tab || !c.width) {
-      chrome.style.removeProperty('--strip-clip');
-      drawSeam(c, null);
-      return;
-    }
-    const t = tab.getBoundingClientRect();
-    const x = +(t.left - c.left).toFixed(1);
-    const y = +(t.top - c.top).toFixed(1);
-    const w = +t.width.toFixed(1);
-    const W = +c.width.toFixed(1);
-    const H = +c.height.toFixed(1);
-    const r = Math.min(parseFloat(getComputedStyle(tab).borderTopLeftRadius) || 9, w / 2);
-    if (w < 2) {
-      chrome.style.removeProperty('--strip-clip');
-      drawSeam(c, null);
-      return;
-    }
-    const F = H;
-    // The hole is the tab's silhouette INCLUDING the flare: a concave
-    // fillet at each foot widens the cut down onto the strip's floor, so
-    // page content scrolling up behind the strip travels through the
-    // flares exactly as it travels through the tab. (These used to be
-    // opaque quarter-disc squares painted next to the hole — which is why
-    // scrolling content hit a hard corner there.)
-    const fl = Math.max(0, Math.min(9, x));            // left fillet radius
-    const fr = Math.max(0, Math.min(9, W - (x + w)));  // right fillet radius
-    // the strip, then the flared tab subtracted from it (evenodd)
-    const path =
-      'M0 0 H' + W + ' V' + F + ' H0 Z ' +
-      'M' + (x - fl) + ' ' + F +
-      ' A' + fl + ' ' + fl + ' 0 0 0 ' + x + ' ' + (F - fl) +
-      ' V' + (y + r) +
-      ' A' + r + ' ' + r + ' 0 0 1 ' + (x + r) + ' ' + y +
-      ' H' + (x + w - r) +
-      ' A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) +
-      ' V' + (F - fr) +
-      ' A' + fr + ' ' + fr + ' 0 0 0 ' + (x + w + fr) + ' ' + F +
-      ' Z';
-    chrome.style.setProperty('--strip-clip', '"' + path + '"');
-    // the mouth is wider than the tab by a flare at each foot — the seam
-    // drawn under the tab reaches out by exactly these to meet the cream
-    chrome.style.setProperty('--flare-l', fl + 'px');
-    chrome.style.setProperty('--flare-r', fr + 'px');
-    lastCut = { r: r, fl: fl, fr: fr };
-    drawSeam(c, t, r, fl, fr);
-  };
-
-  // ---- the seam alone, from fresh rects.
-  //
-  // The mouth is cut in the strip's OWN coordinates (x is t.left - c.left,
-  // and so on), so while the strip is merely travelling — the opening's
-  // glide — the cut is identical every frame and only the seam, which is
-  // drawn in viewport coordinates on a fixed overlay, has anything new to
-  // say. Re-running the whole fit would set two custom properties on
-  // .shell-chrome sixty times a second, and .shell-chrome is the element
-  // whose transform is mid-transition: restyling it every frame is what
-  // takes that transition off the compositor and onto the main thread,
-  // which is the difference between the strip gliding and the strip
-  // stuttering. So the ride redraws the SVG and touches nothing else.
-  const refitSeam = () => {
-    if (!chrome) return;
-    const tab = chrome.querySelector('.chrome-tab.is-active');
-    const c = chrome.getBoundingClientRect();
-    if (!tab || !c.width || !lastCut) { drawSeam(c, null); return; }
-    drawSeam(c, tab.getBoundingClientRect(), lastCut.r, lastCut.fl, lastCut.fr);
-  };
-  // RETIRED. This hit-tested fourteen points across the tab's label on every
-  // scroll frame to catch page content sliding behind it, and turned the
-  // label orange when it did. Content still passes behind — but the label
-  // now rides a pill of the page's own surface (.tab-id in shell.css), so it
-  // is never in the type's way to begin with. A plate that is always right
-  // beats a colour change that has to be recomputed every frame.
-  //
-  // CRITICAL: do NOT call classList.remove('is-over') unconditionally.
-  // Chromium fires a MutationObserver record for remove() even when the
-  // token is absent (oldValue === newValue). The tab-list observer below
-  // used to react to that by calling remove() again → infinite rAF loop,
-  // continuous clip-path restyles, and the Vicino case study "glitching"
-  // while you scrolled. Clear once, only if worn; never from scroll/MO.
-  const clearTabOver = () => {
-    const tab = chrome && chrome.querySelector('.chrome-tab.is-over');
-    if (tab) tab.classList.remove('is-over');
-  };
-  window.__shellTabOver = clearTabOver;
-
-  window.__shellTabHole = fitTabHole;
-  const watchTabHole = () => {
-    fitTabHole();
-    clearTabOver();
-    if (!chrome) return;
-    // js/tabs.js repaints with box.innerHTML, so EVERY tab node is replaced on
-    // every open, close and switch — observing a tab element directly leaves
-    // the observer holding a detached node and the hole frozen where the old
-    // active tab used to be. Watch the LIST instead, which survives, and
-    // re-measure on any change to it.
-    const list = document.getElementById('tab-list') || chrome;
-    if ('MutationObserver' in window) {
-      let holeRaf = 0;
-      new MutationObserver(() => {
-        if (holeRaf) return;
-        holeRaf = requestAnimationFrame(() => { holeRaf = 0; fitTabHole(); });
-      }).observe(list, { childList: true, subtree: true, attributes: true,
-                         attributeFilter: ['class'] });
-    }
-    if ('ResizeObserver' in window) {
-      const ro = new ResizeObserver(() => fitTabHole());
-      ro.observe(chrome);
-      ro.observe(list);
-      // …and the CARD, which the clip never needed but the seam does: its left
-      // edge is where the line turns the corner. The card is the only thing
-      // that moves when the rail slides — including the intro's slide-in,
-      // after which the seam would otherwise still be drawn against the
-      // screen's edge, where the card was while the rail was held out.
-      const card = document.getElementById('shell-card');
-      if (card) ro.observe(card);
-    }
-    // The corner itself ARRIVES: the card's radius transitions 0 → 10px as the
-    // frame assembles around the name (html.intro-run in shell.css). A resize
-    // is the only thing that re-measures the seam, the rail lands in one frame,
-    // and that frame is the one where the corner is still square — so the seam
-    // read a radius of 0, drew a square corner over a round card, and never
-    // looked again. Measure once more when the corner lands.
-    const card = document.getElementById('shell-card');
-    if (card) {
-      card.addEventListener('transitionend', (e) => {
-        if (/radius/.test(e.propertyName)) fitTabHole();
-      });
-    }
-  };
-  requestAnimationFrame(watchTabHole);        // after the strip has laid out
-  const refitChrome = () => fitTabHole();
-  window.addEventListener('resize', refitChrome, { passive: true });
-  window.addEventListener('shell:fit', refitChrome);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refitChrome);
-
-  // ============================================================
-  // The opening, frame by frame.
-  //
-  // Every number in the seam is MEASURED — the strip's floor, the tab's
-  // mouth, the card's left edge and the radius of the corner it turns — so
-  // one measurement is only ever true of a still frame. Through the opening
-  // nothing is still: the strip is travelling down on its own transform,
-  // the tab's mouth with it, and the card's corner is rounding from 0 to
-  // its radius on the same clock. Neither of the two things tried before
-  // could work, because both left a still measurement under a moving frame.
-  // Holding the line back and switching it on at the end put it a beat
-  // behind everything else. Fading it up over the ride was worse: the
-  // geometry underneath it was a still frame of the END, so a rounded
-  // corner drew itself over a corner that was still square and a floor drew
-  // itself where the strip had not arrived yet.
-  //
-  // Re-cut it every frame instead. Then there is nothing to hide and
-  // nothing to fade — the hairline is around the pieces from the first
-  // frame BECAUSE it is around wherever they are: the floor rides down with
-  // the strip, the mouth travels with the tab, the corner rounds as the
-  // corner rounds. This is the answer js/tabs.js reaches for when a tab is
-  // dragged (its `chase`), for exactly the same reason.
-  //
-  // The tail is the radius': the card's border-radius runs on --t-intro
-  // too, and transitionend has no delivery guarantee, so the loop outlives
-  // the ride by a few frames rather than trusting the event.
-  // ============================================================
-  window.addEventListener('shell:intro-done', () => {
-    // only the ride needs this. Every other arrival — a returning visitor,
-    // reduced motion, any page but the home one — settles the frame without
-    // a glide, and there is nothing to chase.
-    if (!root.classList.contains('intro-glide')) return;
-    const secs = parseFloat(
-      getComputedStyle(root).getPropertyValue('--t-intro')) || 0.52;
-    const until = performance.now() + secs * 1000 + 140;
-    const step = () => {
-      refitSeam();
-      if (performance.now() < until) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  });
 
   // restY and land are published for the same reason markCurrent is: a
   // section has ONE resting place, and the three pages that land their own
@@ -1801,6 +1403,5 @@
   // the reading area while clicking Work from the rail centred it. One
   // function, one answer — and one poll that holds it there.
   window.Shell = { get page() { return page; }, get title() { return title; },
-                   lightUp, toggleRail, markCurrent, fitTabHole, setPage,
-                   restY, land };
+                   lightUp, toggleRail, markCurrent, setPage, restY, land };
 })();

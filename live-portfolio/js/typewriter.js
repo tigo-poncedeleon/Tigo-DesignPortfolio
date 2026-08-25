@@ -84,7 +84,6 @@
   // to be simply already there. The phone has no frame to assemble.
   const done = (ride) => {
     const side = document.querySelector('.shell-side');
-    const chrome = document.querySelector('.shell-chrome');
     const stage = document.getElementById('home');
     const eased = ride && window.innerWidth > 700;
     const was = eased && {
@@ -108,17 +107,13 @@
       side: side && side.getBoundingClientRect(),
       stage: stage && stage.getBoundingClientRect(),
     };
+    // ONE piece now, and one direction. The assembly used to be two — the
+    // rail in from the left and the chrome strip down from the top,
+    // perpendicular, on one clock — and the strip's half had to be AUTHORED
+    // rather than measured, because it was sticky at top:0 and had been
+    // sitting at y=0 the whole time, merely invisible. With the strip gone
+    // the frame is the rail, and the rail's arrival is a real measurement.
     if (was.side && is.side) pose(side, was.side.left - is.side.left, 0);
-    // The strip is the one piece whose entrance is AUTHORED rather than
-    // measured, because measuring it gives zero. It is position:sticky at
-    // top:0, so the negative margin that holds it out of the intro's layout
-    // is cancelled by the pin — it has been sitting at y=0 the whole time,
-    // merely invisible, and the margin-top transition this replaces spent
-    // 0.3s tweening a number that moved nothing. The strip's whole arrival
-    // was the fade underneath it. Now it really does come down by its own
-    // height, which is what the CSS always claimed: one piece in from the
-    // left, one down from the top, perpendicular, on one clock.
-    if (chrome) pose(chrome, 0, -chrome.offsetHeight);
     if (was.stage && is.stage && is.stage.width > 0) {
       // The stage lives inside `main`'s zoom, so a viewport delta has to be
       // spent in the stage's own grid px or it travels by the scale factor

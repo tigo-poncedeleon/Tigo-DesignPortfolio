@@ -1,4 +1,13 @@
-// The globe — an orthographic sphere behind the rail's location row.
+// The globe — an orthographic sphere behind the place chip.
+//
+// It hangs off [data-globe], which is the chip in the home screen's
+// top-right corner (js/shell.js buildPlace). It used to hang off the same
+// chip at the far end of the chrome strip, and in between it spent a day
+// DRAWN, permanently, at the foot of the rail — the geometry is the rail's,
+// after all: a 168 box with the sphere at 84,84 is the rail's exact width.
+// It came back behind a hover because 168px could carry one of the three
+// caption lines below and not three, and because a foot that tall pushed
+// the rail's own navigation into a scroll.
 //
 // Everything here falls out of three dot products. A point at latitude phi
 // and longitude lambda is a unit vector; the view is a basis built from the
@@ -12,9 +21,11 @@
 // the arc between them: Tigo, the visitor, and the distance. A relationship
 // needs no coastlines.
 (() => {
-  // the trigger lives in the top bar now, so the card hangs off the shell
+  // no chip on this document — the case studies, the 404 and the phone all
+  // do without one — and this file has nothing to hang off
   const shell = document.getElementById('shell');
-  if (!shell) return;
+  const trigger = document.querySelector('[data-globe]');
+  if (!shell || !trigger) return;
 
   // The one place Tigo's own position is written down.
   const TIGO = { city: 'Chicago', lat: 41.8781, lon: -87.6298 };
@@ -246,6 +257,7 @@
   };
 
   let dragging = false;
+
   const spin = () => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const target = geo ? geo.lon : 0;
@@ -265,22 +277,6 @@
     })(t0);
   };
 
-  const show = () => {
-    if (isOpen) return;
-    isOpen = true;
-    card.hidden = false;
-    card.offsetHeight;                     // commit before the entrance
-    card.classList.add('is-lit');
-    fill();
-    spin();
-  };
-  const hide = () => {
-    if (!isOpen) return;
-    isOpen = false;
-    cancelAnimationFrame(raf);
-    card.classList.remove('is-lit', 'is-landed');
-    setTimeout(() => { if (!isOpen) card.hidden = true; }, 320);
-  };
 
   /* ---- Turn it with your hand.
      Horizontal drag rotates longitude, vertical drag changes the tilt —
@@ -324,21 +320,47 @@
     });
   };
 
+  const show = () => {
+    if (isOpen) return;
+    isOpen = true;
+    card.hidden = false;
+    card.offsetHeight;                     // commit before the entrance
+    card.classList.add('is-lit');
+    fill();
+    spin();
+  };
+  const hide = () => {
+    if (!isOpen) return;
+    isOpen = false;
+    cancelAnimationFrame(raf);
+    card.classList.remove('is-lit', 'is-landed');
+    setTimeout(() => { if (!isOpen) card.hidden = true; }, 320);
+  };
+
   /* ---- wiring: hover intent, click to pin, Escape and outside to close ---- */
   const wire = () => {
-    const row = document.querySelector('[data-globe]');
-    if (!row) return;
-    // pin the card under whatever opened it
+    const row = trigger;
+    // ---- it comes OUT OF THE RAIL, sideways into the page.
+    //
+    // The strip's version hung the card BELOW its trigger, which is what a
+    // menu does when it drops from a bar. From a row inside a column the
+    // same move would lay the card over the navigation underneath it — so
+    // it steps out to the right instead, off the rail's own edge rather
+    // than off the trigger's, so the gap is the same 12px whatever the
+    // seam has been dragged to and whether or not a scrollbar is showing
+    // in the column. `translate: -6px 0` on .globe-card (css/shell.css)
+    // was already the entrance for this: it slides out from under the rail.
     const place = () => {
       const r = row.getBoundingClientRect();
-      // The trigger lives at the strip's RIGHT end now, so hanging the card
-      // off its left edge runs it past the window. Keep it under the trigger
-      // where there is room and tuck it back inside where there is not —
-      // measured off the card's own width, not a guess at it.
+      const rail = document.querySelector('.shell-side');
       const w = card.offsetWidth || 208;
+      const h = card.offsetHeight || 248;
       const edge = document.documentElement.clientWidth - 12;
-      card.style.left = Math.round(Math.max(12, Math.min(r.left, edge - w))) + 'px';
-      card.style.top = Math.round(r.bottom + 8) + 'px';
+      const x = (rail ? rail.getBoundingClientRect().right : r.right) + 12;
+      card.style.left = Math.round(Math.max(12, Math.min(x, edge - w))) + 'px';
+      // level with the row that opened it, and never off the bottom
+      card.style.top = Math.round(Math.max(12,
+        Math.min(r.top, window.innerHeight - h - 12))) + 'px';
     };
     row.addEventListener('pointerenter', place);
     row.addEventListener('click', place);

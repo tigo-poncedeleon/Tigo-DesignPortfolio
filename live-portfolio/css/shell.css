@@ -1,20 +1,24 @@
 /* ============================================================
-   The shell — a mini browser, full-bleed.
+   The shell — one rail, full-bleed.
 
-   A chrome strip of tabs above an L of furniture: the rail down the
-   left, the content card filling the rest. The shell IS the viewport,
-   so the chrome and the rail render at true 1:1 and only the card's
-   1280×832 stage scales (js/stage-fit.js).
+   A column down the left and the content card filling the rest. That is
+   the whole frame.
 
-   Two surfaces, not three. The furniture is one continuous colour and
-   the card is the page colour; the active tab is an OPENING onto the
-   card, so it is the page colour by being the page. That is what lets
-   every seam go — a border between the tab and the page it opens is the
-   thing this file exists to not have.
+   It was a mini browser for a while: a chrome strip of tabs over the same
+   L of furniture, with the active tab cut out of the cream as an OPENING
+   onto the card. The idea was sound and the drawing was good, and it is
+   gone anyway — it spent a strip of the visitor's screen re-drawing the
+   tabs, the back button and the address the real browser draws two
+   centimetres higher, and it charged a clip path, an SVG seam, a per-tab
+   scroll record and a second history model for the privilege.
+
+   So: no strip, no tabs, no hole in anything. The rail IS the shell, it
+   runs the full height of the window, and the one seam left in the frame
+   is its own right edge — which a border can draw, because there is
+   nothing for it to jump over any more.
    ============================================================ */
 
 :root {
-  --shell-chrome-h: 40px;
   /* The rail asks for only what its widest row needs. It lost the twisty
      gutter and the progress thread, so 260 was carrying air — and 208
      still was: it left 64px of nothing to the right of the name, so the
@@ -102,540 +106,30 @@ html { overscroll-behavior-y: none; }
    browser's off. */
 html { overflow-anchor: none; }
 
-/* The card's own border-radius scrolls away with the card — its top-left
-   corner is a thousand pixels up the document once you have moved. This
-   wedge redraws that corner where the strip meets the rail and never
-   leaves: surface colour outside a 10px arc, transparent inside it, so the
-   card simply shows through the round. It tracks --shell-rail, which is
-   what the seam-drag writes, and sits at 0 when the rail is closed. */
-.shell-chrome::after {
-  content: '';
-  position: fixed;
-  top: var(--shell-chrome-h);
-  left: var(--shell-rail);
-  width: 10px;
-  height: 10px;
-  /* a 0.75px soft band on the stop — a 0-width stop aliases into stairs */
-  background: radial-gradient(circle 10px at 100% 100%,
-              transparent 0 9.25px, var(--shell-surface) 10px);
-  pointer-events: none;
-  z-index: 21;
-}
-html.rail-closed .shell-chrome::after { left: 0; }
-@media (max-width: 700px) { .shell-chrome::after { display: none; } }
-
-/* ---- the seam, drawn ----
-   The furniture and the card differ by one considered step of tone, and for a
-   while that step WAS the whole edge. This adds the hairline back on top of
-   it: in from the right along the strip's floor, up over the active tab, and
-   round the card's corner (js/shell.js drawSeam, measured off the same rects
-   as the clip above). It stops at the foot of that corner arc, where the
-   grip's own line takes over down the rail's edge.
-
-   A fixed overlay rather than a border, for two reasons: a border cannot
-   follow a hole, and this way the line costs the card no layout — the 1280
-   stage's fit arithmetic never sees it. Above the chrome (20) so the tab's
-   outline reads, above the case overlay (15) and the theater (16) so those
-   are framed by the same edge, below the grip (30) and the rail's flyouts. */
-.shell-seam {
-  position: fixed;
-  inset: 0;
-  z-index: 21;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--t-micro) ease;
-}
-/* it arrives with the furniture it belongs to */
-.shell-chrome.is-lit ~ .shell-seam { opacity: 1; }
-.shell-seam path {
-  fill: none;
-  stroke: var(--shell-line);
-  stroke-width: 1;
-}
-/* the rail's edge is the one stretch of the line that MOVES, so it is the one
-   stretch that answers the pointer — the handle over it (.side-grip) is
-   invisible, and this is how it says what you are about to drag. :has, because
-   the grip is a later sibling of the layer this lives in. */
-.seam-edge { transition: stroke var(--t-micro) ease; }
-.shell:has(.side-grip:hover) .seam-edge,
-html.rail-dragging .seam-edge { stroke: var(--orange); }
-
-/* ---- the reach ----
-   The rest of that column: from the top of the screen down to the foot of the
-   corner arc, where .seam-edge picks up. Drawn on every measure and painted
-   only for the drag. At rest the frame is exactly what it was — the corner is
-   round, the strip is unbroken, and nothing runs up past the tabs. Under the
-   pointer it fills in, and the accent states the whole width you are about to
-   move rather than the part of it that happens to sit below the tab strip.
-
-   `transparent`, not opacity or display: it is the same property the edge
-   animates, on the same curve, so the two halves arrive as one line rather
-   than as a line plus a thing appearing above it. */
-/* `.shell-seam .seam-reach`, not `.seam-reach` — the stroke this has to beat
-   is set on `.shell-seam path`, which a lone class ties with and loses to. */
-.shell-seam .seam-reach { stroke: transparent; transition: stroke var(--t-micro) ease; }
-.shell:has(.side-grip:hover) .seam-reach,
-html.rail-dragging .seam-reach { stroke: var(--orange); }
-html.is-embed .shell-seam { display: none; }
-@media (max-width: 700px) { .shell-seam { display: none; } }
-
-/* ============================================================
-   Chrome strip
-   ============================================================ */
-.shell-chrome {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  /* The cream is painted by ::before, not here, so it can be CUT to the
-     tab's own silhouette — rounded top corners, standing on the strip's
-     floor — instead of a rectangle running to the top of the screen. */
-  background: none;
-  flex: none;
-  height: var(--shell-chrome-h);
-  display: flex;
-  align-items: flex-end;        /* the tabs stand on the strip's floor */
-  opacity: 0;
-  transition: opacity var(--t-micro) ease;
-}
-.shell-chrome.is-lit { opacity: 1; }
-
-/* the strip's cream, with the active tab cut out of it. js/shell.js measures
-   the tab and writes the silhouette into --strip-clip; until it does (or
-   where path() is unsupported) this is simply a full cream strip. The layer
-   sits behind the chrome's own content but still inside the chrome's
-   stacking context, so the cut reveals the card underneath and nothing
-   else. */
-.shell-chrome::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--shell-surface);
-}
-@supports (clip-path: path('M0 0')) {
-  .shell-chrome::before { clip-path: path(evenodd, var(--strip-clip, 'M0 0')); }
-  /* no path yet = no clip; the var default above would clip everything away */
-  .shell-chrome:not([style*='--strip-clip'])::before { clip-path: none; }
-}
-/* Held from before first paint (the inline script in <head>) so the
-   furniture is already invisible when it is built — no flash to hide.
+/* ---- THE INTRO, held before first paint.
+   Set by the inline script in <head> so the furniture is already invisible
+   when it is built — there is no flash to hide.
 
    The rail is also held OUT of the layout, in exactly the pose it takes
    when closed. That is what lets the name type dead-centre of the whole
-   screen rather than centred in a card that has been pushed 260px right
-   by a panel nobody has seen yet. When the class comes off at the end of
-   the typing, the layout LANDS — in one frame, rail and strip and zoom
-   together — and js/typewriter.js glides the pieces in over the top of it
-   from where they were. Nothing in here animates; see intro-glide below. */
-html.intro-pending :is(.shell-chrome, .shell-side, .shell-card) { transition: none; }
+   screen rather than centred in a card that has been pushed 168px right by
+   a panel nobody has seen yet. When the class comes off at the end of the
+   typing, the layout LANDS in one frame — rail and zoom together — and
+   js/typewriter.js glides the rail in over the top of it from where it
+   was. Nothing in here animates; the glide is a transform written inline.
 
-/* During the intro there is no furniture at all — the card owns the whole
-   viewport and the name types on plain white. The chrome is pulled UP out
-   of the layout by exactly its own height and the rail is pushed LEFT by
-   exactly its own width, both in the pose they take when closed, so
-   letting the class go is not an entrance that had to be written: it is
-   the same two closings, run backwards.
-
-   They arrive together and perpendicular — one down, one right — which
-   reads as the frame assembling around the name rather than as two
-   separate things animating. */
-html.intro-pending .shell-chrome {
-  margin-top: calc(-1 * var(--shell-chrome-h));
-  opacity: 0;
-}
+   (The strip used to be the other half of this: held up out of the layout
+   by its own height, arriving downward while the rail arrived rightward,
+   "the frame assembling around the name". There is no strip, so the
+   assembly is one movement now — which is also one fewer thing that can
+   arrive a frame late.) ---- */
+html.intro-pending :is(.shell-side, .shell-card) { transition: none; }
 html.intro-pending .shell-side {
   margin-left: calc(-1 * var(--shell-rail));
   opacity: 0;
-  pointer-events: none;
 }
-html.intro-pending .side-grip { left: 0; opacity: 0; pointer-events: none; }
-html.intro-pending .chrome-left { width: auto; }
-/* the corner is a detail of the frame, so it arrives with the frame */
-html.intro-pending .shell-card { border-radius: 0; }
-
-/* The left cluster spans the rail's column and holds ONE button — the rail
-   toggle, sitting over the panel it opens. The traffic lights are gone: a
-   full-bleed app has no window to close, and three dots that do nothing are
-   a lie about what this is. Where-you-are moved to .chrome-right, the far
-   end of the strip, so the left edge carries only what the rail is for. */
-.chrome-left {
-  width: calc(var(--shell-rail) + 1px);   /* +1 for the grip's hairline */
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 100%;
-  padding-left: 10px;
-  padding-right: 8px;
-  transition: width var(--t-glide) var(--ease-glide);
-}
-/* Closed: the cluster keeps only the room the toggle needs — and it gets
-   there on the same curve the panel leaves on, which `width: auto` could
-   never do. auto is not an animatable length, so the strip used to SNAP to
-   its closed width while the rail was still gliding out from under it,
-   taking the back/forward pair and the whole tab strip with it in one jump.
-   10 padding + 26 button + 8 padding = 44, stated so it can be tweened. */
-html.rail-closed .chrome-left { width: 44px; }
-
-/* ---- the jump menu: the pages, hung off the + while the rail is shut
-   (js/shell.js). It exists only in that state, which is the only state
-   with no nav on screen. ---- */
-.chrome-jump {
-  position: absolute;
-  top: calc(var(--shell-chrome-h) + 6px);
-  z-index: 30;
-  min-width: 176px;
-  padding: 6px;
-  background: var(--bg);
-  border: 1px solid var(--shell-line);
-  border-radius: 11px;
-  opacity: 0;
-  translate: 0 -6px;
-  transition: opacity var(--t-glide) ease, translate var(--t-glide) var(--ease-glide);
-}
-.chrome-jump.is-lit { opacity: 1; translate: 0 0; }
-.chrome-jump[hidden] { display: none; }
-.jump-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 7px;
-  font-size: 13.5px;
-  color: var(--ink);
-  text-decoration: none;
-  transition: background-color var(--t-micro) ease, color var(--t-micro) ease;
-}
-.jump-row:hover { background: rgba(var(--ink-rgb), 0.06); color: var(--ink); }
-.jump-ico { flex: none; width: 17px; height: 17px; color: var(--g-550); }
-.jump-ico svg { width: 100%; height: 100%; }
-.jump-row:hover .jump-ico { color: var(--ink); }
-
-/* ---- chrome buttons (rail toggle · back · forward · new tab) ---- */
-.chrome-btn {
-  flex: none;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 7px;
-  color: var(--g-550);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
-}
-.chrome-btn:hover,
-.chrome-btn:focus-visible {
-  color: var(--ink);
-  background: rgba(var(--ink-rgb), 0.06);
-}
-.chrome-btn[disabled] {
-  color: var(--g-250);
-  cursor: default;
-  background: none;
-}
-.chrome-btn svg { display: block; width: 20px; height: 20px; }
-/* back/forward live in the TAB strip, against the first tab, as in the
-   reference — not off in the rail's column. They sit on the strip's
-   floor with the tabs, so they need lifting to optical centre. */
-.chrome-btn[data-act='back'],
-.chrome-btn[data-act='fwd'] { align-self: center; margin-bottom: 4px; }
-.chrome-btn[data-act='back'] { margin-left: 4px; }
-.chrome-btn[data-act='fwd']  { margin-left: 2px; margin-right: 6px; }
-
-/* the strip's far end — the place chip rides here, opposite the rail toggle */
-.chrome-right {
-  flex: none;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding-right: 10px;
-  padding-left: 8px;
-}
-
-/* ---- where you are, in the top bar. Opens the globe (js/globe.js). ---- */
-.chrome-place {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 26px;
-  padding: 0 10px;
-  border: 0;
-  border-radius: 7px;
-  background: none;
-  font: inherit;
-  font-size: 12px;
-  /* not 1: at line-height 1 the content box is exactly the em, so the
-     descender on a g or a y falls outside it and the overflow clip below
-     shears it off — "Oregon" lost the tail of its g */
-  line-height: 1.5;
-  color: var(--g-700);
-  white-space: nowrap;
-  overflow: hidden;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
-}
-.chrome-place:hover,
-.chrome-place:focus-visible {
-  color: var(--ink);
-  background: rgba(var(--ink-rgb), 0.06);
-}
-.chrome-place-city { overflow: hidden; text-overflow: ellipsis; }
-.chrome-place-time {
-  color: var(--shell-dim);
-  font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
-}
-/* the chip is the first thing to give ground when the rail is narrow */
-@media (max-width: 1100px) { .chrome-place-time { display: none; } }
-
-/* ---- the tab strip ----
-   The active tab is the PAGE colour and merges into the card below it.
-   No border anywhere, on any tab, ever: a line between the tab and the
-   page it opens is the seam this whole section exists to not have. ---- */
-.chrome-tabs {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  padding-right: 8px;
-}
-
-/* the list fills the strip; the tabs take their 200 from the left and the
-   + rides along as the last flex item, so it is always immediately after
-   the final tab rather than flung to the far edge */
-.tab-list {
-  flex: 1 1 auto;
-  min-width: 0;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-}
-
-.chrome-tab {
-  position: relative;
-  /* each tab wants 200 and gives ground evenly as they multiply, so
-     there is no width arithmetic in JS at all */
-  flex: 0 1 200px;
-  min-width: 0;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  /* the 7px gap and the 11px/10px insets moved into .tab-id, which is the
-     box that has to hug its contents now */
-  padding: 0 1px 0 2px;
-  border: 0;
-  border-radius: 9px 9px 0 0;
-  background: none;
-  font: inherit;
-  color: var(--shell-dim);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  /* transform is added below, for the drag */
-}
-.chrome-tab:hover { background: rgba(var(--ink-rgb), 0.05); color: var(--g-700); }
-
-/* ---- dragging one along the strip (js/tabs.js). The neighbours glide;
-   the tab in hand does not, because it is already following the pointer
-   and a transition on it would put it on elastic. ---- */
-.chrome-tab { transition: background-color var(--t-micro) ease,
-                          color var(--t-micro) ease,
-                          transform var(--t-glide) var(--ease-glide); }
-/* The tab in hand SLIDES; it does not lift off. It keeps its silhouette —
-   rounded at the top, standing on the strip's floor — and keeps the mouth
-   cut under it, which js/tabs.js re-measures every frame of the drag, so
-   the flares at its feet and the seam across it travel WITH it and the tab
-   never comes away from the page it opens.
-   The one thing that changes is that it turns opaque: at rest an inactive
-   tab has no fill at all and the active one is a hole in the cream, so
-   without a surface of its own the tab you are carrying let every tab it
-   crossed read straight through it. Active takes the page's own colour —
-   which is exactly what the mouth reveals, so the tab looks no different
-   standing still. */
-html.tab-dragging .chrome-tab.is-dragging {
-  transition: none;
-  z-index: 3;
-  cursor: grabbing;
-  background: var(--bg);
-}
-/* a background tab stays a background tab while it travels: the strip's own
-   cream, one shade down so you can see what you are carrying */
-html.tab-dragging .chrome-tab.is-dragging:not(.is-active) {
-  background-color: var(--shell-surface);
-  background-image: linear-gradient(rgba(var(--ink-rgb), 0.05), rgba(var(--ink-rgb), 0.05));
-}
-html.tab-dragging { cursor: grabbing; user-select: none; }
-html.tab-dragging .chrome-tab { cursor: grabbing; }
-
-/* The active tab is a WINDOW cut in the cream strip, not a panel painted on
-   it. The card reaches up behind the strip (see .shell-card below), so what
-   shows through the tab IS the page — same colour, because it is the same
-   surface — and a line of text scrolling out travels up through the tab and
-   disappears at its top edge instead of being cut off at the card's.
-
-   Nothing is drawn where the tab meets the page: no fill, no hairline. The
-   tab's own icon and name ride over the opening on a pill of the page's
-   colour, and that pill is the only opaque thing in here — see below. */
-.chrome-tab.is-active {
-  background: transparent;
-  color: var(--g-700);
-  /* the white top-edge highlight retired here: the seam now draws a real
-     hairline around this tab, and two lines on one edge is one too many */
-}
-
-/* ---- the identity pill: the icon and the name ride together on a plate of
-   the page's own surface. The tab is a window and the page travels through
-   it, so without this the label and a passing line of type share the same
-   few greys and simply collide — the plate is what lets the page keep
-   moving behind while the tab keeps saying what it is.
-
-   It is --bg exactly, so at rest, with nothing behind the tab but the
-   page's surface, the pill is invisible; it only asserts itself as content
-   arrives under it. No border and no shadow for the same reason: an outline
-   would be visible always, to solve a problem that is only sometimes. ---- */
-.tab-id {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  max-width: 100%;
-  /* EVERY tab carries the pill's padding, active or not — only the fill is
-     the active one's. Give the padding to the active tab alone and its icon
-     and name sit 9px right of where an inactive tab's do, so the label jumps
-     sideways the moment you switch tabs. The tab's own padding is wound back
-     by the same amount, so the icon lands where it always did. */
-  padding: 6px 12px;
-  /* fully round, not a rounded rectangle. The pill has to read as an object
-     the page passes BEHIND — a lozenge that ends in two arcs the width of
-     its own height does that; an 8px corner reads as a panel welded to the
-     tab, which is the thing the opening exists to not have. */
-  border-radius: 999px;
-  transition: max-width var(--t-glide) var(--ease-glide);
-}
-.chrome-tab.is-active .tab-id { background: var(--bg); }
-
-/* ---- the seam across the active tab's mouth is GONE, and nothing replaced
-   it. It was a hairline standing in for a join that no change of tone marks,
-   since the tab's white and the page's white are the same surface — and that
-   sameness is the point: the tab is an opening, so the edge where it meets
-   the page should be nothing at all. The lozenge above is now the only
-   opaque thing in the tab, and it earns that by being what keeps the name
-   readable while the page travels underneath it.
-
-   js/shell.js still measures --flare-l/r; they cut the hole's concave feet,
-   which is the only thing they were ever really for. ---- */
-/* the pill gives the close button its room rather than sliding under it */
-.chrome-tab:hover .tab-id,
-.chrome-tab:focus-within .tab-id { max-width: calc(100% - 22px); }
-.chrome-tab.is-active:hover { background: transparent; }
-
-/* The flare — the two concave fillets carrying the tab down into the card —
-   is part of the HOLE now, not painted on top of it. js/shell.js widens the
-   clip-path cut with a concave arc at each foot, so page content scrolling
-   up behind the strip passes through the flares exactly as it passes
-   through the tab. The old masked quarter-disc squares painted opaque --bg
-   there, which is what used to snap to a hard corner the moment anything
-   scrolled beneath. */
-
-/* where clip-path: path() is unsupported there is no hole at all — give the
-   active tab a real fill so it still reads (square feet, honest fallback) */
-@supports not (clip-path: path('M0 0')) {
-  .chrome-tab.is-active { background: var(--bg); }
-}
-
-.tab-ico {
-  flex: none;
-  width: 15px;
-  height: 15px;
-  display: grid;
-  place-items: center;
-}
-.tab-ico > svg,
-.tab-ico > img { display: block; width: 100%; height: 100%; }
-.tab-ico > img { border-radius: 3px; object-fit: contain; }
-
-.tab-label {
-  /* shrink-to-fit, never grow: the pill has to hug the name, or it becomes
-     a plate the width of the whole tab and the page stops showing through */
-  flex: 0 1 auto;
-  min-width: 0;
-  font-size: 12.5px;
-  line-height: 1;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-/* the section the page is currently on, trailing the page's own name */
-.tab-label .tab-sec { color: var(--shell-dim); }
-
-/* ---- The active tab's name and icon used to go ORANGE whenever a piece of
-   the page passed behind them — the tab being a window onto the card, page
-   type and tab type share the same few greys and simply collided. The pill
-   solves that at the source: the type sits on its own surface, so it never
-   has to fight what is travelling underneath. ---- */
-.chrome-tab.is-active .tab-ico,
-.chrome-tab.is-active .tab-label {
-  transition: color var(--t-micro) ease;
-}
-/* (.is-over retired with the pill — the label carries its own surface now) */
-/* (the label's fade-under-the-close-button retired with the pill: the pill
-   now yields its own width on hover, and the name ellipsises inside it) */
-
-/* the same box and the same glyph weight as the + it sits opposite */
-.tab-close {
-  position: absolute;
-  right: 4px;
-  width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 5px;
-  color: var(--g-550);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity var(--t-micro) ease, background-color var(--t-micro) ease,
-              color var(--t-micro) ease;
-}
-.tab-close svg { width: 20px; height: 20px; }
-.chrome-tab:hover .tab-close,
-.tab-close:focus-visible { opacity: 1; }
-.tab-close:hover { background: rgba(var(--ink-rgb), 0.08); color: var(--ink); }
-/* you cannot close the window from inside it */
-.tab-list.is-single .tab-close { display: none; }
-/* At the cap the labels stand down and the favicons speak for themselves —
-   and the + goes with them. A button that is present but refuses is worse
-   than no button: the strip is full, and the honest way to say so is to
-   stop offering. It returns the moment a tab closes. */
-.tab-list.is-icon-only .chrome-new { display: none; }
-.tab-list.is-icon-only .tab-label { display: none; }
-.tab-list.is-icon-only .chrome-tab { flex: 0 0 44px; justify-content: center; padding: 0; }
-
-/* the cap is legible: the + shakes rather than doing nothing */
-@keyframes tab-cap-shake {
-  0%, 100% { translate: 0; }
-  25%      { translate: -3px; }
-  75%      { translate: 3px; }
-}
-/* The + sits on the tabs' own centre line, not the strip's. Tabs are 32
-   tall standing on a 40 strip, so their centre is 24 down; a 26px button
-   centred in the strip lands at 18.5 and reads as floating above the row.
-   flex-end plus 3 puts its centre at 24 — level with the close buttons
-   inside the tabs. */
-.tab-list .chrome-new { align-self: flex-end; margin: 0 0 4px 4px; }
-.chrome-new.is-capped { animation: tab-cap-shake 0.18s var(--ease-glide) 2; }
+html.intro-pending .side-grip,
+html.intro-pending .rail-open { opacity: 0; pointer-events: none; }
 
 /* ============================================================
    Sidebar
@@ -650,11 +144,16 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
 .shell-side {
   /* sticky, not fixed: it stays in flow, so html.rail-closed's negative
      margin still pulls it out and the card still reflows to fill the gap */
-  position: sticky;             /* the globe card flies out from here */
-  top: var(--shell-chrome-h);
-  height: calc(100vh - var(--shell-chrome-h));
+  position: sticky;
+  top: 0;
+  height: 100vh;                /* the whole window: there is nothing above it */
   z-index: 10;
   background: var(--shell-surface);
+  /* THE SEAM, and it is one line of CSS again. It used to be a path in an
+     SVG overlay, re-cut every frame, because it had to climb the active
+     tab — a hole in the cream, and no border can follow a hole. With the
+     strip gone the seam is just this edge, top to bottom. */
+  border-right: 1px solid var(--shell-line);
   width: var(--shell-rail);
   flex: none;
   display: flex;
@@ -679,8 +178,10 @@ html.tab-dragging .chrome-tab { cursor: grabbing; }
    width over 0.3s while the panel snaps to the pointer instantly, so the
    orange line visibly lags the edge it is supposed to BE. */
 html.rail-dragging .shell-side,
-html.rail-dragging .chrome-left,
 html.rail-dragging .side-grip { transition: none; }
+/* and while you are on it, the edge you are moving says so */
+.shell:has(.side-grip:hover) .shell-side,
+html.rail-dragging .shell-side { border-right-color: var(--orange); }
 
 /* Closed means CLOSED — the page gets the whole screen. It SLIDES out
    rather than vanishing: a negative margin equal to its own width, so the
@@ -707,18 +208,14 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
 .shell-side > * { flex-shrink: 0; }
 
 /* ---- the resize handle, which is INVISIBLE at rest ----
-   The line it sits on belongs to .shell-seam (the .seam-edge path), so this
-   element is pure hit area: it draws nothing, and hovering it is what turns
-   that path's rail-edge stretch to the accent. Keeping the drawing in one
-   place is the whole reason the corner meets the edge exactly — see the note
-   in js/shell.js drawSeam.
+   The line it sits on is the rail's own border-right, so this element is
+   pure hit area: it draws nothing, and hovering it is what turns that
+   border to the accent.
 
-   FIXED, not absolute: the document is the scroller, so an absolute handle is
-   as tall as the whole PAGE, which is both pointless (you can only grab what
-   is on screen) and, back when it did the drawing, wrong — its offsets were
-   measured from the document's top, so a scrolled page ran the hairline up
-   through the tab strip. The drag is unaffected either way: it reads
-   e.clientX against the shell's own rect, both viewport-relative already. */
+   FIXED, not absolute: the document is the scroller, so an absolute handle
+   is as tall as the whole PAGE, which is pointless — you can only grab what
+   is on screen. The drag is unaffected either way: it reads e.clientX
+   against the shell's own rect, both viewport-relative already. */
 .side-grip {
   position: fixed;
   left: var(--shell-rail);
@@ -736,6 +233,64 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   position: absolute;
   inset: 0 -4px;
 }
+
+/* ---- the toggle, on its own row above the letterhead ----
+   It is 28px on a 168px column, so it does not compete with the name; it
+   is the same glyph the chrome strip's toggle wore, at the same corner of
+   the frame, and .rail-open below puts it back in that corner when the
+   column is gone. One shape, one place, two surfaces. ---- */
+.side-tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px 0;
+}
+.side-tool,
+.rail-open {
+  flex: none;                   /* the row's other half is flexible; this is not */
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--g-500);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
+              opacity var(--t-glide) ease;
+}
+.side-tool:hover,
+.side-tool:focus-visible,
+.rail-open:hover,
+.rail-open:focus-visible {
+  color: var(--ink);
+  background-color: rgba(var(--ink-rgb), 0.06);
+}
+.side-tool svg,
+.rail-open svg { display: block; width: 19px; height: 19px; }
+
+/* ---- and the way back in.
+   Fixed to the frame's own corner rather than to the card, so it does not
+   move when the rail slides: the two buttons occupy the same 28px square
+   whether the column is there or not. It exists ONLY while the rail is
+   shut — open, the rail's own toggle is standing in that square, and two
+   of them would be one too many. ---- */
+.rail-open {
+  position: fixed;
+  left: 10px;
+  top: 8px;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+}
+html.rail-closed .rail-open { opacity: 1; pointer-events: auto; }
+html.is-embed .rail-open,
+html.ai-open .rail-open,
+html.theater-open .rail-open { opacity: 0; pointer-events: none; }
 
 /* ---- identity ----
    The letterhead: name and role as plain type on the bone, the top half
@@ -840,20 +395,7 @@ html.intro-run .side-group { transition: none; }
    Firefox drop subpixel text antialiasing on a non-opaque layer, so every
    label in the rail used to go thin for the length of the slide and then
    snap crisp. Opaque from frame one, translating only. ---- */
-html.intro-glide :is(.shell-chrome, .shell-side, .side-grip) { transition: none; }
-
-/* Nothing here holds the hairline back any more, and nothing fades it in.
-   It is simply on from the frame the strip lights (.is-lit, which
-   js/shell.js hands to the same event that starts the ride) — because by
-   then it is being re-cut every frame around wherever the pieces actually
-   are (js/shell.js, "the opening, frame by frame"). A line measured once
-   off the finished frame had to be hidden; a line that is remeasured has
-   nothing to hide from. */
-
-/* the corner is a detail of the frame, so it arrives on the frame's clock */
-html.intro-run .shell-card {
-  transition: border-radius var(--t-intro) var(--ease-intro);
-}
+html.intro-glide :is(.shell-side, .side-grip) { transition: none; }
 .side-label {
   margin: 14px 0 4px;
   padding: 0 10px;
@@ -879,7 +421,14 @@ html.intro-run .shell-card {
 
 /* ============================================================
    The globe card — where you are, where he is, and how far apart.
-   Flies out to the RIGHT of the rail, over the card.
+   Hangs off the place chip in the home screen's corner (js/globe.js).
+
+   It briefly lived DRAWN, permanently, at the foot of the rail — the
+   geometry is the rail's (a 168 box with the sphere centred at 84,84 is
+   the rail's exact width, and this file's own first line still says so).
+   Two things sent it back behind a hover: a 168px column could carry one
+   of the three caption lines below and not three, and a foot that tall put
+   the rail's navigation into a scroll on any window under about 790.
    ============================================================ */
 .globe-card {
   position: fixed;              /* js/globe.js pins it under its trigger */
@@ -980,6 +529,9 @@ html.intro-run .shell-card {
               scale var(--t-pop) var(--ease-pop);
 }
 
+/* ---- the three lines under the sphere. They are the card's whole reason
+   for being a card: the visitor's own coordinates, how far that is from
+   Chicago, and what time zone they are reading in. ---- */
 .globe-where { font-size: 12.5px; color: rgba(var(--ink-rgb), 0.48); text-align: center; }
 .globe-far {
   margin-top: 4px;
@@ -1000,14 +552,71 @@ html.intro-run .shell-card {
   .globe-card { transition: opacity 0.25s ease; translate: none; }
   .globe-card.is-landed .pin-drop { transition: none; }
 }
-.now-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  margin-left: 4px;
-  border-radius: 50%;
-  background: var(--g-250);
+
+/* ---- WHERE YOU ARE, sharing the toggle's row.
+   The head row existed for a 28px button and had 120px of empty cream to
+   its right; this is the only thing on the site quiet enough to put there.
+   11px — the rail's meta voice, the same one the group labels and the
+   letterhead's role speak — so it sits UNDER the navigation in the
+   column's hierarchy rather than beside it. ---- */
+/* It hugs its own words and parks at the row's right end, rather than
+   stretching the whole way and holding the clock out at arm's length. The
+   two used to be pinned to opposite edges with 30px of cream between them,
+   which read as two separate facts; a word's gap makes them one line of
+   type — "Oregon 1:00 PM" — and the hover chip is then the size of what it
+   is highlighting instead of a plate with words at one end. */
+.side-place {
+  flex: 0 1 auto;
+  margin-left: auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  /* the 8 on the right lands the time on the exact edge every row's label
+     stops at, so the head's last character and the column's line up */
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: inherit;
+  font-size: 11px;
+  /* not 1: at line-height 1 the content box is exactly the em, so the
+     descender on a g falls outside it and the overflow clip below shears
+     it off — "Oregon" lost the tail of its g */
+  line-height: 1.5;
+  color: var(--g-700);
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
 }
+/* the site's standard wash, the same chip every row in this column wears */
+.side-place:hover,
+.side-place:focus-visible {
+  background-color: rgba(var(--ink-rgb), 0.06);
+  color: var(--ink);
+}
+/* the REGION is what gives ground: the rail is 168 by default and a long
+   one ("Massachusetts" wants 79px of a 120px row) would otherwise push the
+   clock off its edge. Drag the seam if you want to read it in full. */
+.side-place-city {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-place-time {
+  flex: none;
+  color: var(--shell-dim);
+  font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
+}
+
+/* the card is a hover popover on the rail, and the rail stays reachable
+   behind the AI sheet's scrim — so it stands down with everything else */
+html.ai-open .globe-card,
+html.theater-open .globe-card { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   /* the letterhead's reveal is NOT an effect and is left alone: it has no
@@ -1269,7 +878,7 @@ html.intro-run .shell-card {
    dot HOLLOW is the thing that has not happened yet. One shape, two states
    — cheaper than a second glyph, and it is legible at 6px in a way a second
    glyph would not be. Both hold still, in the same grey as the place dot in
-   the chrome (.now-dot): a rail that is already carrying an accent per case
+   the place row above: a rail that is already carrying an accent per case
    study does not need a blinking orange light in its foot. */
 .st-dot {
   flex: none;
@@ -1328,10 +937,11 @@ html.intro-run .shell-card {
   -webkit-tap-highlight-color: transparent;
   /* 10px here + the rail's own 8 lands the name on the exact left edge
      the group labels and row glyphs share — the letterhead joins the
-     column's one text line instead of floating in its own box. 14 on
-     top so the block clears the strip's floor rather than wedging
-     under it; 12 below, then the first label's own 6. */
-  margin: 14px 10px 12px;
+     column's one text line instead of floating in its own box. The 14 on
+     top became 10 when the toggle took the row above — the tools row is
+     what clears the top of the window now; 12 below, then the first
+     label's own 6. */
+  margin: 10px 10px 12px;
 }
 
 /* ---- and on the home page it SCROLLS IN.
@@ -1357,7 +967,7 @@ html.intro-run .shell-card {
    the letterhead to nothing on every page that never runs the reveal. ---- */
 .ask-chip.is-tracked {
   height: calc(var(--ask-p, 1) * var(--ask-h, 32px));
-  margin-top: calc(var(--ask-p, 1) * 14px);
+  margin-top: calc(var(--ask-p, 1) * 10px);
   margin-bottom: calc(var(--ask-p, 1) * 12px);
   overflow: hidden;                  /* the slot IS the clip */
 }
@@ -1542,27 +1152,16 @@ html.theater-open .ask-dock {
 /* ============================================================
    Content card — the page's own 1280×832 stage, untouched
    ============================================================ */
-/* ---- the sill is GONE. It was a band of the page's own surface pinned
-   across the strip's height, under the chrome but over everything the card
-   scrolls, and it stopped page content dead at the strip's floor — which is
-   what made the seam under the tab an edge the page ended at, and what made
-   the tab's opening show a blank white band instead of the page.
-
-   Without it the card scrolls all the way up behind the strip again. The
-   cream (.shell-chrome::before) hides all of that except the tab's own cut,
-   so a line of type rises through the tab and leaves at its top edge, and
-   the identity lozenge is what keeps the name readable while it passes. ---- */
-
 .shell-card {
   position: relative;
   flex: 1;
   min-width: 0;
   background: var(--bg);
-  /* the top-left corner is the only one that is not a viewport edge —
-     it softens where the chrome strip meets the rail. NO ring: the drawn
-     hairline that used to live here was the seam between the tab and the
-     page it opens, and removing it is the point. */
-  border-radius: 10px 0 0 0;
+  /* SQUARE. The 10px top-left round existed to soften the junction where
+     the chrome strip met the rail — a corner the frame no longer has. The
+     card's only neighbour now is the rail's edge, which runs straight from
+     the top of the window to the bottom, and a rounded corner on a straight
+     edge is a notch. */
 }
 
 /* THE one transformed element on the page. Absolute + translate(-50%,-50%)
@@ -1593,35 +1192,21 @@ html.theater-open .ask-dock {
 .shell[data-page="play"] .shell-card > main,
 .shell[data-page="vicino"] .shell-card > main,
 .shell[data-page="home"] .shell-card > main { height: auto; }
-.shell-card {
-  min-height: calc(100vh - var(--shell-chrome-h));
-  /* up behind the strip, then padded back down by the same amount: the page
-     rests exactly where it always did, but its surface — and anything that
-     scrolls up into that band — now exists under the chrome, ready to be
-     seen through the tab. The strip's z-index paints over the rest of it. */
-  margin-top: calc(-1 * var(--shell-chrome-h));
-  padding-top: var(--shell-chrome-h);
-}
+.shell-card { min-height: 100vh; }
 
 /* ============================================================
    EMBED (?embed=1 → html.is-embed, set pre-paint) — this document is
    inside the case overlay's iframe on index.html (js/case-overlay.js).
-   The page is content there, not a window: the chrome, the rail and the
-   seam all stand down, and the card owns the whole frame. shell.js skips
-   building them too — this CSS is the no-flash guarantee for the moment
-   before scripts run.
+   The page is content there, not a window: the rail stands down and the
+   card owns the whole frame. shell.js skips building it too — this CSS is
+   the no-flash guarantee for the moment before scripts run.
    ============================================================ */
-html.is-embed .shell-chrome,
 html.is-embed .shell-side,
-html.is-embed .side-grip { display: none; }
-/* The frame reaches up behind the strip (css/case-overlay.css), so this
-   document's top 40px lie under the chrome. No negative margin — there is
-   no strip in THIS document's flow to pull back past — just the padding,
-   which rests the story below the strip while leaving the card's surface
-   (and everything that scrolls up into it) behind the tab's opening. */
+html.is-embed .side-grip,
+html.is-embed .rail-open { display: none; }
 html.is-embed .shell-card {
   margin-top: 0;
-  padding-top: var(--shell-chrome-h);
+  padding-top: 0;
   min-height: 100vh;
   border-radius: 0;
 }
@@ -1645,10 +1230,10 @@ html.is-embed { overscroll-behavior: contain; }
     overflow: visible;
     background: var(--bg);
   }
-  .shell-chrome,
   .shell-side,
   /* there is no rail to resize down here, so there is nothing to grab */
-  .side-grip { display: none; }
+  .side-grip,
+  .rail-open { display: none; }
   .shell-body { display: block; overflow: visible; }
   .shell-card {
     border-radius: 0;

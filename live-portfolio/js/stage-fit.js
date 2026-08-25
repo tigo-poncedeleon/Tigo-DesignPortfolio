@@ -56,14 +56,13 @@
   //   before it. (shell.css also turns anchoring off — two correctors tugging
   //   the same scroller every frame of the slide WAS the glitch — but the
   //   math stays live-read so it cannot regress if that rule moves.)
-  // · the eye line is a VIEWPORT coordinate: chrome strip + half the reading
-  //   area. Measuring it from the reading area's own top left a constant
-  //   40px in the anchor, which leaked ~5px of drift per toggle.
+  // · the eye line is a VIEWPORT coordinate: half the window. It used to
+  //   carry the chrome strip's 40px on the front of it; the strip is gone
+  //   and the card runs to y=0, so the reading area IS the window.
   const apply = (s) => {
     if (Math.abs(s - API.card) < 0.0005) return;
     const prev = API.card;
-    const chromeH = num('--shell-chrome-h', 40);
-    const eye = chromeH + (window.innerHeight - chromeH) / 2;
+    const eye = window.innerHeight / 2;
     // how far the reading line sits INTO the stage, in the stage's own grid
     // px. Layout is clean here (fit() just read clientWidth), so it is free.
     const held = window.scrollY > 0;
@@ -113,7 +112,7 @@
     // screen past the fold and invent a scrollbar that has nothing in it.
     const cardH = num('--card-h', 832);
     const flowing = stage.offsetHeight > cardH + 2;
-    const h = window.innerHeight - num('--shell-chrome-h', 40);
+    const h = window.innerHeight;
     return Math.max(Math.min(w / num('--card-w', 1280),
                              flowing ? Infinity : h / cardH,
                              num('--card-scale-max', 1.25)), MIN);

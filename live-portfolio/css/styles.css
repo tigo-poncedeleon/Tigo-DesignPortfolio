@@ -299,7 +299,7 @@ html, body {
    moves the card — the rail sliding open, a seam drag, a resize — moves the
    name with it for free, no offsets to keep in sync. */
 #home.stage {
-  height: var(--hero-h, calc(100dvh - var(--shell-chrome-h, 40px)));
+  height: var(--hero-h, 100dvh);
 }
 #home .frame-top {
   top: 50%;
@@ -530,7 +530,7 @@ html, body {
   /* clear of the × in the corner above it. The two live at the same right
      edge, 2px apart, so the rail starts a full × plus air below the strip:
      32px of button + 12px of top offset + 20px of breathing room. */
-  top: calc(var(--shell-chrome-h, 0px) + 64px);
+  top: 64px;
   right: 16px;
   z-index: 40;
   display: flex;

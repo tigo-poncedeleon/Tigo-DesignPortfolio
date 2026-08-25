@@ -580,7 +580,6 @@
   right: 0;
   bottom: 0;
   z-index: 16;              /* over the card and the case frame (15) */
-  padding-top: var(--shell-chrome-h, 40px);   /* centre BELOW the strip */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -626,7 +625,7 @@ html.theater-open { overflow: hidden; }
 /* the way back, clear of the chrome strip the layer now reaches behind */
 .theater-x {
   position: absolute;
-  top: calc(var(--shell-chrome-h, 40px) + 14px);
+  top: 14px;
   right: 16px;
   z-index: 3;
   width: 32px;

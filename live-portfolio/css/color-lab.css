@@ -212,26 +212,22 @@
 /* ============================================================
    Dark furniture
 
-   The rail and chrome were drawn for a light L, so a good half of their
-   text is hardcoded greys rather than tokens. When the furniture drops
-   below mid-luminance the lab flips those to the light side so the ramp's
-   bottom half is actually testable. Approximate by design — this is a
-   try-on mirror, not a dark theme.
+   The rail was drawn for a light column, so a good half of its text is
+   hardcoded greys rather than tokens. When the furniture drops below
+   mid-luminance the lab flips those to the light side so the ramp's bottom
+   half is actually testable. Approximate by design — this is a try-on
+   mirror, not a dark theme.
    ============================================================ */
-html.lab-dark-furn .shell-chrome,
 html.lab-dark-furn .shell-side { color: var(--lab-furn-ink); }
 
 html.lab-dark-furn .side-name,
-html.lab-dark-furn .jump-row,
 html.lab-dark-furn .side-row,
 html.lab-dark-furn .side-link,
 html.lab-dark-furn .side-text,
 html.lab-dark-furn .side-label,
 html.lab-dark-furn .st-lead,
-html.lab-dark-furn .chrome-tab,
-html.lab-dark-furn .chrome-btn,
-html.lab-dark-furn .chrome-place-city,
-html.lab-dark-furn .tab-close,
+html.lab-dark-furn .side-tool,
+html.lab-dark-furn .rail-open,
 /* the ask left .side-foot for the top of the rail, so it has to be named
    here in its own right — and it is a chip now, whose typed ink and
    resting question are two different greys */
@@ -256,31 +252,18 @@ html.lab-dark-furn .ask-line:focus-within .ask-input::placeholder {
 
 html.lab-dark-furn .side-role,
 html.lab-dark-furn .st-sub,
-html.lab-dark-furn .jump-ico,
 html.lab-dark-furn .side-ico,
 html.lab-dark-furn .side-meta,
-html.lab-dark-furn .chrome-place-time,
-html.lab-dark-furn .tab-label .tab-sec,
 html.lab-dark-furn .side-tw,
 html.lab-dark-furn .globe-where,
 html.lab-dark-furn .side-group,
 html.lab-dark-furn .ask-kbd { color: var(--lab-furn-dim); }
 
-html.lab-dark-furn .chrome-tab:hover,
 html.lab-dark-furn .side-row.is-trail,
 html.lab-dark-furn .side-scroll.has-here .side-row.is-current { color: var(--lab-furn-ink); }
 
-html.lab-dark-furn .chrome-tab:not(.is-active):hover,
-html.lab-dark-furn .tab-close:hover { background: rgba(255, 255, 255, .1); }
-
-/* …but the ACTIVE tab is a hole cut in the furniture, and its label rides on
-   a pill of --bg. Flipping that one to light ink would put light text on the
-   page's own colour. It stays dark, because it is standing on the card. */
-html.lab-dark-furn .chrome-tab.is-active,
-html.lab-dark-furn .chrome-tab.is-active .tab-label,
-html.lab-dark-furn .chrome-tab.is-active .tab-ico,
-html.lab-dark-furn .chrome-tab.is-active .tab-close { color: #5b5a53; }
-html.lab-dark-furn .chrome-tab.is-active .tab-label .tab-sec { color: var(--shell-dim); }
+html.lab-dark-furn .side-tool:hover,
+html.lab-dark-furn .rail-open:hover { background: rgba(255, 255, 255, .1); }
 
 /* the rail's own scrollbar, and any furniture SVG that inherits */
 html.lab-dark-furn .side-scroll { scrollbar-color: rgba(255, 255, 255, .22) transparent; }

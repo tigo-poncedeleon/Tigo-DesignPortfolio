@@ -31,10 +31,9 @@
       // clientHeight, NOT innerHeight: the visitor may run classic always-on
       // scrollbars, and a viewport height that includes one is not the height
       // of the card you can see
-      const vh = root.clientHeight;
-      const chrome = document.getElementById('shell-chrome');
-      const ch = chrome ? chrome.offsetHeight : 0;
-      root.style.setProperty('--hero-h', ((vh - ch) / s).toFixed(2) + 'px');
+      // the card runs the full height of the window now — the chrome strip
+      // that used to be subtracted here is gone
+      root.style.setProperty('--hero-h', (root.clientHeight / s).toFixed(2) + 'px');
     };
     fitHero();
     window.addEventListener('shell:fit', fitHero);

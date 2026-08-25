@@ -59,24 +59,16 @@
     else u.searchParams.delete('game');
     return (u.pathname.split('/').pop() || 'index.html') + u.search + u.hash;
   };
-  const rememberTab = () => {
-    if (window.ShellTabs && window.ShellTabs.remember) window.ShellTabs.remember();
-  };
-
-  // aspect-fit the court to the CARD (the layer's own box, since the chrome
-  // and rail keep their room now): zoom scales the rendering while every
-  // offsetWidth the game ever reads stays the same layout px
+  // aspect-fit the court to the CARD (the layer's own box, since the rail
+  // keeps its room): zoom scales the rendering while every offsetWidth the
+  // game ever reads stays the same layout px
   const fit = () => {
     if (!openGame) return;
     const b = document.getElementById(GAMES[openGame].board);
     if (!b) return;
-    // the layer's box now includes the band behind the chrome strip, which
-    // is surface, not room — the court is fitted to what is actually visible
     const r = wrap.getBoundingClientRect();
-    const strip = document.getElementById('shell-chrome');
-    const seen = r.height - (strip ? strip.offsetHeight : 0);
     const z = Math.min((r.width - 96) / b.offsetWidth,
-                       (seen - 96) / b.offsetHeight);
+                       (r.height - 96) / b.offsetHeight);
     fitBox.style.zoom = Math.max(z, 0.1);
   };
   window.addEventListener('resize', fit, { passive: true });
@@ -180,7 +172,6 @@
     history.pushState(null, '', hrefWith(game));
     pushed = true;
     open(game);
-    rememberTab();
   };
   // the way back: the ×, Escape, or the rail. A pushed entry has to be
   // POPPED rather than replaced, or Back walks straight into the game again.
@@ -191,7 +182,6 @@
     close();
     if (wasPushed) history.back();
     else history.replaceState(null, '', hrefWith(null));
-    rememberTab();
   };
 
   window.addEventListener('popstate', () => {
