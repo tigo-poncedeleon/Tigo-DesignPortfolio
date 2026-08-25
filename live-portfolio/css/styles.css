@@ -355,6 +355,15 @@ html, body {
   #home .scroll-hint:hover svg { translate: none; }
 }
 
+/* (GONE 2026-08-24: §THE HERO ASK — a full composer under the name pair,
+   the shape every model's front page wears. It was built, lived beside
+   the corner dock for an afternoon so the two could be compared, and the
+   dock won: one door, in the corner, out of the hero's way. The hero is
+   the name and nothing else again, which is what it was always for.
+   Deleted with it: .hero-ask/-field/-mark/-orbit/-star/-well/-input/
+   -mirror/-caret/-send/-chips/-chip, and the ghost writer that typed its
+   placeholder — see js/shell.js.) */
+
 /* ============================================================
    THE CASE-STUDY COVER — one grid, three studies.
 

@@ -37,8 +37,9 @@
      tight enough that the column reads as the width of its own type,
      wide enough that nothing is cut.
 
-     The ⌘K is the one casualty — is-tight drops it below a 170px line,
-     which is exactly the trade that rule was written for. */
+     (The blank that used to hang under the name is gone, so the ⌘K hint
+     and its is-tight width trade went with it — the shortcut still
+     works, it is simply no longer printed in the rail.) */
   --shell-rail:     168px;       /* the visitor owns this — drag the seam */
   --shell-rail-min: 150px;       /* the record of js/shell.js's MIN */
   --shell-rail-max: 420px;
@@ -745,8 +746,9 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
    it like everything else:
      primary      13.5px / --g-900   rows, the status leads, and the name
                                      (whose ONLY distinction is weight 500)
-     provisional  13px   / --g-550   the blank's rotating question
-     meta         11px   / --g-400   labels, the role, subs, ⌘K
+     meta         11px   / --g-400   labels, the role, subs
+   (The provisional voice — 13px / --g-550, the blank's rotating question
+   — left with the blank; it lives in the hero composer now.)
    The name used to sit at full --ink over a foot whose leads were 12.5px
    mid-grey, and the column read as one shout over a whisper. One ink for
    every primary line, one grey for every meta line, and the hierarchy is
@@ -763,7 +765,15 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color var(--t-micro) ease;
 }
+/* the letterhead answers the hand by stepping up one grey each — --g-900
+   to full ink, --shell-dim to the secondary. It is the smallest state the
+   palette can say; anything louder would make the name a button. */
+.ask-chip:hover .side-name,
+.ask-chip:focus-visible .side-name { color: var(--ink); }
+.ask-chip:hover .side-role,
+.ask-chip:focus-visible .side-role { color: var(--g-700); }
 .side-name {
   font-size: 13.5px;
   font-weight: 500;
@@ -1000,10 +1010,11 @@ html.intro-run .shell-card {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* the mark does not turn: the asterisk holds its pose (the six-fold
-     symmetry means the banked notches land invisibly anyway) */
-  .ask-blank::before { transition: none; }
-  .ask-blank > svg { transition: none; }
+  /* the letterhead's reveal is NOT an effect and is left alone: it has no
+     transition to suppress — the slot is the scroll position, and refusing
+     to open it would leave the rail permanently missing its own name.
+     (The blank that used to live here, and the mark that turned with it,
+     are gone — the AI is one door now, the corner dock.) */
   /* the rail appears; it does not perform */
   html.intro-run .side-group {
     translate: none;
@@ -1274,44 +1285,45 @@ html.intro-run .shell-card {
 }
 .st-row.is-ahead:hover .st-dot { box-shadow: inset 0 0 0 1.5px var(--ink); }
 /* ============================================================
-   The letterhead — identity and the ask, one typographic object
+   The letterhead — a name and a role, and nothing else
 
-   Four shapes got us here. A 42px outlined lozenge at the foot of the
-   rail; a bare field under the name; then one filled chip holding both
-   — paper on the rail's bone — and the chip is what taught the rule:
-   it was the ONLY filled surface in a column that is otherwise pure
-   type, and one box in a rail of typography does not read as "the
-   important thing", it reads as a widget from another site. Sore
-   thumb, verbatim.
+   Five shapes got us here. A 42px outlined lozenge at the foot of the
+   rail; a bare field under the name; one filled chip holding both —
+   paper on the rail's bone, which taught the rule, because it was the
+   ONLY filled surface in a column that is otherwise pure type and read
+   as a widget from another site. Then the chip died and the blank
+   stood on its own: one asterisk and a rotating question on a dotted
+   construction rule, the AI's quiet door.
 
-   So no surface at all, and the rail speaks one material everywhere.
-   Under the name sits the blank: ONE asterisk — the AI's mark, worn
-   exactly once — then the rotating question on a dotted rule. The dots
-   are the site's construction line (the globe's grid, the spark's
-   orbit) doing what dots do on paper: marking the blank you are
-   invited to write in. Proximity ties the halves; a twin asterisk on
-   the name tried to say it too and read as a duplicate.
+   And now the blank has gone too. It went to the middle of the home
+   page as a full composer, and that composer was cut the same day: the
+   AI is ONE door, the filled pill in the corner (css/shell.css §THE
+   DOCK). Two copies of one offer on one screen is the offer made twice,
+   and the 13px one in the corner always loses.
 
-   The hover is the pencil being INKED, and the mark being STIRRED. A
-   solid line draws itself left→right over the dots on the pen's own
-   curve, the question steps up a grey, and the asterisk TURNS — its
-   own verb, not the glyph redraw the rows do. It also advances one
-   notch per question (js/shell.js banks --ask-spin), so the mark and
-   the question move on the same beat, like the asterisk is stirring
-   the next one up.
+   So the rail is identity, in the one material it speaks everywhere:
+   ink on the bone. No surface, no control, no cursor — a name set as
+   plain type is not a trapdoor into a dialog, which was always the
+   rule; it only bent while the blank was living underneath it.
 
-   (Still no colour to spend. --orange is black on this site and
-   --ember is spoken for — the blank does its inviting in ink.)
+   (Gone with it: .ask-line, .ask-blank and its dotted rule, .ask-input,
+   .ask-mirror, .ask-caret, .ask-kbd and the is-tight width trade — and
+   the ghost writer that drove them, which outlived the blank by one
+   afternoon in the composer and then went with it.)
    ============================================================ */
 .ask-chip {
   flex: none;
-  /* ONE target, one cursor. Name, role and blank are a single control, so
-     the pointer must never change shape crossing between them — a cursor
-     that flickers arrow-hand-arrow on the way down the block is the block
-     confessing it is really three things. It is set here, on the whole
-     letterhead, rather than on each half, so the gaps between them
-     (.ask-line's 10px step, the 2px between name and role) belong to the
-     button too. js/shell.js binds the press here for the same reason. */
+  /* ---- and it goes HOME. A wordmark in the top-left corner has meant
+     that since the first navigation bar, so the letterhead is finally the
+     link it always looked like. On the home page the rail's own delegate
+     glides it back up to the hero instead of reloading (js/shell.js
+     wireNav); everywhere else it is a plain, crawlable, cmd-clickable
+     href. The hover is one step of ink and nothing else — no wash chip,
+     no underline: the rows wear the chip because they are a list, and
+     this is not in the list. ---- */
+  display: block;
+  text-decoration: none;
+  color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   /* 10px here + the rail's own 8 lands the name on the exact left edge
@@ -1322,212 +1334,210 @@ html.intro-run .shell-card {
   margin: 14px 10px 12px;
 }
 
-.ask-line {
-  position: relative;
-  /* 22px of line and 8 of ground under it: the padding keeps the dotted
-     rule inside the pointer's target, so the blank can be clicked ON the
-     blank, not only on the words above it */
-  height: 30px;
-  padding-bottom: 8px;
-  /* the step off the role line — far enough that the question is a second
-     thought rather than a third line of the name, close enough that it is
-     plainly the same object */
-  margin-top: 10px;
+/* ---- and on the home page it SCROLLS IN.
+   The hero sets this exact name and this exact role in the middle of
+   the page, so the rail says nothing while it is up — and rather than
+   being switched on afterwards, it is opened by the scroll itself.
+
+   `--ask-p` is the letterhead's progress, written every frame by
+   js/shell.js wireAskReveal off how much of the reading area the hero
+   still holds. The slot's HEIGHT is that number, so the block is
+   revealed a line at a time from the top down, in exact lockstep with
+   the hand; `--ask-o` is the same travel lagged, so the room is made
+   first and the type lands in it second.
+
+   There is deliberately NO transition on any of this. A transition
+   would be an animation playing near a scroll — its own clock, its own
+   curve, indifferent to how fast you actually moved. The wheel is the
+   easing. (The smoothstep that keeps it from starting and stopping at
+   full speed is applied to the number in JS, where it belongs.)
+
+   `is-tracked` is what arms the geometry, and it goes on only after
+   --ask-h has been measured — without it the height rule would collapse
+   the letterhead to nothing on every page that never runs the reveal. ---- */
+.ask-chip.is-tracked {
+  height: calc(var(--ask-p, 1) * var(--ask-h, 32px));
+  margin-top: calc(var(--ask-p, 1) * 14px);
+  margin-bottom: calc(var(--ask-p, 1) * 12px);
+  overflow: hidden;                  /* the slot IS the clip */
+}
+.ask-chip.is-tracked .side-id-text {
+  opacity: var(--ask-o, 1);
+  /* it rises the last few px into its place, so the arrival is a
+     movement and not just an unveiling */
+  translate: 0 calc((1 - var(--ask-o, 1)) * 8px);
+}
+
+/* ============================================================
+   THE DOCK — the AI's door, in the corner
+
+   The rail's letterhead is the quiet door and stays the quiet door: a
+   line of type in a column of type, which is right for a rail and
+   wrong as the only handle a stranger ever gets. This is the loud one.
+
+   It is the ONLY filled surface the shell shows, and that is the whole
+   of its prominence — no shadow (the site has none), no badge, no ring,
+   no pulse. It can afford to be filled precisely because it lives OVER
+   the page instead of inside a column of type: the old rail chip was a
+   filled box among typography and read as a widget from another site,
+   which is why the chip is dead and this is here instead.
+
+   INK, not ember. The rule the composer already states (css/ai.css
+   .ai-send): "the primary filled action is INK on parchment — ember
+   never fills." Ember is spent on four things that move, and a button
+   at rest is not one of them. The hand buys the half-step to --orange,
+   which is how every other state on this site is drawn.
+
+   Inside: the AI's asterisk, held in the site's construction line —
+   2 on, 5 off, the same dotted guide the sheet's spark, the rail's
+   blank and the globe's grid keep. The asterisk is drawn a size down so
+   it can turn inside the orbit without ever touching it, and turn is
+   what it does under the hand: the rail's asterisk spins for the same
+   reason, so the site's two AI doors move the same way.
+   ============================================================ */
+.ask-dock {
+  position: fixed;
+  right: var(--sp-24);
+  bottom: var(--sp-24);
+  /* over the card, the case frame (15) and the theater (16), under the
+     seam grip's drag zone is irrelevant here — but firmly under the AI
+     sheet itself (60), which is what this opens */
+  z-index: 40;
   display: flex;
   align-items: center;
-  gap: 8px;
-  /* POINTER, not text. The field is a facade — a mouse click here never
-     types, it opens the sheet — and an I-beam promises a caret that a
-     click does not deliver. The arrow-to-hand is the honest story:
-     this line is a door that looks like a blank, not a blank. */
+  gap: 10px;
+  height: 48px;
+  /* 15 on the mark's side, 18 on the words': the round glyph needs less
+     air than the flat edge of type to sit the same distance in */
+  padding: 0 18px 0 15px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+
+  /* it arrives with the furniture — on Home that is after the name has
+     typed itself (js/shell.js lightUp) — rising the way the rail's own
+     groups do. The lift under the hand is `transform`, deliberately a
+     DIFFERENT property from the entrance's `translate`, so a hover
+     during the entrance cannot fight it. */
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity var(--t-fade) ease,
+              translate var(--t-rise) var(--ease-rise),
+              transform var(--t-snap) var(--ease-lift),
+              background-color var(--t-micro) ease;
 }
+/* …and it is not pressable until it is there. An opacity-0 button still
+   takes clicks, so without this the corner opens the sheet all through
+   the opening, from a pill nobody can see. */
+.ask-dock:not(.is-lit) { pointer-events: none; }
+.ask-dock.is-lit { opacity: 1; translate: 0 0; }
 
-/* ---- THE BLANK, and its measure.
-   The ruled span is the asterisk plus the writable field, and NOTHING
-   else — the ⌘K is a hint about the blank, so it stands outside the
-   rule. That alone pulls the line in by the width of the shortcut.
-
-   The cap is the important half. The rule used to run the full width of
-   the column: 172px against a name that sets 126, so the AI block read a
-   third longer than the letterhead it hangs from — and dragging the rail
-   out to 420 stretched it into a bar three times the name. Type does not
-   stretch, so the blank must not either.
-
-   It is now EXACTLY the name's own measure. 138 was a near-miss (the
-   name plus the dozen px the longest question wanted), and a rule that
-   ends a dozen px past the word above it does not read as a near-miss —
-   it reads as a mistake. So the width comes from the name itself:
-   js/shell.js measures the rendered text with a Range and banks it in
-   --blank-w, which means the two edges line up under any font the
-   visitor actually gets, not just under SF Pro. 126px is the fallback
-   for the one frame before the measure lands.
-
-   The questions pay for this, not the rule: the blank's room for text is
-   the name minus the asterisk's 18 and its 8 gap — about 100px — and
-   every string in ASKS is written to that budget (see js/shell.js).
-
-   It is a MAX, so a rail dragged narrow still hands the question
-   everything there is (and is-tight spends the ⌘K first). ---- */
-.ask-blank {
-  position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: var(--blank-w, 126px);
-  align-self: stretch;           /* so its foot IS the line's content edge */
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.ask-dock:hover,
+.ask-dock:focus-visible {
+  background: var(--orange);          /* the half-step past ink: louder */
+  transform: translateY(-2px);
 }
+.ask-dock:active { transform: translateY(0) scale(0.97); }
+/* the ring is drawn on the light page around it, not on the dark pill */
+.ask-dock:focus-visible { outline-offset: 3px; }
 
-/* dots at rest, the pencil's line. A gradient rather than an SVG so the
-   dash pitch holds at any width the rail is dragged to; 2 on, 5 off is
-   the .guide spec the site's construction lines keep. */
-.ask-blank::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: repeating-linear-gradient(90deg,
-              var(--g-250) 0 2px, transparent 2px 7px);
-}
-/* …and the ink that draws over it on approach. A dashed line cannot draw
-   itself in, so the ink is a second, solid line scaling open from the
-   left on the pen's curve — over the dots, exactly on top of them. */
-.ask-blank::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  z-index: 1;
-  background: var(--orange);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  transition: transform 0.5s var(--ease-draw);
-}
-/* …and the hover is the CHIP's, not the line's. Name, role and blank are
-   one object — the letterhead — so bringing the pointer to the name inks
-   the pen and wakes the writer exactly as landing on the blank does. Two
-   halves of one thing that lit separately read as two controls. */
-.ask-chip:hover .ask-blank::before,
-.ask-line:focus-within .ask-blank::before { transform: scaleX(1); }
-
-/* the question steps up a grey while the pen is on the line */
-.ask-chip:hover .ask-input::placeholder,
-.ask-line:focus-within .ask-input::placeholder { color: var(--g-700); }
-
-/* …and the mark TURNS — the AI's own verb. The rows' glyphs redraw
-   themselves under the pen; the asterisk is not one of the rows, and
-   giving it the same trick made it furniture. It spins instead: half a
-   revolution on approach, sprung on the glide curve so it twirls a hair
-   past and settles. Six-fold symmetry is what makes this free — every
-   60° lands the shape on itself, so the spin reads as life, never as a
-   new pose.
-
-   The rotation STACKS on the notch the question-swap banks into
-   --ask-spin (js/shell.js): a calc over the same var, so hover and the
-   per-question advance can never fight, and letting go unwinds only the
-   half-turn the hand added. */
-.ask-blank > svg {
+.dock-mark {
   flex: none;
-  /* the rows' 18px glyph box, so the question starts on the exact text
-     edge Home and Resume start on — one vertical through the column */
-  width: 18px;
-  height: 18px;
-  color: var(--orange);
-  rotate: var(--ask-spin, 0deg);
+  width: 22px;
+  height: 22px;
+}
+/* the orbit holds still at rest — nothing on this site moves until
+   someone is looking at it — and marches on the spark's own 24s beat
+   once the pointer is here */
+.dock-orbit {
+  opacity: 0.42;
+  transition: opacity var(--t-micro) ease;
+}
+.ask-dock:hover .dock-orbit,
+.ask-dock:focus-visible .dock-orbit {
+  opacity: 0.7;
+  animation: dock-march 24s linear infinite;
+}
+@keyframes dock-march { to { stroke-dashoffset: -140; } }
+/* the mark's own verb. view-box + 50% puts the pivot at the glyph's
+   centre (13,13) rather than at the <g>'s ink bounds, so the six-fold
+   asterisk turns on itself. Same curve as the rail's. */
+.dock-star {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
   transition: rotate 0.55s var(--ease-glide);
 }
-.ask-chip:hover .ask-blank > svg,
-.ask-line:focus-within .ask-blank > svg { rotate: calc(var(--ask-spin, 0deg) + 180deg); }
+.ask-dock:hover .dock-star,
+.ask-dock:focus-visible .dock-star { rotate: 180deg; }
 
-.ask-input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  padding: 0;
-  font: inherit;
-  /* the PROVISIONAL voice of the rail's scale: 13, between the rows'
-     13.5 and the meta 11 — a sample of input, not a line of the column.
-     (13.5 was tried and the longest ASKS string clips at the default
-     rail width; the half-step is what keeps every question whole.) */
-  font-size: 13px;
-  line-height: 1;
-  color: var(--ink);
-  background: none;
-  border: 0;
-  border-radius: 0;
-  /* pointer with the rest of the line — a mouse press opens the sheet,
-     it never types here (the caret below is the keyboard path's) */
-  cursor: pointer;
-  /* the questions are written to fit the narrowest rail (see ASKS in
-     js/shell.js); this is the seatbelt for a question that one day is not,
-     so it trails off instead of stopping mid-letter */
-  text-overflow: ellipsis;
-  /* the field is a facade (js/shell.js wireAI): a caret shows only on the
-     keyboard path, in the pause between tabbing in and the first letter —
-     the same --orange the sheet's real field writes with (ai.css) */
-  caret-color: var(--orange);
+.dock-label {
+  font-size: 13.5px;                  /* the site's primary voice */
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
-/* the rail draws its own rule; the browser's focus ring would box a field
-   that has deliberately given up its box */
-.ask-input:focus { outline: none; }
-.ask-input::placeholder {
-  color: var(--g-550);
-  opacity: 1;                         /* Firefox dims placeholders by default */
-}
-/* (the .is-swap crossfade retired with the fade itself — the ghost
-   writer types and erases the question in place, js/shell.js) */
-
-/* ---- the ghost writer's two instruments (js/shell.js wireAI) ----
-   The mirror: an invisible twin of the placeholder-so-far, wearing the
-   input's exact type so its width IS the text's width — measured once
-   per letter to stand the caret after the last character. Absolute, so
-   the flex line never lays it out; pre, so a trailing space measures. */
-.ask-mirror {
-  position: absolute;
-  top: 0;
-  left: 0;
-  visibility: hidden;
-  white-space: pre;
-  font-size: 13px;                    /* the input's own voice, exactly */
-  pointer-events: none;
-}
-/* The caret: EMBER, and the only ember the rail ever shows — the
-   palette's first sanctioned ember object is the caret that types the
-   hero's name (styles.css), and this is the same caret at its second
-   desk. It exists only while the writer writes or erases; every hold
-   is plain ink. No fade: a typewriter's caret is either at work or
-   gone, and the mechanical cut is the honest one. */
-.ask-caret {
-  position: absolute;
-  top: 4px;                           /* centres the 14px bar in the 22px line */
-  width: 1.5px;
-  height: 14px;
-  border-radius: 1px;
-  background: var(--ember);
-  pointer-events: none;
-}
-.ask-caret[hidden] { display: none; }
-/* the tail: the site's steps(1) blink manner (play.css types this way
-   too) — a beat of presence at the end of the sentence, then gone */
-@keyframes ask-caret-blink { 50% { opacity: 0; } }
-.ask-caret.is-blink { animation: ask-caret-blink 1.06s steps(1) infinite; }
-
-.ask-kbd {
-  flex: none;
+/* the shortcut is furniture here exactly as it is in the rail — printed
+   because there is room for it, and working whether or not it is */
+.dock-kbd {
   font-size: 11px;
-  color: var(--shell-dim);            /* the shortcut is furniture, not accent */
   letter-spacing: 0.02em;
+  color: rgba(var(--bg-rgb), 0.42);
 }
-/* a rail dragged towards its minimum spends the hint on the question —
-   see the ResizeObserver in wireAI. ⌘K keeps working either way */
-.ask-line.is-tight .ask-kbd { display: none; }
+
+/* ---- when something else owns the screen. The sheet this opens is up
+   (a second door to a room you are standing in), or a game is in the
+   theater — either way the dock steps out rather than floating over it.
+   visibility trails the fade so a button nobody can see is never a
+   button Tab can find. ---- */
+/* ---- the sheet's case is a HAND-OFF, not a dismissal. The card grows
+   out of this pill (css/ai.css: a scale about the pill's own centre), so
+   the pill shrinks a touch and goes as the card comes — the two read as
+   one object changing state rather than two things swapping places. Both
+   properties are compositor properties, on the same curve as the card,
+   so nothing in the pair can drop a frame the other one keeps. ---- */
+html.ai-open .ask-dock {
+  opacity: 0;
+  translate: 0 0;
+  transform: scale(0.9);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.14s ease-out,
+              transform 0.22s var(--ease-lift),
+              visibility 0s linear 0.22s;
+}
+/* a game in the theater is not a hand-off — nothing grows out of the
+   dock there, so it simply steps out of the way */
+html.theater-open .ask-dock {
+  opacity: 0;
+  translate: 0 8px;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--t-micro) ease,
+              translate var(--t-glide) var(--ease-rise),
+              visibility 0s linear var(--t-glide);
+}
+
+/* ≤700px the shell dissolves and the page goes back to being a document
+   under the bottom tab bar — which already carries an AI row, and which
+   this would sit on top of. js/mobile.js turns the sheet back into a
+   page down there; the dock has nothing to open. */
+@media (max-width: 700px) { .ask-dock { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-dock {
+    translate: none;
+    transition: opacity 0.25s ease, background-color var(--t-micro) ease;
+  }
+  .ask-dock:hover, .ask-dock:focus-visible { transform: none; }
+  .ask-dock:hover .dock-orbit,
+  .ask-dock:focus-visible .dock-orbit { animation: none; }
+  .dock-star { transition: none; }
+  .ask-dock:hover .dock-star,
+  .ask-dock:focus-visible .dock-star { rotate: 0deg; }
+}
 
 /* ============================================================
    Content card — the page's own 1280×832 stage, untouched

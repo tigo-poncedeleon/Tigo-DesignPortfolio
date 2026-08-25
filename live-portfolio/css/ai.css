@@ -59,7 +59,15 @@
   inset: 0;
 }
 
-/* the sheet, anchored over the ask pill it rises from */
+/* the sheet, anchored over the DOCK it rises from. It stood bottom-LEFT
+   for as long as the rail had an ask blank to rise from; that blank is
+   gone and the AI is one door now — the pill in the card's bottom-right
+   corner (css/shell.css §THE DOCK) — so the sheet opens over the thing
+   that opened it.
+
+   The `translate` pair here is the PHONE's entrance: at ≤700px the sheet
+   is a bottom sheet and simply rises. On a laptop the block below takes
+   it over completely. */
 .ai-stage {
   opacity: 0;
   translate: 0 18px;
@@ -67,9 +75,105 @@
               translate var(--t-rise) var(--ease-rise);
 }
 .ai-stage.revealed { opacity: 1; translate: 0 0; }
+
+/* ---- …and on a laptop it comes OUT OF THE BUTTON.
+
+   ONE gesture, on the compositor: a uniform scale about the pill's
+   centre, and opacity. Nothing else moves and nothing else is timed.
+
+   This replaced a clip-path morph — a window in the pill's exact shape
+   unfolding into the card, with the fill going ink-to-paper so frame
+   one WAS the button. It was the better idea on paper and the worse one
+   in the hand, for two reasons worth keeping written down.
+
+     · It could not be composited. clip-path and background-color are
+       PAINT properties, so every frame repainted a 520x620 panel full
+       of live DOM on the main thread, while the page underneath was
+       still settling. It ran on whatever the main thread had spare.
+     · Worse, it read as THREE events rather than one: an 80ms hold
+       (nothing moves), then an unfold whose overshoot curve spent its
+       last fifth pushing the clip past the sheet's own edges — where it
+       is a no-op, so the motion appeared to stop early — then, after
+       another pause, the contents fading in on their own delay. Pause,
+       pop, pause, fade. Every piece was tuned. The sequence was the
+       clunk.
+
+   Uniform is the word that makes scale work here: 0.86 → 1 keeps type
+   legible the whole way and never squashes it, which is exactly what
+   ruled scale out while the target was the pill's 152x48. The card does
+   not have to reach the pill's SIZE to come from the pill — it has to
+   come from its PLACE, and transform-origin is what says so
+   (js/ai-chat.js poseFrom measures the dock and writes --ai-ox/--ai-oy).
+
+   No delays, no overshoot, one curve. --ease-rise is a long graceful
+   settle — nearly all the distance in the first third, then it eases
+   down onto its mark. Overshoot on a panel this size reads as wobble,
+   which is the opposite of expensive.
+
+   `is-emerging` is worn only for the ride, and that is hygiene rather
+   than tidying: it carries `will-change` (a promise, not a decoration —
+   a layer held for the life of the page costs memory and can soften the
+   sheet's text on some GPUs) and a transform, and a transformed
+   ancestor is a containing block for anything fixed inside it. ---- */
+@media (min-width: 701px) {
+  /* the closed end — and the timings a CLOSE uses. The transition that
+     runs is always the one on the state being moved TO, so this block
+     owns folding away and the one below owns coming out. Exits are
+     quicker than entrances: a dismissal should feel answered, not
+     performed. */
+  .ai-stage.is-overlay.is-emerging {
+    transform: scale(0.86);
+    transform-origin: var(--ai-ox, 88%) var(--ai-oy, 94%);
+    opacity: 0;
+    translate: 0 0;                  /* the 18px rise is the phone's */
+    will-change: transform, opacity;
+    transition: transform 0.2s var(--ease-lift),
+                opacity 0.16s ease-in;
+  }
+  /* …and the open end. */
+  .ai-stage.is-overlay.is-emerging.revealed {
+    transform: none;
+    opacity: 1;
+    transition: transform 0.38s var(--ease-rise),
+                opacity 0.2s ease-out;
+  }
+  /* ---- and NOTHING moves inside the card while the card is moving.
+     The chip stack has its own entrance (opacity + a 16px rise on a
+     0.2s delay, .ai-stage:not(.revealed) .ai-prompts) written for the
+     phone sheet and for the days the desktop sheet simply faded up. On
+     top of a card that is itself still travelling it is motion inside
+     motion — two entrances on two clocks in the same 400ms — and that
+     reads as noise however well either one is tuned. Here the chips are
+     part of the card: they arrive because it arrives. They get their
+     rules back the moment is-emerging comes off, and since a revealed
+     sheet's rules resolve to the same values, nothing jumps. ---- */
+  .ai-stage.is-overlay.is-emerging .ai-prompts {
+    opacity: 1;
+    translate: 0 0;
+    transition: none;
+  }
+  /* a drag must track the pointer exactly, and a half-finished entrance
+     must not fight it */
+  html.ai-dragging .ai-stage.is-overlay.is-emerging { transition: none; }
+}
+
+/* the emergence is a flourish, not information — the sheet simply is */
+@media (prefers-reduced-motion: reduce) {
+  .ai-stage.is-overlay.is-emerging {
+    transform: none;
+    will-change: auto;
+    transition: opacity 0.2s ease;
+  }
+}
+
 .ai-stage.is-overlay {
   position: absolute;
-  left: 16px;
+  /* right, not left — and `left: auto` is load-bearing: a box the visitor
+     has dragged is written back as inline left/top (ai-chat.js applyBox),
+     so this pair is only ever the DEFAULT, and the default has to name the
+     edge it is measured from or the two rules fight on the first paint */
+  left: auto;
+  right: 16px;
   bottom: 16px;
   width: 520px;
   height: 620px;

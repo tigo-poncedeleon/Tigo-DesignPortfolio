@@ -52,6 +52,111 @@
   let lastFocus = null;
   let inflight = null;
 
+  // ============================================================
+  // The sheet COMES OUT OF THE BUTTON.
+  //
+  // It used to fade up 18px, which is what every panel on the web does
+  // and says nothing about where it came from. The AI is one door — the
+  // pill in the bottom-right corner — and the sheet opens over it, so
+  // the honest entrance is the card growing out of that pill.
+  //
+  // ---- What this was, and why it isn't any more.
+  //
+  // The first build was a clip-path morph: a window in exactly the
+  // pill's shape, unfolding into the card, with the sheet's fill going
+  // ink-to-paper so frame one WAS the button. Conceptually lovely, and
+  // clunky in the hand, for two reasons that are worth writing down.
+  //
+  //   · It could not be composited. clip-path and background-color are
+  //     both paint properties: every frame repainted a 520x620 panel
+  //     with a live DOM in it, on the main thread, while the page
+  //     underneath was still settling. It ran at whatever the main
+  //     thread had left.
+  //   · Worse, it read as THREE events instead of one. An 80ms hold
+  //     (nothing moves), then an unfold on an overshoot curve that
+  //     visually finished early — the last fifth of the ease pushed the
+  //     clip past the sheet's own edges, where it is a no-op — then,
+  //     after another pause, the contents faded in on their own delay.
+  //     Pause, pop, pause, fade. Each piece was tuned; the sequence was
+  //     the clunk.
+  //
+  // ---- What it is now: ONE gesture, on the compositor.
+  //
+  // A uniform scale about the pill's centre, plus opacity. Both are
+  // compositor properties, so the whole ride is off the main thread and
+  // cannot be starved by whatever else the page is doing. Uniform is
+  // the important word: 0.86 to 1 leaves type legible the whole way and
+  // never squashes it, which is what stopped a scale-from-small being
+  // an option when the box was going down to the pill's 152x48. It does
+  // not have to reach the pill's SIZE to come from the pill — it has to
+  // come from its PLACE, and that is what transform-origin does.
+  //
+  // One curve (--ease-rise, a long graceful settle), one duration, no
+  // delays, no overshoot. The dock hands off in the same breath: it
+  // shrinks a touch and fades as the card grows out of it, so the two
+  // read as one object changing state rather than two things swapping.
+  // ============================================================
+  const EASE_MS = 420;                   // the ride, plus a frame or two
+  let poseTimer = 0;
+
+  // ---- where a thing WOULD be if nothing were moving it.
+  //
+  // Both boxes are posed at the moment they are measured, and both
+  // errors are silent. The sheet: the base .ai-stage rule holds an
+  // un-revealed one 18px low (the phone sheet's rise). The dock: it
+  // rides in on translate and lifts 2px under the pointer — and the
+  // pointer is ON it, always, at the exact moment this runs.
+  //
+  // The TRANSITION has to be muted first, and that is the subtlety.
+  // Both carry a transition on `translate`, so simply writing the rest
+  // value starts a tween and a rect read on the next line returns the
+  // value at t=0 — the posed number again. The neutralisation silently
+  // changes nothing. Mute, write, read, write back, commit the
+  // write-back while still muted, then unmute.
+  //
+  // Both boxes are done together on purpose: one mute/read/restore pass
+  // is two style flushes instead of four, and these four flushes land
+  // in the click handler, immediately before the animation starts —
+  // exactly where a dropped frame is most visible.
+  function restPose() {
+    const dock = document.getElementById('ask-dock');
+    const els = [stage, dock && dock.offsetWidth ? dock : null].filter(Boolean);
+    const saved = els.map((el) => {
+      const st = el.style;
+      const was = [st.transform, st.translate, st.transition];
+      st.transition = 'none';
+      st.transform = 'none';
+      st.translate = '0px';
+      return was;
+    });
+    const rects = els.map((el) => el.getBoundingClientRect());
+    els.forEach((el, i) => {
+      el.style.transform = saved[i][0];
+      el.style.translate = saved[i][1];
+    });
+    void els[0].offsetWidth;               // commit the restores, still muted
+    els.forEach((el, i) => { el.style.transition = saved[i][2]; });
+    return { sheet: rects[0], dock: rects[1] || null };
+  }
+
+  // The origin is the pill's centre in the sheet's own box, as a
+  // percentage so it survives a resize of either. The dock may be absent
+  // (a case study never builds one) or hidden (⌘K, the phone), and then
+  // the fallback is the box it WOULD have stood in: 152x48, 8px inside
+  // the sheet's bottom-right, which is where right:24/bottom:24 lands
+  // against the sheet's right:16/bottom:16.
+  function poseFrom() {
+    if (!stage || isPhone()) return;
+    const { sheet: s, dock: d } = restPose();
+    if (!s || !s.width || !s.height) return;
+    const w = d ? d.width : 152;
+    const h = d ? d.height : 48;
+    const cx = d ? d.left + w / 2 - s.left : s.width - w / 2 - 8;
+    const cy = d ? d.top + h / 2 - s.top : s.height - h / 2 - 8;
+    stage.style.setProperty('--ai-ox', (cx / s.width * 100).toFixed(2) + '%');
+    stage.style.setProperty('--ai-oy', (cy / s.height * 100).toFixed(2) + '%');
+  }
+
   function open(seed) {
     if (!overlay || isOpen) return;
     isOpen = true;
@@ -62,13 +167,34 @@
     // one move — which on play.html means the games stop hearing the
     // keyboard the moment the sheet is up
     if (card) card.setAttribute('inert', '');
-    document.documentElement.classList.add('ai-open');
     stage.classList.remove('revealed');
+    // MEASURE FIRST, and specifically before `ai-open` goes on: that class
+    // is what sends the dock away, so measuring after it means measuring a
+    // pill already leaving. (restPose would survive it — that is what the
+    // muting is for — but the cheapest fix for a race is not to have one.)
+    poseFrom();
+    document.documentElement.classList.add('ai-open');
+    stage.classList.add('is-emerging');
+    clearTimeout(poseTimer);
     stage.offsetHeight;                       // commit before re-adding
     requestAnimationFrame(() => stage.classList.add('revealed'));
+    // …and the class comes off at the end. It carries `will-change`, which
+    // is a promise, not a decoration: a layer held for the life of the page
+    // costs memory and can soften the sheet's text on some GPUs. It also
+    // carries the transform, and a transformed ancestor is a containing
+    // block for anything fixed inside it — so this is hygiene, not tidying.
+    poseTimer = setTimeout(() => {
+      if (isOpen) stage.classList.remove('is-emerging');
+    }, EASE_MS);
     document.addEventListener('keydown', onKey, true);
     if (input) input.focus({ preventScroll: true });
-    if (seed) submitQuestion(seed);
+    if (seed) {
+      // the sheet is arriving with the question already asked (the hero
+      // composer, or a ?q= deep link), so the chip stack has nothing left
+      // to offer — without this it hangs over the first exchange
+      if (prompts) prompts.style.display = 'none';
+      submitQuestion(seed);
+    }
   }
 
   function close() {
@@ -77,11 +203,22 @@
     if (inflight) inflight.abort();
     stopListening();
     closePersonaMenu();
+    // it folds back into the button it came out of. Re-posed rather than
+    // reused: the sheet may have been dragged or resized since it opened,
+    // so the pill sits somewhere else in its coordinates now.
+    clearTimeout(poseTimer);
+    poseFrom();
+    stage.classList.add('is-emerging');
+    stage.offsetHeight;
     stage.classList.remove('revealed');
     document.removeEventListener('keydown', onKey, true);
     if (card) card.removeAttribute('inert');
     document.documentElement.classList.remove('ai-open');
-    setTimeout(() => { if (!isOpen) overlay.hidden = true; }, 500);  // --t-stage
+    setTimeout(() => {
+      if (isOpen) return;
+      overlay.hidden = true;
+      stage.classList.remove('is-emerging');
+    }, 500);  // --t-stage
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
 

@@ -653,43 +653,13 @@
       '</a>' +
     '</section>';
 
-  // What the blank says when nobody is near it. The line used to cycle
-  // on a timer, and a rail that rewrites itself in the corner of your
-  // eye while you are reading the page is a distraction the page did not
-  // ask for. So at rest there is one calm, honest label — the widest
-  // possible invitation — and nothing moves.
-  const REST = 'ask me anything';
-
-  // …and what the ghost writer types when you actually come near (see
-  // wireAI). They are the questions a stranger arrives with, phrased the
-  // way they would type them — third person, lowercase — because that is
-  // what a placeholder is: a sample of your own input, not a prompt from
-  // the site. REST is not among them: it is the label the writer erases
-  // to begin and restores when you leave, so typing it would be the line
-  // announcing what it already says.
-  //
-  // Every one of them is written to a MEASURED budget, and that is a hard
-  // constraint rather than a style. The blank is exactly as wide as the
-  // name above it (css/shell.css .ask-blank, --blank-w), the asterisk and
-  // its gap take 26 of that, and what is left is ~100px at 13px — so a
-  // question must set under 100px, not under some number of characters.
-  // Measured at the default rail: 'what did he do?' 96, 'is he
-  // available?' 91, "what's he use?" 90, 'who is Tigo?' 75, and REST
-  // itself 99 (the widest string the blank ever holds).
-  //
-  // Two of these were longer before the rule was pinned to the name:
-  // 'what did he build?' sets 110 and "what's his stack?" 104, both past
-  // the edge. Shortening the copy is the right side of that trade — the
-  // rule matching the name is structural, and a question is just words.
-  // ("what did he build at Vicino?" was the very first draft and it
-  // clipped mid-word, which does not read as a long question — it reads
-  // as a broken one.)
-  const ASKS = [
-    'what did he do?',
-    'is he available?',
-    "what's he use?",
-    'who is Tigo?',
-  ];
+  // (GONE 2026-08-24: REST and ASKS — the resting label and the four
+  // questions the ghost writer typed. They belonged to the rail's ask
+  // blank, then to the home page's composer, and both of those have been
+  // retired in favour of ONE door: the corner dock (buildDock), which
+  // says what it is in two words and never rewrites itself. The
+  // typewriter idiom survives where it started, on the hero's name —
+  // js/typewriter.js.)
 
   const buildSide = () => {
     if (!side) return;
@@ -705,66 +675,32 @@
 
     side.innerHTML =
       // ============================================================
-      // The letterhead, and the blank.
+      // The letterhead — a name and a role, and nothing else.
       //
-      // The chip is dead. It held who-this-is and the ask field on a
-      // plate of --g-050, and that plate was the only filled surface in
-      // a column that is otherwise entirely type — labels, rows, status.
-      // One box in a rail of typography does not read as "the important
-      // thing"; it reads as a widget from another site. So the box is
-      // gone and the rail speaks in one material everywhere: ink on the
-      // bone.
+      // It held the ask blank underneath it for a while: one asterisk and
+      // a rotating question on a dotted rule, the AI's quiet door. A
+      // composer in the middle of the home page was tried next, and both
+      // were retired the same week for one reason — the AI is ONE door
+      // now, the pill in the corner (buildDock), and a site with one door
+      // does not put a second, quieter copy of it in the rail.
       //
-      // Name and role stand as plain type, and directly under them sits
-      // the blank: ONE asterisk — the site's AI mark — then the rotating
-      // question on a dotted rule. The rule is the site's construction
-      // line (the globe's grid, the spark's orbit) doing what a dotted
-      // line does on paper: marking the blank you are invited to write
-      // in. Proximity is what ties the halves together; a second
-      // asterisk up on the name tried to say it too and read as a
-      // duplicate, so the mark appears exactly once, where the feature
-      // lives.
+      // So the rail is identity, in the one material it speaks
+      // everywhere: ink on the bone, no surface, no box.
       //
-      // ONE target, and it is the LINE, not the block: a name set as
-      // plain type must not be a trapdoor into a dialog. The blank is
-      // the door (see wireAI); the name is just the letterhead.
-      //
-      // The input inside is a facade — see wireAI(). Clicking the line,
-      // or typing into it, opens the sheet, which owns the real field;
-      // the keystroke is carried across so nothing is lost. On a page
-      // without ai-chat.js the whole thing falls back to ai.html.
-      '<div class="ask-chip" id="ask-chip">' +
+      // It IS a link — but home, which is the one thing a wordmark in the
+      // top-left corner has always meant. That is not the rule it used to
+      // break: "a name set as plain type must not be a trapdoor into a
+      // dialog" was about the AI sheet opening out of a line of identity,
+      // which nobody expects. Going home is what everybody expects, and
+      // on the home page itself the rail delegate glides it back up to
+      // the hero rather than reloading the document (wireNav). The AI's
+      // doors are the dock and ⌘K, and neither of them is this.
+      '<a class="ask-chip" id="ask-chip" href="index.html#home">' +
         '<span class="side-id-text">' +
           '<span class="side-name">Tigo Ponce de León</span>' +
           '<span class="side-role">product design engineer</span>' +
         '</span>' +
-        // the typed question is the only moving thing in the rail, and
-        // it says what the AI is FOR — which "ask my ai" never did. (Not a
-        // pulse: the old arrival ring was cut for reading as a
-        // notification badge. This is the control doing its job, and it
-        // stops the moment you touch it.)
-        //
-        // The mirror and the caret belong to the ghost writer (below):
-        // the mirror is an invisible copy of the placeholder-so-far,
-        // measured so the caret can stand exactly after the last letter;
-        // both are absolute, so the flex line never knows they exist.
-        // The BLANK is its own box, and the rule belongs to it rather than
-        // to the whole line: what is ruled is what you can write on. The
-        // ⌘K sits outside it — a hint about the blank, not part of it —
-        // which is also what stops the rule from running the full width
-        // of the column and reading longer than the name it belongs to.
-        '<div class="ask-line" id="ask-line">' +
-          '<span class="ask-blank">' +
-            svg(G.ai, 2) +
-            '<input class="ask-input" id="ask-input" type="text" ' +
-              'aria-label="Ask my AI about Tigo" autocomplete="off" ' +
-              'spellcheck="false" placeholder="' + esc(REST) + '" />' +
-            '<span class="ask-mirror" id="ask-mirror" aria-hidden="true"></span>' +
-            '<span class="ask-caret" id="ask-caret" aria-hidden="true" hidden></span>' +
-          '</span>' +
-          '<span class="ask-kbd" aria-hidden="true">⌘K</span>' +
-        '</div>' +
-      '</div>' +
+      '</a>' +
       '<nav class="side-scroll" id="side-scroll" aria-label="Site">' + groups + '</nav>' +
       '<div class="side-foot">' +
         statusHTML() +
@@ -929,6 +865,67 @@
         AI_PANEL +
       '</div>';
     shell.appendChild(wrap);
+  };
+
+  // ============================================================
+  // The dock — the AI's own door, standing in the card's corner.
+  //
+  // The rail's letterhead is the QUIET door: a line of type in a column
+  // of type, which is exactly right for a rail and exactly wrong as the
+  // only handle a stranger is ever given. It is quieter still on the
+  // home screen, where it now waits for the hero to leave (see
+  // wireAskReveal) — so for the first whole screen of the site the one
+  // piece of software on it had nothing visible to press.
+  //
+  // So: ONE filled thing, in the corner the eye checks last, saying
+  // plainly what it is. Filled is the whole point — it is the only
+  // filled surface the shell shows, which is what buys the prominence,
+  // and it can be the only one because it lives OVER the page rather
+  // than in a column of type (that is the mistake the old rail chip
+  // made, and why the chip is dead).
+  //
+  // INK, not ember. The site's rule for a primary filled action is ink
+  // on parchment and ember never fills (css/ai.css .ai-send says it in
+  // as many words); ember is spent on four things that MOVE and a
+  // button at rest is not one of them. Hover spends the half-step to
+  // --orange instead — the same "louder than ink" every other state on
+  // this site is drawn with.
+  //
+  // It wears the AI's asterisk inside the site's construction line
+  // (2 on, 5 off — the sheet's spark, the rail's blank, the globe's
+  // grid), and the mark TURNS under the hand: the verb the rail's
+  // asterisk already speaks, so the two doors move the same way. No
+  // pulse, no badge, no ring at rest — an arrival ring was tried in the
+  // rail and cut for reading as a notification, and nothing here is
+  // allowed to move until someone is looking at it.
+  // ============================================================
+  const buildDock = () => {
+    const b = document.createElement('button');
+    b.className = 'ask-dock';
+    b.id = 'ask-dock';
+    b.type = 'button';
+    // the label is a word, not a sentence; the full ask is for the reader
+    // who cannot see the pill's shape
+    b.setAttribute('aria-label', 'Ask my AI about Tigo');
+    b.setAttribute('aria-haspopup', 'dialog');
+    // Not svg() — this glyph carries a second element the rail's does not
+    // (the orbit), and the asterisk is drawn a size down inside it so the
+    // mark can turn without ever touching the dots.
+    b.innerHTML =
+      '<svg class="dock-mark" viewBox="0 0 26 26" aria-hidden="true" fill="none">' +
+        '<circle class="dock-orbit" cx="13" cy="13" r="11.2" ' +
+          'stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 5" ' +
+          'stroke-linecap="round" />' +
+        '<g class="dock-star" stroke="currentColor" stroke-width="2.1" ' +
+          'stroke-linecap="round">' +
+          '<path d="M13 6.6 V19.4" />' +
+          '<path d="M7.5 9.8 L18.5 16.2" />' +
+          '<path d="M18.5 9.8 L7.5 16.2" />' +
+        '</g>' +
+      '</svg>' +
+      '<span class="dock-label">ask my ai</span>' +
+      '<span class="dock-kbd" aria-hidden="true">⌘K</span>';
+    shell.appendChild(b);
   };
 
   // ============================================================
@@ -1256,6 +1253,16 @@
     const row = side && side.querySelector('.side-link[data-page="ai"]');
     if (row) row.addEventListener('click', openIt);
 
+    // ---- the dock, and it is the SAME door. It knocks through openAsk
+    // with an empty seed, so a page that never loaded ai-chat.js still
+    // gets the ai.html hand-off rather than a button that does nothing.
+    // A plain click, not a pointerdown: the letterhead opens on press
+    // because it is a facade with a field in it and a caret must never
+    // land there, and this is a button — buttons answer to clicks, and
+    // to Space and Enter for free.
+    const dock = document.getElementById('ask-dock');
+    if (dock) dock.addEventListener('click', () => openAsk(''));
+
     document.addEventListener('keydown', (e) => {
       if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'k') return;
       if (!window.AIChat) return;
@@ -1263,267 +1270,125 @@
       if (window.AIChat.isOpen()) window.AIChat.close();
       else window.AIChat.open();
     });
+  };
 
-    // ============================================================
-    // The ask line
-    //
-    // The field inside it is a FACADE, deliberately. It is about 130px
-    // wide at the rail's default width, which is no place to write a
-    // question — so it never holds one. It looks typeable because looking
-    // typeable is the entire point, and the instant you treat it as one it
-    // hands the sentence to the sheet, which has the room.
-    //
-    // The WHOLE LETTERHEAD is the target — name, role and blank. It was
-    // the line alone for a while, on the theory that a name set as plain
-    // type must not be a trapdoor; in practice the name is the first
-    // thing a visitor's pointer lands on in the rail, and landing there
-    // to find the blank underneath dead is the worse surprise. The two
-    // halves are one object, so they answer as one: hovering the name
-    // inks the pen and wakes the ghost writer, and clicking it opens the
-    // sheet exactly as clicking the blank does, and one cursor covers the
-    // whole block so the pointer never changes shape inside it (see
-    // .ask-chip).
-    //
-    // Pointer and keyboard are split on purpose. A pointer press means
-    // "now", so it opens on pointerdown with focus never landing here at
-    // all — preventDefault keeps the caret from blinking in a field that
-    // is about to be behind a scrim. A keyboard TAB does not mean now: it
-    // means you are passing through, so tabbing in only pauses the
-    // rotation and shows you a caret, and it is the first real character
-    // (or Enter) that opens the sheet.
-    // ============================================================
+  // ============================================================
+  // The letterhead SCROLLS IN — it is not switched on.
+  //
+  // On the home screen the name and the role are already set, several
+  // times over, in the middle of the page. Two spellings of the same
+  // words on one screen is not emphasis, it is an echo, and it is the
+  // small copy that loses. So on the document that owns the hero —
+  // index, and only index: every other page has no #home and this
+  // returns at the first line — the rail's letterhead is not there at
+  // all, and the tree simply starts at the top of the column.
+  //
+  // The first version FLIPPED it: two thresholds, a class on and a class
+  // off, and a 0.6s transition to cover the switch. That is an animation
+  // playing NEAR a scroll, not a thing being scrolled, and it read as
+  // one — the letterhead arrived on its own clock and you could pass the
+  // trigger without seeing it.
+  //
+  // This is the honest version. One number, `p`, is the letterhead's
+  // progress, and the scroll wheel is the only thing that moves it: the
+  // slot opens from zero to the block's full height in exact lockstep
+  // with the hero leaving, and the type inside is CLIPPED by that slot,
+  // so the name is revealed a line at a time from the top down. Scroll
+  // half as far and it is half in; scroll back and it goes back. There
+  // is no transition on the geometry at all, because there is nothing to
+  // ease — the visitor's hand is the easing.
+  //
+  // It is spent over HALF A SCREEN of scrolling (the hero holding 88% of
+  // the reading area down to 30%), which is the "slowly but surely" part:
+  // long enough to be a movement you watch rather than a state you
+  // notice has changed.
+  //
+  // Two curves shape it, both applied to the same raw travel:
+  //   · smoothstep on the geometry, so the slot eases out of nothing and
+  //     into place instead of starting and stopping at full speed;
+  //   · the ink lags the slot (it waits until the slot is 18% open and is
+  //     fully up at 85%), so the first thing that happens is the space
+  //     being made and the last is the name landing in it. Type that
+  //     faded in exactly as fast as its own box opened read as one blurry
+  //     event; staged, it reads as two — make room, then arrive.
+  //
+  // Measured against the READING AREA (the window under the sticky
+  // strip, the line every other spy on this site reads).
+  // ============================================================
+  const wireAskReveal = () => {
     const chip = document.getElementById('ask-chip');
-    const line = document.getElementById('ask-line');
-    const field = document.getElementById('ask-input');
-    if (!chip || !line || !field) return;
+    const hero = document.getElementById('home');
+    if (!chip || !hero) return;
 
-    // ONE listener, on the CHIP — not one per half. Two listeners meant
-    // two controls that happened to agree, and the seam showed: the gaps
-    // between them (the 10px step down to the blank, the 2px between name
-    // and role) belonged to neither, so the pointer crossed a dead strip
-    // on its way from the name to the line. The whole letterhead is the
-    // button, so there is nothing between its parts to fall through.
-    //
-    // A modified click is someone asking for a new tab; the letterhead is
-    // not an anchor and has nowhere to put one, so it does nothing rather
-    // than something surprising.
-    chip.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      e.preventDefault();
-      openAsk('');
-    });
-
-    // ---- and the rule is the name's own length.
-    // Measured rather than declared: the name is system type, so its
-    // width is whatever the visitor's machine renders it at, and a number
-    // hard-coded off SF Pro would be a near-miss on every other font. A
-    // Range over the text node gives the ink's true width — the element's
-    // own box is the full column, ellipsis and all — and it is banked at
-    // full precision so the two edges land on the same subpixel.
-    const fitBlank = () => {
-      const name = chip.querySelector('.side-name');
-      if (!name || !name.firstChild) return;
-      const r = document.createRange();
-      r.selectNodeContents(name);
-      const w = r.getBoundingClientRect().width;
-      // guard the frame before layout: a 0 here would collapse the rule
-      if (w > 1) chip.style.setProperty('--blank-w', w + 'px');
+    // ---- the slot's full height, MEASURED, not declared. The block is
+    // system type at two sizes, so its height is whatever the visitor's
+    // machine renders it at and a number off SF Pro would be a near-miss
+    // on every other font. Measured on the TEXT, never on the chip: the
+    // chip's own height is the thing this drives, so measuring it would
+    // be reading back the answer. Re-run when the real face lands.
+    const fit = () => {
+      const text = chip.querySelector('.side-id-text');
+      if (!text) return;
+      const h = text.getBoundingClientRect().height;
+      if (h > 1) chip.style.setProperty('--ask-h', h + 'px');
     };
-    fitBlank();
-    // …and again when the real face lands, because the fallback font's
-    // measure is not the one the visitor ends up reading
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBlank);
+    fit();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    chip.classList.add('is-tracked');   // only now is the geometry safe to arm
 
-    field.addEventListener('keydown', (e) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;   // ⌘K still gets through
-      if (e.key === 'Enter') { e.preventDefault(); openAsk(''); return; }
-      // one printable character — anything longer is a named key
-      if (e.key.length !== 1) return;
-      e.preventDefault();
-      openAsk(e.key);
-    });
+    const IN = 0.88;                 // hero's share of the screen: p = 0 above
+    const OUT = 0.30;                // …and p = 1 below
+    const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+    const smooth = (v) => v * v * (3 - 2 * v);
 
-    // …and the backstop, because keydown is not how every character
-    // arrives. A paste, an IME commit, a phone's autocomplete and the
-    // browser's own autofill all write straight to the value without ever
-    // pressing a key, and without this they would strand a whole sentence
-    // in a 130px field that cannot send it. Whatever lands here is handed
-    // over and the facade is wiped, so it is never holding text.
-    field.addEventListener('input', () => {
-      const carried = field.value;
-      if (!carried) return;
-      field.value = '';
-      openAsk(carried);
-    });
-
-    // ---- what gives when the rail is dragged narrow.
-    //
-    // The visitor owns the rail's width (180 → 420, see .side-grip), and
-    // every other label in it is written to survive the minimum — nothing
-    // in the tree ellipsises at 180px. The question would: it needs about
-    // 106px and the field is down to 90 by then, so it alone would break
-    // the rule the rest of the rail keeps.
-    //
-    // The ⌘K is what pays. It is the most expendable thing on the line —
-    // a hint for a shortcut that goes on working whether or not it is
-    // printed — and dropping it hands the question back the ~30px it was
-    // short. Measured off the line rather than off the field, because the
-    // field's own width is what the hiding changes, and a threshold that
-    // moves with its own outcome oscillates. (160, not the 188 this was
-    // before the chip: the line lost its own gutter when it moved inside
-    // a padded container.)
-    if (window.ResizeObserver) {
-      new ResizeObserver(() => {
-        // 170, up from 160: the question grew to 13px when the rail's type
-        // collapsed to one scale, so the width where it stops fitting
-        // moved with it — the hint gives way a few px sooner
-        line.classList.toggle('is-tight', line.clientWidth < 170);
-      }).observe(line);
-    }
-
-    // ============================================================
-    // The ghost writer — and it only writes when you are there.
-    //
-    // The questions used to crossfade on a timer, then be TYPED on a
-    // timer, and the timer was the mistake either way: a line that
-    // rewrites itself in the corner of your eye, forever, while you are
-    // trying to read the page. Motion that nobody asked for is noise no
-    // matter how well it is drawn.
-    //
-    // So the blank rests on one calm label — "ask me anything" — and
-    // holds perfectly still. Bring the pointer to the LETTERHEAD — the
-    // name, the role, or the blank itself, since they are one object and
-    // the chip is one zone — and the writer wakes: it erases the label
-    // and ghost-writes the questions a stranger actually arrives with,
-    // one after another, for exactly as long as you are looking. Take
-    // the pointer away and the line puts its label back and goes quiet. The rail is still at rest and alive
-    // under the hand, which is the right way round.
-    //
-    // It is the same gesture that opens the site — the hero name types
-    // itself once on arrival — so this is that typewriter's second life.
-    // The beat of one question:
-    //   erase (fast, the platen's return) → the asterisk clicks ONE
-    //   NOTCH (+60°, its six-fold symmetry landing it on itself — the
-    //   advance that loads the next line) → type (with per-letter
-    //   jitter, nobody types on a metronome) → the caret blinks its tail
-    //   → the next question.
-    //
-    // The caret is EMBER — the palette's first sanctioned ember object
-    // is "the caret that types the name" (styles.css), and this is the
-    // same caret at its second desk. It exists only while the writer is
-    // actually writing, so a rail at rest spends no colour at all.
-    //
-    // The questions do NOT restart at the top on every hover: the index
-    // survives, so coming back to the line brings the next question
-    // rather than the same one again.
-    // ============================================================
-    if (reduced()) { field.placeholder = REST; return; }
-
-    const caret = document.getElementById('ask-caret');
-    const mirror = document.getElementById('ask-mirror');
-    let i = -1;                    // -1 → the first wake types ASKS[0]
-    let turn = 0;
-    let awake = false;
-    let t = 0;
-    const step = (fn, ms) => { clearTimeout(t); t = setTimeout(fn, ms); };
-
-    // the caret stands exactly after the last letter: the mirror wears
-    // the same type, so its width IS the text's width. Clamped to the
-    // field's own box for the one day a question outgrows a narrow rail.
-    const caretTo = () => {
-      if (!caret || !mirror) return;
-      mirror.textContent = field.placeholder;
-      caret.style.left = (field.offsetLeft +
-        Math.min(mirror.offsetWidth + 1, field.offsetWidth - 2)) + 'px';
-    };
-    const caretOn = () => { caret.hidden = false; caret.classList.remove('is-blink'); };
-    const caretOff = () => { caret.hidden = true; caret.classList.remove('is-blink'); };
-
-    // …and the three things that end a session even with the pointer
-    // still on the line: the tab going away, the sheet rising over it,
-    // and the field taking a real caret. Checked in the loop rather than
-    // wired to events because two of them have no event to listen to.
-    const blocked = () => document.hidden || document.activeElement === field ||
-      !!(window.AIChat && window.AIChat.isOpen());
-
-    const erase = () => {
-      if (!awake) return;
-      if (blocked()) { sleep(); return; }
-      if (!field.placeholder) { advance(); return; }
-      caretOn();
-      field.placeholder = field.placeholder.slice(0, -1);
-      caretTo();
-      step(erase, 22);
-    };
-    const advance = () => {
-      // the caret stays, standing at the left margin — the carriage has
-      // returned and the writer is loading the next line
-      i = (i + 1) % ASKS.length;
-      // the notch — banked in the var the hover's half-turn stacks on
-      // (see .ask-blank > svg: a calc over the same var, so the two
-      // spins can never fight)
-      turn += 60;
-      line.style.setProperty('--ask-spin', turn + 'deg');
-      step(write, 300);
-    };
-    const write = () => {
-      if (!awake) return;
-      if (blocked()) { sleep(); return; }
-      const want = ASKS[i];
-      if (field.placeholder === want) {
-        // the tail: the caret blinks at the end of the sentence, long
-        // enough to read it, then the writer reaches for the next one
-        caret.classList.add('is-blink');
-        step(erase, 1600);
-        return;
-      }
-      caretOn();
-      field.placeholder = want.slice(0, field.placeholder.length + 1);
-      caretTo();
-      step(write, 38 + Math.random() * 30);      // nobody types on a metronome
+    let last = -1;
+    const apply = (p) => {
+      if (Math.abs(p - last) < 0.001) return;
+      last = p;
+      chip.style.setProperty('--ask-p', smooth(p).toFixed(4));
+      chip.style.setProperty('--ask-o', smooth(clamp((p - 0.18) / 0.67)).toFixed(4));
+      // out of the tab order until there is something to reach — a
+      // letterhead nobody can see must not be what Tab finds first
+      if (p <= 0.001) chip.setAttribute('inert', '');
+      else chip.removeAttribute('inert');
     };
 
-    // ---- waking and sleeping.
-    // The wake is DELAYED by a beat: a pointer crossing the rail on its
-    // way to the tree passes over this line, and a writer that fires on
-    // the fly-past would be exactly the flicker this design removed.
-    // 140ms is long enough to mean "you stopped here".
-    const wake = () => {
-      if (awake || document.hidden) return;
-      if (window.AIChat && window.AIChat.isOpen()) return;
-      if (document.activeElement === field) return;   // they are typing, not watching
-      awake = true;
-      step(erase, 140);
-    };
-    // Sleep SNAPS: the label returns at once rather than being typed
-    // back, because an animation that plays after the pointer has gone
-    // is motion aimed at nobody.
-    const sleep = () => {
-      awake = false;
-      clearTimeout(t);
-      caretOff();
-      field.placeholder = REST;
+    const read = () => {
+      const head = chromeH();
+      const view = Math.max(1, window.innerHeight - head);
+      const r = hero.getBoundingClientRect();
+      // the share of the reading area the hero still holds
+      const vis = (Math.min(r.bottom, window.innerHeight) -
+                   Math.max(r.top, head)) / view;
+      apply(clamp((IN - vis) / (IN - OUT)));
     };
 
-    // the CHIP, not the line: the pointer crossing from the name down to
-    // the blank must not read as a leave-then-enter, or the writer would
-    // reset the question mid-sentence on the way to the thing it is
-    // advertising
-    chip.addEventListener('pointerenter', wake);
-    chip.addEventListener('pointerleave', sleep);
-    // a keyboard visitor gets the resting label and their OWN caret —
-    // the ghost stands down rather than typing over what they came to
-    // write, and picks up again only if the pointer is still resting here
-    field.addEventListener('focus', sleep);
-    field.addEventListener('blur', () => { if (chip.matches(':hover')) wake(); });
-    // closing the rail takes the whole line off screen, pointer or not
-    window.addEventListener('shell:rail', sleep);
+    read();
+
+    let queued = false;
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; read(); });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    // the card rescales on a rail slide or a seam drag, which moves the
+    // hero under a stationary scroll position
+    window.addEventListener('shell:fit', onScroll);
   };
 
   if (!EMBED) {
     buildChrome();
     buildSide();
     buildAI();
+    // …but NOT inside a case study. A story is somewhere you have gone to
+    // READ, and a filled black pill parked over the last paragraph is the
+    // site interrupting itself — the same reason the reading rail is the
+    // only chrome those pages carry. The AI is still there on ⌘K; it just
+    // stops asking. (Cases are real documents now, not the old ?case=
+    // overlay, so the test is simply whether this page IS one.)
+    if (!document.querySelector('.case-stage')) buildDock();
 
     const grip = document.createElement('div');
     grip.className = 'side-grip';
@@ -1552,6 +1417,12 @@
       // shift the target — assert the pixel once more on the first frame
       requestAnimationFrame(() => window.scrollTo(0, t0.state.y));
     }
+
+    // LAST, and after the pixel restore on purpose: this reads the hero's
+    // rect to decide whether the letterhead is there at all, and reading
+    // it before the restore would answer for the top of a page the visitor
+    // is not on.
+    wireAskReveal();
   } else {
     // ---- the bridge back to the parent frame. Registered at load time,
     // AFTER every parse-time listener on this document, so a page overlay
@@ -1583,6 +1454,11 @@
   const lightUp = () => {
     if (chrome) chrome.classList.add('is-lit');
     if (side) side.classList.add('is-lit');
+    // the dock arrives with the furniture — on Home that means after the
+    // name has finished typing, so the set piece is never interrupted by a
+    // filled black pill sliding into the corner halfway through it
+    const dock = document.getElementById('ask-dock');
+    if (dock) dock.classList.add('is-lit');
   };
   if (root.classList.contains('intro-pending')) {
     window.addEventListener('shell:intro-done', lightUp, { once: true });
