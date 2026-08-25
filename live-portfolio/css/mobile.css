@@ -139,10 +139,6 @@
   }
   .m-work-go span { margin-left: 2px; }
 
-  /* the desktop stepper's own furniture, in case it is ever on the page
-     without js (progressive enhancement rather than a broken screen) */
-  .pick-hint { display: none; }
-
   /* About's own phone layout — and the pin it used to keep from the
      desktop — lives with the rest of About, in css/about.css. The one
      thing that belongs to the PAGER is here: the two chapters are one
