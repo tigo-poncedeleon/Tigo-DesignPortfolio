@@ -57,11 +57,40 @@
       arm();
     }
 
-    // …and bows out the moment the visitor moves
+    // …and bows out the moment the visitor moves.
+    //
+    // ---- THE HERO DIMS AS IT LEAVES ----
+    // The chat sits at the FOOT of the hero once a question has been asked,
+    // and the hero is still ~190px of screen at the moment Work's own
+    // content reaches the middle of it — so the composer was still drawn,
+    // at full strength, across the top of a screen that belongs to Work.
+    // Nothing was overlapping wrongly; the hero was simply outstaying the
+    // screen it owns.
+    //
+    // So the hero's contents fade on the hero's own exit: `gone` is the
+    // share of it that has scrolled off the top, and everything in it is
+    // clear by OUT of that share — 0.7, which lands the last of the fade
+    // a comfortable margin before Work is centred. Published as one custom
+    // property and spent in css/ai.css and css/styles.css, so the name and
+    // the chat dim together on one clock rather than one of them going
+    // ghostly beside the other.
+    //
+    // Both numbers come from the SAME rect: `main` is scaled by `zoom`
+    // (js/stage-fit.js), so a visual top over a layout height would be
+    // wrong by the scale factor on every screen that is not 1280 wide.
+    const OUT = 0.7;
     let raf = 0;
     const track = () => {
       raf = 0;
       stage.classList.toggle('is-scrolled', window.scrollY > 40);
+      const r = stage.getBoundingClientRect();
+      const gone = r.height > 0
+        ? Math.min(Math.max(-r.top / r.height, 0), 1) : 0;
+      const fade = Math.max(0, 1 - gone / OUT);
+      stage.style.setProperty('--hero-fade', fade.toFixed(3));
+      // …and once it is clear it stops taking the pointer. Opacity alone
+      // would leave an invisible composer swallowing clicks on Work's title.
+      stage.classList.toggle('is-gone', fade <= 0.005);
     };
     window.addEventListener('scroll', () => {
       if (!raf) raf = requestAnimationFrame(track);

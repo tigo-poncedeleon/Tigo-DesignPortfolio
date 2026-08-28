@@ -169,7 +169,15 @@
   }
   .ai-stage.is-hero {
     --sheet-pad: 14px;
-    --input-h:   52px;
+    /* 84, not the 52 this block was written with. NOT a design change —
+       the composer is two rows now (css/ai.css .ai-inputbar), and 52 does
+       not contain a 30px control row plus its padding, so at 52 the
+       attach, mood, mic and send all hang out below the border. Every
+       other number in this block is the one the phone had before the
+       desktop pass; when the phone is redrawn properly this whole block
+       gets rewritten anyway. */
+    --input-h:   84px;
+    --ctl-h:     30px;
     --input-ins: 30px;
     --sub-ins:   11px;
     --chip-h:    44px;

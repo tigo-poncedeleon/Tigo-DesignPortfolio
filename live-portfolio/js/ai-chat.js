@@ -16,16 +16,21 @@
   const AI_ENDPOINT =
     window.AI_ENDPOINT || 'https://tigo-design-portfolio.vercel.app/api/chat';
   const STORE_KEY = 'ai.history';
-  const SUB_LIVE = 'powered by Claude Haiku 4.5';
+  // The live line — "powered by Claude Haiku 4.5" — is GONE. A model's name
+  // under an empty field is a spec sheet, and the one thing on the home
+  // screen should not introduce itself by its parts. What is left is the
+  // line that actually has something to say: when the assistant cannot be
+  // reached, the answers are canned, and a visitor is owed that.
+  const SUB_LIVE = '';
   const SUB_OFFLINE = 'offline — canned answers for now';
 
   const panel    = document.getElementById('ai-panel');
   const scroll   = document.getElementById('ai-scroll');
-  const prompts  = document.getElementById('ai-prompts');
   const inputBar = document.getElementById('ai-inputbar');
   const input    = document.getElementById('ai-input');
   const subEl    = document.getElementById('ai-sub');
   const liveEl   = document.getElementById('ai-live');
+  const resetBtn = document.getElementById('ai-reset');
   const sendBtn  = inputBar ? inputBar.querySelector('.ai-send') : null;
   const hero     = document.getElementById('home');
   // the composer's tools (absent on an older page that predates them)
@@ -72,6 +77,36 @@
       setTimeout(unmute, 200);
     }
   }
+
+  /* ---- back to the opening. The one way out of a conversation, and the
+     reverse of activate(): every class it added comes off, so the composer
+     travels back up the hero and the name fades in on the same curve it
+     left on. Nothing here animates anything — #home.is-asking is still the
+     whole state, which is why undoing it is four lines and not forty.
+
+     It clears the transcript AND the session's copy of it: a reload button
+     that left the conversation in sessionStorage would put it straight back
+     on the next page load, which is the opposite of what was asked for. ---- */
+  function resetChat() {
+    if (!hero) return;
+    if (inflight) inflight.abort();
+    inflight = null;
+    responding = false;
+    history.length = 0;
+    offered.clear();
+    clearPhoto();
+    try { sessionStorage.removeItem(STORE_KEY); } catch {}
+    if (scroll) scroll.replaceChildren();
+    if (liveEl) liveEl.textContent = '';
+    if (input) input.value = '';
+    paintSend();
+    setSubtitle(SUB_LIVE);          // drops the offline notice with the rest
+    hero.classList.remove('is-asking', 'is-instant');
+    asking = false;
+    if (input) input.focus({ preventScroll: true });
+  }
+
+  if (resetBtn) resetBtn.addEventListener('click', resetChat);
 
   // the tab bar on a phone stands on the composer the moment the keyboard
   // is up. A class of its own, deliberately: `ai-open` used to mean "a
@@ -301,8 +336,7 @@
       "Outside of design I'm into soccer — especially following Real Madrid — " +
       'and anything that gets me making things with my hands.',
     _default:
-      "I couldn't reach my live assistant just now — try again in a moment, " +
-      'or tap one of the suggested prompts.',
+      "I couldn't reach my live assistant just now — try again in a moment.",
   };
 
   // conversation starters that keep going after the first answer; each is
@@ -319,7 +353,8 @@
   ];
   const offered = new Set();
 
-  /* ---- honesty in the header: the subtitle says when the line is down ---- */
+  /* ---- honesty under the composer: the line is EMPTY while the assistant
+     is answering for itself, and says so when it is not ---- */
   function setSubtitle(text) {
     if (!subEl || subEl.textContent === text) return;
     if (prefersReduced()) { subEl.textContent = text; return; }
@@ -498,89 +533,13 @@
     scrollToBottom();
   }
 
-  /* ---- chips: slide away; the picked one flies into the new exchange ---- */
-  function hidePrompts(pillsToSlide, done) {
-    if (!prompts || prompts.style.display === 'none') { done(); return; }
-    if (prefersReduced() || pillsToSlide.length === 0) {
-      prompts.style.display = 'none';
-      done();
-      return;
-    }
-    let finished = false;
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      prompts.style.display = 'none';
-      done();
-    };
-    pillsToSlide[pillsToSlide.length - 1]
-      .addEventListener('transitionend', finish, { once: true });
-    setTimeout(finish, 450);
-    pillsToSlide.forEach((p) => p.classList.add('chip-exit'));
-  }
-
-  function handleChipSelect(chip) {
-    if (responding) return;
-    const text = chip.textContent.trim();
-    // a pending photo makes this a photo message — skip the fly (the clone
-    // has no photo in it, so the trick would land on a bubble it doesn't match)
-    if (pendingPhoto) {
-      const all = Array.from(prompts.querySelectorAll('.prompt-chip'));
-      hidePrompts(all, () => submitQuestion(text));
-      return;
-    }
-    const others = Array.from(prompts.querySelectorAll('.prompt-chip'))
-      .filter((p) => p !== chip);
-
-    if (prefersReduced()) {
-      hidePrompts(others.concat(chip), () => submitQuestion(text));
-      return;
-    }
-
-    // fly the picked chip to where the question lands in the new bubble.
-    // Rect deltas are visual px; ShellFit converts them to the layout px the
-    // panel expects, answering for the box THIS node lives in. That answer
-    // USED to be 1 — the sheet floated outside the scaled card — and it is
-    // not any more: the panel is inside .shell-card > main, which `zoom`
-    // scales, so the division is doing real work on every screen that is
-    // not exactly 1280 wide. The call site is unchanged; only the reason is.
-    const F = window.ShellFit || { toLayout: (p) => p };
-    const px = (v) => F.toLayout(v, panel);
-    const startRect = chip.getBoundingClientRect();
-    chip.style.opacity = '0';
-    hidePrompts(others, () => {});
-
-    const { questionEl, answerEl } = buildExchange(text);
-    questionEl.style.opacity = '0';
-    const endRect = questionEl.getBoundingClientRect();
-    const panelRect = panel.getBoundingClientRect();
-
-    const clone = document.createElement('span');
-    clone.className = 'prompt-chip chip-clone';
-    clone.textContent = text;
-    Object.assign(clone.style, {
-      position: 'absolute',
-      pointerEvents: 'none',
-      zIndex: '10',
-      /* no −1 here: the sheet had a 1px border to discount and the panel
-         has none, so the correction would now BE the error */
-      left: px(startRect.left - panelRect.left) + 'px',
-      top: px(startRect.top - panelRect.top) + 'px',
-      transition: 'none',
-    });
-    panel.appendChild(clone);
-    clone.offsetHeight;
-    clone.style.transition = 'transform var(--t-lift) var(--ease-lift)';
-    clone.style.transform =
-      'translate(' + px(endRect.left - startRect.left) + 'px, ' +
-                     px(endRect.top - startRect.top) + 'px)';
-    clone.addEventListener('transitionend', () => {
-      questionEl.style.opacity = '1';
-      clone.remove();
-    }, { once: true });
-
-    submitQuestion(text, answerEl);
-  }
+  /* (GONE with the four suggested-question chips: hidePrompts, which slid
+     the row out from under the bar, and handleChipSelect, which flew the
+     picked chip into the bubble its question landed in. The fly was the
+     nicest thing in this file and it is still the right call to delete it —
+     it existed to hide a jump between two elements that no longer both
+     exist. The follow-up chips after an answer never used it: they are
+     inside the transcript already, so there is nowhere to fly from.) */
 
   /* ---- ask the proxy. A sheet can be closed mid-question, so the request
      is abortable — without it `responding` would stay true and the send
@@ -698,18 +657,11 @@
     // instant: the conversation is still there from earlier in the session,
     // it is not happening now, so the hero must not replay its travel
     activate(true);
-    if (prompts) prompts.style.display = 'none';
     showFollowups();
     scrollToBottom();
   }
 
   /* ---- wiring ---- */
-  if (prompts) {
-    prompts.querySelectorAll('.prompt-chip').forEach((chip) => {
-      chip.addEventListener('click', () => handleChipSelect(chip));
-    });
-  }
-
   if (input) input.addEventListener('input', paintSend);
   paintSend();
 
@@ -720,13 +672,7 @@
       if (!value && !pendingPhoto) return;  // a photo alone is a fine question
       input.value = '';
       paintSend();
-      const visible = prompts && prompts.style.display !== 'none';
-      if (visible) {
-        const all = Array.from(prompts.querySelectorAll('.prompt-chip'));
-        hidePrompts(all, () => submitQuestion(value));
-      } else {
-        submitQuestion(value);
-      }
+      submitQuestion(value);
     });
   }
 
@@ -740,7 +686,6 @@
   // to the field and lets the visitor write their own.
   const P = new URLSearchParams(location.search);
   if (P.has('q')) {
-    if (prompts) prompts.style.display = 'none';   // the question is already asked
     submitQuestion(P.get('q'));
   } else if (P.has('ask') && input) {
     input.focus({ preventScroll: true });

@@ -76,7 +76,29 @@
   container: sheet / size;
 
   --sheet-pad: 2px;          /* the bar is left: calc(pad - 2px); 0 would hang it out */
-  --input-h:   56px;
+  /* THE BOX, whole. It is two rows now (see .ai-inputbar), so this is no
+     longer "how tall is the field" — it is how tall the composer is, and
+     every derived number downstream (--dock-h, the idle lift's
+     --input-h/2, the menu and attach offsets) means the same thing it
+     always did because they were all written against the box.
+
+     92 = 54 of writing room + 30 of controls + 8 of floor. It walked
+     56 → 50 → 44 as ONE row and then went back up as two, which is not a
+     reversal: a 44px pill is a search field, and the thing this actually
+     is has a photo, a mood, a mic and a send hanging off it. Given its
+     own line to stand on, the words get the whole width and the controls
+     stop crowding the caret. */
+  --input-h:   92px;
+  --ctl-h:     30px;         /* the second row: attach at its head, the rest at its end */
+  /* …and what the box becomes once a question has been asked. The tall
+     box is a THRESHOLD — it is the whole invitation on an empty screen,
+     and it earns its height there. In a conversation it is furniture: the
+     transcript is the subject, and a 92px slab at the foot of it is the
+     loudest thing on a screen it should be the quietest thing on. So the
+     same box collapses to one row and goes back to a pill, which is
+     exactly the pair the reference draws (a tall composer to start, a
+     pill to keep talking). One token does it — see #home.is-asking. */
+  --asked-h:   46px;
   /* the bar's foot clears the floor by enough to seat the honesty line
      UNDER it — which is the reason this is 34 and not the sheet's 13.
      Everything in the composer that must survive the travel has to live
@@ -85,23 +107,47 @@
   --input-ins: 34px;
   --sub-ins:   12px;         /* the honesty line, under the bar, in both states */
   --dock-h:    calc(var(--input-h) + 2 * var(--input-ins));
-  --chip-h:    44px;
-  --chip-gap:  8px;
-  --chip-font: 15px;
-  --msg-font:  17px;
+  /* The bar's own top and bottom edges, measured from the composer's floor.
+     Everything that hangs OFF the bar — the mood menu, a chosen photo —
+     used to hang off --dock-h instead, and --dock-h is the whole dock BAND:
+     the bar plus an inset on each side. So it cleared the bar's top by a
+     full --input-ins (34) before the rule's own 6 or 8 was added, which is
+     where that 40px of nothing came from. These two are the edges
+     themselves; the gap is whatever a rule adds to them and nothing more. */
+  --bar-top:   calc(var(--input-ins) + var(--input-h));
+  --bar-bot:   var(--input-ins);
+  /* the bubbles' floor. It was --chip-h — a bubble was held to exactly a
+     chip's height so the chip→bubble fly landed seamlessly — and the name
+     went when the chips did. The number stays: a two-word answer should
+     still be a bubble and not a sliver. */
+  --msg-min:   34px;
+  --chip-font: 13px;         /* the follow-up chips, which remain */
+  --msg-font:  16px;
   --scroll-top: 48px;        /* air above the first question */
 
-  --ask-w:     720px;        /* the measure everything inside inherits */
+  /* 620, walked down from 720 through 640. 720 was half the hero's own
+     width plus change, and a field that wide reads as a search bar across
+     the top of a page rather than as one thing sitting under a name. The
+     line above it measures ~523 (it is Work's 28px header — see
+     css/styles.css .frame-name), so this is 1.19 of the type it belongs
+     to: near enough that the two read as one object.
+
+     It does not go lower, and the CHIPS are why. The four of them lay out
+     at 601.8 (80.9 + 103.1 + 175.6 + 218.2, three 8px gaps), so anything
+     under about 610 wraps the fourth onto a second row. 600 was tried and
+     that is exactly what it did. The row is the floor on this number: if
+     the chip copy is ever rewritten, re-measure before narrowing. */
+  --ask-w:     620px;        /* the measure everything inside inherits */
   /* --ask-rise and --ask-lift are NOT here: the name pair is a sibling of
      this box, not a child, so the pair they make would only reach half of
      what it describes. They live on #home — see css/styles.css. */
 }
 
 /* One centred column rather than five centred children: .ai-scroll,
-   .ai-inputbar, .ai-prompts, .ai-persona-menu and .ai-attach-row all
+   .ai-inputbar, .ai-persona-menu and .ai-attach-row all
    measure off this box, so they inherit the measure with no overrides
    of their own. .ai-msg's max-width: min(85%, 62ch) then lands at
-   ~570px, which is the number it always wanted. */
+   ~544px, which is a readable line and not a paragraph run wide. */
 .ai-stage.is-hero .ai-panel {
   width: min(var(--ask-w), 100%);
   margin-inline: auto;
@@ -139,25 +185,63 @@
 .ai-stage.is-hero .ai-composer > * { pointer-events: auto; }
 #home.is-asking .ai-composer { transform: none; }
 
-/* the chips ride the same lift, in a row under the bar rather than a
-   column beside it — there is width here that a 520px sheet never had.
-   The 0.2s beat they wait in the sheet is dropped: a second clock is
-   the smell the dock's commit names.
+/* ============================================================
+   ASKED — the box becomes a pill.
 
-   They hang BELOW the composer's own box, which would be clipped at the
-   foot of the screen — and never is, because the first question takes
-   them away (ai-chat.js hidePrompts) before the travel begins. */
-.ai-stage.is-hero .ai-prompts {
-  left: 0;
-  right: 0;
-  bottom: calc(var(--input-ins) - var(--chip-h) - 14px);
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--chip-gap);
-  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
+   It is ONE declaration, and that is the point of having written the
+   whole file against --input-h: --dock-h is (input-h + 2 * input-ins),
+   the transcript's floor is dock-h + 1, --bar-top and --bar-bot are the
+   edges the mood menu and the attach row hang off, and the bar's own
+   height IS this. Change the token and every one of them lands correctly
+   with nothing else touched.
+
+   The composer's own translateY also reads --input-h/2 — and cannot be
+   hurt by this, because the state that changes the token is the same
+   state that sets `transform: none`.
+   ============================================================ */
+#home.is-asking .ai-stage.is-hero { --input-h: var(--asked-h); }
+
+/* ONE ROW, and it is the whole box. Moving the words down into the
+   30px control row was not enough and this is the bug it left: the
+   writing row above them did not disappear, it merely ran out of free
+   space and settled at ~15px — so the box carried 15 of dead air on top
+   and the whole line sat flush against the bottom edge, half a pixel off
+   it. `1fr` as the only track means the row IS the content box, and the
+   container's own align-items:center then puts every control on the
+   box's centreline: 7 above, 7 below, which is what a bar is.
+
+   All four children are re-placed rather than just the input, because
+   the row they were addressed to (2) no longer exists. */
+#home.is-asking .ai-inputbar { grid-template-rows: 1fr; }
+#home.is-asking .ai-inputbar > .ai-input {
+  grid-area: 1 / 2;
+  align-self: stretch;
+  height: auto;
 }
+#home.is-asking .ai-inputbar > .ai-add   { grid-area: 1 / 1; }
+#home.is-asking .ai-inputbar > .ai-tools { grid-area: 1 / 3; }
+#home.is-asking .ai-inputbar > .ai-send  { grid-area: 1 / 4; }
+/* …and the box loses its top inset only. The RADIUS DOES NOT CHANGE: it
+   was a full pill here for an afternoon and that was the mistake — two
+   shapes for one object, so the composer read as a different control
+   after the first question instead of the same one, lower down. 14 in
+   both states, and the box that travels is plainly the box you typed in.
+
+   The side inset does not change either (8, from the rule above): the
+   attach sits the same distance from the left edge and the send from the
+   right edge in both states, so the only thing that actually moves when
+   the box collapses is the words. The 1fr writing row closes on its own
+   as the height comes down — it was never a fixed track. */
+#home.is-asking .ai-inputbar {
+  padding: 0 8px;
+}
+
+/* (GONE: the four suggested-question chips, in a row 12px under the bar,
+   riding the composer's own lift. Two rules died with them and are worth
+   naming because both were hard-won: the row was TOP-anchored so a wrap
+   fell downward instead of over the field, and --ask-w had a floor of 610
+   because that is what four chips lay out to. The measure is free of that
+   floor now — if the composer ever wants to be narrower, it can be.) */
 
 /* the fine print, under the composer where the sheet's head used to
    carry it. setSubtitle() still writes here. */
@@ -207,12 +291,18 @@
    the conversation did not just happen, it is simply still there */
 #home.is-instant .frame-top,
 #home.is-instant .ai-composer { transition: none; }
-/* the chips still rise a beat after the sheet */
-.ai-prompts {
-  transition: opacity var(--t-fade) ease 0.2s,
-              translate var(--t-rise) var(--ease-rise) 0.2s;
-}
-.ai-stage:not(.revealed) .ai-prompts { opacity: 0; translate: 0 16px; }
+/* The chat dims as the hero leaves — transcript, composer, the way back,
+   all of it, on the one clock js/main.js publishes (--hero-fade, and the
+   reasoning lives there). On .ai-panel rather than on .ai-stage because
+   the stage's own opacity is spoken for by the entrance, and two rules
+   fighting over one property is how an entrance ends up flickering on a
+   page that is merely being scrolled.
+
+   .is-gone is the tail: at 0 opacity the composer is still a box across
+   the top of Work's screen, and an invisible box that takes clicks is
+   worse than a visible one. */
+.ai-panel { opacity: var(--hero-fade, 1); }
+#home.is-gone .ai-panel { visibility: hidden; }
 
 /* ---- the panel: the chat's body, and the box every absolutely
    positioned thing inside measures itself against ---- */
@@ -220,6 +310,43 @@
   position: relative;
   flex: 1;
   min-height: 0;
+}
+
+/* ---- back to the opening: a quiet glyph in the band above the transcript,
+   at the right edge of the chat's own measure. It is the .ai-tool register
+   exactly — same 30px squircle, same grey, same warm wash under the hand —
+   because it belongs to the same family of small controls, and the last
+   thing a "start over" should be is louder than the send.
+
+   It exists only while there is a conversation to leave. Not hidden with
+   opacity: a button nobody can see must not still take the pointer. ---- */
+.ai-reset {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ctl-h);
+  height: var(--ctl-h);
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 9px;
+  color: var(--g-400);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-fade) ease, color var(--t-micro) ease,
+              background-color var(--t-micro) ease;
+}
+.ai-reset svg { width: 16px; height: 16px; }
+#home.is-asking .ai-reset { opacity: 1; pointer-events: auto; }
+.ai-reset:hover,
+.ai-reset:focus-visible {
+  color: var(--ink);
+  background: rgba(var(--ink-rgb), 0.06);
 }
 
 /* ---- the transcript. Absolutely positioned rather than a flex child on
@@ -263,7 +390,7 @@
   color: var(--g-700);                     /* matches the chips the bubbles echo */
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  min-height: var(--chip-h);          /* == the chip: the fly animation lands */
+  min-height: var(--msg-min);         /* a short answer is still a bubble */
   margin-bottom: 10px;
 }
 .ai-msg-user { margin-left: auto; }
@@ -330,80 +457,83 @@
   transform: translateY(-1.5px);
 }
 
-/* ---- suggested prompts. A column against the right edge for as long as
-   the chat was 520px wide and had no room to be anything else; the hero
-   has width, so .is-hero lays them in a centred row under the bar and
-   this is only what they fall back to. ---- */
-.ai-prompts {
-  position: absolute;
-  right: 16px;
-  bottom: calc(var(--dock-h) + 16px);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--chip-gap);
-}
-.prompt-chip {
-  height: var(--chip-h);
-  padding: 0 14px;
-  border-radius: 15px;
-  background: rgba(var(--line-rgb), 0.48);
-  border: 1px solid var(--g-250);
-  font: inherit;
-  font-size: var(--chip-font);
-  color: var(--g-700);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: transform var(--t-lift) var(--ease-lift),
-              opacity 0.38s ease,
-              background-color var(--t-micro) ease, color var(--t-micro) ease,
-              border-color var(--t-micro) ease;
-}
-/* hover — the site's two signature moves, whispered: the surface firms up
-   and lifts a hair, and the label warms to the nav's orange */
-.prompt-chip:hover,
-.prompt-chip:focus-visible {
-  background: rgba(var(--ink-rgb), 0.06);   /* the sitewide grey hover wash */
-  border-color: rgba(var(--ink-rgb), 0.2);
-  color: var(--ink);
-  transform: translateY(-1.5px);
-}
-.prompt-chip:active {
-  transform: translateY(0);
-}
-/* declared AFTER the hover rule so an exiting chip's transform/opacity win */
-.prompt-chip.chip-exit {
-  transform: translateY(24px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* the flying clone (js positions it; keep visuals identical to a chip) */
-.prompt-chip.chip-clone {
-  display: flex;
-  align-items: center;
-}
-
 /* ---- input bar. The Figma original (1373:333) carried a 70×57 grey send
    slab on its LEFT edge — a block that outweighed everything it sat with.
-   The bar is a flex row now: words first, then the tools, then a send that
-   is exactly as loud as the state it is in. ---- */
+   The bar is a flex row now: the attach at the head, then the words, then
+   the tools, then a send that is exactly as loud as the state it is in.
+
+   THE ATTACH LEADS. It sat in the tool cluster on the right for as long
+   as the bar was a 520px sheet and every control had to share one end.
+   On the hero it goes to the head, where both references put it, and the
+   reason is not fashion: the right-hand cluster is what you press AFTER
+   writing (how it answers, and send), and the left is what you bring
+   BEFORE — the photo you are asking about. Reading order is the order of
+   the actions. The button is a sibling of .ai-tools now rather than a
+   child of it; #ai-add is still #ai-add, so js/ai-chat.js never noticed.
+
+   TWO ROWS, and a rounded rect rather than a pill. One row put the
+   words, the attach, the mood, the mic and the send on a single line, so
+   the caret wrote toward a wall of controls and every one of them had to
+   shrink to keep out of its way. Given a row of its own the field is the
+   full measure wide, and the controls read as a tray under it rather than
+   as clutter inside it: attach at the head of that row, mood and mic and
+   send at its end. It is the shape both references converge on.
+
+   A grid, not a nested pair of flex rows, and deliberately: the markup
+   stays one flat <form> — input, attach, tools, send, as it has been
+   through three layouts — so nothing in js/ai-chat.js has to know that
+   the box now has rows. Column 2 is the empty middle that pushes the two
+   ends apart.
+
+   The radius follows the box: 14 is the family the panel already speaks
+   in (chips 12, bubbles 16, the mood menu 14). A pill was right while
+   this was one 44px row and is wrong the moment it is 92 tall. ---- */
 .ai-inputbar {
   position: absolute;
   left: calc(var(--sheet-pad) - 2px);
   right: calc(var(--sheet-pad) - 2px);
   bottom: var(--input-ins);
   height: var(--input-h);
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  /* the writing row takes whatever the controls do not */
+  grid-template-rows: 1fr var(--ctl-h);
   align-items: center;
-  padding-left: 16px;
-  padding-right: 6px;
+  padding: 12px 8px 8px;
   background: var(--g-050);
   border: 1px solid rgba(var(--ink-rgb), 0.16);
-  border-radius: 20px;
-  transition: border-color var(--t-micro) ease;
+  border-radius: 14px;
+  /* height and padding ride the composer's own curve, so the box closing
+     down to one row and the box travelling to the foot are one gesture
+     rather than a snap followed by a slide. (No border-radius here: it is
+     14 in both states now, which is the point.) */
+  transition: border-color var(--t-micro) ease,
+              height var(--t-rise) var(--ease-rise),
+              padding var(--t-rise) var(--ease-rise);
 }
-/* writing wakes the bar — the compose letter's focus manner */
+/* The words own the top row, all four columns of it — and sit at the TOP
+   of it, not centred in it. That is the difference between a field with
+   room under it and a field that has been vertically centred in a tall
+   box: the caret starts where writing starts, and the space below is
+   plainly the space the answer to a long question will grow into.
+   26 is one line of 15px type; the row is taller than that on purpose. */
+.ai-inputbar > .ai-input {
+  grid-area: 1 / 1 / 2 / -1;
+  align-self: start;
+  height: 26px;
+}
+/* …and the tray underneath: the photo you bring at the head, what you
+   press after writing at the end */
+.ai-inputbar > .ai-add   { grid-area: 2 / 1; }
+.ai-inputbar > .ai-tools { grid-area: 2 / 3; }
+.ai-inputbar > .ai-send  { grid-area: 2 / 4; }
+/* Writing wakes the bar — the compose letter's focus manner, and NOTHING
+   else. An ember halo was tried here (0.10 of the hue on a 3px spread,
+   with the border warmed to match) and cut: the palette spends the site's
+   only colour on four small things that MOVE, and a box sitting still
+   under a cursor is not one of them — it read as a state light on a page
+   that has no other. The border stepping one grey darker is the whole
+   answer, and it is the answer every other field on this site gives. */
 .ai-inputbar:focus-within { border-color: rgba(var(--ink-rgb), 0.34); }
 
 /* ---- the send: a small circle that answers the bar's state. Empty bar →
@@ -412,8 +542,10 @@
    point in the composer. Replying → it rests. ---- */
 .ai-send {
   flex: none;
-  width: calc(var(--input-h) - 14px);
-  height: calc(var(--input-h) - 14px);
+  /* pinned, not calc(--input-h - 14): --input-h is the whole two-row box
+     now, and a send scaled off it would be 78px across */
+  width: var(--ctl-h);
+  height: var(--ctl-h);
   margin-left: 4px;
   display: flex;
   align-items: center;
@@ -421,13 +553,20 @@
   padding: 0;
   background: transparent;
   border: 0;
-  border-radius: 50%;
+  /* a rounded square, not a disc. It shares the row with the mood and the
+     mic, which are 9px squircles (.ai-tool), and a circle among them read
+     as a different KIND of control — which it is not; it is the loudest
+     one. Same radius, same 30px box: only the fill says it is the verb. */
+  border-radius: 9px;
   color: var(--g-350);                      /* the ghost: visible, not clamouring */
   cursor: default;                     /* nothing to send = nothing to press */
   transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
               transform var(--t-snap) var(--ease-spring);
 }
-.ai-send svg { width: 17px; height: 17px; }
+/* 16, the same as every other glyph in the row (.ai-tool svg) — it was
+   17, which is not a difference anyone can name and is exactly the kind
+   that makes a row of controls look hand-placed. */
+.ai-send svg { width: 16px; height: 16px; }
 /* words (or a photo) in the bar: the circle fills with the accent */
 .ai-inputbar.is-ready .ai-send:not([disabled]) {
   /* the primary filled action is INK on parchment — ember never fills */
@@ -450,16 +589,25 @@
 .ai-input {
   flex: 1;
   min-width: 0;
-  height: 100%;
-  padding: 0;
   border: 0;
   background: none;
+  /* 8 against the box's own 8 puts the words 16 in from its edge, which
+     is where the attach glyph below them starts too */
+  padding: 0 8px;
   font: inherit;
-  /* the 16px floor is load-bearing: below it iOS zooms the page on focus */
-  font-size: max(16px, var(--chip-font));
+  font-size: 15px;
   color: var(--ink);
-  caret-color: var(--orange);
+  /* EMBER, not --orange (which is black). The palette gives the hue to
+     four small things that MOVE and names "the caret that types" first
+     among them — it was the hero's name on arrival and the questions in
+     the rail's blank, and this field is where the typing happens now, so
+     this is that caret at its current desk rather than a fifth use. */
+  caret-color: var(--ember);
 }
+/* the 16px floor is load-bearing WHERE THERE IS A KEYBOARD: below it iOS
+   zooms the page on focus. Only there — the hero's field reads better a
+   step down, and a desktop browser has never zoomed for a text input. */
+@media (pointer: coarse) { .ai-input { font-size: 16px; } }
 .ai-input::placeholder { color: var(--muted); }
 .ai-input:focus { outline: none; }
 
@@ -475,8 +623,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
-  min-width: 30px;
+  height: 28px;
+  min-width: 28px;
   padding: 0;
   background: none;
   border: 0;
@@ -493,14 +641,14 @@
   color: var(--ink);
   background: rgba(var(--ink-rgb), 0.06);
 }
-.ai-tool svg { width: 17px; height: 17px; }
+.ai-tool svg { width: 16px; height: 16px; }
 
 /* the mood toggle is a word, because the moods are words */
 .ai-persona {
   gap: 4px;
   padding: 0 8px 0 10px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--muted);
 }
 .ai-persona .persona-chev { width: 11px; height: 11px; }
@@ -537,11 +685,44 @@
 .ai-mic.is-listening .mic-glyph { display: none; }
 .ai-mic.is-listening .mic-eq { display: flex; }
 
+/* ============================================================
+   WHAT HANGS OFF THE BAR — the mood menu and a chosen photo.
+
+   They go BELOW the box on the hero and ABOVE it once the box is at the
+   foot of the screen, which is the only place each of them fits: on the
+   hero the box sits under the name, so a menu rising from it lands on top
+   of "Tigo Ponce de León"; at the foot of the screen there is nothing
+   under the box at all. Same 8px off the bar's own edge in both cases —
+   near enough to read as part of the composer rather than as a panel that
+   happens to be nearby.
+   ============================================================ */
+.ai-stage.is-hero .ai-persona-menu,
+.ai-stage.is-hero .ai-attach-row {
+  top: calc(100% - var(--bar-bot) + 8px);
+  bottom: auto;
+}
+#home.is-asking .ai-persona-menu,
+#home.is-asking .ai-attach-row {
+  top: auto;
+  bottom: calc(var(--bar-top) + 8px);
+}
+/* …and the menu grows FROM the edge it is attached to, either way */
+.ai-stage.is-hero .ai-persona-menu {
+  transform-origin: top right;
+  animation-name: menu-drop;
+}
+#home.is-asking .ai-persona-menu {
+  transform-origin: bottom right;
+  animation-name: menu-pop;
+}
+@keyframes menu-drop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+}
+
 /* ---- the mood menu, rising from the toggle it belongs to ---- */
 .ai-persona-menu {
   position: absolute;
   right: calc(var(--sheet-pad) - 2px);
-  bottom: calc(var(--dock-h) + 6px);
   z-index: 5;
   min-width: 216px;
   padding: 4px;
@@ -595,11 +776,12 @@
 }
 .persona-row.is-active .persona-check { visibility: visible; }
 
-/* ---- a chosen photo waits above the bar until the next send ---- */
+/* ---- a chosen photo waits beside the bar until the next send ---- */
 .ai-attach-row {
   position: absolute;
-  left: var(--sheet-pad);
-  bottom: calc(var(--dock-h) + 8px);
+  /* the bar's own left edge, not --sheet-pad: the thumbnail lines up with
+     the box it belongs to, 2px off it read as a mistake */
+  left: calc(var(--sheet-pad) - 2px);
   z-index: 4;
   display: flex;
   gap: 8px;
@@ -670,7 +852,7 @@
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-stage, .ai-prompts {
+  .ai-stage {
     transition: opacity 0.25s ease;
     translate: none;
   }

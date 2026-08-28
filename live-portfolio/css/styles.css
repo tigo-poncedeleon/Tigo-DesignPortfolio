@@ -282,15 +282,35 @@ html, body {
 .stage.revealed { opacity: 1; }
 
 /* ---- the name pair, dead-centre of the card. The cover frame retired
-   with the pill, so this is the resting position, not a waypoint. ---- */
+   with the pill, so this is the resting position, not a waypoint.
+
+   A ROW, not two stacked blocks: the name and the role are one line above
+   the field now. Both children are .tw-line grids holding a full-width
+   ghost, so the line's total width is final on frame one and the typing
+   cannot drift it. baseline rather than centre because they are one
+   sentence, even though at equal size the two happen to agree. ---- */
 .frame-top {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
   text-align: center;
   white-space: nowrap;
 }
+/* …and inside their reserved cells the two strings sit at the START, not
+   centred. This is the rule that makes the typing read as writing: a
+   centred string grows out of its own middle, so on one line the role
+   opened a gap after the name and closed it character by character, and
+   the name itself crept leftwards as it went. Start-aligned, every glyph
+   is drawn at the x it will finish at — the ghost holds the line's total
+   width, the words simply fill it left to right, and the caret's hop from
+   the name to the role is the only thing that moves.
+   (Stacked on the phone they are centred again — see the mobile block.) */
+.frame-top > .tw-line { justify-items: start; }
 
 /* ---- the hero, centred in the CONTENT CARD ----
    Plain 50%/50%, because the stage is exactly the visible card: `main` is
@@ -302,17 +322,38 @@ html, body {
   height: var(--hero-h, 100dvh);
 
   /* Where the name and the composer rest when nothing has been asked.
-     They are one pair and they are centred as a pair: --ask-rise lifts
-     the name by half the group's height, --ask-lift drops the bar by the
-     other half, and the 56px between them is the only air either number
-     is really made of. (76 of name + 56 of air + 56 of bar = 188; half
-     is 94; the name's centre is 38 in from its top and the bar's is 28
-     in from its foot.)
+     They are one group, and the group is measured before it is placed:
+     38 of name line + 20 of air + 92 of bar = 150, half is 75, the
+     line's centre is 19 in from its top and the bar's is 46 in from
+     its foot (the composer is two rows now — see css/ai.css). (The pair was two stacked lines and 68 tall until the
+     hero set it on ONE — see .frame-top below.)
+
+     The group does NOT straddle the middle. It used to — 94 above, 94
+     below — and dead centre is where a poster sits, not where a thing
+     you are meant to type into sits: every chat worth copying (both
+     references on the desk) puts its field around 45% of the screen and
+     leaves the fall underneath. So the whole group is lifted 56px, and
+     the two numbers below are that lift folded into the group's own
+     halves — the line by 75 + 56 − 19, the bar by 75 − 56 − 46, which
+     is why the second one is NEGATIVE: the bar rests above the middle
+     rather than below it.
+
+     The air between them is 20, walked down from 56 through 40 and 28.
+     One line of type needs less than a stacked pair did to read as the
+     label on the field beneath it, and the box grew a second row while
+     the line stayed put — so the pair had to close up again to keep
+     reading as one object rather than as a title over a panel.
+
+     Note the arithmetic falls out clean: --ask-rise is (air + box)/2 + 56
+     and the line's own height CANCELS, so changing the type size moves
+     --ask-lift alone. A slider rig (js/type-lab.js) drove exactly that
+     pair live while the size was being chosen; 28 won, and the rig was
+     deleted with the decision.
 
      On #home rather than on the stage because the name pair is the
      stage's SIBLING: this is the nearest element that can see both. */
-  --ask-rise: 56px;
-  --ask-lift: 66px;
+  --ask-rise: 112px;
+  --ask-lift: -27px;
 }
 /* --ask-rise lifts the name by half the composer's block so the PAIR —
    name and composer together — is what reads as centred, rather than the
@@ -765,6 +806,26 @@ html.is-embed .read-rail { top: 24px; }
 /* the phone has no room for a rail beside the story */
 @media (max-width: 700px) { .read-rail { display: none; } }
 
+/* ONE LINE, and 28 — WORK'S HEADER, exactly. The pair was stacked (a name
+   with its role under it, which is a letterhead, and a letterhead is what
+   the RAIL is for) and it walked down to 22 on one line while the field
+   under it was still finding its own size. Then the obvious answer:
+   .work-title is already this shape one screen below — an ink phrase, a
+   0.34 phrase beside it, baseline-aligned, 10px apart, 28px, -0.015em —
+   so the hero is not a size of its own at all. It is the section header
+   this site already has, used on the section that happens to be first.
+   Change one and change the other (css/work.css).
+
+   The phone keeps the stack and its own two sizes — see the mobile block
+   at the foot of this file. */
+/* the name dims with the rest of the hero as it scrolls away — see
+   --hero-fade in js/main.js. On the two lines rather than on .frame-top,
+   whose own opacity is already the is-asking exit's: the two multiply,
+   which is exactly right (a name leaving on both counts is gone twice
+   over), and neither rule has to know about the other. */
+#home .frame-name,
+#home .frame-role { opacity: var(--hero-fade, 1); }
+
 .frame-name {
   font-size: 28px;
   line-height: 38px;
@@ -1015,6 +1076,10 @@ html:not(.js) .tw-caret { display: none; }
      The hero pill, the clock footer, and the opening cover all retire. ---- */
   .frame-name { font-size: 23px; line-height: 32px; }
   .frame-role { font-size: 17px; line-height: 26px; }
+  /* the hero sets the pair on ONE line above this width; 23 + 17 of it is
+     wider than a phone, and the two sizes only read as a pair stacked */
+  .frame-top { flex-direction: column; align-items: center; gap: 0; }
+  .frame-top > .tw-line { justify-items: center; }
 
   /* the shell dissolves at this width — the phone's whole screen is the
      card, and js/main.js stops measuring --hero-h */

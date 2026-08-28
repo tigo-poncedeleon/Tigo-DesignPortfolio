@@ -25,9 +25,9 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=87" />
-  <link rel="stylesheet" href="css/shell.css?v=116" />
-  <link rel="stylesheet" href="css/ai.css?v=47" />
+  <link rel="stylesheet" href="css/styles.css?v=96" />
+  <link rel="stylesheet" href="css/shell.css?v=117" />
+  <link rel="stylesheet" href="css/ai.css?v=61" />
   <link rel="stylesheet" href="css/about.css?v=78" />
   <link rel="stylesheet" href="css/work.css?v=120" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="css/case-overlay.css?v=17" />
   <!-- LAST: the phone re-casts the one document as four tapped screens, so
        its overrides answer for the blocks in every sheet above -->
-  <link rel="stylesheet" href="css/mobile.css?v=4" />
+  <link rel="stylesheet" href="css/mobile.css?v=6" />
   <!-- set before first paint so the chrome and sidebar are already held at
        opacity 0 when they are built — the intro has no flash to hide.
        `is-phone` goes on in the same breath: css/mobile.css hides the three
@@ -120,6 +120,20 @@
            ============================================================ -->
       <div class="ai-stage is-hero" id="ai-stage">
         <div class="ai-panel" id="ai-panel">
+          <!-- back to the opening. It lives in the band of air above the
+               transcript (--scroll-top), at the right edge of the chat's
+               own measure — the corner the sheet's close button used to
+               hold, which is where a visitor already looks for the way out
+               of a conversation. It exists only while there IS one. -->
+          <button class="ai-reset" id="ai-reset" type="button"
+                  aria-label="Start over" title="Start over">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <path d="M1 4 V10 H7" />
+              <path d="M3.51 15 a9 9 0 1 0 2.13-9.36 L1 10" />
+            </svg>
+          </button>
           <div class="ai-scroll" id="ai-scroll"></div>
           <!-- answers are announced here once complete — the word-by-word
                visual reveal stays quiet for screen readers -->
@@ -130,12 +144,16 @@
                mood menu and the attach row are positioned against this
                box, so lifting the bar alone would strand them. -->
           <div class="ai-composer">
-            <div class="ai-prompts" id="ai-prompts">
-              <button class="prompt-chip" type="button">Hobbies?</button>
-              <button class="prompt-chip" type="button">Your toolset?</button>
-              <button class="prompt-chip" type="button">Tell me your background!</button>
-              <button class="prompt-chip" type="button">What is your design philosophy?</button>
-            </div>
+            <!-- (GONE: four suggested-question chips in a row under the bar.
+                 They were the sheet's furniture — a 520px window with an
+                 empty transcript needed something to press — and the hero
+                 is not that: the field is already the invitation, and the
+                 chips put a menu of four sentences between the name and
+                 the one thing there is to do. The conversation still
+                 offers its own follow-ups AFTER an answer (.fu-chip), which
+                 is where a suggestion is actually worth having. Deleted
+                 with them: .ai-prompts/.prompt-chip and the chip→bubble
+                 fly, in css/ai.css and js/ai-chat.js.) -->
             <!-- a chosen photo waits here, above the bar, until the next send -->
             <div class="ai-attach-row" id="ai-attach-row" hidden></div>
             <!-- the persona menu rises from the toggle that opens it -->
@@ -157,6 +175,12 @@
               </button>
             </div>
             <form class="ai-inputbar" id="ai-inputbar">
+              <!-- a photo for context, at the HEAD of the bar: it is what you
+                   bring BEFORE writing, and the cluster at the other end is
+                   what you press after. Both references seat it here. -->
+              <button class="ai-tool ai-add" id="ai-add" type="button" aria-label="Add a photo">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg>
+              </button>
               <input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo" placeholder="ask me anything!" autocomplete="off" />
               <div class="ai-tools">
                 <!-- how it answers: friendly is the house voice, the other two are moods -->
@@ -172,10 +196,6 @@
                   </svg>
                   <span class="mic-eq" aria-hidden="true"><i></i><i></i><i></i></span>
                 </button>
-                <!-- a photo for context — the answer can look at what you are looking at -->
-                <button class="ai-tool ai-add" id="ai-add" type="button" aria-label="Add a photo">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg>
-                </button>
               </div>
               <!-- the send: quiet until there is something to send, then
                    filled with the accent (ai-chat.js flips .is-ready) -->
@@ -184,9 +204,13 @@
               </button>
               <input type="file" id="ai-file" accept="image/*" hidden />
             </form>
-            <!-- the sheet's head carried this line; the composer carries it
-                 now. setSubtitle() in ai-chat.js still writes here. -->
-            <p id="ai-sub">powered by Claude Haiku 4.5</p>
+            <!-- Empty, and it starts empty: the sheet's head used to carry
+                 "powered by Claude Haiku 4.5" and the composer carried it
+                 after — a model's name under a field the visitor has not
+                 used yet. The element stays because setSubtitle() in
+                 ai-chat.js still has ONE thing to say here: that the
+                 assistant could not be reached and the answers are canned. -->
+            <p id="ai-sub"></p>
           </div>
         </div>
       </div>
@@ -693,7 +717,7 @@
   <script src="js/frame-clock.js?v=4"></script>
   <script src="js/typewriter.js?v=6"></script>
   <script src="js/nav-touch.js?v=4"></script>
-  <script src="js/main.js?v=10"></script>
+  <script src="js/main.js?v=99"></script>
   <script src="js/timeline.js?v=21"></script>
   <script src="js/about.js?v=14"></script>
   <script src="js/work.js?v=113"></script>
