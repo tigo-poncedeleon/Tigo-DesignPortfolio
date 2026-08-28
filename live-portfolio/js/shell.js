@@ -100,7 +100,6 @@
           '<path d="M9.3 8 V6.2 C9.3 5.2, 9.8 4.7, 10.8 4.7 H15.2 C16.2 4.7, 16.7 5.2, 16.7 6.2 V8" />' +
           '<path d="M4 13.2 H22" />',
     play: '<path d="M8 5.5 L20 13 L8 20.5 Z" />',
-    ai: '<path d="M13 4 V22" /><path d="M5.5 8.5 L20.5 17.5" /><path d="M20.5 8.5 L5.5 17.5" />',
     // about's chapters (about.html)
     bio: '<path d="M13 6 C10.5 4, 6 4, 4 5.5 V20.5 C6 19, 10.5 19, 13 21 C15.5 19, 20 19, 22 20.5 V5.5 C20 4, 15.5 4, 13 6 Z" />' +
          '<path d="M13 6 V21" />',
@@ -510,11 +509,10 @@
 
   // (GONE 2026-08-24: REST and ASKS — the resting label and the four
   // questions the ghost writer typed. They belonged to the rail's ask
-  // blank, then to the home page's composer, and both of those have been
-  // retired in favour of ONE door: the corner dock (buildDock), which
-  // says what it is in two words and never rewrites itself. The
-  // typewriter idiom survives where it started, on the hero's name —
-  // js/typewriter.js.)
+  // blank; the corner dock replaced them, and the hero composer has now
+  // replaced the dock. The chips in index.html are what became of the
+  // four questions. The typewriter idiom survives where it started, on
+  // the hero's name — js/typewriter.js.)
 
   const buildSide = () => {
     if (!side) return;
@@ -570,11 +568,11 @@
       // The letterhead — a name and a role, and nothing else.
       //
       // It held the ask blank underneath it for a while: one asterisk and
-      // a rotating question on a dotted rule, the AI's quiet door. A
-      // composer in the middle of the home page was tried next, and both
-      // were retired the same week for one reason — the AI is ONE door
-      // now, the pill in the corner (buildDock), and a site with one door
-      // does not put a second, quieter copy of it in the rail.
+      // a rotating question on a dotted rule, the AI's quiet door. That
+      // went, then a corner pill took its place, and now the composer is
+      // the home screen itself. The rule that killed all three is the
+      // same one: the AI is ONE door, and a site with one door does not
+      // put a second, quieter copy of it in the rail.
       //
       // So the rail is identity, in the one material it speaks
       // everywhere: ink on the bone, no surface, no box.
@@ -635,192 +633,20 @@
   };
 
   // ============================================================
-  // The AI overlay
+  // The AI sheet is GONE, and with it the dock that opened it.
   //
-  // The chat used to be a page you had to leave the site to reach. It is
-  // a sheet now, rising from the ask pill, reachable from anywhere. The
-  // panel markup below is verbatim what ai.html used to hold — and the
-  // sheet deliberately keeps id="ai-stage" and class="ai-stage", because
-  // every .ai-stage.revealed selector in ai.css (the entrance, the
-  // spark's draw-in) and the lookup in ai-chat.js then keep working
-  // untouched. One decision, forty edits saved.
+  // The chat is the home page now: it lives in index.html inside #home,
+  // as markup rather than as a template string here, because a template
+  // in this file earns its place by being identical on nine documents
+  // and this one would render on exactly one. What used to stand here —
+  // AI_PANEL, buildAI(), buildDock() and the filled ink pill in the
+  // card's corner — went with it.
+  //
+  // ⌘K still works everywhere. It is a door to the composer now rather
+  // than a toggle for a sheet: on Home it rests the hero and puts the
+  // caret in the field, and on a case study it is a real navigation
+  // home. See wireAsk().
   // ============================================================
-  const AI_PANEL =
-    '<div class="ai-panel" id="ai-panel">' +
-      '<div class="ai-scroll" id="ai-scroll"></div>' +
-      // answers are announced here once complete — the word-by-word visual
-      // reveal stays quiet for screen readers
-      '<p class="sr-only" id="ai-live" aria-live="polite"></p>' +
-      // empty-state spark: a hand-drawn asterisk in a dotted orbit that
-      // draws itself in, and bows out on the first question
-      '<div class="ai-empty" id="ai-empty" aria-hidden="true">' +
-        '<svg class="ai-spark" width="120" height="120" viewBox="0 0 120 120">' +
-          '<circle class="guide" cx="60" cy="60" r="52" />' +
-          '<g fill="none" stroke="#5b5a53" stroke-width="2.2" stroke-linecap="round">' +
-            '<path class="ray s1" pathLength="1" d="M60 22 L60 46" />' +
-            '<path class="ray s1" pathLength="1" d="M60 98 L60 74" />' +
-            '<path class="ray s2" pathLength="1" d="M92.9 41 L72.1 53" />' +
-            '<path class="ray s2" pathLength="1" d="M27.1 79 L47.9 67" />' +
-            '<path class="ray s3" pathLength="1" d="M27.1 41 L47.9 53" />' +
-            '<path class="ray s3" pathLength="1" d="M92.9 79 L72.1 67" />' +
-          '</g>' +
-          '<circle class="spark-dot" cx="60" cy="60" r="5.5" />' +
-        '</svg>' +
-        '<p>ask me anything about Tigo &mdash; or start with a chip</p>' +
-      '</div>' +
-      '<div class="ai-dock" aria-hidden="true"></div>' +
-      '<div class="ai-prompts" id="ai-prompts">' +
-        '<button class="prompt-chip" type="button">Hobbies?</button>' +
-        '<button class="prompt-chip" type="button">Your toolset?</button>' +
-        '<button class="prompt-chip" type="button">Tell me your background!</button>' +
-        '<button class="prompt-chip" type="button">What is your design philosophy?</button>' +
-      '</div>' +
-      // a chosen photo waits here, above the bar, until the next send
-      '<div class="ai-attach-row" id="ai-attach-row" hidden></div>' +
-      // the persona menu rises from the toggle that opens it
-      '<div class="ai-persona-menu" id="ai-persona-menu" hidden>' +
-        ['friendly|warm &amp; to the point',
-         'whimsical|answers with a wink',
-         'suspicious|trusts no question'].map((row) => {
-          const p = row.split('|');
-          return '<button class="persona-row" type="button" data-persona="' + p[0] + '">' +
-            '<span class="persona-name">' + p[0] + '</span>' +
-            '<span class="persona-desc">' + p[1] + '</span>' +
-            '<svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" ' +
-              'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
-              'stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>' +
-          '</button>';
-        }).join('') +
-      '</div>' +
-      '<form class="ai-inputbar" id="ai-inputbar">' +
-        '<input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo" ' +
-          'placeholder="ask me anything!" autocomplete="off" />' +
-        '<div class="ai-tools">' +
-          // how it answers: friendly is the house voice, the other two are moods
-          '<button class="ai-tool ai-persona" id="ai-persona" type="button" ' +
-            'aria-haspopup="menu" aria-expanded="false" aria-label="Choose a mood">' +
-            '<span class="persona-label" id="ai-persona-label">friendly</span>' +
-            '<svg class="persona-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" ' +
-              'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" ' +
-              'stroke-linejoin="round"><path d="M6 10 L12 15.5 L18 10" /></svg>' +
-          '</button>' +
-          // dictation — ai-chat.js hides this button when the browser cannot listen
-          '<button class="ai-tool ai-mic" id="ai-mic" type="button" hidden ' +
-            'aria-label="Ask out loud" aria-pressed="false">' +
-            '<svg class="mic-glyph" viewBox="0 0 24 24" aria-hidden="true" fill="none" ' +
-              'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
-              'stroke-linejoin="round">' +
-              '<path d="M12 3 a3 3 0 0 1 3 3 V12 a3 3 0 0 1-6 0 V6 a3 3 0 0 1 3-3 z" />' +
-              '<path d="M18.5 11.5 a6.5 6.5 0 0 1-13 0" /><path d="M12 18 V21" />' +
-            '</svg>' +
-            '<span class="mic-eq" aria-hidden="true"><i></i><i></i><i></i></span>' +
-          '</button>' +
-          // a photo for context — the answer can look at what you are looking at
-          '<button class="ai-tool ai-add" id="ai-add" type="button" ' +
-            'aria-label="Add a photo">' +
-            '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" ' +
-              'stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-              '<path d="M12 5 V19" /><path d="M5 12 H19" />' +
-            '</svg>' +
-          '</button>' +
-        '</div>' +
-        // the send: a small circle at the bar's end, quiet until there is
-        // something to send, then filled with the accent (ai-chat.js flips
-        // .is-ready on the bar). Drawn at the glyph set's own 2.2 stroke —
-        // the old block was a 7.5-stroke arrow on a 70px grey slab.
-        '<button class="ai-send" type="submit" aria-label="Send">' +
-          '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" ' +
-            'stroke="currentColor" stroke-width="2.2" stroke-linecap="round" ' +
-            'stroke-linejoin="round">' +
-            '<path d="M12 19 V5.5" /><path d="M6 11.5 L12 5.5 L18 11.5" />' +
-          '</svg>' +
-        '</button>' +
-        '<input type="file" id="ai-file" accept="image/*" hidden />' +
-      '</form>' +
-    '</div>';
-
-  const buildAI = () => {
-    const wrap = document.createElement('div');
-    wrap.className = 'ai-overlay';
-    wrap.id = 'ai-overlay';
-    wrap.hidden = true;
-    wrap.innerHTML =
-      '<div class="ai-scrim" id="ai-scrim"></div>' +
-      '<div class="ai-stage is-overlay" id="ai-stage" role="dialog" aria-modal="true" ' +
-        'aria-label="Ask my AI">' +
-        '<header class="ai-sheet-head">' +
-          svg(G.ai, 2) +
-          '<span class="ai-sheet-title">ask my ai</span>' +
-          '<p id="ai-sub">powered by Claude Haiku 4.5</p>' +
-          '<button class="ai-x" type="button" aria-label="Close">' +
-            svg('<path d="M7 7 L19 19" /><path d="M19 7 L7 19" />', 2) +
-          '</button>' +
-        '</header>' +
-        AI_PANEL +
-      '</div>';
-    shell.appendChild(wrap);
-  };
-
-  // ============================================================
-  // The dock — the AI's own door, standing in the card's corner.
-  //
-  // The rail's letterhead is the QUIET door: a line of type in a column
-  // of type, which is exactly right for a rail and exactly wrong as the
-  // only handle a stranger is ever given. It is quieter still on the
-  // home screen, where it now waits for the hero to leave (see
-  // wireAskReveal) — so for the first whole screen of the site the one
-  // piece of software on it had nothing visible to press.
-  //
-  // So: ONE filled thing, in the corner the eye checks last, saying
-  // plainly what it is. Filled is the whole point — it is the only
-  // filled surface the shell shows, which is what buys the prominence,
-  // and it can be the only one because it lives OVER the page rather
-  // than in a column of type (that is the mistake the old rail chip
-  // made, and why the chip is dead).
-  //
-  // INK, not ember. The site's rule for a primary filled action is ink
-  // on parchment and ember never fills (css/ai.css .ai-send says it in
-  // as many words); ember is spent on four things that MOVE and a
-  // button at rest is not one of them. Hover spends the half-step to
-  // --orange instead — the same "louder than ink" every other state on
-  // this site is drawn with.
-  //
-  // It wears the AI's asterisk inside the site's construction line
-  // (2 on, 5 off — the sheet's spark, the rail's blank, the globe's
-  // grid), and the mark TURNS under the hand: the verb the rail's
-  // asterisk already speaks, so the two doors move the same way. No
-  // pulse, no badge, no ring at rest — an arrival ring was tried in the
-  // rail and cut for reading as a notification, and nothing here is
-  // allowed to move until someone is looking at it.
-  // ============================================================
-  const buildDock = () => {
-    const b = document.createElement('button');
-    b.className = 'ask-dock';
-    b.id = 'ask-dock';
-    b.type = 'button';
-    // the label is a word, not a sentence; the full ask is for the reader
-    // who cannot see the pill's shape
-    b.setAttribute('aria-label', 'Ask my AI about Tigo');
-    b.setAttribute('aria-haspopup', 'dialog');
-    // Not svg() — this glyph carries a second element the rail's does not
-    // (the orbit), and the asterisk is drawn a size down inside it so the
-    // mark can turn without ever touching the dots.
-    b.innerHTML =
-      '<svg class="dock-mark" viewBox="0 0 26 26" aria-hidden="true" fill="none">' +
-        '<circle class="dock-orbit" cx="13" cy="13" r="11.2" ' +
-          'stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 5" ' +
-          'stroke-linecap="round" />' +
-        '<g class="dock-star" stroke="currentColor" stroke-width="2.1" ' +
-          'stroke-linecap="round">' +
-          '<path d="M13 6.6 V19.4" />' +
-          '<path d="M7.5 9.8 L18.5 16.2" />' +
-          '<path d="M18.5 9.8 L7.5 16.2" />' +
-        '</g>' +
-      '</svg>' +
-      '<span class="dock-label">ask my ai</span>' +
-      '<span class="dock-kbd" aria-hidden="true">⌘K</span>';
-    shell.appendChild(b);
-  };
 
   // ============================================================
   // Section navigation
@@ -1067,63 +893,39 @@
     });
   };
 
-  // ---- the ask field, the AI row and ⌘K all open the same sheet. Where
-  // the sheet is not on the page (ai-chat.js only ships with a handful of
-  // documents) every one of them falls back to a real navigation to
-  // ai.html — the same posture as the section links.
-  const wireAI = () => {
-    // ONE door, however you knocked. `seed` is the character that opened
-    // it, handed to the sheet's own field so the keystroke that started
-    // the sentence is not the one you have to type twice. It is placed,
-    // not submitted: you asked to start typing, not to send.
-    const openAsk = (seed) => {
-      // no sheet on this document: hand off to ai.html, which is a redirect
-      // into index.html with the sheet already open and ?q= already spoken
-      // for — so even the fallback does not drop the sentence
-      if (!window.AIChat) {
-        location.href = 'ai.html' + (seed ? '?q=' + encodeURIComponent(seed) : '');
+  // ---- ⌘K, and it is the only key the AI answers to now. There is no
+  // sheet to toggle any more: the chat IS the home screen, so the
+  // shortcut means GO ASK rather than open/close. On Home that is a
+  // scroll home plus a caret in the field; anywhere else it is a real
+  // navigation, the same posture every section link already has.
+  const wireAsk = () => {
+    const goAsk = () => {
+      // #ai-input, not window.AIChat: this file runs before ai-chat.js,
+      // so the field is the thing that is actually there to test, and it
+      // is looked up inside the handler rather than closed over because
+      // by press time the whole document has parsed.
+      const field = document.getElementById('ai-input');
+      if (!field) {
+        location.href = 'index.html#home';       // a case study, or 404
         return;
       }
-      // the rail is not inert while the sheet is up (only the card is), so
-      // the field can still be reached behind the scrim — reaching it a
-      // second time must extend the sentence, not overwrite it
-      const already = window.AIChat.isOpen();
-      window.AIChat.open();
-      const real = document.getElementById('ai-input');
-      if (!real) return;
-      if (already) real.focus({ preventScroll: true });
-      if (!seed) return;
-      real.value = already ? real.value + seed : seed;
-      // ai-chat.js paints the send button off an input event, so the arrow
-      // is already live by the time the sheet finishes rising
-      real.dispatchEvent(new Event('input', { bubbles: true }));
+      // rest the hero first: the composer is only the foot of the SCREEN
+      // while the hero IS the screen, so a ⌘K from three sections down
+      // has to bring you back to it before the caret means anything.
+      const hero = document.getElementById('home');
+      if (hero) {
+        window.scrollTo({ top: restY(hero),
+          behavior: reduced() ? 'auto' : 'smooth' });
+      }
+      // preventScroll, because the line above is already doing the
+      // scrolling and the two would fight over the same frames
+      field.focus({ preventScroll: true });
     };
-
-    const openIt = (e) => {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      if (!window.AIChat) return;
-      e.preventDefault();
-      window.AIChat.open();
-    };
-    const row = side && side.querySelector('.side-link[data-page="ai"]');
-    if (row) row.addEventListener('click', openIt);
-
-    // ---- the dock, and it is the SAME door. It knocks through openAsk
-    // with an empty seed, so a page that never loaded ai-chat.js still
-    // gets the ai.html hand-off rather than a button that does nothing.
-    // A plain click, not a pointerdown: the letterhead opens on press
-    // because it is a facade with a field in it and a caret must never
-    // land there, and this is a button — buttons answer to clicks, and
-    // to Space and Enter for free.
-    const dock = document.getElementById('ask-dock');
-    if (dock) dock.addEventListener('click', () => openAsk(''));
 
     document.addEventListener('keydown', (e) => {
       if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'k') return;
-      if (!window.AIChat) return;
       e.preventDefault();
-      if (window.AIChat.isOpen()) window.AIChat.close();
-      else window.AIChat.open();
+      goAsk();
     });
   };
 
@@ -1233,14 +1035,6 @@
 
   if (!EMBED) {
     buildSide();
-    buildAI();
-    // …but NOT inside a case study. A story is somewhere you have gone to
-    // READ, and a filled black pill parked over the last paragraph is the
-    // site interrupting itself — the same reason the reading rail is the
-    // only chrome those pages carry. The AI is still there on ⌘K; it just
-    // stops asking. (Cases are real documents now, not the old ?case=
-    // overlay, so the test is simply whether this page IS one.)
-    if (!document.querySelector('.case-stage')) buildDock();
 
     // ---- and the way back in. With the rail shut the site has no visible
     // navigation at all, which is exactly the hole the strip's jump menu
@@ -1264,7 +1058,7 @@
     shell.appendChild(grip);
     wireGrip(grip);
     wireNav();
-    wireAI();
+    wireAsk();
 
     // ---- a real page load: land on the exact pixel this HISTORY ENTRY
     // banked (see `bank` at the top of this file). Runs before the reveal
@@ -1319,11 +1113,12 @@
   // types before the furniture arrives; every other page just appears.
   const lightUp = () => {
     if (side) side.classList.add('is-lit');
-    // the dock arrives with the furniture — on Home that means after the
-    // name has finished typing, so the set piece is never interrupted by a
-    // filled black pill sliding into the corner halfway through it
-    const dock = document.getElementById('ask-dock');
-    if (dock) dock.classList.add('is-lit');
+    // the composer arrives with the furniture — on Home that means after
+    // the name has finished typing, so the set piece is never interrupted
+    // by a field sliding in underneath it halfway through. This is the
+    // dock's old posture, kept: one arrival, everything in it.
+    const stage = document.getElementById('ai-stage');
+    if (stage) stage.classList.add('revealed');
   };
   if (root.classList.contains('intro-pending')) {
     window.addEventListener('shell:intro-done', lightUp, { once: true });

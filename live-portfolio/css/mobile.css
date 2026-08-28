@@ -146,67 +146,53 @@
   #contact.about-slide { padding-top: 12px; }
 
   /* ============================================================
-     AI — a page again.
+     THE HERO CHAT, at phone size.
 
-     js/mobile.js lifts the sheet out of its overlay into a section of
-     the document (and deletes the overlay, which is what puts
-     ai-chat.js back on its pre-sheet path). What is left to say is
-     geometry: the sheet was a floating box with a border and a drag
-     handle; the page is the screen.
+     Nothing is lifted or re-parented here any more: the composer is the
+     same markup on both widths, sitting in #home, and #home on a phone
+     is already exactly one screen with nothing under it to scroll to
+     (see the home block above). So all that is left is the sizes the
+     chat was drawn at — pinned, because a phone is not a box the
+     visitor resizes. Every number below is the one the phone sheet
+     used, kept.
+
+     The keyboard needs no rule at all. index.html carries
+     interactive-widget=resizes-content, so 100dvh shrinks when the
+     keyboard is up, so #home.stage shortens, so the composer at
+     bottom: var(--input-ins) rides above it — and because the idle
+     lift is measured in 50cqh, the resting position re-centres in the
+     shortened hero on its own.
      ============================================================ */
-  .ai-page { position: relative; }
-
-  .ai-stage.is-overlay.is-page {
-    position: static;
-    left: auto;
-    right: auto;
-    top: auto;
-    bottom: auto;
-    width: 100%;
-    height: calc(100dvh - var(--m-nav-band));
-    min-width: 0;
-    min-height: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
+  html.is-phone #home.stage {
+    --ask-rise: 44px;
+    --ask-lift: 52px;
   }
-  /* nothing to grab, nothing to drag, nothing to close */
-  .ai-stage.is-page .ai-sheet-head::before { display: none; }
-  .ai-stage.is-page .ai-resize { display: none; }
-
-  /* the head reads as a section title now, not as a window's title bar:
-     the glyph and the name centred on one line, the honesty line under
-     it, no rule beneath */
-  .ai-stage.is-page .ai-sheet-head {
-    height: auto;
-    padding: 26px 20px 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    row-gap: 4px;
-    border-bottom: 0;
-    cursor: default;
-  }
-  .ai-stage.is-page .ai-sheet-title {
-    font-size: 22px;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-  }
-  .ai-stage.is-page .ai-sheet-head svg { width: 19px; height: 19px; }
-  .ai-stage.is-page .ai-sheet-head #ai-sub {
-    flex: 0 0 100%;
-    font-size: 13px;
-    text-align: center;
+  .ai-stage.is-hero {
+    --sheet-pad: 14px;
+    --input-h:   52px;
+    --input-ins: 30px;
+    --sub-ins:   11px;
+    --chip-h:    44px;
+    --chip-font: 16px;
+    --msg-font:  17px;
+    --ask-w:     100%;
+    --scroll-top: 28px;     /* the phone screen already starts under a bar */
   }
 
-  /* the composer sits at the foot of the CHAT, and the chat already
-     stops short of the tab pill — so the phone-sheet's own clearance
-     (which was measured against the viewport) comes back off */
-  .ai-stage.is-page .ai-inputbar { bottom: 14px; }
+  /* four chips is 200px of stack between the name and the field. Two is
+     an invitation; four is a menu. */
+  .ai-stage.is-hero .prompt-chip:nth-child(n+3) { display: none; }
 
-  /* (the tab bar's own Play tab was already hidden on phones — see the
-     mobile block in css/styles.css. Nothing to add: the sheet's
-     `html.ai-open .site-nav { opacity: 0 }` in css/ai.css is simply
-     never reached now, because a page never opens.) */
+  /* the floating tab pill stands on the composer the moment the keyboard
+     is up. This used to be `html.ai-open`, which meant "a modal is over
+     the page" and is read as a keyboard guard by five other files;
+     ai-chat.js sets this one off the field's own focus, and it means
+     only what it says. */
+  html.ai-typing .site-nav {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t-micro) ease;
+  }
 }
 
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) {

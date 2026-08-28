@@ -300,10 +300,41 @@ html, body {
    name with it for free, no offsets to keep in sync. */
 #home.stage {
   height: var(--hero-h, 100dvh);
+
+  /* Where the name and the composer rest when nothing has been asked.
+     They are one pair and they are centred as a pair: --ask-rise lifts
+     the name by half the group's height, --ask-lift drops the bar by the
+     other half, and the 56px between them is the only air either number
+     is really made of. (76 of name + 56 of air + 56 of bar = 188; half
+     is 94; the name's centre is 38 in from its top and the bar's is 28
+     in from its foot.)
+
+     On #home rather than on the stage because the name pair is the
+     stage's SIBLING: this is the nearest element that can see both. */
+  --ask-rise: 56px;
+  --ask-lift: 66px;
 }
+/* --ask-rise lifts the name by half the composer's block so the PAIR —
+   name and composer together — is what reads as centred, rather than the
+   name being centred and the composer hanging off it. And it leaves on
+   the same class flip the composer travels on (#home.is-asking, see
+   css/ai.css), so the two are one gesture: one recalculation, one curve.
+
+   `translate`, not `transform`: transform is already spent on the
+   -50%/-50% above, and this file uses the independent property
+   everywhere for exactly that reason. opacity and never visibility —
+   the .sr-only copies of the name stay in the accessibility tree while
+   the drawn ones fade. */
 #home .frame-top {
-  top: 50%;
+  top: calc(50% - var(--ask-rise, 56px));
   left: 50%;
+  transition: opacity var(--t-rise) var(--ease-rise),
+              translate var(--t-rise) var(--ease-rise);
+}
+#home.is-asking .frame-top {
+  opacity: 0;
+  translate: 0 -14px;
+  pointer-events: none;
 }
 
 /* ---- "scroll" under the name — the about page's hint, re-homed on the
@@ -331,11 +362,12 @@ html, body {
   opacity: 0;
   transition: opacity 0.6s ease 0.9s, color var(--t-micro) ease;
 }
-#home.hint-ready:not(.is-scrolled) .scroll-hint {
+#home.hint-ready:not(.is-scrolled):not(.is-asking) .scroll-hint {
   opacity: 1;
   pointer-events: auto;
 }
-#home.is-scrolled .scroll-hint { opacity: 0; transition: opacity 0.3s ease; }
+#home.is-scrolled .scroll-hint,
+#home.is-asking .scroll-hint { opacity: 0; transition: opacity 0.3s ease; }
 #home .scroll-hint:hover,
 #home .scroll-hint:focus-visible { color: rgba(var(--ink-rgb), 0.78); }
 #home .scroll-hint svg { animation: hint-bob 2.2s ease-in-out infinite; }

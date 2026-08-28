@@ -56,36 +56,12 @@
   const playStage = document.getElementById('play-stage');
   if (playStage) playStage.remove();
 
-  /* ============================================================
-     The AI, a page again
-     shell.js has already built the sheet. Lift the sheet's own stage
-     out of its overlay, drop it into a section of the document, and
-     delete the overlay — at which point ai-chat.js (which runs after
-     this file) finds no #ai-overlay and takes its pre-sheet branch:
-     no scrim, no open/close, no focus trap, just a chat that is on the
-     page. Every id inside is untouched, so the rest of that file, and
-     every selector in ai.css, keeps working.
-     ============================================================ */
-  const overlay = document.getElementById('ai-overlay');
-  const aiStage = document.getElementById('ai-stage');
-  let aiSection = null;
-  if (overlay && aiStage) {
-    aiSection = document.createElement('section');
-    aiSection.className = 'ai-page';
-    aiSection.id = 'ai';
-    aiSection.setAttribute('aria-label', 'Ask my AI');
-
-    aiStage.classList.add('is-page');
-    // it is not a modal any more — it is the screen you are on
-    aiStage.removeAttribute('role');
-    aiStage.removeAttribute('aria-modal');
-    const x = aiStage.querySelector('.ai-x');
-    if (x) x.remove();                       // nothing to close
-
-    aiSection.appendChild(aiStage);
-    main.appendChild(aiSection);
-    overlay.remove();
-  }
+  /* (GONE: "The AI, a page again". This used to lift shell.js's sheet out
+     of its overlay and drop it into a section, because the desktop chat
+     was a floating window and a phone cannot have one. There is no
+     overlay any more — the chat is markup inside #home on both — so the
+     phone's version of it is simply the home screen, and the phone has
+     one fewer screen than it did.) */
 
   /* ============================================================
      Work, unrolled
@@ -164,7 +140,6 @@
     { id: 'home',  el: document.getElementById('home'),                hash: '#home' },
     { id: 'work',  el: document.querySelector('.work-stage'),          hash: '#vicino' },
     { id: 'about', el: document.querySelector('.about-stage'),         hash: '#bio' },
-    { id: 'ai',    el: aiSection,                                      hash: '#ai' },
   ].filter((s) => s.el);
 
   // which screen a hash belongs to. The retired ids are all here on
@@ -174,7 +149,7 @@
     home: 'home', '': 'home',
     work: 'work', vicino: 'work', pantrypal: 'work', drone: 'work',
     bio: 'about', about: 'about', contact: 'about', resume: 'about',
-    ai: 'ai',
+    ai: 'home',
     play: 'home', pong: 'home', snake: 'home', flappy: 'home',
   };
 
@@ -189,7 +164,7 @@
     const hash = href.indexOf('#') > -1 ? href.slice(href.indexOf('#') + 1) : '';
     if (hash) return OF_HASH[hash] || null;
     return { 'about.html': 'about', 'work.html': 'work',
-             'ai.html': 'ai', 'index.html': 'home' }[href] || null;
+             'index.html': 'home' }[href] || null;
   };
 
   const scrollOf = {};                       // where each screen was left
@@ -218,7 +193,10 @@
     // nothing to run from and the screen simply snaps in.
     requestAnimationFrame(() => {
       next.el.classList.add('revealed');
-      next.el.querySelectorAll('.about-slide, .work-slide, .ai-stage')
+      // NOT .ai-stage: the composer answers to shell.js's lightUp(), which
+      // waits for the typewriter. Revealing it here would put a field under
+      // the name before the name has typed a character.
+      next.el.querySelectorAll('.about-slide, .work-slide')
         .forEach((s) => s.classList.add('revealed'));
     });
 
@@ -286,22 +264,15 @@
     show(OF_HASH[location.hash.slice(1)] || 'home', { silent: true });
   });
 
-  // ---- landing. ?ask=1 (ai.html's redirect) opens the chat screen; ?q=…
-  // still asks its question, which the sheet used to do on open.
+  // ---- landing. ?ask=1 (ai.html's redirect) is a home landing now — home
+  // IS the chat — and ?q=… still asks its question on arrival.
   const params = new URLSearchParams(location.search);
-  const landing = params.has('ask') ? 'ai'
+  const landing = params.has('ask') ? 'home'
     : (OF_HASH[location.hash.slice(1)] || 'home');
   show(landing, { silent: true, restore: false });
 
-  const seed = params.get('q');
-  if (seed && aiSection) {
-    window.addEventListener('load', () => {
-      const field = document.getElementById('ai-input');
-      const bar = document.getElementById('ai-inputbar');
-      if (!field || !bar) return;
-      field.value = seed;
-      field.dispatchEvent(new Event('input', { bubbles: true }));
-      bar.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    });
-  }
+  // (?q= is not replayed here any more. It used to be, because the seed had
+  // to survive the sheet being lifted into a section on this width; the
+  // composer is the same markup on both widths now, so ai-chat.js asks the
+  // question once, for everyone. Two copies of this would ask it twice.)
 })();

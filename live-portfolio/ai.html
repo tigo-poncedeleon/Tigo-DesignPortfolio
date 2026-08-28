@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <title>Tigo Ponce de León — AI</title>
-  <!-- The AI is an overlay now, not a page of its own. This file survives so
-       the OG card, nav-touch's icon map and every external link still land
-       somewhere sensible: the one page, with the sheet already open. ?q= is
-       carried through so a seeded question still works. -->
+  <!-- The AI is the home page now — you land on the composer. This file
+       survives so the OG card and every external link that already exists
+       in the world still arrives somewhere sensible. ?q= is carried
+       through, and ai-chat.js asks it on arrival. -->
   <link rel="canonical" href="https://tigoponcedeleon.com/" />
   <meta name="robots" content="noindex" />
   <script>
     var q = new URLSearchParams(location.search).get('q');
-    location.replace('index.html?ask=1' + (q ? '&q=' + encodeURIComponent(q) : ''));
+    location.replace('index.html' + (q ? '?q=' + encodeURIComponent(q) : '') + '#home');
   </script>
-  <meta http-equiv="refresh" content="0; url=index.html?ask=1" />
+  <meta http-equiv="refresh" content="0; url=index.html#home" />
 </head>
-<body><p>Taking you to <a href="index.html?ask=1">tigoponcedeleon.com</a>…</p></body>
+<body><p>Taking you to <a href="index.html#home">tigoponcedeleon.com</a>…</p></body>
 </html>

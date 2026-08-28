@@ -21,8 +21,6 @@
       '<rect x="4" y="8" width="18" height="12.5" rx="2.5" />' +
       '<path d="M9.3 8 V6.2 C9.3 5.2, 9.8 4.7, 10.8 4.7 H15.2 C16.2 4.7, 16.7 5.2, 16.7 6.2 V8" />' +
       '<path d="M4 13.2 H22" />',
-    ai:
-      '<path d="M13 4 V22" /><path d="M5.5 8.5 L20.5 17.5" /><path d="M20.5 8.5 L5.5 17.5" />',
     play:                                          // hidden on mobile, kept complete
       '<path d="M8 5.5 L20 13 L8 20.5 Z" />',
   };
@@ -33,7 +31,6 @@
     'index.html#home': 'home',
     'about.html': 'about', '#bio': 'about',
     'work.html': 'work', '#vicino': 'work',
-    'ai.html': 'ai', '#ai': 'ai',
     'play.html': 'play', '#pong': 'play',
   };
 

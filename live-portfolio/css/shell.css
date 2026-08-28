@@ -289,7 +289,6 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
 }
 html.rail-closed .rail-open { opacity: 1; pointer-events: auto; }
 html.is-embed .rail-open,
-html.ai-open .rail-open,
 html.theater-open .rail-open { opacity: 0; pointer-events: none; }
 
 /* ---- identity ----
@@ -613,9 +612,8 @@ html.intro-glide :is(.shell-side, .side-grip) { transition: none; }
   font-variant-numeric: tabular-nums;   /* the seconds tick without reflowing */
 }
 
-/* the card is a hover popover on the rail, and the rail stays reachable
-   behind the AI sheet's scrim — so it stands down with everything else */
-html.ai-open .globe-card,
+/* the card is a hover popover on the rail, and a game in the theater is
+   the whole screen — so it stands down */
 html.theater-open .globe-card { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -978,176 +976,15 @@ html.theater-open .globe-card { display: none; }
   translate: 0 calc((1 - var(--ask-o, 1)) * 8px);
 }
 
-/* ============================================================
-   THE DOCK — the AI's door, in the corner
-
-   The rail's letterhead is the quiet door and stays the quiet door: a
-   line of type in a column of type, which is right for a rail and
-   wrong as the only handle a stranger ever gets. This is the loud one.
-
-   It is the ONLY filled surface the shell shows, and that is the whole
-   of its prominence — no shadow (the site has none), no badge, no ring,
-   no pulse. It can afford to be filled precisely because it lives OVER
-   the page instead of inside a column of type: the old rail chip was a
-   filled box among typography and read as a widget from another site,
-   which is why the chip is dead and this is here instead.
-
-   INK, not ember. The rule the composer already states (css/ai.css
-   .ai-send): "the primary filled action is INK on parchment — ember
-   never fills." Ember is spent on four things that move, and a button
-   at rest is not one of them. The hand buys the half-step to --orange,
-   which is how every other state on this site is drawn.
-
-   Inside: the AI's asterisk, held in the site's construction line —
-   2 on, 5 off, the same dotted guide the sheet's spark, the rail's
-   blank and the globe's grid keep. The asterisk is drawn a size down so
-   it can turn inside the orbit without ever touching it, and turn is
-   what it does under the hand: the rail's asterisk spins for the same
-   reason, so the site's two AI doors move the same way.
-   ============================================================ */
-.ask-dock {
-  position: fixed;
-  right: var(--sp-24);
-  bottom: var(--sp-24);
-  /* over the card, the case frame (15) and the theater (16), under the
-     seam grip's drag zone is irrelevant here — but firmly under the AI
-     sheet itself (60), which is what this opens */
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 48px;
-  /* 15 on the mark's side, 18 on the words': the round glyph needs less
-     air than the flat edge of type to sit the same distance in */
-  padding: 0 18px 0 15px;
-  border: 0;
-  border-radius: 24px;
-  background: var(--ink);
-  color: var(--bg);
-  font-family: inherit;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  /* it arrives with the furniture — on Home that is after the name has
-     typed itself (js/shell.js lightUp) — rising the way the rail's own
-     groups do. The lift under the hand is `transform`, deliberately a
-     DIFFERENT property from the entrance's `translate`, so a hover
-     during the entrance cannot fight it. */
-  opacity: 0;
-  translate: 0 14px;
-  transition: opacity var(--t-fade) ease,
-              translate var(--t-rise) var(--ease-rise),
-              transform var(--t-snap) var(--ease-lift),
-              background-color var(--t-micro) ease;
-}
-/* …and it is not pressable until it is there. An opacity-0 button still
-   takes clicks, so without this the corner opens the sheet all through
-   the opening, from a pill nobody can see. */
-.ask-dock:not(.is-lit) { pointer-events: none; }
-.ask-dock.is-lit { opacity: 1; translate: 0 0; }
-
-.ask-dock:hover,
-.ask-dock:focus-visible {
-  background: var(--orange);          /* the half-step past ink: louder */
-  transform: translateY(-2px);
-}
-.ask-dock:active { transform: translateY(0) scale(0.97); }
-/* the ring is drawn on the light page around it, not on the dark pill */
-.ask-dock:focus-visible { outline-offset: 3px; }
-
-.dock-mark {
-  flex: none;
-  width: 22px;
-  height: 22px;
-}
-/* the orbit holds still at rest — nothing on this site moves until
-   someone is looking at it — and marches on the spark's own 24s beat
-   once the pointer is here */
-.dock-orbit {
-  opacity: 0.42;
-  transition: opacity var(--t-micro) ease;
-}
-.ask-dock:hover .dock-orbit,
-.ask-dock:focus-visible .dock-orbit {
-  opacity: 0.7;
-  animation: dock-march 24s linear infinite;
-}
-@keyframes dock-march { to { stroke-dashoffset: -140; } }
-/* the mark's own verb. view-box + 50% puts the pivot at the glyph's
-   centre (13,13) rather than at the <g>'s ink bounds, so the six-fold
-   asterisk turns on itself. Same curve as the rail's. */
-.dock-star {
-  transform-box: view-box;
-  transform-origin: 50% 50%;
-  transition: rotate 0.55s var(--ease-glide);
-}
-.ask-dock:hover .dock-star,
-.ask-dock:focus-visible .dock-star { rotate: 180deg; }
-
-.dock-label {
-  font-size: 13.5px;                  /* the site's primary voice */
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-/* the shortcut is furniture here exactly as it is in the rail — printed
-   because there is room for it, and working whether or not it is */
-.dock-kbd {
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  color: rgba(var(--bg-rgb), 0.42);
-}
-
-/* ---- when something else owns the screen. The sheet this opens is up
-   (a second door to a room you are standing in), or a game is in the
-   theater — either way the dock steps out rather than floating over it.
-   visibility trails the fade so a button nobody can see is never a
-   button Tab can find. ---- */
-/* ---- the sheet's case is a HAND-OFF, not a dismissal. The card grows
-   out of this pill (css/ai.css: a scale about the pill's own centre), so
-   the pill shrinks a touch and goes as the card comes — the two read as
-   one object changing state rather than two things swapping places. Both
-   properties are compositor properties, on the same curve as the card,
-   so nothing in the pair can drop a frame the other one keeps. ---- */
-html.ai-open .ask-dock {
-  opacity: 0;
-  translate: 0 0;
-  transform: scale(0.9);
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.14s ease-out,
-              transform 0.22s var(--ease-lift),
-              visibility 0s linear 0.22s;
-}
-/* a game in the theater is not a hand-off — nothing grows out of the
-   dock there, so it simply steps out of the way */
-html.theater-open .ask-dock {
-  opacity: 0;
-  translate: 0 8px;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity var(--t-micro) ease,
-              translate var(--t-glide) var(--ease-rise),
-              visibility 0s linear var(--t-glide);
-}
-
-/* ≤700px the shell dissolves and the page goes back to being a document
-   under the bottom tab bar — which already carries an AI row, and which
-   this would sit on top of. js/mobile.js turns the sheet back into a
-   page down there; the dock has nothing to open. */
-@media (max-width: 700px) { .ask-dock { display: none; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .ask-dock {
-    translate: none;
-    transition: opacity 0.25s ease, background-color var(--t-micro) ease;
-  }
-  .ask-dock:hover, .ask-dock:focus-visible { transform: none; }
-  .ask-dock:hover .dock-orbit,
-  .ask-dock:focus-visible .dock-orbit { animation: none; }
-  .dock-star { transition: none; }
-  .ask-dock:hover .dock-star,
-  .ask-dock:focus-visible .dock-star { rotate: 0deg; }
-}
+/* (GONE: §THE DOCK — the filled ink pill in the card's bottom-right, the
+   AI's one door, with the asterisk that turned under the hand. It was
+   built to solve a real problem: for the first whole screen of the site
+   the one piece of software on it had nothing visible to press. The chat
+   is that first screen now, so the problem it answered no longer exists,
+   and a second door to the thing already filling the page is an echo.
+   Deleted with it: .ask-dock, .dock-mark/-orbit/-star/-label/-kbd and
+   @keyframes dock-march. ⌘K survives and means "go ask" — js/shell.js
+   wireAsk(). The rail's letterhead is still the quiet door home.) */
 
 /* ============================================================
    Content card — the page's own 1280×832 stage, untouched

@@ -25,9 +25,9 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=86" />
-  <link rel="stylesheet" href="css/shell.css?v=115" />
-  <link rel="stylesheet" href="css/ai.css?v=46" />
+  <link rel="stylesheet" href="css/styles.css?v=87" />
+  <link rel="stylesheet" href="css/shell.css?v=116" />
+  <link rel="stylesheet" href="css/ai.css?v=47" />
   <link rel="stylesheet" href="css/about.css?v=78" />
   <link rel="stylesheet" href="css/work.css?v=120" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="css/case-overlay.css?v=17" />
   <!-- LAST: the phone re-casts the one document as four tapped screens, so
        its overrides answer for the blocks in every sheet above -->
-  <link rel="stylesheet" href="css/mobile.css?v=3" />
+  <link rel="stylesheet" href="css/mobile.css?v=4" />
   <!-- set before first paint so the chrome and sidebar are already held at
        opacity 0 when they are built — the intro has no flash to hide.
        `is-phone` goes on in the same breath: css/mobile.css hides the three
@@ -64,18 +64,18 @@
       <aside class="shell-side" id="shell-side"></aside>
       <div class="shell-card" id="shell-card">
   <main>
-    <!-- ONE PAGE. Home, About, Work, Play and AI are sections of a single
-         document now — you scroll straight through them. The two case
+    <!-- ONE PAGE. Home, Work, Play and About are sections of a single
+         document — you scroll straight through them. The two case
          studies are still their own pages, opened from Work.
          about.html / work.html / play.html / ai.html survive as redirects
          so every link that already exists in the world keeps working.
-         The AI has no section of its own — the ask field under the name in
-         the rail opens it as an overlay sheet over whatever you are
-         reading. -->
-    <!-- The home card holds the name pair and nothing else. The pill of
-         words retired with the cover frame — the sidebar is the nav now —
-         so the one thing that happens on arrival is that the name writes
-         itself (js/typewriter.js).
+         The AI has no section of its own because it does not need one:
+         it IS Home. -->
+    <!-- The home card holds the name pair and the chat, and the order is
+         the point — the name writes itself first (js/typewriter.js), and
+         only then does the field arrive underneath it (js/shell.js
+         lightUp). Ask something and the pair leaves as the composer
+         travels to the foot of the screen: two states, one class.
 
          Each line is a grid: a hidden ghost copy reserves the full width
          from frame one, so the centred header cannot drift while it types.
@@ -95,6 +95,101 @@
           <span class="tw" data-text="product design engineer" aria-hidden="true"></span>
         </p>
       </header>
+
+      <!-- ============================================================
+           THE CHAT, on the home screen.
+
+           It was a sheet built by js/shell.js and floated over whatever
+           page you were on. That template lived there because chrome
+           must be identical across nine documents — and the chat is on
+           ONE document now, so the reason is spent and the markup comes
+           home. Three things it buys: the composer paints WITH the hero
+           instead of appearing after the second <script>; it rides the
+           typewriter's FLIP (js/typewriter.js) for free rather than
+           risking a landing mid-flight; and js/stage-fit.js measures the
+           real stage on its first pass.
+
+           Two states, one class, on #home — see css/ai.css. Idle, the
+           composer sits under the name pair; ask something and the name
+           leaves as the composer travels to the foot of the screen, on
+           one curve, because #home is the parent of both.
+
+           No empty-state spark here: the name pair IS the empty state,
+           and two of those on one screen is an echo. The code that drew
+           it went with it (ai-chat.js dismissEmpty/restoreEmpty).
+           ============================================================ -->
+      <div class="ai-stage is-hero" id="ai-stage">
+        <div class="ai-panel" id="ai-panel">
+          <div class="ai-scroll" id="ai-scroll"></div>
+          <!-- answers are announced here once complete — the word-by-word
+               visual reveal stays quiet for screen readers -->
+          <p class="sr-only" id="ai-live" aria-live="polite"></p>
+
+          <!-- ONE group, and that is the point: everything that travels
+               between the two states moves as a single transform. The
+               mood menu and the attach row are positioned against this
+               box, so lifting the bar alone would strand them. -->
+          <div class="ai-composer">
+            <div class="ai-prompts" id="ai-prompts">
+              <button class="prompt-chip" type="button">Hobbies?</button>
+              <button class="prompt-chip" type="button">Your toolset?</button>
+              <button class="prompt-chip" type="button">Tell me your background!</button>
+              <button class="prompt-chip" type="button">What is your design philosophy?</button>
+            </div>
+            <!-- a chosen photo waits here, above the bar, until the next send -->
+            <div class="ai-attach-row" id="ai-attach-row" hidden></div>
+            <!-- the persona menu rises from the toggle that opens it -->
+            <div class="ai-persona-menu" id="ai-persona-menu" hidden>
+              <button class="persona-row" type="button" data-persona="friendly">
+                <span class="persona-name">friendly</span>
+                <span class="persona-desc">warm &amp; to the point</span>
+                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
+              </button>
+              <button class="persona-row" type="button" data-persona="whimsical">
+                <span class="persona-name">whimsical</span>
+                <span class="persona-desc">answers with a wink</span>
+                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
+              </button>
+              <button class="persona-row" type="button" data-persona="suspicious">
+                <span class="persona-name">suspicious</span>
+                <span class="persona-desc">trusts no question</span>
+                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
+              </button>
+            </div>
+            <form class="ai-inputbar" id="ai-inputbar">
+              <input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo" placeholder="ask me anything!" autocomplete="off" />
+              <div class="ai-tools">
+                <!-- how it answers: friendly is the house voice, the other two are moods -->
+                <button class="ai-tool ai-persona" id="ai-persona" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Choose a mood">
+                  <span class="persona-label" id="ai-persona-label">friendly</span>
+                  <svg class="persona-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 L12 15.5 L18 10" /></svg>
+                </button>
+                <!-- dictation — ai-chat.js hides this button when the browser cannot listen -->
+                <button class="ai-tool ai-mic" id="ai-mic" type="button" hidden aria-label="Ask out loud" aria-pressed="false">
+                  <svg class="mic-glyph" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3 a3 3 0 0 1 3 3 V12 a3 3 0 0 1-6 0 V6 a3 3 0 0 1 3-3 z" />
+                    <path d="M18.5 11.5 a6.5 6.5 0 0 1-13 0" /><path d="M12 18 V21" />
+                  </svg>
+                  <span class="mic-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+                </button>
+                <!-- a photo for context — the answer can look at what you are looking at -->
+                <button class="ai-tool ai-add" id="ai-add" type="button" aria-label="Add a photo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg>
+                </button>
+              </div>
+              <!-- the send: quiet until there is something to send, then
+                   filled with the accent (ai-chat.js flips .is-ready) -->
+              <button class="ai-send" type="submit" aria-label="Send">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19 V5.5" /><path d="M6 11.5 L12 5.5 L18 11.5" /></svg>
+              </button>
+              <input type="file" id="ai-file" accept="image/*" hidden />
+            </form>
+            <!-- the sheet's head carried this line; the composer carries it
+                 now. setSubtitle() in ai-chat.js still writes here. -->
+            <p id="ai-sub">powered by Claude Haiku 4.5</p>
+          </div>
+        </div>
+      </div>
       <!-- the rest of the site waits below — say so, quietly, once the
            name has finished typing (js/main.js arms it). It is a real link,
            not a caption: clicking it glides to Work through the shell's own
@@ -560,10 +655,9 @@
 
     </section>
 
-    <!-- ai.html is still a real page: the OG card, nav-touch's icon map and
-         any external link point at it. It shows the invitation and opens the
-         sheet straight away (js/ai-chat.js); ?q=… seeds the first question.
-         The chat panel itself lives in the shell now, not here. -->
+    <!-- (ai.html survives as a redirect for the OG card and every external
+         link that already exists in the world. It lands on #home, which is
+         the chat; ?q=… still asks its question on arrival — js/ai-chat.js.) -->
   </main>
       </div>
     </div>
@@ -583,23 +677,22 @@
         <a class="site-nav-word" href="#vicino">work</a>
         <a class="site-nav-word" href="#bio">about</a>
         <a class="site-nav-word" href="#pong">play</a>
-        <a class="site-nav-word" href="#ai">ai</a>
       </div>
     </div>
   </nav>
 
   <script src="js/portrait.js?v=11"></script>
-  <script src="js/shell.js?v=101"></script>
+  <script src="js/shell.js?v=102"></script>
   <!-- ≤700px only, and the position in this list is load-bearing: AFTER
-       shell.js (whose AI sheet it turns back into a page), BEFORE every
-       file below that would otherwise wire itself to the stepper, the
-       game boards or the overlay it takes away. -->
-  <script src="js/mobile.js?v=4"></script>
+       shell.js (whose rail it reads), BEFORE every file below that would
+       otherwise wire itself to the stepper or the game boards it takes
+       away. -->
+  <script src="js/mobile.js?v=5"></script>
   <script src="js/globe.js?v=8"></script>
   <script src="js/stage-fit.js?v=17"></script>
   <script src="js/frame-clock.js?v=4"></script>
   <script src="js/typewriter.js?v=6"></script>
-  <script src="js/nav-touch.js?v=3"></script>
+  <script src="js/nav-touch.js?v=4"></script>
   <script src="js/main.js?v=10"></script>
   <script src="js/timeline.js?v=21"></script>
   <script src="js/about.js?v=14"></script>
@@ -612,7 +705,7 @@
   <script src="js/play-pager.js?v=106"></script>
   <script src="js/case-overlay.js?v=101"></script>
   <script src="js/theater.js?v=9"></script>
-  <script src="js/ai-chat.js?v=16"></script>
+  <script src="js/ai-chat.js?v=17"></script>
   <script src="js/color-lab.js?v=3"></script>
 </body>
 </html>

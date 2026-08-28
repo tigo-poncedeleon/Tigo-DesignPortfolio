@@ -19,18 +19,15 @@
   const SUB_LIVE = 'powered by Claude Haiku 4.5';
   const SUB_OFFLINE = 'offline — canned answers for now';
 
-  const stage    = document.getElementById('ai-stage');
   const panel    = document.getElementById('ai-panel');
   const scroll   = document.getElementById('ai-scroll');
   const prompts  = document.getElementById('ai-prompts');
   const inputBar = document.getElementById('ai-inputbar');
   const input    = document.getElementById('ai-input');
-  const emptyEl  = document.getElementById('ai-empty');
   const subEl    = document.getElementById('ai-sub');
   const liveEl   = document.getElementById('ai-live');
   const sendBtn  = inputBar ? inputBar.querySelector('.ai-send') : null;
-  const overlay  = document.getElementById('ai-overlay');
-  const card     = document.getElementById('shell-card');
+  const hero     = document.getElementById('home');
   // the composer's tools (absent on an older page that predates them)
   const personaBtn   = document.getElementById('ai-persona');
   const personaMenu  = document.getElementById('ai-persona-menu');
@@ -42,366 +39,54 @@
   if (!scroll) return;
 
   /* ============================================================
-     Open / close
-     The chat is a sheet now, not a page, so .revealed has to fire on
-     every OPEN rather than once on load — otherwise the spark only ever
-     draws itself the first time. The reflow flush between remove and add
-     is load-bearing: without it the class toggle coalesces into nothing.
+     Idle, and asking.
+
+     There is nothing to open. The chat is the home screen, so the only
+     state it has is whether a conversation has started — and that is a
+     class on #home, not on this stage, because #home is the parent of
+     both the name pair and the composer. One class, one style
+     recalculation, and the name's exit and the composer's travel are
+     frame-locked to each other. (The sheet that used to live here had
+     to sequence a pose measurement, an entrance and a content fade, and
+     the sequencing is exactly what read as three events instead of one.)
      ============================================================ */
-  let isOpen = false;
-  let lastFocus = null;
   let inflight = null;
+  let asking = false;
 
-  // ============================================================
-  // The sheet COMES OUT OF THE BUTTON.
-  //
-  // It used to fade up 18px, which is what every panel on the web does
-  // and says nothing about where it came from. The AI is one door — the
-  // pill in the bottom-right corner — and the sheet opens over it, so
-  // the honest entrance is the card growing out of that pill.
-  //
-  // ---- What this was, and why it isn't any more.
-  //
-  // The first build was a clip-path morph: a window in exactly the
-  // pill's shape, unfolding into the card, with the sheet's fill going
-  // ink-to-paper so frame one WAS the button. Conceptually lovely, and
-  // clunky in the hand, for two reasons that are worth writing down.
-  //
-  //   · It could not be composited. clip-path and background-color are
-  //     both paint properties: every frame repainted a 520x620 panel
-  //     with a live DOM in it, on the main thread, while the page
-  //     underneath was still settling. It ran at whatever the main
-  //     thread had left.
-  //   · Worse, it read as THREE events instead of one. An 80ms hold
-  //     (nothing moves), then an unfold on an overshoot curve that
-  //     visually finished early — the last fifth of the ease pushed the
-  //     clip past the sheet's own edges, where it is a no-op — then,
-  //     after another pause, the contents faded in on their own delay.
-  //     Pause, pop, pause, fade. Each piece was tuned; the sequence was
-  //     the clunk.
-  //
-  // ---- What it is now: ONE gesture, on the compositor.
-  //
-  // A uniform scale about the pill's centre, plus opacity. Both are
-  // compositor properties, so the whole ride is off the main thread and
-  // cannot be starved by whatever else the page is doing. Uniform is
-  // the important word: 0.86 to 1 leaves type legible the whole way and
-  // never squashes it, which is what stopped a scale-from-small being
-  // an option when the box was going down to the pill's 152x48. It does
-  // not have to reach the pill's SIZE to come from the pill — it has to
-  // come from its PLACE, and that is what transform-origin does.
-  //
-  // One curve (--ease-rise, a long graceful settle), one duration, no
-  // delays, no overshoot. The dock hands off in the same breath: it
-  // shrinks a touch and fades as the card grows out of it, so the two
-  // read as one object changing state rather than two things swapping.
-  // ============================================================
-  const EASE_MS = 420;                   // the ride, plus a frame or two
-  let poseTimer = 0;
-
-  // ---- where a thing WOULD be if nothing were moving it.
-  //
-  // Both boxes are posed at the moment they are measured, and both
-  // errors are silent. The sheet: the base .ai-stage rule holds an
-  // un-revealed one 18px low (the phone sheet's rise). The dock: it
-  // rides in on translate and lifts 2px under the pointer — and the
-  // pointer is ON it, always, at the exact moment this runs.
-  //
-  // The TRANSITION has to be muted first, and that is the subtlety.
-  // Both carry a transition on `translate`, so simply writing the rest
-  // value starts a tween and a rect read on the next line returns the
-  // value at t=0 — the posed number again. The neutralisation silently
-  // changes nothing. Mute, write, read, write back, commit the
-  // write-back while still muted, then unmute.
-  //
-  // Both boxes are done together on purpose: one mute/read/restore pass
-  // is two style flushes instead of four, and these four flushes land
-  // in the click handler, immediately before the animation starts —
-  // exactly where a dropped frame is most visible.
-  function restPose() {
-    const dock = document.getElementById('ask-dock');
-    const els = [stage, dock && dock.offsetWidth ? dock : null].filter(Boolean);
-    const saved = els.map((el) => {
-      const st = el.style;
-      const was = [st.transform, st.translate, st.transition];
-      st.transition = 'none';
-      st.transform = 'none';
-      st.translate = '0px';
-      return was;
-    });
-    const rects = els.map((el) => el.getBoundingClientRect());
-    els.forEach((el, i) => {
-      el.style.transform = saved[i][0];
-      el.style.translate = saved[i][1];
-    });
-    void els[0].offsetWidth;               // commit the restores, still muted
-    els.forEach((el, i) => { el.style.transition = saved[i][2]; });
-    return { sheet: rects[0], dock: rects[1] || null };
-  }
-
-  // The origin is the pill's centre in the sheet's own box, as a
-  // percentage so it survives a resize of either. The dock may be absent
-  // (a case study never builds one) or hidden (⌘K, the phone), and then
-  // the fallback is the box it WOULD have stood in: 152x48, 8px inside
-  // the sheet's bottom-right, which is where right:24/bottom:24 lands
-  // against the sheet's right:16/bottom:16.
-  function poseFrom() {
-    if (!stage || isPhone()) return;
-    const { sheet: s, dock: d } = restPose();
-    if (!s || !s.width || !s.height) return;
-    const w = d ? d.width : 152;
-    const h = d ? d.height : 48;
-    const cx = d ? d.left + w / 2 - s.left : s.width - w / 2 - 8;
-    const cy = d ? d.top + h / 2 - s.top : s.height - h / 2 - 8;
-    stage.style.setProperty('--ai-ox', (cx / s.width * 100).toFixed(2) + '%');
-    stage.style.setProperty('--ai-oy', (cy / s.height * 100).toFixed(2) + '%');
-  }
-
-  function open(seed) {
-    if (!overlay || isOpen) return;
-    isOpen = true;
-    lastFocus = document.activeElement;
-    overlay.hidden = false;
-    restoreEmpty();
-    // inert kills focus, clicks and key bleed into the page underneath in
-    // one move — which on play.html means the games stop hearing the
-    // keyboard the moment the sheet is up
-    if (card) card.setAttribute('inert', '');
-    stage.classList.remove('revealed');
-    // MEASURE FIRST, and specifically before `ai-open` goes on: that class
-    // is what sends the dock away, so measuring after it means measuring a
-    // pill already leaving. (restPose would survive it — that is what the
-    // muting is for — but the cheapest fix for a race is not to have one.)
-    poseFrom();
-    document.documentElement.classList.add('ai-open');
-    stage.classList.add('is-emerging');
-    clearTimeout(poseTimer);
-    stage.offsetHeight;                       // commit before re-adding
-    requestAnimationFrame(() => stage.classList.add('revealed'));
-    // …and the class comes off at the end. It carries `will-change`, which
-    // is a promise, not a decoration: a layer held for the life of the page
-    // costs memory and can soften the sheet's text on some GPUs. It also
-    // carries the transform, and a transformed ancestor is a containing
-    // block for anything fixed inside it — so this is hygiene, not tidying.
-    poseTimer = setTimeout(() => {
-      if (isOpen) stage.classList.remove('is-emerging');
-    }, EASE_MS);
-    document.addEventListener('keydown', onKey, true);
-    if (input) input.focus({ preventScroll: true });
-    if (seed) {
-      // the sheet is arriving with the question already asked (the hero
-      // composer, or a ?q= deep link), so the chip stack has nothing left
-      // to offer — without this it hangs over the first exchange
-      if (prompts) prompts.style.display = 'none';
-      submitQuestion(seed);
+  function activate(instant) {
+    if (asking || !hero) return;
+    asking = true;
+    // `instant` is the restored transcript: the conversation did not just
+    // happen, it is simply still there, so it must not replay. Two frames,
+    // because one is not enough to guarantee the class landed before the
+    // transition is handed back.
+    if (instant) hero.classList.add('is-instant');
+    hero.classList.add('is-asking');
+    if (instant) {
+      // two frames, then a timer that does the same thing. rAF does not
+      // run in a background tab, and a page opened in one would otherwise
+      // wear `is-instant` — a class whose whole job is to suppress
+      // transitions — for the rest of the session.
+      const unmute = () => hero.classList.remove('is-instant');
+      requestAnimationFrame(() => requestAnimationFrame(unmute));
+      setTimeout(unmute, 200);
     }
   }
 
-  function close() {
-    if (!overlay || !isOpen) return;
-    isOpen = false;
-    if (inflight) inflight.abort();
-    stopListening();
-    closePersonaMenu();
-    // it folds back into the button it came out of. Re-posed rather than
-    // reused: the sheet may have been dragged or resized since it opened,
-    // so the pill sits somewhere else in its coordinates now.
-    clearTimeout(poseTimer);
-    poseFrom();
-    stage.classList.add('is-emerging');
-    stage.offsetHeight;
-    stage.classList.remove('revealed');
-    document.removeEventListener('keydown', onKey, true);
-    if (card) card.removeAttribute('inert');
-    document.documentElement.classList.remove('ai-open');
-    setTimeout(() => {
-      if (isOpen) return;
-      overlay.hidden = true;
-      stage.classList.remove('is-emerging');
-    }, 500);  // --t-stage
-    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  // the tab bar on a phone stands on the composer the moment the keyboard
+  // is up. A class of its own, deliberately: `ai-open` used to mean "a
+  // modal is over the page" and is read by five other files as a keyboard
+  // guard — this means only "the caret is in the field".
+  if (input) {
+    input.addEventListener('focus', () =>
+      document.documentElement.classList.add('ai-typing'));
+    input.addEventListener('blur', () =>
+      document.documentElement.classList.remove('ai-typing'));
   }
 
-  // capture phase, so Escape closes the sheet before any game sees it —
-  // and the mood menu before the sheet, innermost thing first
-  function onKey(e) {
-    if (e.key === 'Escape') {
-      e.stopPropagation();
-      if (personaMenu && !personaMenu.hidden) { closePersonaMenu(true); return; }
-      close();
-      return;
-    }
-    if (e.key !== 'Tab') return;
-    // the trap must not hand focus to what cannot take it: the closed mood
-    // menu's rows, the hidden mic, the file input behind the + button
-    const f = Array.prototype.filter.call(stage.querySelectorAll(
-      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'),
-      (el) => !el.hidden && el.type !== 'file' && el.offsetParent !== null);
-    if (!f.length) return;
-    const first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  }
-
-
-  /* ============================================================
-     Drag and resize.
-
-     Position and size live in inline left/top/width/height once the
-     visitor has touched them, which means CSS owns the defaults until
-     they do — nothing is written down until there is a preference to
-     write. Both are clamped into the viewport on every move AND on
-     resize, so a sheet dragged to the corner of a wide window cannot
-     strand itself off-screen when the window narrows.
-
-     The sheet takes a drag from the header (move) or from any of its
-     eight edges and corners (resize). Below 700px none of it applies:
-     the sheet is full-bleed there, and an inline box would outrank the
-     media query and strand a phone at desktop geometry.
-     ============================================================ */
-  const GEO_KEY = 'ai.box';
-  const MINW = 340, MINH = 320;
-  const GAP = 8;                        // the sheet never touches the edge
-  const isPhone = () => matchMedia('(max-width: 700px)').matches;
-
-  const clampBox = (b) => {
-    const w = Math.max(MINW, Math.min(b.w, window.innerWidth - 2 * GAP));
-    const h = Math.max(MINH, Math.min(b.h, window.innerHeight - 2 * GAP));
-    return {
-      w: w, h: h,
-      x: Math.max(GAP, Math.min(b.x, window.innerWidth - w - GAP)),
-      y: Math.max(GAP, Math.min(b.y, window.innerHeight - h - GAP)),
-    };
-  };
-
-  const clearBox = () => {
-    ['left', 'top', 'right', 'bottom', 'width', 'height']
-      .forEach((k) => stage.style.removeProperty(k));
-  };
-
-  const applyBox = (b) => {
-    const c = clampBox(b);
-    stage.style.left = c.x + 'px';
-    stage.style.top = c.y + 'px';
-    stage.style.right = 'auto';
-    stage.style.bottom = 'auto';
-    stage.style.width = c.w + 'px';
-    stage.style.height = c.h + 'px';
-    try { sessionStorage.setItem(GEO_KEY, JSON.stringify(c)); } catch (err) { /* private mode */ }
-    return c;
-  };
-
-  const savedBox = () => {
-    try {
-      const b = JSON.parse(sessionStorage.getItem(GEO_KEY) || 'null');
-      return (b && b.w && b.h) ? b : null;
-    } catch (err) { return null; }
-  };
-
-  // the sheet's current box, read from layout the first time it is moved
-  const liveBox = () => {
-    const r = stage.getBoundingClientRect();
-    return { x: r.left, y: r.top, w: r.width, h: r.height };
-  };
-
-  // A resize drag grows the sheet from the edge you grabbed: pulling the
-  // north or west side moves that side and pins the opposite one, so the
-  // sheet never creeps across the screen while you size it. Each of those
-  // two is clamped BEFORE the anchor is worked out — at the minimum the
-  // dragged edge simply stops, rather than pushing the far edge along.
-  const resize = (dir, box, dx, dy) => {
-    let x = box.x, y = box.y, w = box.w, h = box.h;
-    // east/south stop at the window edge rather than growing past it and
-    // letting clampBox slide the whole sheet left to compensate
-    if (dir.indexOf('e') > -1) w = Math.min(box.w + dx, window.innerWidth - box.x - GAP);
-    if (dir.indexOf('s') > -1) h = Math.min(box.h + dy, window.innerHeight - box.y - GAP);
-    if (dir.indexOf('w') > -1) {
-      w = Math.max(MINW, Math.min(box.w - dx, box.x + box.w - GAP));
-      x = box.x + box.w - w;                    // the right edge stays put
-    }
-    if (dir.indexOf('n') > -1) {
-      h = Math.max(MINH, Math.min(box.h - dy, box.y + box.h - GAP));
-      y = box.y + box.h - h;                    // the bottom edge stays put
-    }
-    return { x: x, y: y, w: w, h: h };
-  };
-
-  const wireDrag = () => {
-    const head = stage.querySelector('.ai-sheet-head');
-
-    // eight invisible strips straddling the border, plus the header. The
-    // sheet draws no corner mark — the resize cursor is the whole tell.
-    const handles = ['n', 's', 'e', 'w', 'ne', 'nw', 'sw', 'se'].map((d) => {
-      const el = document.createElement('div');
-      el.className = 'ai-resize';
-      el.dataset.dir = d;
-      stage.appendChild(el);
-      return el;
-    });
-
-    let mode = null, id = null, start = null, box = null, grabbed = null;
-
-    const begin = (el, m) => (e) => {
-      if (isPhone()) return;                    // full-bleed: nothing to drag
-      if (e.button !== 0 && e.pointerType === 'mouse') return;
-      if (e.target.closest('.ai-x')) return;    // the close button is not a handle
-      mode = m; id = e.pointerId; grabbed = el;
-      box = liveBox();
-      start = { x: e.clientX, y: e.clientY };
-      try { el.setPointerCapture(id); } catch (err) { /* no live pointer */ }
-      document.documentElement.classList.add('ai-dragging');
-      // hold the handle's own cursor for the whole drag, wherever the
-      // pointer wanders
-      document.documentElement.style.cursor = getComputedStyle(el).cursor;
-      e.preventDefault();
-    };
-    const move = (e) => {
-      if (mode === null || e.pointerId !== id) return;
-      const dx = e.clientX - start.x, dy = e.clientY - start.y;
-      if (mode === 'move') applyBox({ x: box.x + dx, y: box.y + dy, w: box.w, h: box.h });
-      else applyBox(resize(mode, box, dx, dy));
-    };
-    const end = () => {
-      if (mode === null) return;
-      try { grabbed.releasePointerCapture(id); } catch (err) { /* gone */ }
-      mode = null; id = null; grabbed = null;
-      document.documentElement.classList.remove('ai-dragging');
-      document.documentElement.style.removeProperty('cursor');
-    };
-
-    head.addEventListener('pointerdown', begin(head, 'move'));
-    handles.forEach((el) => el.addEventListener('pointerdown', begin(el, el.dataset.dir)));
-    [head].concat(handles).forEach((el) => {
-      el.addEventListener('pointermove', move);
-      el.addEventListener('pointerup', end);
-      el.addEventListener('pointercancel', end);
-    });
-    // double-click the header to put the sheet back where it started
-    head.addEventListener('dblclick', () => {
-      clearBox();
-      try { sessionStorage.removeItem(GEO_KEY); } catch (err) { /* fine */ }
-    });
-    // a window that narrows must not strand the sheet outside it — and once
-    // it is phone-width the inline box has to go entirely, or it would
-    // outrank the full-bleed media query
-    window.addEventListener('resize', () => {
-      if (!stage.style.width) return;
-      if (isPhone()) clearBox(); else applyBox(liveBox());
-    });
-  };
-
-  if (overlay) {
-    const scrim = document.getElementById('ai-scrim');
-    if (scrim) scrim.addEventListener('click', close);
-    const x = overlay.querySelector('.ai-x');
-    if (x) x.addEventListener('click', close);
-    wireDrag();
-    const b = savedBox();
-    if (b && !isPhone()) applyBox(b);          // where the visitor last left it
-  } else {
-    // no shell (or an older page): behave exactly as before
-    requestAnimationFrame(() => stage && stage.classList.add('revealed'));
-  }
+  // the sheet's geometry was written down between visits; there is no
+  // sheet to remember the shape of now
+  try { sessionStorage.removeItem('ai.box'); } catch {}
 
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   const prefersReduced = () => motionQuery.matches;
@@ -513,7 +198,7 @@
       rec.onerror = () => stopListening();
       rec.onend = () => {
         stopListening();
-        if (isOpen && input) input.focus({ preventScroll: true });
+        if (input) input.focus({ preventScroll: true });
       };
       try { rec.start(); } catch (err) { stopListening(); }
     });
@@ -662,28 +347,17 @@
     return history.some((m) => m.role === 'user' && msgText(m).toLowerCase() === t);
   }
 
-  /* ---- the empty-state spark bows out on the first question. It used to
-     be REMOVED, which was fine for a page you only saw once; a sheet can
-     be closed and reopened, so it hides instead and comes back when the
-     transcript is empty. The visibility step also stops a dismissed spark
-     taking pointer or focus — an a11y win the .remove() got by accident. ---- */
-  function dismissEmpty(instant) {
-    if (!emptyEl) return;
-    emptyEl.classList.toggle('is-instant', !!instant || prefersReduced());
-    emptyEl.classList.add('is-gone');
-  }
-
-  function restoreEmpty() {
-    if (emptyEl && !history.length) {
-      emptyEl.classList.remove('is-gone', 'is-instant');
-    }
-  }
+  /* (GONE: dismissEmpty / restoreEmpty — the empty-state spark's exit and
+     its way back. The hero has no spark: the name pair IS the empty state,
+     and two of those on one screen is an echo, not emphasis.) */
 
   /* ---- exchange rendering: two chat bubbles per exchange — the question
      right-aligned, the answer left-aligned, same styling (see .ai-msg) ---- */
   function buildExchange(question, photoUrl) {
+    // the single funnel — both a typed question and a tapped chip arrive
+    // here — so this is the one place the hero has to change state
+    activate(false);
     removeFollowups();
-    dismissEmpty(false);
 
     const q = document.createElement('p');
     q.className = 'ai-msg ai-msg-user';
@@ -765,11 +439,16 @@
       el.style.maxHeight = (fullH + 60) + 'px';
       requestAnimationFrame(() => spans.forEach((s) => s.classList.add('is-in')));
 
-      // glide the thread along while the bubble grows
+      // glide the thread along while the bubble grows — but only while the
+      // reader is still AT the bottom. This used to pin scrollTop every
+      // frame unconditionally, which meant scrolling up to re-read a long
+      // answer mid-reveal yanked you straight back down. Tolerable in a
+      // 620px sheet nobody read twice; not on the landing page.
       let following = true;
       (function follow() {
         if (!following) return;
-        scrollToBottom();
+        const slack = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight;
+        if (slack < 40) scrollToBottom();
         requestAnimationFrame(follow);
       })();
 
@@ -779,7 +458,9 @@
         el.style.maxHeight = '';
         el.style.transition = '';
         el.textContent = text;   // collapse the spans — clean copy/paste
-        scrollToBottom();
+        if (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40) {
+          scrollToBottom();
+        }
         resolve();
       }, total + 80);
     });
@@ -858,10 +539,11 @@
 
     // fly the picked chip to where the question lands in the new bubble.
     // Rect deltas are visual px; ShellFit converts them to the layout px the
-    // panel expects, answering for the box THIS node lives in. The sheet sits
-    // outside the scaled card, so the answer is 1 and the division vanishes —
-    // which is exactly right, and neither this file nor nextlevel.js has to
-    // know that about itself.
+    // panel expects, answering for the box THIS node lives in. That answer
+    // USED to be 1 — the sheet floated outside the scaled card — and it is
+    // not any more: the panel is inside .shell-card > main, which `zoom`
+    // scales, so the division is doing real work on every screen that is
+    // not exactly 1280 wide. The call site is unchanged; only the reason is.
     const F = window.ShellFit || { toLayout: (p) => p };
     const px = (v) => F.toLayout(v, panel);
     const startRect = chip.getBoundingClientRect();
@@ -880,8 +562,10 @@
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: '10',
-      left: (px(startRect.left - panelRect.left) - 1) + 'px',   /* −1: panel border */
-      top: (px(startRect.top - panelRect.top) - 1) + 'px',
+      /* no −1 here: the sheet had a 1px border to discount and the panel
+         has none, so the correction would now BE the error */
+      left: px(startRect.left - panelRect.left) + 'px',
+      top: px(startRect.top - panelRect.top) + 'px',
       transition: 'none',
     });
     panel.appendChild(clone);
@@ -970,13 +654,10 @@
       offline = false;
       setSubtitle(SUB_LIVE);
     } catch (err) {
-      // a request the visitor cancelled by closing the sheet must not print
-      // an offline apology into a panel nobody is looking at
-      if (err.name === 'AbortError' && !isOpen) {
-        responding = false;
-        if (sendBtn) sendBtn.disabled = false;
-        return;
-      }
+      // NO AbortError branch. It used to swallow the abort that closing the
+      // sheet fired, into a panel nobody was looking at — and there is no
+      // closing any more, so the only abort left is fetchReply's own 20s
+      // timeout, which is precisely the case the canned answers exist for.
       full = OFFLINE_ANSWERS[text.toLowerCase()] || OFFLINE_ANSWERS._default;
       offline = true;
       setSubtitle(SUB_OFFLINE);
@@ -1014,8 +695,10 @@
       scroll.appendChild(p);
     });
     if (!history.length) return;
+    // instant: the conversation is still there from earlier in the session,
+    // it is not happening now, so the hero must not replay its travel
+    activate(true);
     if (prompts) prompts.style.display = 'none';
-    dismissEmpty(true);
     showFollowups();
     scrollToBottom();
   }
@@ -1049,15 +732,17 @@
 
   restore();
 
-  window.AIChat = { open, close, isOpen: () => isOpen };
+  window.AIChat = { ask: submitQuestion };
 
-  // The AI has no page of its own any more — it is an overlay over whatever
-  // you are reading. ai.html survives as a redirect that arrives with ?ask=1,
-  // so every OG card and external link still opens the sheet on landing, and
-  // ?q=… still seeds the first question.
-  if (overlay && new URLSearchParams(location.search).has('ask')) {
-    // no rAF here — open() already waits a frame for its own entrance, and
-    // gating the OPEN on a frame means a page that never paints never opens
-    open(new URLSearchParams(location.search).get('q') || undefined);
+  // ai.html survives as a redirect for every OG card and external link that
+  // already exists in the world. It lands here now rather than opening a
+  // sheet: ?q= asks the question outright, a bare ?ask= just takes the caret
+  // to the field and lets the visitor write their own.
+  const P = new URLSearchParams(location.search);
+  if (P.has('q')) {
+    if (prompts) prompts.style.display = 'none';   // the question is already asked
+    submitQuestion(P.get('q'));
+  } else if (P.has('ask') && input) {
+    input.focus({ preventScroll: true });
   }
 })();

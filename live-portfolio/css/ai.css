@@ -1,73 +1,26 @@
 /* ============================================================
-   AI — the ask sheet
-   The chat used to be a page: a 605×664 panel pinned to Figma
-   1395:168 inside a full 1280×832 stage. It is a popup now, rising
-   from the sidebar's ask pill and floating over whatever page you
-   were on — so the geometry below belongs to the panel, and the
-   stage is just the sheet that holds it.
+   AI — the chat
 
-   The sheet keeps the .ai-stage class deliberately: every
-   .ai-stage.revealed rule here (the entrance, the spark's draw-in)
-   goes on working untouched, and ai-chat.js finds the same element.
+   Three homes in a year, and the reasons are worth keeping because
+   each one is a rule. It was a PAGE (605x664, pinned to Figma
+   1395:168), which meant leaving the site to ask a question. Then a
+   SHEET rising from a pill in the corner, which meant it was always
+   within reach and never in the way. Now it is the HOME SCREEN
+   itself: the first thing on the site is a field, because the one
+   piece of software here is the thing worth showing first.
 
-   The chat-scale type and the chip-stack custom properties below
-   were written for the phone; a 520px sheet has exactly the same
-   problem, so they are the base now rather than an override.
+   The class survived all three on purpose. Every .ai-stage.revealed
+   rule still fires, and ai-chat.js still finds the same element —
+   one decision, forty edits saved, three times over.
+
+   What each move deleted is recorded where it stood, not here.
    ============================================================ */
 
-/* ---- ai.html's card: the invitation, while the sheet opens over it ---- */
-.ai-hero {
-  position: relative;
-  height: var(--card-h, 832px);
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ai-hero-title { text-align: center; white-space: nowrap; }
-.ai-hero-title h1 {
-  font-size: 28px;
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 38px;
-  color: var(--ink);
-}
-.ai-hero-title p {
-  font-size: 28px;
-  letter-spacing: -0.015em;
-  line-height: 38px;
-  color: rgba(var(--ink-rgb), 0.34);
-}
-
-/* FIXED, not absolute. It used to be absolute inside .shell, which was
-   pinned to the viewport — the shell is as tall as the document now, so an
-   absolute overlay stretched the whole way down and the sheet hung
-   thousands of pixels below the fold. The sheet is chrome; it belongs to
-   the window, not to the page under it. */
-.ai-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-}
-.ai-overlay[hidden] { display: none; }
-
-/* the page stays sharp behind the sheet — the sheet's own border and its
-   parchment fill do the separating. The scrim is here only to catch the
-   click-away. */
-.ai-scrim {
-  position: absolute;
-  inset: 0;
-}
-
-/* the sheet, anchored over the DOCK it rises from. It stood bottom-LEFT
-   for as long as the rail had an ask blank to rise from; that blank is
-   gone and the AI is one door now — the pill in the card's bottom-right
-   corner (css/shell.css §THE DOCK) — so the sheet opens over the thing
-   that opened it.
-
-   The `translate` pair here is the PHONE's entrance: at ≤700px the sheet
-   is a bottom sheet and simply rises. On a laptop the block below takes
-   it over completely. */
+/* the arrival: a fade and 18px of rise. It was the phone sheet's
+   entrance, and it is the whole entrance now — js/shell.js adds
+   .revealed from lightUp(), which on the home page waits for the
+   typewriter, so the composer arrives WITH the rail rather than
+   underneath a name still typing itself. */
 .ai-stage {
   opacity: 0;
   translate: 0 18px;
@@ -76,207 +29,184 @@
 }
 .ai-stage.revealed { opacity: 1; translate: 0 0; }
 
-/* ---- …and on a laptop it comes OUT OF THE BUTTON.
+/* ============================================================
+   THE HERO CHAT — the home page opens on it.
 
-   ONE gesture, on the compositor: a uniform scale about the pill's
-   centre, and opacity. Nothing else moves and nothing else is timed.
+   The sheet was a window that floated over the page. This is not a
+   window: it is the home screen. So the box is gone (no head, no
+   border, no radius, no scrim) and what is left is the two things a
+   chat is — a transcript and a composer — laid on the hero itself.
 
-   This replaced a clip-path morph — a window in the pill's exact shape
-   unfolding into the card, with the fill going ink-to-paper so frame
-   one WAS the button. It was the better idea on paper and the worse one
-   in the hand, for two reasons worth keeping written down.
+   TWO STATES, ONE CLASS. #home is the parent of both the name pair
+   and this stage, so `#home.is-asking` is a single style
+   recalculation and the name's exit and the composer's travel are
+   frame-locked to each other by construction. That is the whole
+   answer to the failure the corner dock's commit records: a hold,
+   then an overshoot that finished early, then a delayed fade, read
+   as three events instead of one.
 
-     · It could not be composited. clip-path and background-color are
-       PAINT properties, so every frame repainted a 520x620 panel full
-       of live DOM on the main thread, while the page underneath was
-       still settling. It ran on whatever the main thread had spare.
-     · Worse, it read as THREE events rather than one: an 80ms hold
-       (nothing moves), then an unfold whose overshoot curve spent its
-       last fifth pushing the clip past the sheet's own edges — where it
-       is a no-op, so the motion appeared to stop early — then, after
-       another pause, the contents fading in on their own delay. Pause,
-       pop, pause, fade. Every piece was tuned. The sequence was the
-       clunk.
-
-   Uniform is the word that makes scale work here: 0.86 → 1 keeps type
-   legible the whole way and never squashes it, which is exactly what
-   ruled scale out while the target was the pill's 152x48. The card does
-   not have to reach the pill's SIZE to come from the pill — it has to
-   come from its PLACE, and transform-origin is what says so
-   (js/ai-chat.js poseFrom measures the dock and writes --ai-ox/--ai-oy).
-
-   No delays, no overshoot, one curve. --ease-rise is a long graceful
-   settle — nearly all the distance in the first third, then it eases
-   down onto its mark. Overshoot on a panel this size reads as wobble,
-   which is the opposite of expensive.
-
-   `is-emerging` is worn only for the ride, and that is hygiene rather
-   than tidying: it carries `will-change` (a promise, not a decoration —
-   a layer held for the life of the page costs memory and can soften the
-   sheet's text on some GPUs) and a transform, and a transformed
-   ancestor is a containing block for anything fixed inside it. ---- */
-@media (min-width: 701px) {
-  /* the closed end — and the timings a CLOSE uses. The transition that
-     runs is always the one on the state being moved TO, so this block
-     owns folding away and the one below owns coming out. Exits are
-     quicker than entrances: a dismissal should feel answered, not
-     performed. */
-  .ai-stage.is-overlay.is-emerging {
-    transform: scale(0.86);
-    transform-origin: var(--ai-ox, 88%) var(--ai-oy, 94%);
-    opacity: 0;
-    translate: 0 0;                  /* the 18px rise is the phone's */
-    will-change: transform, opacity;
-    transition: transform 0.2s var(--ease-lift),
-                opacity 0.16s ease-in;
-  }
-  /* …and the open end. */
-  .ai-stage.is-overlay.is-emerging.revealed {
-    transform: none;
-    opacity: 1;
-    transition: transform 0.38s var(--ease-rise),
-                opacity 0.2s ease-out;
-  }
-  /* ---- and NOTHING moves inside the card while the card is moving.
-     The chip stack has its own entrance (opacity + a 16px rise on a
-     0.2s delay, .ai-stage:not(.revealed) .ai-prompts) written for the
-     phone sheet and for the days the desktop sheet simply faded up. On
-     top of a card that is itself still travelling it is motion inside
-     motion — two entrances on two clocks in the same 400ms — and that
-     reads as noise however well either one is tuned. Here the chips are
-     part of the card: they arrive because it arrives. They get their
-     rules back the moment is-emerging comes off, and since a revealed
-     sheet's rules resolve to the same values, nothing jumps. ---- */
-  .ai-stage.is-overlay.is-emerging .ai-prompts {
-    opacity: 1;
-    translate: 0 0;
-    transition: none;
-  }
-  /* a drag must track the pointer exactly, and a half-finished entrance
-     must not fight it */
-  html.ai-dragging .ai-stage.is-overlay.is-emerging { transition: none; }
-}
-
-/* the emergence is a flourish, not information — the sheet simply is */
-@media (prefers-reduced-motion: reduce) {
-  .ai-stage.is-overlay.is-emerging {
-    transform: none;
-    will-change: auto;
-    transition: opacity 0.2s ease;
-  }
-}
-
-.ai-stage.is-overlay {
+   And so ACTIVE is the ONLY geometry authored here — .ai-scroll and
+   .ai-inputbar already sit where it wants them, unchanged from the
+   sheet. IDLE is that same layout under one translateY. The
+   transition is therefore literally `transform: none`: one
+   compositor property, one curve, no delay, no sub-entrance.
+   ============================================================ */
+.ai-stage.is-hero {
+  /* absolute + inset is REQUIRED, not tidiness: `container: … / size`
+     is `contain: size`, which means the box takes no height from its
+     own content. Without a definite height from outside, 50cqh below
+     resolves to 0 and the idle composer sits on the hero's floor
+     with the name pair floating alone above it. */
   position: absolute;
-  /* right, not left — and `left: auto` is load-bearing: a box the visitor
-     has dragged is written back as inline left/top (ai-chat.js applyBox),
-     so this pair is only ever the DEFAULT, and the default has to name the
-     edge it is measured from or the two rules fight on the first paint */
-  left: auto;
-  right: 16px;
-  bottom: 16px;
-  width: 520px;
-  height: 620px;
-  min-width: 340px;                 /* == MINW in ai-chat.js */
-  min-height: 320px;                /* == MINH */
+  inset: 0;
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
-  background: var(--bg);
-  border: 1px solid var(--g-250);
-  overflow: hidden;
 
-  /* ---- the sheet's size scale ----
-     The visitor can drag this box to any size between 340×320 and the whole
-     window, so nothing inside may be a fixed pixel any more. Every dimension
-     below is a share of the SHEET (cqw/cqh), clamped at both ends — which is
-     why the stage is a size container.
+  /* The sheet's tokens were shares of a box the visitor could drag
+     (cqw/cqh, clamped). Against a 1280x832 hero every one of them
+     saturates at its ceiling — a 26px pad on a 1280 stage is not a
+     design, it is a clamp running out. So they are pinned, which is
+     this file's own established answer for a box nobody resizes:
+     see the phone block in css/mobile.css.
 
-     Each clamp is tuned so the default 520×620 sheet resolves to the number
-     that was hardcoded here before (7.5cqh→46.5, 2.8cqw→14.6, 8.5cqh→52.7,
-     7cqh→43.4, 3.1cqw→16.1, 3.3cqw→17.2, 16cqh→99). The default sheet is
-     unchanged; the tokens only bite once it is dragged. */
+     The container itself STAYS, for one reason that pays for the
+     keyword: 50cqh is the idle lift's measurement, and it is the
+     only thing that re-resolves for free when iOS's keyboard
+     shortens the hero underneath it. */
   container: sheet / size;
 
-  --head-h:    clamp(40px, 7.5cqh, 52px);
-  --sheet-pad: clamp(12px, 2.8cqw, 26px);
-  --input-h:   clamp(44px, 8.5cqh, 56px);
-  --input-ins: 13px;
+  --sheet-pad: 2px;          /* the bar is left: calc(pad - 2px); 0 would hang it out */
+  --input-h:   56px;
+  /* the bar's foot clears the floor by enough to seat the honesty line
+     UNDER it — which is the reason this is 34 and not the sheet's 13.
+     Everything in the composer that must survive the travel has to live
+     inside this inset, or it is clipped by the hero when the group
+     arrives at the bottom of the screen. */
+  --input-ins: 34px;
+  --sub-ins:   12px;         /* the honesty line, under the bar, in both states */
   --dock-h:    calc(var(--input-h) + 2 * var(--input-ins));
-  --chip-h:    clamp(36px, 7cqh, 46px);
-  --chip-gap:  6px;
-  --chip-font: clamp(14px, 3.1cqw, 17px);
-  --msg-font:  clamp(15px, 3.3cqw, 18px);
-  --spark-h:   clamp(56px, 16cqh, 120px);
-  --chips-bottom: calc(var(--dock-h) + 16px);
+  --chip-h:    44px;
+  --chip-gap:  8px;
+  --chip-font: 15px;
+  --msg-font:  17px;
+  --scroll-top: 48px;        /* air above the first question */
+
+  --ask-w:     720px;        /* the measure everything inside inherits */
+  /* --ask-rise and --ask-lift are NOT here: the name pair is a sibling of
+     this box, not a child, so the pair they make would only reach half of
+     what it describes. They live on #home — see css/styles.css. */
 }
 
-/* ---- the sheet's head: what it is, whether the line is up, and out ---- */
-.ai-sheet-head {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: var(--head-h);
-  padding: 0 10px 0 16px;
-  border-bottom: 0.648px solid var(--g-250);
-  color: var(--g-700);
+/* One centred column rather than five centred children: .ai-scroll,
+   .ai-inputbar, .ai-prompts, .ai-persona-menu and .ai-attach-row all
+   measure off this box, so they inherit the measure with no overrides
+   of their own. .ai-msg's max-width: min(85%, 62ch) then lands at
+   ~570px, which is the number it always wanted. */
+.ai-stage.is-hero .ai-panel {
+  width: min(var(--ask-w), 100%);
+  margin-inline: auto;
 }
-/* the header is the drag handle, so it says so */
-.ai-sheet-head { cursor: grab; user-select: none; }
-html.ai-dragging .ai-sheet-head { cursor: grabbing; }
-html.ai-dragging .ai-stage { transition: none; }   /* track the pointer exactly */
-html.ai-dragging { user-select: none; }
-.ai-sheet-head svg { flex: none; width: 16px; height: 16px; }
-.ai-sheet-title { font-size: 13.5px; }
-.ai-sheet-head #ai-sub {
-  flex: 1;
-  min-width: 0;
-  font-size: 11.5px;
-  color: var(--g-400);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+/* the transcript starts BELOW the top of the screen. In the sheet a
+   header held this room; here nothing does, and a first question set
+   flush against the window's edge reads as a page that has been cut off
+   rather than one that begins. */
+.ai-stage.is-hero .ai-scroll {
+  top: var(--scroll-top);
 }
-.ai-x {
-  flex: none;
-  width: 28px;
-  height: 28px;
-  display: flex;
+
+/* ---- the group that travels. It is a wrapper and it is load-bearing:
+   the mood menu, the attach row and the chips are all positioned
+   against .ai-panel, so lifting the input bar alone would leave the
+   menu drawn at the foot of the hero, detached from the button that
+   opened it. inset: 0 keeps every one of those offsets exactly as it
+   was — same containing-block rect — and takes the one transform.
+
+   The derivation of the idle lift: the bar's resting centre sits
+   (input-ins + input-h/2) above the hero's floor; idle wants it
+   --ask-lift below the hero's middle (50cqh). ---- */
+.ai-stage.is-hero .ai-composer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;                /* the transcript above stays reachable */
+  transform: translateY(calc(
+    var(--input-ins) + var(--input-h) / 2 + var(--ask-lift) - 50cqh));
+  /* --t-rise/--ease-rise deliberately: .ai-msg's own msg-rise uses the
+     same curve, so the composer's travel and the first bubble's arrival
+     are one gesture rather than two that happen to overlap. */
+  transition: transform var(--t-rise) var(--ease-rise);
+}
+.ai-stage.is-hero .ai-composer > * { pointer-events: auto; }
+#home.is-asking .ai-composer { transform: none; }
+
+/* the chips ride the same lift, in a row under the bar rather than a
+   column beside it — there is width here that a 520px sheet never had.
+   The 0.2s beat they wait in the sheet is dropped: a second clock is
+   the smell the dock's commit names.
+
+   They hang BELOW the composer's own box, which would be clipped at the
+   foot of the screen — and never is, because the first question takes
+   them away (ai-chat.js hidePrompts) before the travel begins. */
+.ai-stage.is-hero .ai-prompts {
+  left: 0;
+  right: 0;
+  bottom: calc(var(--input-ins) - var(--chip-h) - 14px);
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  background: none;
-  border: 0;
-  border-radius: 7px;
-  color: var(--g-550);
-  cursor: pointer;
-  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
+  gap: var(--chip-gap);
+  transition: opacity var(--t-fade) ease, translate var(--t-rise) var(--ease-rise);
 }
-.ai-x svg { width: 17px; height: 17px; }
 
-/* ---- resize handles: every edge and corner takes a drag. All eight are
-   invisible — the sheet draws nothing in its corner; the cursor is the
-   whole affordance. They straddle the border (the stage clips at
-   overflow:hidden, so the outward half is only a hit area), and the
-   corners outrank the edges so the diagonal wins where the two meet. ---- */
-.ai-resize { position: absolute; z-index: 2; }
-.ai-resize[data-dir="n"] { top: -3px; left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
-.ai-resize[data-dir="s"] { bottom: -3px; left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
-.ai-resize[data-dir="e"] { right: -3px; top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
-.ai-resize[data-dir="w"] { left: -3px; top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
-.ai-resize[data-dir="ne"],
-.ai-resize[data-dir="nw"],
-.ai-resize[data-dir="sw"],
-.ai-resize[data-dir="se"] { width: 14px; height: 14px; z-index: 3; }
-.ai-resize[data-dir="nw"] { top: 0; left: 0; cursor: nwse-resize; }
-.ai-resize[data-dir="ne"] { top: 0; right: 0; cursor: nesw-resize; }
-.ai-resize[data-dir="sw"] { bottom: 0; left: 0; cursor: nesw-resize; }
-.ai-resize[data-dir="se"] { bottom: 0; right: 0; cursor: nwse-resize; }
+/* the fine print, under the composer where the sheet's head used to
+   carry it. setSubtitle() still writes here. */
+/* the honesty line — which model is answering, or that none is. It sits
+   inside the composer's bottom inset so it travels with the bar and is
+   never clipped, and it is NOT THERE until there is something to be
+   honest about: idle, the chips are in that space, and a machine's name
+   under an empty field is a claim nobody has asked to check yet.
 
-.ai-x:hover,
-.ai-x:focus-visible { color: var(--ink); background: rgba(var(--ink-rgb), 0.06); }
+   It fades on the same class as everything else, so it is still one
+   gesture — nothing here moves on its own clock. */
+.ai-stage.is-hero #ai-sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--sub-ins);
+  text-align: center;
+  font-size: 12px;
+  color: rgba(var(--ink-rgb), 0.3);
+  opacity: 0;
+  transition: opacity var(--t-rise) var(--ease-rise);
+}
+#home.is-asking .ai-stage.is-hero #ai-sub { opacity: 1; }
+/* …and the swap to the offline notice still crossfades through it */
+#home.is-asking .ai-stage.is-hero #ai-sub.is-swapping { opacity: 0; }
 
+/* ---- the transcript gets NO entrance of its own. That would be the
+   third event. Its arrival is the first bubble's msg-rise, which is
+   already written. visibility, never a move: handleChipSelect measures
+   the new bubble's rect in the same task as the class flip, and that
+   survives only because this box's geometry is state-independent. ---- */
+#home:not(.is-asking) .ai-scroll { visibility: hidden; }
+
+/* ---- scroll handoff. overscroll-behavior is deliberately left at
+   `auto`, and this comment is the reason so nobody "fixes" it:
+   browsers latch a wheel gesture to the inner scroller for that
+   gesture's duration, so reading the transcript cannot fling the page
+   down to Work; and the NEXT gesture at the boundary chains out to the
+   document, which is how you get to Work without hunting for a margin.
+   `contain` would buy the first behaviour and destroy the second —
+   it means "never chain", not "not mid-gesture", so a transcript
+   scrolled to its end would make the page unscrollable under the
+   pointer. Idle there is no overflow at all, so the hero behaves
+   exactly as it did before the chat arrived. ---- */
+
+/* a restored transcript is already in the active pose on first paint —
+   the conversation did not just happen, it is simply still there */
+#home.is-instant .frame-top,
+#home.is-instant .ai-composer { transition: none; }
 /* the chips still rise a beat after the sheet */
 .ai-prompts {
   transition: opacity var(--t-fade) ease 0.2s,
@@ -284,105 +214,19 @@ html.ai-dragging { user-select: none; }
 }
 .ai-stage:not(.revealed) .ai-prompts { opacity: 0; translate: 0 16px; }
 
-/* ---- the panel: the sheet's body, filling whatever the head leaves ---- */
+/* ---- the panel: the chat's body, and the box every absolutely
+   positioned thing inside measures itself against ---- */
 .ai-panel {
   position: relative;
   flex: 1;
   min-height: 0;
-
-  /* One source of truth for the chip stack's footprint: the empty-state
-     spark reserves room off THIS number rather than a fixed top, so the
-     two can never overlap however short the sheet gets. --chip-h and
-     --chips-bottom live on the stage (they answer to its size); the 4 is
-     the chip count in shell.js's AI_PANEL; keep them in step. */
-  --chips-h: calc(4 * var(--chip-h) + 3 * var(--chip-gap));
 }
 
-/* ---- the empty-state spark: rays draw in, the orange heart pops,
-   the dotted orbit slowly marches; it bows out on the first question ---- */
-/* the spark + invitation own the room ABOVE the chip stack and centre
-   themselves in it, so the two can never overlap however short the sheet.
-   Insets do the centring, not translateX — .is-gone still animates
-   `translate`, and the two must not fight. */
-.ai-empty {
-  position: absolute;
-  top: 10px;
-  bottom: calc(var(--chips-bottom) + var(--chips-h) + 12px);
-  left: var(--sheet-pad);
-  right: var(--sheet-pad);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  overflow: hidden;
-  text-align: center;
-  pointer-events: none;
-  transition: opacity 0.4s ease, translate 0.45s var(--ease-rise);
-}
-.ai-empty.is-gone {
-  opacity: 0;
-  translate: 0 -10px;
-  visibility: hidden;                /* a dismissed spark takes no focus */
-  transition: opacity 0.4s ease, translate 0.45s var(--ease-rise),
-              visibility 0s linear 0.45s;
-}
-.ai-empty.is-instant { transition: none; }
-.ai-empty p {
-  margin: 0;
-  flex: none;
-  font-size: 14px;
-  max-width: 230px;
-  color: rgba(var(--ink-rgb), 0.48);
-}
-/* a viewBox'd SVG, so letting flex shrink it keeps the whole empty state
-   fitting in tall and short sheets alike — no size breakpoints needed */
-.ai-spark {
-  flex: 0 1 auto;
-  width: auto;
-  height: var(--spark-h);
-  max-height: 100%;
-  min-height: 0;
-  aspect-ratio: 1;
-}
-.ai-spark .guide {
-  fill: none;
-  stroke: var(--g-250);
-  stroke-width: 1.2;
-  stroke-dasharray: 2 5;
-  stroke-linecap: round;
-  opacity: 0;
-  transition: opacity 0.5s ease 1.2s;
-  animation: spark-march 24s linear infinite;
-}
-.ai-stage.revealed .ai-spark .guide { opacity: 1; }
-@keyframes spark-march {
-  to { stroke-dashoffset: -140; }
-}
-/* the rays carry their grey as a presentation attribute (js/shell.js writes
-   the whole svg as a string), and an attribute cannot hold a var() — so the
-   token is put back on here, where a theme can still reach it */
-.ai-spark g[stroke] { stroke: var(--g-700); }
-.ai-spark .ray {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.7s var(--ease-draw) var(--rd, 0.5s);
-}
-.ai-spark .ray.s1 { --rd: 0.5s; }
-.ai-spark .ray.s2 { --rd: 0.65s; }
-.ai-spark .ray.s3 { --rd: 0.8s; }
-.ai-stage.revealed .ai-spark .ray { stroke-dashoffset: 0; }
-.ai-spark .spark-dot {
-  fill: var(--orange);
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(0);
-  transition: transform var(--t-pop) var(--ease-pop) 1.1s;
-}
-.ai-stage.revealed .ai-spark .spark-dot { transform: scale(1); }
-
-/* exchanges scroll between the panel top and the input bar; scrollbar hidden
-   per site convention */
+/* ---- the transcript. Absolutely positioned rather than a flex child on
+   purpose: its box must be IDENTICAL in both states, because
+   handleChipSelect measures the new bubble's rect in the same task as the
+   class flip and a moving container would land the flying chip somewhere
+   else. .is-hero only insets its top. ---- */
 .ai-scroll {
   position: absolute;
   top: 0;
@@ -396,16 +240,6 @@ html.ai-dragging { user-select: none; }
   scrollbar-width: none;
 }
 
-/* ---- footer strip the input rides on (Figma 1395:192: no grey band any
-   more, just a hairline across the panel 95px up) ---- */
-.ai-dock {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--dock-h);
-  border-top: 1px solid var(--g-250);
-}
 .ai-scroll::-webkit-scrollbar { display: none; }
 
 /* ---- chat bubbles: user messages hug the right edge, AI replies the left,
@@ -496,13 +330,14 @@ html.ai-dragging { user-select: none; }
   transform: translateY(-1.5px);
 }
 
-/* ---- suggested prompts (Figma 1395:183–1408:3 rev 2: ALL chips h63 r20,
-   24px text, 18px side insets; right edge lines up with the input bar's,
-   stacked 6px apart just above it) ---- */
+/* ---- suggested prompts. A column against the right edge for as long as
+   the chat was 520px wide and had no room to be anything else; the hero
+   has width, so .is-hero lays them in a centred row under the bar and
+   this is only what they fall back to. ---- */
 .ai-prompts {
   position: absolute;
   right: 16px;
-  bottom: var(--chips-bottom);
+  bottom: calc(var(--dock-h) + 16px);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -821,104 +656,30 @@ html.ai-dragging { user-select: none; }
 #ai-sub.is-swapping { opacity: 0; }
 
 /* ============================================================
-   MOBILE (≤700px) — the shell dissolves here (css/shell.css), so the
-   sheet stops floating and becomes a proper bottom sheet: full width,
-   clearing the site-nav tab bar at the foot. The chat-scale type it
-   used to gain at this width is the base now, so only geometry moves.
+   MOBILE (≤700px) — nothing here any more.
+
+   The sheet needed a whole block at this width: it stopped floating,
+   became a bottom sheet, grew a grab handle, gave up its resize edges
+   and cleared the home indicator. The hero chat IS the phone's home
+   screen, so all that is left is sizes — and sizes live with the rest
+   of the phone's layout, in css/mobile.css.
+
+   Gone with the sheet: the short/narrow @container rules. They existed
+   because the visitor could drag the box down to 340x320 and the empty
+   state would run into the chip stack. Nobody drags the home page.
    ============================================================ */
-@media (max-width: 700px) {
-  .ai-overlay { position: fixed; z-index: 60; }
-  .ai-stage.is-overlay {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 56px;
-    width: auto;
-    height: auto;
-    min-width: 0;             /* the desktop floor would overflow a 320px phone */
-    min-height: 0;
-    border-radius: 16px 16px 0 0;
-    border-bottom: 0;
-
-    /* a phone sheet is not resizable, so it does not scale with the box —
-       these are the sizes the chat was drawn at, pinned */
-    --sheet-pad: 14px;
-    --input-h: 52px;
-    --chip-h: 44px;
-    --chip-font: 16px;
-    --msg-font: 17px;
-    --spark-h: 96px;
-  }
-  /* nothing to drag: the sheet fills the screen */
-  .ai-resize { display: none; }
-  /* the grab handle a sheet is expected to have */
-  .ai-sheet-head::before {
-    content: '';
-    position: absolute;
-    top: 7px;
-    left: 50%;
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--g-200);
-    transform: translateX(-50%);
-  }
-  .ai-sheet-head { position: relative; padding-top: 8px; height: 52px; }
-  /* the input dock clears the home indicator */
-  .ai-inputbar { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
-
-  /* the sheet is modal — the card is inert behind it — so the bottom tab
-     bar stands down rather than sitting on top of the composer */
-  html.ai-open .site-nav {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--t-micro) ease;
-  }
-}
-
-/* ============================================================
-   A SHORT OR NARROW SHEET — keyed off the sheet, not the window. These
-   used to be @media (max-height:…), which meant a visitor shrinking the
-   sheet on a tall screen never triggered them and the empty state ran
-   into the chip stack. @container asks the box itself.
-   ============================================================ */
-
-/* the chip stack and dock take a fixed bite out of a short sheet; rather
-   than let the empty state crowd the pills it bows out — spark and
-   invitation together, in one move, never one without the other. Above
-   this the spark just flex-shrinks into whatever room is left. */
-@container sheet (max-height: 460px) { .ai-empty { display: none; } }
-
-/* a narrow sheet drops the subtitle rather than truncating it mid-word —
-   the title and the close button are all the header owes you at that size.
-   (Type needs no rule here: --chip-font's clamp is already at its 14px
-   floor by the time the sheet is this narrow.)
-
-   Scoped to desktop on purpose. A phone sheet is ~390px wide, so an
-   unscoped container query would strip the subtitle off every phone —
-   this is about a sheet the visitor SHRANK, not a small screen. */
-@media (min-width: 701px) {
-  @container sheet (max-width: 400px) {
-    .ai-sheet-head #ai-sub { display: none; }
-  }
-  /* a sheet shrunk this far keeps the words (the mood, the message) and
-     gives up the mic first — it is the one tool with another way in
-     (you can always type) */
-  @container sheet (max-width: 440px) {
-    .ai-mic { display: none; }
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .ai-stage, .ai-prompts, .ai-empty {
+  .ai-stage, .ai-prompts {
     transition: opacity 0.25s ease;
     translate: none;
   }
-  .ai-empty.is-gone { transition: none; }
-  .ai-spark .guide { animation: none; transition: none; opacity: 1; }
-  .ai-spark .ray { transition: none; stroke-dashoffset: 0; }
-  .ai-spark .spark-dot { transition: none; transform: scale(1); }
+  /* the two states still swap — they simply arrive rather than travel.
+     The composer holds its asked position and the name is either there
+     or not; nothing crosses the screen. */
+  .ai-stage.is-hero .ai-composer { transition: none; transform: none; }
+  #home .frame-top { transition: opacity 0.25s ease; }
+  #home.is-asking .frame-top { translate: none; }
   .ai-msg, .ai-followups { animation: none; }
   .think-dot { animation: none; }
   .ai-word { transition: none; opacity: 1; }
