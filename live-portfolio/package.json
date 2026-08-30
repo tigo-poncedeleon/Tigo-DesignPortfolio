@@ -2,6 +2,7 @@
   "name": "tigo-design-portfolio",
   "private": true,
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.6.1"
   }
 }

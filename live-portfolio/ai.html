@@ -9,6 +9,11 @@
        through, and ai-chat.js asks it on arrival. -->
   <link rel="canonical" href="https://tigoponcedeleon.com/" />
   <meta name="robots" content="noindex" />
+  <!-- Vercel Web Analytics -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
   <script>
     var q = new URLSearchParams(location.search).get('q');
     location.replace('index.html' + (q ? '?q=' + encodeURIComponent(q) : '') + '#home');
