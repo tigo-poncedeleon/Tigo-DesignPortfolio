@@ -13,6 +13,34 @@
   <link rel="stylesheet" href="css/styles.css?v=96" />
   <link rel="stylesheet" href="css/shell.css?v=117" />
   <link rel="stylesheet" href="css/notfound.css?v=7" />
+  <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
+       sends, and drops it outright when that hook returns null — so this is a
+       real opt-out, not a send-then-discard: nothing leaves the browser.
+       Load ?va-ignore=1 once on a machine to go quiet on it, ?va-ignore=0 to
+       start counting again. The flag is localStorage, so it is per browser
+       profile — each browser you read this site in needs its own visit, and
+       clearing site data forgets it. The param strips itself so the URL you
+       are left holding is the ordinary one. -->
+  <script>
+    (() => {
+      try {
+        const q = new URLSearchParams(location.search);
+        if (q.has('va-ignore')) {
+          const on = q.get('va-ignore') !== '0';
+          if (on) localStorage.setItem('va.ignore', '1');
+          else localStorage.removeItem('va.ignore');
+          q.delete('va-ignore');
+          const rest = q.toString();
+          history.replaceState(null, '',
+            location.pathname + (rest ? '?' + rest : '') + location.hash);
+          console.log('[analytics] this browser is now ' + (on ? 'IGNORED' : 'counted'));
+        }
+        if (localStorage.getItem('va.ignore')) {
+          (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
+        }
+      } catch (e) { /* private mode, blocked storage: just count normally */ }
+    })();
+  </script>
   <!-- Vercel Web Analytics. First-party and cookieless: the script is served
        from this same origin at deploy time, so there is no third party in the
        page, nothing for a blocker to catch, and no consent banner owed. -->
