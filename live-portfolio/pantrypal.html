@@ -18,10 +18,10 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=96" />
+  <link rel="stylesheet" href="css/styles.css?v=97" />
   <link rel="stylesheet" href="css/shell.css?v=117" />
-  <link rel="stylesheet" href="css/case-overlay.css?v=16" />
-  <link rel="stylesheet" href="css/pantry.css?v=102" />
+  <link rel="stylesheet" href="css/case-overlay.css?v=18" />
+  <link rel="stylesheet" href="css/pantry.css?v=103" />
   <!-- inside the case overlay's iframe the shell stands down — set before
        first paint so no chrome ever flashes (js/case-overlay.js) -->
   <script>
@@ -29,6 +29,10 @@
       document.documentElement.className += ' is-embed';
   </script>
   <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
+  <!-- the phone's whole navigation: one button in the corner and the
+       panel it opens (js/drawer.js). Phone-only — every rule inside is in
+       one @media block, and above 700px the rail is still the nav. -->
+  <link rel="stylesheet" href="css/drawer.css?v=2" />
   <link rel="stylesheet" href="css/color-lab.css?v=8" />
   <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
        sends, and drops it outright when that hook returns null — so this is a
@@ -76,7 +80,6 @@
   <main>
     <section class="case-stage">
 
-      <div class="nav-frost" aria-hidden="true"></div>
 
 
       <!-- Six chapters, one per viewport, scrolling DOWN — the same
@@ -377,30 +380,28 @@
     </div>
   </div>
 
-  <!-- MOBILE ONLY: the shared site-nav bottom bar (styles.css). It stays a
-       direct child of <body>, OUTSIDE the shell — a position:fixed element
-       inside a transformed ancestor is positioned against the ancestor,
-       not the viewport. On desktop the sidebar is the nav and this hides. -->
-  <nav class="site-nav" aria-label="Site">
-    <a class="site-nav-home" href="index.html#home" aria-label="Back home">
-      <img src="Media/pong-house.svg" alt="" width="32" height="28" />
-    </a>
-    <div class="site-nav-reveal">
-      <div class="site-nav-words">
-        <a class="site-nav-word is-home" href="index.html#home">home</a>
-        <a class="site-nav-word" href="about.html">about</a>
-        <a class="site-nav-word is-current" aria-current="page" href="work.html">work</a>
-        <a class="site-nav-word" href="play.html">play</a>
-      </div>
-    </div>
-  </nav>
+  <!-- (GONE 2026-08-30: the site-nav BOTTOM BAR, and with it the last of the
+       1380:150 top-left nav it was made from. It was a floating pill of three
+       words at the foot of every phone screen, and three words is all it could
+       ever be: the case studies, the resume, the email and the four profiles
+       — every one of them already listed in the rail — had no way onto a
+       phone at all. On these three case pages it was worse than empty, since
+       its links still pointed at the about.html / work.html / play.html
+       redirect stubs and it marked the wrong one as the current page.
 
-  <script src="js/shell.js?v=102"></script>
+       What replaced it is a DRAWER, built by js/drawer.js off the same TREE
+       the rail is built from (js/shell.js), opened by one button in the
+       top-left corner. One source for the site's shape, and a nav that can
+       hold the whole of it. js/nav-touch.js — which existed only to draw
+       icons into this bar's tabs — went with it; its glyphs live on in G,
+       in js/shell.js, which is where they were copied from.) -->
+
+  <script src="js/shell.js?v=103"></script>
+  <script src="js/drawer.js?v=3"></script>
   <script src="js/globe.js?v=8"></script>
   <script src="js/stage-fit.js?v=17"></script>
   <script src="js/frame-clock.js?v=4"></script>
-  <script src="js/nav-touch.js?v=4"></script>
-  <script src="js/pantry.js?v=101"></script>
+  <script src="js/pantry.js?v=102"></script>
   <script src="js/case-progress.js?v=10"></script>
   <script src="js/case-overlay.js?v=101"></script>
   <script src="js/color-lab.js?v=3"></script>

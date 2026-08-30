@@ -3,10 +3,11 @@
    and nothing above 700px can see it.
 
    The desktop site is one long document you scroll from Home into
-   Work into About. On a phone it is FOUR SCREENS you tap between
-   with the bottom bar (js/mobile.js): only one section is in the
-   document at a time, so there is no scrolling from one into the
-   next and each screen is as tall as what it actually holds.
+   Work into About. On a phone it is THREE SCREENS (js/mobile.js):
+   only one section is in the document at a time, so there is no
+   scrolling from one into the next and each screen is as tall as
+   what it actually holds. You get between them from the drawer —
+   css/drawer.css, which is loaded after this file.
 
    Loaded LAST, on purpose: the phone blocks already inside
    styles.css / work.css / about.css / ai.css are the base, and the
@@ -14,15 +15,11 @@
    ============================================================ */
 @media (max-width: 700px) {
 
-  /* the bottom bar's own band — how much room the floating tab pill
-     takes out of the foot of every screen. One number, so a screen's
-     bottom padding and the chat's composer can never disagree. */
-  :root {
-    --m-nav-h: 68px;                    /* the pill itself */
-    /* …the 12px it floats above the foot, the home indicator under that,
-       and 10px of air so nothing ever rests against it */
-    --m-nav-band: calc(var(--m-nav-h) + 22px + env(safe-area-inset-bottom, 0px));
-  }
+  /* (GONE 2026-08-30: --m-nav-h and --m-nav-band, the 90px the floating
+     tab pill took out of the foot of every screen. The bar is deleted and
+     the drawer that replaced it stands in a corner rather than on a band,
+     so every screen gets the whole 100dvh back. Three rules spent this
+     token and all three are simpler without it.) */
 
   /* ---- the pager. `is-phone` is set on <html> before first paint
      (the inline script in index.html), so the three screens you are
@@ -34,19 +31,35 @@
   html.is-phone:not(.m-ready) #home.stage { display: block; }
 
   /* ---- home: one screen exactly, and nothing under it to scroll to.
-     The hint retires with the scroll it used to promise. ---- */
+     The hint retires with the scroll it used to promise.
+
+     …less whatever the software keyboard is covering. --kb is measured
+     off visualViewport by js/mobile.js and is 0 whenever no keyboard is
+     up — including on every browser that honours the viewport meta's
+     interactive-widget request, where innerHeight has already shrunk and
+     the measurement collapses to zero rather than subtracting twice.
+
+     ONE number, on the one box, and everything inside follows for free:
+     .ai-stage.is-hero is inset: 0 of this, so the composer's
+     bottom: var(--input-ins) rides above the keyboard, .ai-scroll's
+     bottom: var(--dock-h) shortens with it, the name pair's
+     top: calc(50% - var(--ask-rise)) re-centres in what is left, and
+     #ai-reset stays in the corner. Nothing else needs a rule. ---- */
   html.is-phone #home.stage {
-    height: calc(100dvh - var(--m-nav-band));
+    height: calc(100dvh - var(--kb, 0px));
     overflow: hidden;
+    /* iOS reports the new height when the keyboard has finished sliding,
+       not while it slides, so the stage would otherwise SNAP a quarter of
+       a second after the keyboard had already covered it. Given a curve of
+       its own, the late arrival reads as the screen making room. */
+    transition: height var(--t-snap) var(--ease-lift);
   }
   html.is-phone #home .scroll-hint { display: none; }
 
-  /* ---- every other screen starts under the status bar and ends clear
-     of the tab pill ---- */
+  /* ---- every other screen is at least the whole window. No --kb here:
+     neither of them holds a field, so neither can raise a keyboard. ---- */
   html.is-phone .work-stage,
-  html.is-phone .about-stage {
-    min-height: calc(100dvh - var(--m-nav-band));
-  }
+  html.is-phone .about-stage { min-height: 100dvh; }
 
   /* ============================================================
      WORK — the three projects, scrolled straight through.
@@ -146,64 +159,153 @@
   #contact.about-slide { padding-top: 12px; }
 
   /* ============================================================
-     THE HERO CHAT, at phone size.
+     THE HERO CHAT, at phone size — and the composer is DOCKED.
 
-     Nothing is lifted or re-parented here any more: the composer is the
-     same markup on both widths, sitting in #home, and #home on a phone
-     is already exactly one screen with nothing under it to scroll to
-     (see the home block above). So all that is left is the sizes the
-     chat was drawn at — pinned, because a phone is not a box the
-     visitor resizes. Every number below is the one the phone sheet
-     used, kept.
+     Above this width the field rests under the name a little above the
+     middle, and travels to the foot of the screen when you ask: the two
+     of them one centred object (the arithmetic is in css/styles.css, on
+     #home). On a 390px screen there is no half-screen to cross and no
+     reason to cross it. The field belongs at the bottom, under the
+     thumb, from the first frame — which is where both references put
+     it, and where this phone's own tab bar used to stand before it was
+     deleted. So the idle position IS the asked position less one small
+     hop, the name sits alone at ~45%, and the only thing that leaves
+     when you ask is the name.
 
-     The keyboard needs no rule at all. index.html carries
-     interactive-widget=resizes-content, so 100dvh shrinks when the
-     keyboard is up, so #home.stage shortens, so the composer at
-     bottom: var(--input-ins) rides above it — and because the idle
-     lift is measured in 50cqh, the resting position re-centres in the
-     shortened hero on its own.
+     Written as a transform override rather than as a value for
+     --ask-lift, because "docked" is a fraction of the container and
+     --ask-lift is a static px that has to be declared on #home (the
+     name pair is the stage's sibling — css/ai.css). One declaration,
+     one curve, and two-states-one-class survives intact.
+
+     The keyboard is answered ONE place — the stage's height, above —
+     and the composer inherits it by being anchored to that stage's FLOOR
+     rather than to half its height. (This block used to claim the
+     viewport meta's interactive-widget did the whole job. It does where
+     it is honoured; iOS Safari does not honour it, which is why the
+     height above is measured rather than asked for.)
      ============================================================ */
   html.is-phone #home.stage {
-    --ask-rise: 44px;
-    --ask-lift: 52px;
+    /* the pair, a touch above dead centre. It no longer answers to the
+       composer's height, because the two are not one object here. */
+    --ask-rise: 42px;
+    /* (GONE: --ask-lift. The phone does not use it — see below.) */
   }
   .ai-stage.is-hero {
     --sheet-pad: 14px;
-    /* 84, not the 52 this block was written with. NOT a design change —
-       the composer is two rows now (css/ai.css .ai-inputbar), and 52 does
-       not contain a 30px control row plus its padding, so at 52 the
-       attach, mood, mic and send all hang out below the border. Every
-       other number in this block is the one the phone had before the
-       desktop pass; when the phone is redrawn properly this whole block
-       gets rewritten anyway. */
+    /* two rows: 54 of writing room + 30 of controls */
     --input-h:   84px;
     --ctl-h:     30px;
-    --input-ins: 30px;
-    --sub-ins:   11px;
-    --chip-h:    44px;
-    --chip-font: 16px;
+    /* 24, down from 30. The 30 was the composer's floor inside a stage
+       that had already had 90px taken out of its foot for the tab bar;
+       the stage is the whole screen now, and 24 off the true bottom edge
+       is where the box actually wants to sit. */
+    --input-ins: calc(24px + env(safe-area-inset-bottom, 0px));
+    --sub-ins:   calc(8px + env(safe-area-inset-bottom, 0px));
+    /* how far above its docked place the box rests before anything has
+       been asked. Small on purpose: a breath, not a journey. */
+    --ask-hop:   28px;
+    /* (was --chip-h. The token is --msg-min in css/ai.css — it was
+       renamed when the chips it was named for were deleted — and the
+       old spelling had been sitting here setting nothing.) */
+    --msg-min:   34px;
+    --chip-font: 14px;      /* the follow-up chips, which remain */
     --msg-font:  17px;
     --ask-w:     100%;
-    --scroll-top: 28px;     /* the phone screen already starts under a bar */
+    /* the transcript starts under the two corner buttons: 12 + 38 + 12 */
+    --scroll-top: 62px;
   }
 
-  /* four chips is 200px of stack between the name and the field. Two is
-     an invitation; four is a menu. */
-  .ai-stage.is-hero .prompt-chip:nth-child(n+3) { display: none; }
-
-  /* the floating tab pill stands on the composer the moment the keyboard
-     is up. This used to be `html.ai-open`, which meant "a modal is over
-     the page" and is read as a keyboard guard by five other files;
-     ai-chat.js sets this one off the field's own focus, and it means
-     only what it says. */
-  html.ai-typing .site-nav {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--t-micro) ease;
+  /* the dock itself — the one declaration the block above is written for */
+  html.is-phone .ai-stage.is-hero .ai-composer {
+    transform: translateY(calc(-1 * var(--ask-hop)));
   }
+  html.is-phone #home.is-asking .ai-composer { transform: none; }
+  /* …and the hop is spent the moment the keyboard is up. It is the breath
+     before anything is asked, and a caret in the field means the asking has
+     started — so the box goes flush to its dock and the keyboard becomes the
+     floor it stands on. js/mobile.js sets kb-up off the measurement. */
+  html.is-phone.kb-up .ai-stage.is-hero .ai-composer { transform: none; }
+
+  /* ============================================================
+     …and everything that hangs off the bar hangs ABOVE it, in both
+     states.
+
+     css/ai.css puts the mood menu and the chosen-photo row BELOW the
+     box on the hero and above it once the box is at the foot, and its
+     reason is sound at desktop width: on the hero the box sits under
+     the name, so a menu rising from it would land on top of "Tigo
+     Ponce de León".
+
+     On a phone the box does not sit under the name — it is docked at
+     the foot from the first frame (see the dock above), so "below the
+     box" is the bottom edge of the screen and the menu opens into
+     nothing. It was being clipped, which is the same fault the desktop
+     rule was written to avoid, arrived at from the other side.
+
+     Above it there is a whole empty hero and the name is 300px away,
+     so the asked-state placement is simply right for both states here.
+     One rule: take the pair css/ai.css already wrote for #home.is-asking
+     and let it answer for the idle hero too.
+     ============================================================ */
+  html.is-phone .ai-stage.is-hero .ai-persona-menu,
+  html.is-phone .ai-stage.is-hero .ai-attach-row {
+    top: auto;
+    bottom: calc(var(--bar-top) + 8px);
+  }
+  /* …and it grows FROM the edge it is attached to, which is now the
+     bar's top edge in both states */
+  html.is-phone .ai-stage.is-hero .ai-persona-menu {
+    transform-origin: bottom right;
+    animation-name: menu-pop;
+  }
+
+  /* (GONE: `.ai-stage.is-hero .prompt-chip:nth-child(n+3)`, which hid the
+     third and fourth suggested question. All four chips were deleted from
+     the hero months ago — the field is the invitation — and .prompt-chip
+     has not existed anywhere since.) */
+
+  /* ============================================================
+     …and the way back out takes the corner opposite the menu.
+
+     .ai-reset was already sitting there: css/ai.css puts it at the head
+     of the chat's own measure, and on a phone --ask-w is 100%, so that
+     corner IS the screen's top-right. All this does is give it the same
+     circle the menu button wears, so the two read as a pair of corners
+     rather than as one button and one corner.
+
+     ABSOLUTE, deliberately, not fixed. .ai-stage.is-hero is inset: 0 of
+     a 100dvh #home, so absolute lands in exactly the same place — and
+     stays immune to the drawer's push, which makes .shell the
+     containing block for anything fixed inside it (css/drawer.css).
+     It also disappears with the home screen for free: a child of a
+     display:none section is not rendered.
+     ============================================================ */
+  html.is-phone .ai-reset {
+    top: 12px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    background: rgba(var(--bg-rgb), 0.94);
+    border: 1px solid var(--shell-line);
+    border-radius: 50%;
+  }
+
+  /* (GONE: `html.ai-typing .site-nav`, which faded the bottom tab pill out
+     while the keyboard was up — the bar stood ON the composer and had to
+     get out of its way. The bar is deleted and the button that replaced it
+     is at the top of the screen, so there is nothing left to move. That was
+     the class's only reader; the listeners that set it went too, in
+     js/ai-chat.js.) */
 }
 
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  /* the screen makes room for the keyboard instantly rather than easing
+     into it — it is a layout correction, and a visitor who has asked for
+     no motion should not be given a quarter-second of it every time they
+     tap the field */
+  html.is-phone #home.stage { transition: none; }
+
   .m-work-item { transition: opacity 0.25s ease; translate: none; }
 
   .m-work-item:active .m-work-shot img { scale: none; }

@@ -21,8 +21,13 @@
 // One tree, page → section → chapter, so there is exactly one place
 // that knows the shape of the site.
 //
-// The precedent is js/nav-touch.js: chrome that is identical on every
+// The precedent was js/nav-touch.js: chrome that is identical on every
 // page is generated once here rather than hand-synced across nine files.
+// That file has since been deleted along with the bottom tab bar it drew
+// for, and its own bar was the counter-example — <nav class="site-nav">
+// WAS hand-synced across five documents, and by the end three of them
+// pointed at redirect stubs and lit the wrong current page. The drawer
+// that replaced it reads TREE from this file (see window.Shell).
 (() => {
   const shell = document.getElementById('shell');
   if (!shell) return;
@@ -73,8 +78,9 @@
   window.addEventListener('pagehide', () => { clearTimeout(bankT); bankT = 0; write(); });
 
   // ---- the icon vocabulary: the site's own 26-box line glyphs, lifted
-  // from js/nav-touch.js, about.html and the two case studies so the rail
-  // speaks in shapes the visitor has already seen.
+  // from js/nav-touch.js (since deleted), about.html and the two case
+  // studies so the rail speaks in shapes the visitor has already seen.
+  // js/drawer.js reads these too, rather than keeping a fourth copy.
   // No width/height: CSS owns the box, so a glyph can never be the wrong
   // size again. pathLength is injected rather than hand-written into thirty
   // path strings — with it, the site's existing self-draw idiom (dasharray 1
@@ -91,7 +97,9 @@
     rail: '<rect x="3.5" y="4.5" width="19" height="17" rx="3.5" />' +
           '<path d="M10.5 4.5 V21.5" />',
     twist: '<path d="M10 6.5 L16.5 13 L10 19.5" />',
-    // pages (js/nav-touch.js)
+    // pages. These four were copied into js/nav-touch.js to draw the phone
+    // tab bar's icons; that file and that bar are both gone (2026-08-30) and
+    // the drawer that replaced them reads these — so this is their one home.
     home: '<path d="M4 12.5 L13 5 L22 12.5" /><path d="M6.5 11 V20.5 H19.5 V11" />' +
           '<path d="M10.5 20.5 V14.8 H15.5 V20.5" />',
     about: '<circle cx="13" cy="9" r="4" />' +
@@ -156,6 +164,8 @@
             '<circle cx="6.7" cy="19.3" r="2.8" /><circle cx="19.3" cy="19.3" r="2.8" />',
     // elsewhere
     link: '<path d="M4.5 16.5 L16.5 4.5" /><path d="M6.5 4.5 H16.5 V14.5" />',
+    // the drawer's dark pill — nothing above 700px asks for it
+    plus: '<path d="M13 6 V20" /><path d="M6 13 H20" />',
   };
 
   // The social marks are STROKED, not filled — same 26 box, same weight,
@@ -213,7 +223,13 @@
       // the rail's job is to be a map of the document, so when the document
       // reorders, this does too (the nav thread reads its sections straight
       // off these rows, so it follows for free)
-      { id: 'play', href: 'index.html#play', text: 'Play', icon: 'play' },
+      // …and Play does not come to the phone. js/mobile.js takes the whole
+      // stage out of the document below 700px, so a row for it in the phone
+      // drawer would be a door onto nothing. `phone: false` is the ONE place
+      // that says so — the rail above this width still shows it, and
+      // js/drawer.js filters on the flag rather than knowing about Play.
+      { id: 'play', href: 'index.html#play', text: 'Play', icon: 'play',
+        phone: false },
       { id: 'about', href: 'index.html#bio', text: 'About', icon: 'about' },
     ] },
     { label: 'elsewhere', rows: [
@@ -705,9 +721,9 @@
     const box = el.getBoundingClientRect();
     let top = Infinity, bottom = -Infinity;
     Array.prototype.forEach.call(el.children, (kid) => {
-      // the frost strip and the screen-reader heading are not ink
-      if (kid.hidden || kid.classList.contains('sr-only') ||
-          kid.classList.contains('nav-frost')) return;
+      // the screen-reader heading is not ink. (The .nav-frost clause that
+      // stood beside it went with the frost itself — css/styles.css.)
+      if (kid.hidden || kid.classList.contains('sr-only')) return;
       const r = kid.getBoundingClientRect();
       if (r.height < 1) return;
       top = Math.min(top, r.top);
@@ -872,8 +888,8 @@
     // The five scroll-spies each own their page's hash and always did;
     // they simply say out loud where they landed. One-directional — the
     // shell never writes history except from goToSection above — so the
-    // pages keep working with shell.js absent, the same posture as
-    // nav-touch.js. Duplicating five IntersectionObservers here would
+    // pages keep working with shell.js absent, which was nav-touch.js's
+    // posture too. Duplicating five IntersectionObservers here would
     // mean two sources of truth that disagree at threshold boundaries.
     window.addEventListener('shell:section', (e) => {
       // an instant tab-restore jump sets the spies off; while it settles
@@ -1197,6 +1213,22 @@
   // stopped, so arriving at Work from a case study parked it at the top of
   // the reading area while clicking Work from the rail centred it. One
   // function, one answer — and one poll that holds it there.
+  // ---- …and the site's SHAPE, published alongside them.
+  //
+  // TREE is the one place that knows it (see the comment above TREE), and
+  // below 700px there is a second reader: js/drawer.js, which lays the same
+  // rows out as a drawer under a thumb rather than as a rail under a
+  // pointer. Published rather than duplicated, for exactly the reason this
+  // file generates the rail in the first place — the .site-nav markup that
+  // was hand-copied into five documents is what the alternative looks like,
+  // and it had drifted (three of those five marked the wrong current page).
+  //
+  // The GLYPHS and the two helpers come with it. A drawer that drew its own
+  // icons would be the third copy of the same twelve line marks — and
+  // js/nav-touch.js, which was the second, is deleted.
+  //
+  // Read-only by convention: nothing outside this file writes to TREE.
   window.Shell = { get page() { return page; }, get title() { return title; },
-                   lightUp, toggleRail, markCurrent, setPage, restY, land };
+                   lightUp, toggleRail, markCurrent, setPage, restY, land,
+                   TREE, ANCESTORS, SOCIAL, G, svg, esc, statusHTML };
 })();

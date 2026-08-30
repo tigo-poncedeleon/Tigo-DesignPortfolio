@@ -1086,7 +1086,10 @@
     height: auto;
     padding: 30px 20px 40px;
   }
-  .case-slide:first-of-type { padding-top: 56px; }  /* no top nav on mobile now (bar is at the foot) */
+  /* 66, not 56: the menu button is a 38px circle at top 12, so its foot is
+     at 50 and 56 left six pixels of clearance. The first chapter starts
+     clear of the corner it now shares. */
+  .case-slide:first-of-type { padding-top: 66px; }
   /* nextlevel.js appends this: a slim reading-progress line at the very top,
      the brand-blue sweep filling as you read down the seven chapters */
   .read-progress {
@@ -1102,8 +1105,11 @@
       var(--nl-sky), var(--nl-azure) 55%, var(--nl-navy));
     pointer-events: none;
   }
-  /* the last chapter clears the site-nav bottom bar (styles.css) */
-  .case-slide:last-of-type { padding-bottom: 120px; }
+  /* the foot of the story, and nothing else — the 120 here used to be
+     clearing the site-nav bottom bar, which is deleted */
+  .case-slide:last-of-type {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
 
   .case-title {
     position: static;

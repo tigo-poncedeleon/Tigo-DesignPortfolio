@@ -662,8 +662,11 @@
   #bio.about-slide { padding: 56px 20px 40px; }   /* was keeping the desktop
                                                      header rhythm on a phone */
   .about-slide:first-of-type { padding-top: 56px; }
-  /* the last chapter clears the shared site-nav bottom bar (styles.css) */
-  .about-slide:last-of-type { padding-bottom: 120px; }
+  /* the foot of the letter, and nothing else — the 120 here used to be
+     clearing the site-nav bottom bar, which is deleted */
+  .about-slide:last-of-type {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
 
   .about-title {
     position: static;

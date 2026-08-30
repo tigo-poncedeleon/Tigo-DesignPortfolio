@@ -1,15 +1,17 @@
 // THE PHONE (≤700px) — and nothing above it.
 //
 // On a laptop this site is one long document: Home, Work, About and Play
-// scroll into one another and the AI is a sheet that floats over whatever
-// you are reading. None of that survives a phone well, so below 700px the
-// same markup is re-cast as FOUR SCREENS you tap between with the bottom
-// bar — no scrolling from one section into the next, one thing at a time:
+// scroll into one another. None of that survives a phone well, so below
+// 700px the same markup is re-cast as THREE SCREENS — no scrolling from one
+// section into the next, one thing at a time:
 //
-//   home   the name, one screen, nothing under it
+//   home   the name, one screen, and the composer docked under it
 //   work   the three projects, scrolled straight through
 //   about  the letter and the chronology
-//   ai     the chat, a PAGE again rather than an overlay
+//
+// You get between them from the DRAWER (js/drawer.js), which is the phone's
+// whole navigation now. The bottom tab bar this file used to drive was
+// deleted with it — see the (GONE) block in index.html.
 //
 // Play retires entirely here (the boards want a keyboard and a wider
 // court) — the whole stage is taken out of the document before the game
@@ -131,7 +133,7 @@
 
   /* ============================================================
      The pager
-     Four screens, one at a time. The hash stays the address — every
+     Three screens, one at a time. The hash stays the address — every
      link that already exists in the world (index.html#bio from the case
      studies, about.html's redirect, #vicino from work.html) lands on the
      right screen, and back/forward walk them.
@@ -153,18 +155,27 @@
     play: 'home', pong: 'home', snake: 'home', flappy: 'home',
   };
 
-  const navWords = Array.from(document.querySelectorAll('.site-nav-word'));
-  // each tab's own destination, read from the markup rather than repeated.
-  // The Play tab answers for NOTHING: it is hidden on phones, and a stray
-  // #pong routes home only so an old link is not a dead end — that must not
-  // also light a tab nobody can see (two aria-current="page" in one bar).
-  const wordScreen = (a) => {
-    const href = a.getAttribute('href') || '';
-    if (href === 'play.html' || href === '#pong') return null;
-    const hash = href.indexOf('#') > -1 ? href.slice(href.indexOf('#') + 1) : '';
-    if (hash) return OF_HASH[hash] || null;
-    return { 'about.html': 'about', 'work.html': 'work',
-             'index.html': 'home' }[href] || null;
+  // ---- which screen an href names, if any.
+  //
+  // It used to understand only a bare '#bio', because the only in-page links
+  // on this document were the hero's own and the bottom bar's. The DRAWER's
+  // rows are full paths — index.html#bio, the same hrefs the rail emits, so
+  // one tree serves five documents and every row stays crawlable and
+  // cmd-clickable — so this has to fold the two spellings of this page's own
+  // URL together before it can answer. Same normalisation js/shell.js does.
+  //
+  // Anything that is not this document comes back null and is left alone: a
+  // case study is a real navigation and must not be swallowed.
+  const norm = (p) => p.replace(/(^|\/)index\.html$/, '$1');
+  const HERE = norm(location.pathname);
+  const screenOf = (href) => {
+    if (!href) return null;
+    if (href.charAt(0) === '#') return OF_HASH[href.slice(1)] || null;
+    let u;
+    try { u = new URL(href, location.href); } catch (err) { return null; }
+    if (u.origin !== location.origin) return null;
+    if (norm(u.pathname) !== HERE) return null;      // a real page: let it go
+    return OF_HASH[u.hash.slice(1)] || null;
   };
 
   const scrollOf = {};                       // where each screen was left
@@ -200,12 +211,10 @@
         .forEach((s) => s.classList.add('revealed'));
     });
 
-    navWords.forEach((a) => {
-      const on = wordScreen(a) === next.id;
-      a.classList.toggle('is-current', on);
-      if (on) a.setAttribute('aria-current', 'page');
-      else a.removeAttribute('aria-current');
-    });
+    // (GONE: the loop that lit the bottom bar's current tab. The drawer
+    // marks itself off the `phone:screen` event dispatched below — one
+    // listener, in the file that owns the rows, instead of this file
+    // reaching across into markup it did not build.)
 
     const first = at === null;
     at = next.id;
@@ -227,36 +236,28 @@
     }
   };
 
-  // ---- the bottom bar drives it. Capture phase, so shell.js's own
-  // document-level anchor delegate never sees these clicks and never tries
-  // to smooth-scroll to a section that is not on screen.
+  // ---- ONE delegate now, for every link on the document that names a
+  // screen: the drawer's rows, the hero's own anchors, a redirect landing.
+  // (There were two — the second was the bottom bar's, and it went with the
+  // bar. screenOf answers for both spellings, so one is enough.)
+  //
+  // Capture phase, so shell.js's own document-level anchor delegate never
+  // sees these clicks and never tries to smooth-scroll to a section that is
+  // not on screen. js/drawer.js knows about this and does not compete: it
+  // closes off the `phone:screen` event below rather than off the click.
   document.addEventListener('click', (e) => {
-    const a = e.target.closest('.site-nav-word, .site-nav-home');
-    if (!a || !document.querySelector('.site-nav').contains(a)) return;
+    const a = e.target.closest('a[href]');
+    if (!a) return;
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    const id = a.classList.contains('site-nav-home') ? 'home' : wordScreen(a);
+    if (a.target === '_blank') return;
+    const id = screenOf(a.getAttribute('href'));
     if (!id || !SCREENS.some((s) => s.id === id)) return;   // let it navigate
     e.preventDefault();
     e.stopPropagation();
-    if (id === at) {                         // tapping the tab you are on
+    if (id === at) {                         // the screen you are already on
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    show(id, { restore: false });
-  }, true);
-
-  // ---- in-page anchors (the hero's own links, a redirect landing) — same
-  // rule, and again ahead of the shell's delegate
-  document.addEventListener('click', (e) => {
-    const a = e.target.closest('a[href]');
-    if (!a || a.closest('.site-nav')) return;
-    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    const href = a.getAttribute('href') || '';
-    if (href.charAt(0) !== '#') return;
-    const id = OF_HASH[href.slice(1)];
-    if (!id || !SCREENS.some((s) => s.id === id)) return;
-    e.preventDefault();
-    e.stopPropagation();
     show(id, { restore: false });
   }, true);
 
@@ -275,4 +276,84 @@
   // to survive the sheet being lifted into a section on this width; the
   // composer is the same markup on both widths now, so ai-chat.js asks the
   // question once, for everyone. Two copies of this would ask it twice.)
+
+  /* ============================================================
+     THE KEYBOARD, MEASURED.
+
+     The home screen is exactly 100dvh with the composer docked to its
+     floor, so the moment a software keyboard opens, the field is behind
+     it. index.html asks the browser to fix that for us —
+     `interactive-widget=resizes-content` in the viewport meta, which
+     makes the LAYOUT viewport (and therefore 100dvh) shrink by the
+     keyboard — and where that is honoured it is the whole answer.
+
+     It is not honoured everywhere, and the place it is not is the one
+     this site is most often read on. On iOS Safari the keyboard does not
+     touch the layout viewport at all: innerHeight does not move, 100dvh
+     does not move, the stage does not shorten, and the composer sits
+     under the keyboard while Safari scrolls the document around trying
+     to reveal it. So measure the thing directly.
+
+     THE MEASUREMENT, and why it is safe to run everywhere:
+
+       kb = innerHeight − visualViewport.height − visualViewport.offsetTop
+
+     innerHeight is the layout viewport; visualViewport.height is how much
+     of it you can actually see. Their difference IS the keyboard. And it
+     is self-correcting: where interactive-widget IS honoured, innerHeight
+     shrinks too, the difference stays at zero, and nothing is subtracted
+     twice. One expression, both platforms, no sniffing.
+
+     Two things it must not mistake for a keyboard:
+       ·  PINCH-ZOOM, where visualViewport.height is smaller because it is
+          scaled rather than because anything is covering it — vv.scale
+          says so, and we stand down.
+       ·  SAFARI'S SHRINKING URL BAR, which moves innerHeight and
+          vv.height together, so the difference never opens. Nothing to do.
+     ============================================================ */
+  const vv = window.visualViewport;
+  if (vv) {
+    const scroll = document.getElementById('ai-scroll');
+    let kb = -1;                             // -1 so the first pass always writes
+
+    const syncKB = () => {
+      // a pinch is not a keyboard
+      const next = vv.scale > 1.01 ? 0
+        : Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      if (next === kb) return;               // this IS the coalescer: iOS fires
+      kb = next;                             // a burst of these per keyboard and
+      root.style.setProperty('--kb', kb + 'px');   // only the changes cost anything
+      // 80 rather than 0: a stray pixel or two of rounding is not a
+      // keyboard, and nothing should flip a class over it. No keyboard is
+      // anywhere near this short.
+      root.classList.toggle('kb-up', kb > 80);
+
+      // Safari scrolls the DOCUMENT to bring a focused field into view, and
+      // on the home screen — one screen, nothing under it — that can only
+      // ever take the name off the top. The stage has already shortened to
+      // sit above the keyboard, so there is nothing it needs to reveal.
+      if (kb > 80 && at === 'home' && window.scrollY) window.scrollTo(0, 0);
+
+      // the transcript just got shorter by the height of a keyboard. A
+      // reader who was at the bottom of it should still be at the bottom
+      // of it; one who had scrolled up to re-read something is left alone.
+      // Same 40px slack ai-chat.js uses for the same judgement.
+      if (scroll && kb > 80 &&
+          scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40 + kb) {
+        scroll.scrollTop = scroll.scrollHeight;
+      }
+    };
+
+    // Called straight off the event rather than deferred to a frame: the
+    // only work here is one custom property, the guard above already drops
+    // every event that does not change it, and the LAYOUT it triggers is
+    // batched by the browser anyway. A rAF in front of this would buy
+    // nothing and would stall in a tab that is not being painted.
+    vv.addEventListener('resize', syncKB);
+    vv.addEventListener('scroll', syncKB);
+    // …and a screen change closes the keyboard without necessarily firing
+    // either of them in an order we can rely on
+    window.addEventListener('phone:screen', syncKB);
+    syncKB();
+  }
 })();

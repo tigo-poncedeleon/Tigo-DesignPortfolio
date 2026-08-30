@@ -1,0 +1,407 @@
+/* ============================================================
+   THE DRAWER — the phone's whole navigation, and nothing above
+   700px can see any of it.
+
+   The phone used to be navigated by a floating pill of three words
+   at the foot of the screen. Three words is all it could ever be,
+   and the site is bigger than three words: the case studies, the
+   resume, the mailbox and the four profiles have been listed in the
+   desktop rail since the shell was built and had no way onto a phone
+   at all. On the case pages the bar was worse than empty — its links
+   still pointed at the about.html / work.html / play.html redirect
+   stubs, and it marked the wrong one as the current page.
+
+   So the rail comes to the phone, in the shape a phone reads: one
+   button in the top-left corner, a panel that slides out from under
+   it, and the page pushed aside behind it. Same TREE (js/shell.js),
+   regrouped for a thumb — see js/drawer.js for what moves where and
+   why.
+
+   NOT a re-skin of .shell-side. That column is sticky, is as wide as
+   a remembered localStorage number, carries a resize grip and a
+   collapse toggle and a globe, and — fatally — its letterhead is
+   driven by wireAskReveal(), which on a phone reads the hero at 100%
+   of the screen, writes --ask-p: 0, and sets `inert` on the name.
+   Every one of those would have to be undone here. This is a panel.
+
+   Loaded on all five documents. Every rule is inside the one media
+   query; js/drawer.js does its own matchMedia guard.
+   ============================================================ */
+@media (max-width: 700px) {
+
+  /* the panel's share of the screen. 81% is the reference's, and it
+     is the right number for a different reason: what has to fit is a
+     46px row and a label, and 316px of a 390 leaves the page behind
+     it visible as a strip rather than as a sliver — which is what
+     tells you the page is still there to go back to. */
+  :root {
+    --m-drawer-w: 81%;
+    --m-btn: 38px;               /* both corner buttons, one number */
+    --m-btn-top: 12px;
+    --m-btn-side: 14px;
+  }
+
+  /* ============================================================
+     THE PUSH.
+
+     The page travels right and scales down behind the panel. This is
+     the one gesture taken whole from the reference, and it is the one
+     thing on this phone that needed clearing for first: a transform
+     on .shell makes .shell the containing block for every
+     position:fixed descendant, which turns `top: 0` into "the top of
+     a nine-thousand-pixel document". css/shell.css:1071 carries
+     `transform: none !important` precisely to promise that never
+     happens, and the promise was load-bearing — the case studies each
+     hang a fixed reading-progress bar inside .shell.
+
+     So the bar moved out to <body> first (js/vicino.js and its two
+     siblings), .globe-card is taken out of the phone document below,
+     and the two corner buttons are a <body> child and an absolute
+     child of the hero respectively. After all four, NOTHING inside
+     .shell is fixed at this width, and the override is safe.
+
+     Specificity, for the record: `html.m-open .shell` is (0,2,1) and
+     beats `.shell` at (0,1,0), so !important against !important
+     resolves the right way round.
+
+     --t-lift / --ease-lift is the site's own "a surface arrives and
+     settles" pair, and the panel below rides the same one so the two
+     halves of the gesture are one movement.
+     ============================================================ */
+  .shell {
+    transform-origin: left center;
+    transition: transform var(--t-lift) var(--ease-lift),
+                border-radius var(--t-lift) var(--ease-lift);
+  }
+  html.m-open .shell {
+    transform: translateX(78%) scale(0.88) !important;
+    border-radius: 22px;
+    /* the corners have to actually cut something, and the card's own
+       overflow is `visible` at this width (css/shell.css) */
+    overflow: hidden;
+  }
+
+  /* js/globe.js builds its card at parse time on EVERY page and
+     appends it into #shell, and there is no hover on a phone to ever
+     open it. It is already [hidden]; this also stops it being a fixed
+     descendant of the element the push transforms. */
+  .globe-card { display: none !important; }
+
+  /* ============================================================
+     THE PANEL
+     ============================================================ */
+  .m-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 70;
+    width: var(--m-drawer-w);
+    display: flex;
+    flex-direction: column;
+    /* the rail's own material. --shell-surface (--g-100) against the
+       card's --bg is the one considered step the whole frame is built
+       on, and the drawer IS the rail — it should not invent a third
+       surface to say so. */
+    background: var(--shell-surface);
+    border-right: 1px solid var(--shell-line);
+    padding: calc(var(--m-btn-top) + var(--m-btn) + 14px) 0
+             calc(16px + env(safe-area-inset-bottom, 0px));
+    translate: -100% 0;
+    /* visibility, not display: a display:none panel cannot transition,
+       and a panel that is merely translated off-screen is still in the
+       tab order. This is the pair that answers both. */
+    visibility: hidden;
+    overscroll-behavior: contain;
+    transition: translate var(--t-lift) var(--ease-lift),
+                visibility var(--t-lift);
+  }
+  html.m-open .m-drawer { translate: 0 0; visibility: visible; }
+  /* while a finger is on it the panel must track the pointer exactly —
+     a transition here puts the panel on elastic (js/drawer.js) */
+  html.m-dragging .m-drawer { transition: none; }
+  html.m-dragging .shell { transition: none; }
+
+  /* ---- the scrim, and it is the SCROLL LOCK.
+
+     It covers every pixel of the page, so every touch meant for the
+     page lands here instead — and `touch-action: none` means the
+     browser will not pan from it. That is the whole lock: no
+     overflow:hidden on <html> (iOS honours it unevenly, and it would
+     fight the pager's own per-screen scroll bank in js/mobile.js), no
+     position:fixed body swap, no scrollY bookkeeping to get wrong.
+     The panel's own overscroll-behavior closes the only other hole,
+     and html { overscroll-behavior-y: none } (css/shell.css) already
+     closed the rubber-band one.
+
+     A <button>, not a <div>: it is the drawer's screen-reader-
+     reachable way out, and it costs nothing to make it one. ---- */
+  .m-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(var(--ink-rgb), 0.32);
+    opacity: 0;
+    visibility: hidden;
+    touch-action: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity var(--t-lift) var(--ease-lift),
+                visibility var(--t-lift);
+  }
+  html.m-open .m-scrim { opacity: 1; visibility: visible; }
+
+  /* ============================================================
+     THE BUTTON IN THE CORNER — and it does not move.
+
+     It wears G.rail, the same mark the desktop rail's own toggle and
+     .rail-open both wear, and it obeys the rule js/shell.js states
+     about them: open or closed, the toggle is in the top-left corner
+     of the frame and does not move; only the surface behind it
+     changes. So the panel slides out from UNDERNEATH it. Focus never
+     leaves the button, which means there is nothing to restore on
+     close and no second control to keep in step.
+
+     A <body> child, outside .shell — the push would otherwise carry
+     it off with the page it opens.
+
+     NO backdrop-filter, and .case-x's comment is the reason verbatim:
+     a filter here would re-blur its own circle on every scrolled
+     frame beneath it, for the whole length of a case-study read.
+     Near-solid does the same job for nothing.
+     ============================================================ */
+  .m-menu {
+    position: fixed;
+    top: var(--m-btn-top);
+    left: var(--m-btn-side);
+    z-index: 80;                    /* over the panel (70) and .read-progress (45) */
+    width: var(--m-btn);
+    height: var(--m-btn);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    background: rgba(var(--bg-rgb), 0.94);
+    border: 1px solid var(--shell-line);
+    border-radius: 50%;
+    color: var(--g-550);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    transition: opacity var(--t-fade) ease,
+                color var(--t-micro) ease,
+                background-color var(--t-micro) ease;
+  }
+  .m-menu.is-lit { opacity: 1; }
+  .m-menu svg { display: block; width: 20px; height: 20px; }
+  .m-menu:active { background: var(--wash-solid); color: var(--ink); }
+  html.m-open .m-menu { color: var(--ink); }
+
+  /* the opening owns the corner. On the home page the button waits for
+     the name to finish typing, exactly as .rail-open does above this
+     width; js/typewriter.js drops the class. On the other four pages
+     the class is never set and js/drawer.js lights it a frame in. */
+  html.intro-pending .m-menu { opacity: 0; pointer-events: none; }
+
+  /* ?embed=1 is a bare frame with no chrome at all (js/shell.js) */
+  html.is-embed .m-menu,
+  html.is-embed .m-drawer,
+  html.is-embed .m-scrim { display: none; }
+
+  /* ============================================================
+     THE LETTERHEAD — a mark, a name and a role.
+
+     The rail's own #ask-chip could not be reused and it is worth
+     writing down why: wireAskReveal() runs unguarded at this width,
+     reads the hero as 100% of the reading area, writes --ask-p: 0 and
+     sets `inert`. The rail's letterhead is deliberately invisible on
+     a phone. This is a fresh one, with the same two lines and the
+     same href, which is the one thing a wordmark in a top-left corner
+     has always meant.
+
+     The mark is darkcircle.png — already the <link rel="icon"> on all
+     five pages, so it is in cache before this is parsed. NOT the
+     hedcut: js/portrait.js records that the rail's small face was
+     replaced by a drawn mark for being illegible at that size, and
+     the drawn mark has since gone too. Twice retired is enough.
+     ============================================================ */
+  .m-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 18px 16px;
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .m-head-mark {
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border-radius: 50%;
+    display: block;
+  }
+  .m-head-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .m-head-name {
+    font-size: 15px;
+    line-height: 19px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .m-head-role {
+    font-size: 11.5px;
+    line-height: 14px;
+  }
+
+  /* ============================================================
+     THE ROWS
+
+     46px, not the rail's 30. That is the whole argument for new class
+     names rather than .side-row: every number in css/shell.css's row
+     block was drawn for a 14px label under a pointer, and a thumb
+     wants a target it can hit without looking.
+     ============================================================ */
+  .m-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+  .m-group + .m-group { margin-top: 18px; }
+  /* ============================================================
+     ONE INK.
+
+     The rail differentiates hard — the current row wears the accent,
+     its ancestors a half-step of it, the rest sit back in --g-700 with
+     their glyphs a further step back in --g-400 — because the rail is
+     a persistent map you read WHILE you are somewhere, and it has to
+     answer "where am I" without being asked.
+
+     A drawer is not that. It is shut except in the moment you opened
+     it to go somewhere, you already know where you are because you
+     were just looking at it, and every gradient of grey in here was
+     answering a question nobody was asking. So the labels, the rows,
+     the glyphs and the status lines are all one colour, and the only
+     thing that varies down the column is the type size.
+
+     The current row still carries aria-current — that mark is for a
+     reader who genuinely cannot see the page behind the panel, and it
+     costs nothing to keep saying it.
+     ============================================================ */
+  .m-drawer,
+  .m-drawer .m-label,
+  .m-drawer .m-row,
+  .m-drawer .m-ico,
+  .m-drawer .m-head-name,
+  .m-drawer .m-head-role,
+  .m-drawer .st-lead,
+  .m-drawer .st-sub,
+  .m-drawer .side-label { color: var(--ink); }
+  /* the status marker is a dot of the same ink, filled for the present
+     and hollow for the not-yet — the one distinction in here that is
+     shape rather than colour, so it survives */
+  .m-drawer .st-dot { background: var(--ink); }
+  .m-drawer .st-row.is-ahead .st-dot {
+    background: none;
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+  }
+
+  .m-label {
+    margin: 0 0 4px;
+    padding: 0 20px;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+  }
+  .m-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 46px;
+    padding: 0 20px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--t-micro) ease;
+  }
+  .m-ico {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .m-ico svg { display: block; width: 22px; height: 22px; }
+  .m-text {
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .m-row:active { background: rgba(var(--ink-rgb), 0.05); }
+
+  /* (GONE: `.m-row.is-current`, `.is-current .m-ico` and `.is-trail`,
+     which painted the current row in the accent and its ancestors a
+     step down from it. See ONE INK above — the classes are still set by
+     js/drawer.js and still carry aria-current; nothing paints them.) */
+
+  /* ============================================================
+     THE FOOT — the status rows, and nothing under them.
+
+     statusHTML() comes straight from js/shell.js, markup and all, and
+     its own comment is the reason: status belongs at the bottom of a
+     column with navigation above it, and parking it there gives the
+     column a weighted floor instead of a long fall to nothing. The
+     reference's bottom-left avatar is an account switcher; there is
+     no account here, and the honest translation of "the thing at the
+     foot of the rail" is the thing already at the foot of the rail.
+     ============================================================ */
+  .m-foot {
+    flex: none;
+    padding: 12px 10px 0;
+    border-top: 1px solid var(--shell-line);
+  }
+  .m-foot .side-status { margin: 0; }
+  .m-foot .side-label {
+    margin: 0 0 2px;
+    padding: 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  /* the rows are the rail's, given a phone's height */
+  .m-foot .st-row { padding: 8px 10px; border-radius: 8px; }
+  .m-foot .st-row:active { background: rgba(var(--ink-rgb), 0.05); }
+
+  /* (GONE: `.m-new`, the black "new chat" pill that stood under the
+     status rows. The reference has one because its drawer lists
+     conversations; this site has one conversation, and the way to clear
+     it — #ai-reset — is already in the corner of the screen the pill
+     would have taken you to.) */
+}
+
+/* ---- no travel for a visitor who does not want any. The panel is
+   simply there, cross-faded at the micro duration so the change is
+   still legible AS a change, and the page does not move at all. ---- */
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .m-drawer {
+    translate: none;
+    opacity: 0;
+    transition: opacity var(--t-micro) ease, visibility var(--t-micro);
+  }
+  html.m-open .m-drawer { translate: none; opacity: 1; }
+  .m-scrim {
+    transition: opacity var(--t-micro) ease, visibility var(--t-micro);
+  }
+  .shell { transition: none; }
+  html.m-open .shell {
+    transform: none !important;
+    border-radius: 0;
+    overflow: visible;
+  }
+}

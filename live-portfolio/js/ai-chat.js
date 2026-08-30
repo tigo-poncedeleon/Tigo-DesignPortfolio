@@ -108,16 +108,12 @@
 
   if (resetBtn) resetBtn.addEventListener('click', resetChat);
 
-  // the tab bar on a phone stands on the composer the moment the keyboard
-  // is up. A class of its own, deliberately: `ai-open` used to mean "a
-  // modal is over the page" and is read by five other files as a keyboard
-  // guard — this means only "the caret is in the field".
-  if (input) {
-    input.addEventListener('focus', () =>
-      document.documentElement.classList.add('ai-typing'));
-    input.addEventListener('blur', () =>
-      document.documentElement.classList.remove('ai-typing'));
-  }
+  // (GONE 2026-08-30: the `ai-typing` class, set on <html> off this field's
+  // own focus. It had exactly one reader — css/mobile.css faded the phone's
+  // bottom tab bar out while the keyboard was up, because the bar stood ON
+  // the composer. The bar is gone and the button that replaced it is at the
+  // top of the screen, seven hundred pixels from the caret, so there is no
+  // longer anything to get out of the way. The class had no other reader.)
 
   // the sheet's geometry was written down between visits; there is no
   // sheet to remember the shape of now
@@ -678,6 +674,10 @@
 
   restore();
 
+  // ask() is the door every external link comes through (?q=, ⌘K, ai.html's
+  // redirect). (reset() was published here for a moment, for a "new chat"
+  // pill in the phone drawer; the pill is gone — #ai-reset is already on the
+  // screen it would have led to — and resetChat has one caller again.)
   window.AIChat = { ask: submitQuestion };
 
   // ai.html survives as a redirect for every OG card and external link that

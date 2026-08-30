@@ -156,7 +156,14 @@
       const bar = document.createElement('div');
       bar.className = 'read-progress';
       bar.setAttribute('aria-hidden', 'true');
-      stage.appendChild(bar);
+      // …appended to <body>, NOT to the stage. It is position:fixed at the
+      // top of the WINDOW, and below 700px the drawer pushes .shell aside
+      // with a transform (css/drawer.css) — which would make .shell the
+      // containing block for any fixed descendant and re-anchor `top: 0`
+      // to the top of a nine-thousand-pixel document. Outside .shell it
+      // means what it says at every width. Same reason the site-nav markup
+      // used to sit out here before the drawer replaced it.
+      document.body.appendChild(bar);
       let rpRaf = 0;
       const trackRP = () => {
         rpRaf = 0;
