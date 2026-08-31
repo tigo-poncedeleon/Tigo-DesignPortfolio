@@ -451,8 +451,8 @@
        compensated: the box is capped on focus (see below), so the field is
        already clear and the browser never asks. If that ever stops being
        true the symptom will be the page sitting low during a keyboard,
-       not a twitch — and the fix would be to make the cap work, not to
-       start chasing offsetTop again. ---- */
+       not a twitch — and the fix is the scroll lock in css/mobile.css and
+       the scrollTop pin below, not chasing offsetTop again. ---- */
 
     /* ---- (GONE, and this is the whole lesson of this block: an
        ANTICIPATED height, which shrank the box on focus by a remembered
@@ -480,45 +480,17 @@
        second try than the first. That property is worth more here than
        any amount of cleverness about what the keyboard is about to do.) */
 
-    /* ---- MAKE THE ROOM ON THE TAP, SO THE BROWSER NEVER SHOVES.
+    /* ---- (GONE with it: armCap(), the remembered-keyboard store, and the
+       focus handler that primed them. The whole point was to lift the
+       composer on the tap so the browser had nothing to reveal — and the
+       reveal is now stopped at the source instead: the home screen cannot
+       scroll (css/mobile.css) and any scroll is put back below. That is a
+       guarantee rather than a prediction, and it costs no state.
 
-       WebKit shoves the visual viewport down to reveal a focused field it
-       thinks the keyboard covers — and at the instant of the tap it is
-       right, because the composer really is sitting where the keyboard is
-       about to be. Content then appears to jump UP by the shove and come
-       back down as we answer it a frame later. That up-and-back is what
-       takes the two corner buttons off the screen and returns them.
-
-       No amount of answering it faster wins; the answer is to give the
-       browser nothing to reveal. On focus the box is capped at what will
-       be left once the keyboard is up, so the field is already clear
-       before the keyboard has moved, and no shove is ever requested.
-
-       A MINIMUM, and that is the whole difference from the version of this
-       that had to be torn out. That one SWAPPED between the guess and the
-       live reading depending on which side of a threshold each frame fell,
-       so as the keyboard slid through every intermediate height the box
-       alternated between the two — the spasm. min() cannot do that: as the
-       keyboard opens the live reading falls past the cap and takes over,
-       and the box only ever goes down. Monotonic in, monotonic out, no
-       state to get stuck in, nothing to disagree with.
-
-       The cap is measured, not guessed, after the first use — every
-       keyboard this device shows is remembered. The first-run fallback of
-       0.36 deliberately UNDER-estimates (real keyboards are 0.34–0.41 of
-       the screen), because under-guessing means the live reading wins and
-       the result is exact; over-guessing would leave the composer a little
-       high until blur. ---- */
-    const KB_KEY = 'kb.h';
-    let cap = 0;                       // 0 = not anticipating anything
-    let lastLive = -1;                 // for spotting a SETTLED reading
-
-    const armCap = () => {
-      let kb = 0;
-      try { kb = parseInt(sessionStorage.getItem(KB_KEY) || '0', 10); } catch (e) {}
-      if (!(kb > 80)) kb = Math.round(window.innerHeight * 0.36);
-      cap = Math.min(kb, Math.max(0, window.innerHeight - 140));
-    };
+       What is left in this function is a pure read of the live viewport.
+       Every attempt to be clever here — anticipating the keyboard,
+       settling the shove, remembering a height — has cost more in
+       spasms and every-other-time bugs than it ever bought.) ---- */
 
     // ---- write the window's box, and say whether it moved.
     const write = () => {
@@ -526,37 +498,22 @@
       // that has nothing to do with a keyboard
       const zoomed = vv.scale > 1.01;
       const live = Math.round(zoomed ? window.innerHeight : vv.height);
-      /* …and remember what this device's keyboard actually takes, so the
-         cap above is exact from the second tap onward.
-
-         Only a SETTLED reading counts — the same height twice running.
-         Recording every reading meant recording the ones the keyboard
-         passes through on its way DOWN as well: the last value written on
-         a close was whatever the animation happened to be at when it
-         crossed the threshold, so the remembered height came out as 84
-         instead of 336 and the next tap barely lifted at all. Two equal
-         readings in a row is the whole of "it has stopped moving", and it
-         needs no timer to say so. */
-      const covered = window.innerHeight - live;
-      if (covered > 80 && live === lastLive) {
-        try { sessionStorage.setItem(KB_KEY, String(covered)); } catch (e) {}
-      }
-      lastLive = live;
-      // the keyboard's own height, which is the one thing that moves.
-      // max(), not min(), because this is the inset rather than the height
-      // — the same monotonic rule the other way up: on focus it goes
-      // straight to what the keyboard will take, and a live reading only
-      // ever deepens it. It cannot alternate.
-      const liveKb = Math.max(0, window.innerHeight - live);
-      const kb = cap ? Math.max(liveKb, cap) : liveKb;
+      /* (GONE: a focus-time CAP on the keyboard's height, remembered in
+         sessionStorage, that lifted the composer on the tap before the
+         keyboard existed. It became dead weight the moment --kb stopped
+         being published — and worse than dead: the early-return below
+         still compared the CAPPED value while the height published was
+         the live one, so whenever the cap pinned that number the screen's
+         height froze while the real window kept shrinking. Measured, the
+         gap under the composer walked 52, 24, -4 … -228 as the keyboard
+         opened. A guard must compare exactly what it guards.) */
       // where the visible window starts, in DOCUMENT coordinates
       const top = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
-      if (kb === wh && top === wt) return false;
-      wh = kb; wt = top;
-      // (--kb is no longer published: the screen is sized to --win-h, which
-      // already excludes the keyboard, and a second subtraction downstream
-      // took it off twice. The number is still computed because the focus
-      // cap below is expressed in it.)
+      if (live === wh && top === wt) return false;
+      wh = live; wt = top;
+      // TWO properties, and they are exactly the two the guard above
+      // compares. (--kb was published once and taken off twice downstream;
+      // it is gone entirely rather than left to be misused again.)
       root.style.setProperty('--doc-top', top + 'px');
       root.style.setProperty('--win-h', live + 'px');
       return true;
@@ -682,12 +639,8 @@
     window.addEventListener('scroll', follow, { passive: true });
     // …and focus is the EARLIEST warning there is — early enough to make
     // the room BEFORE the keyboard needs it (see the note above).
-    document.addEventListener('focusin', (e) => {
-      const el = e.target;
-      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) armCap();
-      follow();
-    }, true);
-    document.addEventListener('focusout', () => { cap = 0; follow(); }, true);
+    document.addEventListener('focusin', follow, true);
+    document.addEventListener('focusout', follow, true);
 
     // …and again when the screen has finished making room. The pin above
     // lands against the box's height AT THE MOMENT the window is reported,
