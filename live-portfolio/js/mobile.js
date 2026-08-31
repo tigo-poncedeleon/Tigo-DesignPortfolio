@@ -348,14 +348,38 @@
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
     let kb = -1;                             // -1 so the first pass always writes
+    let vvTop = -1;
 
     const syncKB = () => {
       // a pinch is not a keyboard
+      const top = vv.scale > 1.01 ? 0 : Math.max(0, Math.round(vv.offsetTop));
+      if (top !== vvTop) {
+        vvTop = top;
+        root.style.setProperty('--vv-top', top + 'px');
+      }
+
       const next = vv.scale > 1.01 ? 0
         : Math.max(0, Math.round(window.innerHeight - vv.height));
       if (next === kb) return;               // this IS the coalescer: iOS fires
       kb = next;                             // a burst of these per keyboard and
       root.style.setProperty('--kb', kb + 'px');   // only the changes cost anything
+
+      /* ---- …and WHERE the window is looking, which is a separate fact and
+         the one that was making the chrome fall off the screen.
+
+         When a field would be under the keyboard, the browser brings it
+         into view by scrolling the VISUAL viewport inside the layout one.
+         `window.scrollY` does not move for that — `visualViewport.offsetTop`
+         does. Nothing in CSS knows about it: `position: fixed` is fixed to
+         the LAYOUT viewport, so the menu button slid up off the top of the
+         screen, and the hero (a plain block at document y 0) went with it,
+         taking the name and role with it.
+
+         So publish it, and let the two things that must stay glued to the
+         top of what you can SEE add it to their own offset. It is written
+         here rather than corrected with a scrollTo because it is not an
+         error to undo — it is the browser telling us where the window is,
+         and the answer is to draw in the right place, not to fight it. ---- */
 
       // (GONE: an `html.kb-up` class set off the same threshold. Its one
       // reader was a rule that docked the composer flush to the keyboard,
@@ -366,10 +390,9 @@
       // 80 rather than 0 in each of them: a stray pixel or two of rounding
       // is not a keyboard. No keyboard is anywhere near this short.
 
-      // Safari scrolls the DOCUMENT to bring a focused field into view, and
-      // on the home screen — one screen, nothing under it — that can only
-      // ever take the name off the top. The stage has already shortened to
-      // sit above the keyboard, so there is nothing it needs to reveal.
+      // …and the DOCUMENT, if it also moved. On the home screen there is
+      // nothing under the fold to reveal, so any document scroll here is
+      // the browser guessing, and the stage has already made room.
       if (kb > 80 && at === 'home' && window.scrollY) window.scrollTo(0, 0);
 
       // the transcript just got shorter by the height of a keyboard. A

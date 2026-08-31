@@ -164,7 +164,14 @@
      ============================================================ */
   .m-menu {
     position: fixed;
-    top: var(--m-btn-top);
+    /* fixed is fixed to the LAYOUT viewport, and when the browser scrolls
+       the visual viewport inside it to reveal a focused field, that is
+       exactly how a "fixed" button slides up off the top of the screen.
+       --vv-top is how far it has done so (js/mobile.js); adding it keeps
+       this button on the top line of what can actually be SEEN. The hero
+       carries the same offset as a translate, so #ai-reset — its absolute
+       child — lands on this same line without a rule of its own. */
+    top: calc(var(--m-btn-top) + var(--vv-top, 0px));
     left: var(--m-btn-side);
     z-index: 80;                    /* over the panel (70) and .read-progress (45) */
     width: var(--m-btn);
@@ -174,7 +181,10 @@
     justify-content: center;
     margin: 0;
     padding: 0;
-    background: rgba(var(--bg-rgb), 0.94);
+    /* opaque. The chat's transcript runs underneath this button now
+       (css/mobile.css --scroll-top), and at 94% the words showed through
+       it — see the same note on .ai-reset. */
+    background: var(--bg);
     border: 1px solid var(--shell-line);
     border-radius: 50%;
     color: var(--g-550);

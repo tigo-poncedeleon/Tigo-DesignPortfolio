@@ -48,6 +48,20 @@
   html.is-phone #home.stage {
     height: calc(100dvh - var(--kb, 0px));
     overflow: hidden;
+    /* …and it sits where the WINDOW is looking. The hero is a plain block
+       at document y 0; when the browser scrolls the visual viewport inside
+       the layout one to reveal a focused field, y 0 is no longer the top of
+       what you can see, and the name and role go off the top of the screen
+       with nothing to stop them. --vv-top is that offset, measured in
+       js/mobile.js. Not transitioned: it is the window reporting where it
+       is, and a transition on it would draw the hero somewhere the window
+       is not, one frame behind, for a fifth of a second.
+
+       This is also what keeps the two corner buttons in step. #ai-reset is
+       an absolute child of this box, so it rides the same translate; the
+       menu button is fixed to the layout viewport and adds --vv-top to its
+       own top (css/drawer.css). Both land on the same line of the screen. */
+    transform: translateY(var(--vv-top, 0px));
     /* THE ONLY THING THAT MOVES FOR THE KEYBOARD, and that is what makes
        it seamless rather than merely animated.
 
@@ -224,8 +238,29 @@
     --chip-font: 14px;      /* the follow-up chips, which remain */
     --msg-font:  17px;
     --ask-w:     100%;
-    /* the transcript starts under the two corner buttons: 12 + 38 + 12 */
-    --scroll-top: 62px;
+    /* 0, not 62. The 62 was a band held clear at the top of the screen so
+       no message could ever reach the corner buttons — and a band that
+       content stops dead at is a strip of nothing across the top of the
+       chat. The box runs the full height now and the conversation passes
+       UNDER the buttons, which are opaque (below, and in css/drawer.css)
+       so nothing shows through them.
+       Where the transcript RESTS is a different question, and it is
+       answered by padding rather than by shortening the box — see
+       .ai-scroll below. */
+    --scroll-top: 0px;
+  }
+
+  /* …and it comes to rest clear of them. Padding INSIDE the scroller, not
+     a shorter box: the first message sits below the buttons when there is
+     nothing to scroll, and slides under them when there is. Same 62 the
+     band used to be — 12 of inset, 38 of button, 12 of air. */
+  html.is-phone .ai-stage.is-hero .ai-scroll {
+    padding-top: calc(var(--m-btn-top) + var(--m-btn) + 12px);
+    /* the transcript is the ONLY scroller on this screen. `contain` stops a
+       flick at either end of it from turning into a page bounce behind the
+       chat — the hero itself has nowhere to go (overflow: hidden, exactly
+       one screen) and should never look like it does. */
+    overscroll-behavior: contain;
   }
 
   /* the dock itself — the one declaration the block above is written for */
@@ -309,14 +344,32 @@
      display:none section is not rendered.
      ============================================================ */
   html.is-phone .ai-reset {
-    top: 12px;
-    right: 14px;
-    width: 38px;
-    height: 38px;
-    background: rgba(var(--bg-rgb), 0.94);
+    /* THE MENU BUTTON'S TWIN, and every number here is that button's own
+       (css/drawer.css --m-btn-*), so the pair cannot drift apart. They did
+       drift: this one is an absolute child of the hero and that one is
+       fixed to the layout viewport, and the moment the visual viewport was
+       offset the two were drawn on different lines. The hero now carries
+       --vv-top and the menu adds it, so both land on the same line again.
+
+       OPAQUE, not 0.94 of the background. The transcript runs under it now
+       (--scroll-top above), and at 94% a message showed through the button
+       sitting on top of it. A control that content is visible through does
+       not read as a control. */
+    top: var(--m-btn-top);
+    right: var(--m-btn-side);
+    width: var(--m-btn);
+    height: var(--m-btn);
+    background: var(--bg);
     border: 1px solid var(--shell-line);
     border-radius: 50%;
+    color: var(--g-550);
   }
+  /* 18 against the menu's 20: the two marks are drawn on different grids
+     (this one a 24 box, the rail mark a 26) and the circular arrow fills
+     more of its own, so equal CSS sizes would read as a heavier button on
+     the right. These two match by WEIGHT, which is what "consistent" is
+     asking about here. */
+  html.is-phone .ai-reset svg { width: 18px; height: 18px; }
 
   /* (GONE: `html.ai-typing .site-nav`, which faded the bottom tab pill out
      while the keyboard was up — the bar stood ON the composer and had to
