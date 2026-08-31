@@ -300,137 +300,120 @@
   // question once, for everyone. Two copies of this would ask it twice.)
 
   /* ============================================================
-     THE KEYBOARD, MEASURED.
+     THE WINDOW, MEASURED — and nothing subtracted from anything.
 
-     The home screen is exactly 100dvh with the composer docked to its
-     floor, so the moment a software keyboard opens, the field is behind
-     it. index.html asks the browser to fix that for us —
-     `interactive-widget=resizes-content` in the viewport meta, which
-     makes the LAYOUT viewport (and therefore 100dvh) shrink by the
-     keyboard — and where that is honoured it is the whole answer.
+     The home screen is exactly one screen with the composer docked to its
+     floor, so the moment a software keyboard opens, the field is behind it
+     unless the screen shortens. index.html asks the browser to do that for
+     us (`interactive-widget=resizes-content` in the viewport meta), and
+     where that is honoured it is the whole answer. It is not honoured
+     everywhere, and iOS Safari is where it is not.
 
-     It is not honoured everywhere, and the place it is not is the one
-     this site is most often read on. On iOS Safari the keyboard does not
-     touch the layout viewport at all: innerHeight does not move, 100dvh
-     does not move, the stage does not shorten, and the composer sits
-     under the keyboard while Safari scrolls the document around trying
-     to reveal it. So measure the thing directly.
+     This block used to answer that by MEASURING THE KEYBOARD —
+     `innerHeight − visualViewport.height` — and taking it off 100dvh. That
+     is arithmetic across two different ideas of the viewport, and it is
+     only correct while they agree:
 
-     THE MEASUREMENT, and why it is safe to run everywhere:
+       ·  100dvh is the browser's DYNAMIC viewport. It tracks the browser's
+          own toolbars showing and hiding, and it does not move for a
+          keyboard.
+       ·  innerHeight is the LAYOUT viewport, which is a different number
+          the moment the toolbar is mid-collapse.
 
-       kb = innerHeight − visualViewport.height
+     In one browser's webview they happened to be equal and the subtraction
+     was right; in Safari they are not, and the difference landed straight
+     in the stage's height — the hero drawn taller or shorter than the
+     screen, the name pushed off the top, the composer left under the
+     keyboard. "Works in one browser and not another" was that gap.
 
-     innerHeight is the layout viewport; visualViewport.height is how much
-     of it you can actually see. What is missing is what is covering it,
-     which is the keyboard. And it is self-correcting: where
-     interactive-widget IS honoured, innerHeight shrinks too, the
-     difference stays at zero, and nothing is subtracted twice. One
-     expression, both platforms, no sniffing.
+     So: do not subtract. visualViewport.height IS the height of what the
+     visitor can see, in every browser, keyboard or no keyboard, toolbar or
+     no toolbar, and whether or not the meta above was honoured. And
+     visualViewport.offsetTop is WHERE that window starts — how far the
+     browser has scrolled the visual viewport inside the layout one to
+     reveal a focused field. `window.scrollY` does not move for that and
+     `position: fixed` does not know about it, which is how the menu button
+     slid off the top of the screen and took the name and role with it.
 
-     NOT minus vv.offsetTop, which this had at first and which is wrong in
-     exactly the moment it matters. offsetTop is how far Safari has scrolled
-     the VISUAL viewport inside the layout one to bring the focused field
-     into view — it says nothing about how tall the keyboard is, and
-     subtracting it makes the keyboard measure short by however far the page
-     was shoved. Short measurement, stage not shortened enough, field still
-     under the keyboard, so Safari shoves further: the two feed each other.
-     The height of the covered strip does not depend on where the window is
-     looking.
+     Two numbers, both read straight off the window, nothing derived:
+       --vh      how tall the window is   → the hero's height
+       --vv-top  where the window starts  → the hero's offset, and the
+                                            menu button's (css/drawer.css)
 
-     Two things it must not mistake for a keyboard:
-       ·  PINCH-ZOOM, where visualViewport.height is smaller because it is
-          scaled rather than because anything is covering it — vv.scale
-          says so, and we stand down.
-       ·  SAFARI'S SHRINKING URL BAR, which moves innerHeight and
-          vv.height together, so the difference never opens. Nothing to do.
+     PINCH-ZOOM is the one thing that must not be mistaken for either:
+     visualViewport shrinks because it is scaled, not because anything is
+     covering it. vv.scale says so, and we stand down and report the
+     layout viewport instead.
      ============================================================ */
   const vv = window.visualViewport;
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
-    let kb = -1;                             // -1 so the first pass always writes
-    let vvTop = -1;
+    const home = document.getElementById('home');
+    let vh = -1, vTop = -1;
 
     const syncKB = () => {
-      // a pinch is not a keyboard
-      const top = vv.scale > 1.01 ? 0 : Math.max(0, Math.round(vv.offsetTop));
-      if (top !== vvTop) {
-        vvTop = top;
-        root.style.setProperty('--vv-top', top + 'px');
+      const zoomed = vv.scale > 1.01;
+      const h = Math.round(zoomed ? window.innerHeight : vv.height);
+      const t = Math.round(zoomed ? 0 : vv.offsetTop);
+
+      if (h !== vh) {
+        vh = h;
+        root.style.setProperty('--vh', h + 'px');
+      }
+      if (t !== vTop) {
+        vTop = t;
+        root.style.setProperty('--vv-top', t + 'px');
       }
 
-      const next = vv.scale > 1.01 ? 0
-        : Math.max(0, Math.round(window.innerHeight - vv.height));
-      if (next === kb) return;               // this IS the coalescer: iOS fires
-      kb = next;                             // a burst of these per keyboard and
-      root.style.setProperty('--kb', kb + 'px');   // only the changes cost anything
+      // is something covering the screen? The only use left for the
+      // keyboard's own height is deciding whether there IS one — nothing in
+      // CSS asks for the number any more. 80 rather than 0 because a stray
+      // pixel of toolbar is not a keyboard.
+      const covered = window.innerHeight - h > 80;
 
-      /* ---- …and WHERE the window is looking, which is a separate fact and
-         the one that was making the chrome fall off the screen.
-
-         When a field would be under the keyboard, the browser brings it
-         into view by scrolling the VISUAL viewport inside the layout one.
-         `window.scrollY` does not move for that — `visualViewport.offsetTop`
-         does. Nothing in CSS knows about it: `position: fixed` is fixed to
-         the LAYOUT viewport, so the menu button slid up off the top of the
-         screen, and the hero (a plain block at document y 0) went with it,
-         taking the name and role with it.
-
-         So publish it, and let the two things that must stay glued to the
-         top of what you can SEE add it to their own offset. It is written
-         here rather than corrected with a scrollTo because it is not an
-         error to undo — it is the browser telling us where the window is,
-         and the answer is to draw in the right place, not to fight it. ---- */
-
-      // (GONE: an `html.kb-up` class set off the same threshold. Its one
-      // reader was a rule that docked the composer flush to the keyboard,
-      // and that rule was a second animation on a gesture that should only
-      // ever have one — see the note in css/mobile.css. The guards below
-      // read the number directly, which is what they always did.)
-      //
-      // 80 rather than 0 in each of them: a stray pixel or two of rounding
-      // is not a keyboard. No keyboard is anywhere near this short.
-
-      // …and the DOCUMENT, if it also moved. On the home screen there is
+      // …the document, if it also moved. On the home screen there is
       // nothing under the fold to reveal, so any document scroll here is
       // the browser guessing, and the stage has already made room.
-      if (kb > 80 && at === 'home' && window.scrollY) window.scrollTo(0, 0);
+      if (covered && at === 'home' && window.scrollY) window.scrollTo(0, 0);
 
       // the transcript just got shorter by the height of a keyboard. A
-      // reader who was at the bottom of it should still be at the bottom
-      // of it; one who had scrolled up to re-read something is left alone.
+      // reader who was at the bottom of it should still be at the bottom of
+      // it; one who had scrolled up to re-read something is left alone.
       // Same 40px slack ai-chat.js uses for the same judgement.
-      if (scroll && kb > 80 &&
-          scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40 + kb) {
+      if (scroll && covered &&
+          scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight
+            < 40 + (window.innerHeight - h)) {
         scroll.scrollTop = scroll.scrollHeight;
       }
     };
 
     // …and again when the screen has finished making room. The pin above
-    // lands against the box's height AT THE MOMENT the keyboard is
-    // reported, and the box spends the next fifth of a second shrinking to
-    // its real one (css/mobile.css eases #home.stage's height) — so the
-    // last bubble creeps a few pixels below the fold on the way down. One
-    // listener on the end of that ease puts it back, exactly once.
-    const home = document.getElementById('home');
+    // lands against the box's height AT THE MOMENT the window is reported,
+    // and the box spends the next quarter-second easing to its real one
+    // (css/mobile.css) — so the last bubble creeps a few pixels below the
+    // fold on the way down. One listener on the end of that ease puts it
+    // back, exactly once.
     if (home && scroll) {
       home.addEventListener('transitionend', (e) => {
         if (e.propertyName !== 'height' || e.target !== home) return;
-        if (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40 + kb) {
+        if (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40) {
           scroll.scrollTop = scroll.scrollHeight;
         }
       });
     }
 
-    // Called straight off the event rather than deferred to a frame: the
-    // only work here is one custom property, the guard above already drops
-    // every event that does not change it, and the LAYOUT it triggers is
-    // batched by the browser anyway. A rAF in front of this would buy
-    // nothing and would stall in a tab that is not being painted.
     vv.addEventListener('resize', syncKB);
     vv.addEventListener('scroll', syncKB);
     // …and a screen change closes the keyboard without necessarily firing
     // either of them in an order we can rely on
     window.addEventListener('phone:screen', syncKB);
+
+    // The FIRST measurement lands cold — the hero is simply the size of the
+    // window, with no ease, because there is nothing for it to ease from.
+    // Only once it is standing at the right size does the curve go on, so
+    // the opening frame can never be an animation of the page assembling
+    // itself out of a wrong height.
     syncKB();
+    root.classList.add('kb-armed');
   }
 })();

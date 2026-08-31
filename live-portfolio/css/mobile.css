@@ -15,6 +15,15 @@
    ============================================================ */
 @media (max-width: 700px) {
 
+  /* the keyboard's clock. Matched to iOS rather than drawn from the site's
+     own motion tokens, because it is not the site's motion — it is a panel
+     the operating system is sliding, and the screen making room for it
+     should arrive with it rather than a beat behind. */
+  :root {
+    --kb-t: 0.25s;
+    --kb-ease: cubic-bezier(0.17, 0.59, 0.4, 1);
+  }
+
   /* (GONE 2026-08-30: --m-nav-h and --m-nav-band, the 90px the floating
      tab pill took out of the foot of every screen. The bar is deleted and
      the drawer that replaced it stands in a corner rather than on a band,
@@ -31,59 +40,76 @@
   html.is-phone:not(.m-ready) #home.stage { display: block; }
 
   /* ---- home: one screen exactly, and nothing under it to scroll to.
-     The hint retires with the scroll it used to promise.
+     The hint retires with the scroll it used to promise. What "one screen"
+     means is the whole of the next block. ---- */
+  /* ============================================================
+     THE HERO IS THE WINDOW.
 
-     …less whatever the software keyboard is covering. --kb is measured
-     off visualViewport by js/mobile.js and is 0 whenever no keyboard is
-     up — including on every browser that honours the viewport meta's
-     interactive-widget request, where innerHeight has already shrunk and
-     the measurement collapses to zero rather than subtracting twice.
+     Not 100dvh, and not 100dvh less a measured keyboard, which is what
+     this was and why it worked in one mobile browser and not another.
+     That subtraction crossed two different ideas of the viewport — dvh is
+     the browser's DYNAMIC viewport, which follows its own toolbars and
+     does not move for a keyboard; the keyboard was measured off
+     innerHeight, the LAYOUT viewport — and the two are only equal some of
+     the time. Wherever they disagreed the difference went straight into
+     this height, and the hero was drawn taller or shorter than the screen:
+     the name off the top, the composer under the keyboard.
 
-     ONE number, on the one box, and everything inside follows for free:
-     .ai-stage.is-hero is inset: 0 of this, so the composer's
-     bottom: var(--input-ins) rides above the keyboard, .ai-scroll's
-     bottom: var(--dock-h) shortens with it, the name pair's
-     top: calc(50% - var(--ask-rise)) re-centres in what is left, and
-     #ai-reset stays in the corner. Nothing else needs a rule. ---- */
+     --vh is visualViewport.height, read straight off the window by
+     js/mobile.js. It IS the height of what can be seen, in every browser,
+     with or without a keyboard, whatever the toolbars are doing, and
+     whether or not the viewport meta's interactive-widget request was
+     honoured. Nothing is derived from it and nothing is taken off it.
+
+     --vv-top is where that window starts, for when the browser scrolls the
+     visual viewport inside the layout one to reveal the focused field. It
+     is the same offset the menu button adds to its own top
+     (css/drawer.css), which is what keeps that button and #ai-reset — an
+     absolute child of this box — on one line.
+     ============================================================ */
   html.is-phone #home.stage {
-    height: calc(100dvh - var(--kb, 0px));
-    overflow: hidden;
-    /* …and it sits where the WINDOW is looking. The hero is a plain block
-       at document y 0; when the browser scrolls the visual viewport inside
-       the layout one to reveal a focused field, y 0 is no longer the top of
-       what you can see, and the name and role go off the top of the screen
-       with nothing to stop them. --vv-top is that offset, measured in
-       js/mobile.js. Not transitioned: it is the window reporting where it
-       is, and a transition on it would draw the hero somewhere the window
-       is not, one frame behind, for a fifth of a second.
-
-       This is also what keeps the two corner buttons in step. #ai-reset is
-       an absolute child of this box, so it rides the same translate; the
-       menu button is fixed to the layout viewport and adds --vv-top to its
-       own top (css/drawer.css). Both land on the same line of the screen. */
+    height: var(--vh, 100dvh);
     transform: translateY(var(--vv-top, 0px));
-    /* THE ONLY THING THAT MOVES FOR THE KEYBOARD, and that is what makes
-       it seamless rather than merely animated.
+    overflow: hidden;
 
-       Nothing else is given a transition of its own on this gesture. The
-       composer's bottom inset, the transcript's floor, the name pair's
-       50% and the corner buttons are all measured against this box, so
-       one animated property carries every one of them, in one layout, on
-       one curve — they cannot drift out of step because there is only one
-       step. (The rule that used to break this is recorded above.)
+    /* ---- THE KEYBOARD'S OWN CURVE, and these two properties are the only
+       things on this screen that ride it.
 
-       A transition at all, rather than tracking the events raw, because
-       iOS may report the new height only once the keyboard has finished
-       sliding — raw, the screen would snap a quarter-second after the
-       keyboard had already covered it. Where the reports DO arrive
-       continuously this smooths them instead. --ease-lift decelerates, so
-       either way it settles into place rather than arriving at speed. */
-    transition: height var(--t-snap) var(--ease-lift);
+       Everything else follows from LAYOUT: the composer's bottom inset,
+       the transcript's floor, the name pair's 50%, #ai-reset's corner are
+       all measured against this box, so one eased height and one eased
+       translate carry every one of them, in one pass, on one curve. They
+       cannot drift out of step because there is only one step. (A second
+       rule that used to break this — the composer docking flush on
+       kb-up — is recorded further down.)
+
+       Height AND transform together, not height alone: on a browser that
+       shoves the window to reveal the field, both numbers arrive in the
+       same event, and easing one while snapping the other is a jump
+       followed by a settle.
+
+       0.25s is iOS's keyboard, and the curve is a hard decelerate with no
+       overshoot — the panel is sliding to a stop, not springing. It is
+       deliberately NOT one of the site's own eases: those are the
+       vocabulary of this site's motion, and this one is matching somebody
+       else's animation frame for frame. Eased at all, rather than tracking
+       raw, because iOS may report the new window only once the keyboard
+       has finished sliding; raw, the screen would snap a quarter-second
+       late. Where the reports do arrive continuously, this smooths them. */
+    transition: height var(--kb-t) var(--kb-ease),
+                transform var(--kb-t) var(--kb-ease);
   }
+  /* …but not on the first measurement. js/mobile.js sizes the hero to the
+     window before it arms this, so the opening frame is the right height
+     rather than an animation of the page assembling itself out of a wrong
+     one. */
+  html.is-phone:not(.kb-armed) #home.stage { transition: none; }
+
   html.is-phone #home .scroll-hint { display: none; }
 
-  /* ---- every other screen is at least the whole window. No --kb here:
-     neither of them holds a field, so neither can raise a keyboard. ---- */
+  /* ---- every other screen is at least a windowful. Not --vh: these two
+     SCROLL, so their height is their content's and 100dvh is only a floor;
+     and neither holds a field, so neither can raise a keyboard. ---- */
   html.is-phone .work-stage,
   html.is-phone .about-stage { min-height: 100dvh; }
 
