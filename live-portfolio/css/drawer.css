@@ -200,8 +200,15 @@
      answering the same event, and the hero carries #ai-reset — so all
      three move as one thing or none of them moves at all. ---- */
   html.is-phone[data-m-screen="home"] .m-menu {
-    /* NOTHING. No transform, no transition, nothing that answers the
-       keyboard — and that is the rule, not an omission.
+    /* The hero's coordinate exactly (css/mobile.css) — absolute, at the
+       document y of the top of the visible window. Not fixed: on iOS a
+       fixed box is anchored to the layout viewport, which is itself
+       displaced while a keyboard is open, and that is how this button
+       ended up above the top of the screen.
+
+       No transform and no transition on it — the coordinate already puts
+       it where the window is, and easing a position that IS the answer
+       would draw it somewhere the window is not.
 
        It used to translate by visualViewport.offsetTop to stay on the
        window's top line when the browser shoved it. Correct on paper and a
@@ -214,6 +221,8 @@
        #ai-reset (an absolute child of that box) sit on one line and stay
        there because neither of them has anything to react to. The shove
        is prevented upstream instead; see js/mobile.js. */
+    position: absolute;
+    top: calc(var(--doc-top, 0px) + var(--m-btn-top));
   }
 
   .m-menu.is-lit { opacity: 1; }

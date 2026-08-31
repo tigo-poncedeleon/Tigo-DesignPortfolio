@@ -58,8 +58,9 @@
      whether or not the viewport meta's interactive-widget request was
      honoured. Nothing is derived from it and nothing is taken off it.
 
-     ONE number — `--kb`, the keyboard's own height — and it insets the
-     chat area rather than resizing the screen. Nothing here translates by
+     `--kb` is the keyboard's own height and it insets the CHAT AREA;
+     `--doc-top` and `--win-h` place and size the screen in document
+     coordinates. Nothing here translates by
      visualViewport.offsetTop: that is answered a frame late, and the frame
      is a visible flinch on the two corner buttons. And nothing resizes the
      screen either: that left an empty strip of layout viewport for the
@@ -88,6 +89,12 @@
      flow there is nothing else on this screen asking for height, so this
      is the last thing holding the document open. */
   html.is-phone[data-m-screen="home"] .shell { min-height: 0; }
+  /* …and no positioned ancestor between #home.stage and the document, or
+     its --doc-top would be measured from the wrong origin. .shell-card is
+     position: relative above this width and that is what an earlier
+     version of this resolved against, which pushed the screen off the
+     bottom the moment the document scrolled. */
+  html.is-phone[data-m-screen="home"] .shell-card { position: static; }
   /* the screen is fixed now, so it contributes nothing to the document at
      all — there is no height here for the page to scroll through. */
 
@@ -105,19 +112,32 @@
        The translate is a compositor property, so following the window
        costs no layout; only the height does, and only because the
        transcript genuinely has to resize. */
-    /* THE WHOLE LAYOUT VIEWPORT, ALWAYS. It does not resize for the
-       keyboard and it does not move — which is precisely why the two
-       corner buttons cannot. What the keyboard insets is the CHAT AREA
-       inside this box (.ai-stage.is-hero, below) and the name pair's
-       centring; the box itself is a constant.
+    /* ABSOLUTE, AT A DOCUMENT COORDINATE — and not fixed, deliberately.
 
-       Sizing this box to the window instead left the rest of the layout
-       viewport empty underneath it, and the browser scrolled down into
-       that empty region: measured off a recording, the composer's control
-       row ended up behind the status bar. Filling the viewport leaves
-       nothing to scroll into. */
-    position: fixed;
-    inset: 0;
+       On iOS a `position: fixed` box is anchored to the LAYOUT viewport,
+       and while a keyboard is open the layout viewport is itself displaced
+       relative to what can be seen (WebKit is also known to drift fixed
+       layers outright in that state). Measured off a recording, the whole
+       screen ended up above the top of the display by more than a
+       keyboard's height. `inset: 0` cannot help with that: filling the
+       layout viewport is no use when the layout viewport is the thing that
+       moved.
+
+       --doc-top is scrollY + visualViewport.offsetTop, which IS the
+       document y of the top of the visible window, in every browser, by
+       the definitions of those two numbers. Placed there, this box is
+       where the window is and no browser gets a vote.
+
+       The proviso is that an absolute box resolves against its nearest
+       POSITIONED ancestor, and .shell-card is position: relative — an
+       earlier absolute version resolved against it and was pushed off the
+       bottom. That ancestor is made static on this screen (below) so the
+       coordinate means what it says. */
+    position: absolute;
+    top: var(--doc-top, 0px);
+    left: 0;
+    right: 0;
+    height: var(--win-h, 100dvh);
     overflow: hidden;
 
     /* ---- AND NOTHING HERE TRANSITIONS.

@@ -337,13 +337,37 @@
 
      TWO numbers, both read straight off the visual viewport:
 
-       --kb   innerHeight − visualViewport.height   → the keyboard's height,
-              which insets the chat area (nothing is resized or moved)
-     and the screen NEVER RESIZES. `#home.stage` is `position: fixed;
-     inset: 0` — always the whole layout viewport, at every moment, with or
-     without a keyboard. What the number insets is the CHAT AREA inside it
-     (`.ai-stage.is-hero { bottom: var(--kb) }`), and the name pair's
-     centring.
+       --kb    innerHeight − visualViewport.height   → the keyboard's
+               height, which insets the chat area
+       --doc-top   scrollY + visualViewport.offsetTop → the DOCUMENT y of
+               the top of the visible window, which is where the screen and
+               the menu button are placed
+     and the screen is `position: ABSOLUTE`, at an explicit document
+     coordinate, sized to the visible window. `position: fixed` is not used
+     anywhere on this screen, and that is the point rather than an
+     accident: **on iOS a fixed element is unreliable while a keyboard is
+     open** — it is anchored to the LAYOUT viewport, which is itself
+     displaced relative to what can be seen, and WebKit is additionally
+     known to drift fixed layers during a keyboard. Measured off a
+     recording, the whole screen ended up above the top by more than a
+     keyboard's height, which no amount of `inset: 0` prevents: filling the
+     layout viewport does not help when the layout viewport is the thing
+     that moved.
+
+     Document coordinates have no such ambiguity. scrollY + offsetTop is
+     the document y of the top of the visible window in every browser, by
+     the definitions of the two numbers, and an absolutely positioned box
+     resolves against the document — PROVIDED no ancestor is positioned.
+     That proviso is the one that bit last time: `.shell-card` is
+     `position: relative`, so an earlier absolute version resolved against
+     it instead and was pushed off the bottom. css/mobile.css now makes
+     that ancestor `static` on this screen, so the coordinate means what
+     it says.
+
+     What `--kb` insets is the CHAT AREA inside the box
+     (`.ai-stage.is-hero { bottom: var(--kb) }`) and the name pair's
+     centring — so the box's own top edge never moves relative to the
+     window, and the two corner buttons sitting on it cannot either.
 
      This is the third model and the first that satisfies both halves of
      what is wanted at once, so the reasoning is worth keeping:
@@ -403,7 +427,7 @@
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
     const home = document.getElementById('home');
-    let wh = -1;
+    let wh = -1, wt = -1;
 
     /* ---- ONE number leaves this file, and visualViewport.offsetTop is
        deliberately not it.
@@ -525,9 +549,13 @@
       // ever deepens it. It cannot alternate.
       const liveKb = Math.max(0, window.innerHeight - live);
       const kb = cap ? Math.max(liveKb, cap) : liveKb;
-      if (kb === wh) return false;
-      wh = kb;
+      // where the visible window starts, in DOCUMENT coordinates
+      const top = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
+      if (kb === wh && top === wt) return false;
+      wh = kb; wt = top;
       root.style.setProperty('--kb', kb + 'px');
+      root.style.setProperty('--doc-top', top + 'px');
+      root.style.setProperty('--win-h', live + 'px');
       return true;
     };
 
