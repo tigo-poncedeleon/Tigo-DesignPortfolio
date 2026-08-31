@@ -29,57 +29,46 @@
    ============================================================ */
 @media (max-width: 700px) {
 
-  /* the panel's share of the screen. 81% is the reference's, and it
-     is the right number for a different reason: what has to fit is a
-     46px row and a label, and 316px of a 390 leaves the page behind
-     it visible as a strip rather than as a sliver — which is what
-     tells you the page is still there to go back to. */
+  /* THE WHOLE SCREEN. It was 81% — the reference's share, keeping a
+     strip of the page visible so you could see it was still there —
+     and a strip you cannot read is not reassurance, it is 74px of a
+     390px screen spent on a rumour of the page behind. Given all of
+     it, the navigation gets room to be laid out rather than fitted in.
+
+     What tells you the page is still there is the button in the corner,
+     which never moved and is the way back. That was always the stronger
+     signal; the strip was the weaker one standing next to it. */
   :root {
-    --m-drawer-w: 81%;
+    --m-drawer-w: 100%;
     --m-btn: 38px;               /* both corner buttons, one number */
     --m-btn-top: 12px;
     --m-btn-side: 14px;
+    /* one left edge for the whole column: the mark, the labels and every
+       glyph hang off this, so nothing in the panel is a pixel out */
+    --m-inset: 24px;
   }
 
   /* ============================================================
-     THE PUSH.
+     (GONE: THE PUSH — .shell travelling right and scaling to 0.88
+     behind the panel, with rounded corners, which was the gesture taken
+     whole from the reference.
 
-     The page travels right and scales down behind the panel. This is
-     the one gesture taken whole from the reference, and it is the one
-     thing on this phone that needed clearing for first: a transform
-     on .shell makes .shell the containing block for every
-     position:fixed descendant, which turns `top: 0` into "the top of
-     a nine-thousand-pixel document". css/shell.css:1071 carries
-     `transform: none !important` precisely to promise that never
-     happens, and the promise was load-bearing — the case studies each
-     hang a fixed reading-progress bar inside .shell.
+     It went with the strip. At 81% there was a page behind the drawer to
+     push; at 100% there is nothing to see, so the transform was
+     compositing an entire nine-thousand-pixel document into one layer to
+     move it somewhere no one could look. This site has twice stopped
+     drawing over exactly that kind of layer (css/styles.css's frost
+     incident, js/case-overlay.js's iframe measurement), and this one was
+     not even buying a picture.
 
-     So the bar moved out to <body> first (js/vicino.js and its two
-     siblings), .globe-card is taken out of the phone document below,
-     and the two corner buttons are a <body> child and an absolute
-     child of the hero respectively. After all four, NOTHING inside
-     .shell is fixed at this width, and the override is safe.
-
-     Specificity, for the record: `html.m-open .shell` is (0,2,1) and
-     beats `.shell` at (0,1,0), so !important against !important
-     resolves the right way round.
-
-     --t-lift / --ease-lift is the site's own "a surface arrives and
-     settles" pair, and the panel below rides the same one so the two
-     halves of the gesture are one movement.
+     Its two preconditions STAY, on their own merits: the case studies'
+     .read-progress is appended to <body> (js/vicino.js and siblings)
+     because a fixed bar has no business inside a transformable ancestor
+     either way, and .globe-card is out of the phone document below
+     because there is no hover here to open it. Neither is load-bearing
+     for anything now — but if a push ever comes back, they are what
+     makes it safe.)
      ============================================================ */
-  .shell {
-    transform-origin: left center;
-    transition: transform var(--t-lift) var(--ease-lift),
-                border-radius var(--t-lift) var(--ease-lift);
-  }
-  html.m-open .shell {
-    transform: translateX(78%) scale(0.88) !important;
-    border-radius: 22px;
-    /* the corners have to actually cut something, and the card's own
-       overflow is `visible` at this width (css/shell.css) */
-    overflow: hidden;
-  }
 
   /* js/globe.js builds its card at parse time on EVERY page and
      appends it into #shell, and there is no hover on a phone to ever
@@ -102,9 +91,11 @@
        on, and the drawer IS the rail — it should not invent a third
        surface to say so. */
     background: var(--shell-surface);
-    border-right: 1px solid var(--shell-line);
-    padding: calc(var(--m-btn-top) + var(--m-btn) + 14px) 0
-             calc(16px + env(safe-area-inset-bottom, 0px));
+    /* no border-right: at full width there is no edge for a seam to sit
+       on, and a hairline against the screen's own edge is a line for
+       nothing */
+    padding: calc(var(--m-btn-top) + var(--m-btn) + 18px) 0
+             calc(24px + env(safe-area-inset-bottom, 0px));
     translate: -100% 0;
     /* visibility, not display: a display:none panel cannot transition,
        and a panel that is merely translated off-screen is still in the
@@ -118,7 +109,6 @@
   /* while a finger is on it the panel must track the pointer exactly —
      a transition here puts the panel on elastic (js/drawer.js) */
   html.m-dragging .m-drawer { transition: none; }
-  html.m-dragging .shell { transition: none; }
 
   /* ---- the scrim, and it is the SCROLL LOCK.
 
@@ -163,8 +153,9 @@
      leaves the button, which means there is nothing to restore on
      close and no second control to keep in step.
 
-     A <body> child, outside .shell — the push would otherwise carry
-     it off with the page it opens.
+     A <body> child, outside .shell — where it has to be to sit OVER the
+     panel at full width, and where the push (now retired, see above)
+     needed it too.
 
      NO backdrop-filter, and .case-x's comment is the reason verbatim:
      a filter here would re-blur its own circle on every scrolled
@@ -230,29 +221,29 @@
   .m-head {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 18px 16px;
+    gap: 12px;
+    padding: 0 var(--m-inset) 20px;
     text-decoration: none;
     color: inherit;
     -webkit-tap-highlight-color: transparent;
   }
   .m-head-mark {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     flex: none;
     border-radius: 50%;
     display: block;
   }
-  .m-head-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .m-head-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .m-head-name {
-    font-size: 15px;
-    line-height: 19px;
-    letter-spacing: -0.01em;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: -0.015em;
     color: var(--ink);
   }
   .m-head-role {
-    font-size: 11.5px;
-    line-height: 14px;
+    font-size: 12px;
+    line-height: 15px;
   }
 
   /* ============================================================
@@ -263,14 +254,33 @@
      block was drawn for a 14px label under a pointer, and a thumb
      wants a target it can hit without looking.
      ============================================================ */
+  /* the hairline lives HERE rather than under .m-head, so it runs the
+     full width of the screen instead of stopping at the letterhead's
+     inset: it divides identity from navigation, and that is a division
+     of the whole panel, not of one padded box inside it. */
   .m-scroll {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px;
+    border-top: 1px solid var(--shell-line);
+    padding: 12px 0 8px;
   }
-  .m-group + .m-group { margin-top: 18px; }
+
+  /* ---- THE RHYTHM, which is the whole of what makes this read as
+     organised rather than as a list that happens to have headings.
+
+     A label owns the rows UNDER it, so the air above it is large and the
+     air below it is small — 28 and 6. Get that pair the wrong way round,
+     or make them equal (the same mistake, more politely), and every label
+     floats between two groups belonging to neither: the eye then has to
+     READ the words to find the seams instead of seeing them.
+
+     And there are exactly two vertical edges in the panel. --m-inset
+     carries the mark, both labels and every glyph, so a line drawn down
+     the screen touches all of them; the row TEXT sits on a second edge of
+     its own, past the glyph column. Nothing is on a third. ---- */
+  .m-group + .m-group { margin-top: 28px; }
   /* ============================================================
      ONE INK.
 
@@ -299,25 +309,31 @@
   .m-drawer .m-head-role { color: var(--ink); }
 
   .m-label {
-    margin: 0 0 4px;
-    padding: 0 20px;
+    margin: 0 0 6px;
+    padding: 0 var(--m-inset);
     font-size: 11px;
     font-weight: 400;
-    letter-spacing: 0.06em;
+    /* the label register: small, spaced, lowercase. Size and tracking do
+       the work a second colour would have done — see ONE INK above. */
+    letter-spacing: 0.1em;
     text-transform: lowercase;
   }
   .m-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    height: 46px;
-    padding: 0 20px;
+    gap: 14px;
+    height: 52px;
+    padding: 0 var(--m-inset);
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
     transition: background-color var(--t-micro) ease;
   }
   .m-ico {
     flex: none;
+    /* a fixed box, not the glyph's own size: the marks are drawn on a 26
+       grid and do not all fill it, so without this the word after a narrow
+       one (Goodreads' g) would start a pixel or two left of the word after
+       a wide one. The COLUMN is the thing being aligned, not the drawing. */
     width: 22px;
     height: 22px;
     display: flex;
@@ -326,9 +342,9 @@
   }
   .m-ico svg { display: block; width: 22px; height: 22px; }
   .m-text {
-    font-size: 16px;
-    line-height: 20px;
-    letter-spacing: -0.01em;
+    font-size: 17px;
+    line-height: 22px;
+    letter-spacing: -0.015em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -369,11 +385,5 @@
   html.m-open .m-drawer { translate: none; opacity: 1; }
   .m-scrim {
     transition: opacity var(--t-micro) ease, visibility var(--t-micro);
-  }
-  .shell { transition: none; }
-  html.m-open .shell {
-    transform: none !important;
-    border-radius: 0;
-    overflow: visible;
   }
 }
