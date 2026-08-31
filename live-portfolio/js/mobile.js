@@ -562,10 +562,23 @@
     const syncKB = () => {
       if (!write()) return false;
 
-      // (GONE: a window.scrollTo(0, 0) that fired whenever the screen was
-      // covered. The hero is position: fixed — document scroll cannot move
-      // it — so there was nothing for this to correct, and a scroll the
-      // page did not ask for is one more thing moving at once.)
+      /* ---- CANCEL THE REVEAL-SCROLL. This came out once, when the hero
+         was position: fixed and could not be moved by a document scroll.
+         The hero is ABSOLUTE now, so a document scroll drags it straight
+         off the top — which is exactly the reported fault, and why
+         scrolling back up by hand fixed it.
+
+         Why the compensation in --doc-top is not enough on its own: it
+         counts window.scrollY, and iOS does not reliably fire a `scroll`
+         event for its own keyboard-reveal scroll (it does for a finger,
+         which is why a manual scroll appeared to repair it). So do not
+         wait to be told. On the home screen there is nothing under the
+         fold to reveal and the composer is already above the keyboard by
+         construction, so any document scroll here is the browser acting
+         on a layout that no longer exists, and the right answer is to put
+         it back. Checked every frame by the loop, not just on an event. */
+      if (at === 'home' && window.scrollY) window.scrollTo(0, 0);
+
 
       // the transcript just got shorter by the height of a keyboard. A
       // reader who was at the bottom of it should still be at the bottom of

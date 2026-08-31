@@ -89,6 +89,21 @@
      flow there is nothing else on this screen asking for height, so this
      is the last thing holding the document open. */
   html.is-phone[data-m-screen="home"] .shell { min-height: 0; }
+
+  /* ---- …and the document cannot scroll here AT ALL.
+     The hero is absolutely positioned, so a document scroll drags it off
+     the top of the screen — which is the fault this pairs with. iOS grows
+     the scrollable area when a keyboard opens so it can scroll a covered
+     field into view; ours is never covered, so that scroll is the browser
+     acting on a layout that no longer exists. Taking the overflow away
+     means it cannot happen, and js/mobile.js puts scrollTop back every
+     frame in case a browser manages it anyway. Belt and braces, because
+     the failure mode is the whole screen leaving the display. ---- */
+  html.is-phone[data-m-screen="home"],
+  html.is-phone[data-m-screen="home"] body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
   /* …and no positioned ancestor between #home.stage and the document, or
      its --doc-top would be measured from the wrong origin. .shell-card is
      position: relative above this width and that is what an earlier
