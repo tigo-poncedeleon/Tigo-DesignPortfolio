@@ -192,18 +192,19 @@
      coordinate instead, for the reason js/mobile.js sets out at length:
      `position: fixed` is anchored to something browsers disagree about
      while a keyboard is up, and the home screen is the only one here that
-     ever raises one. --win-top is the document y of the top of the visible
-     window, so this lands 12px below it whatever the browser thinks.
+     ever raises one. --vv-t is how far the window has been shoved, so this
+     lands on the same line as the hero whatever the browser does.
 
      It rides the same curve as the hero (css/mobile.css) because it is
      answering the same event, and the hero carries #ai-reset — so all
      three move as one thing or none of them moves at all. ---- */
   html.is-phone[data-m-screen="home"] .m-menu {
-    position: absolute;
-    top: calc(var(--win-top, 0px) + var(--m-btn-top));
-    /* `top` is deliberately NOT in this transition list. It is where the
-       window is, reported every frame by js/mobile.js — easing it would
-       draw the button somewhere the window is not. */
+    /* the hero's formula exactly (css/mobile.css): fixed to the layout
+       viewport, translated onto the visual one. Same two numbers, same
+       frame, so this button and the hero — and #ai-reset, which the hero
+       carries — cannot come apart. No transition: --vv-t is where the
+       window IS, and easing it would draw the button where it is not. */
+    transform: translateY(var(--vv-t, 0px));
   }
 
   .m-menu.is-lit { opacity: 1; }

@@ -335,32 +335,47 @@
      `position: fixed` does not know about it, which is how the menu button
      slid off the top of the screen and took the name and role with it.
 
-     TWO numbers, and that they are DOCUMENT COORDINATES is the whole
-     point of them:
+     TWO numbers, both read straight off the visual viewport:
 
-       --win-top   the document y of the top of the visible window,
-                   = window.scrollY + visualViewport.offsetTop
-       --win-h     how tall that window is,
-                   = visualViewport.height
+       --vv-h   visualViewport.height     → the screen's height
+       --vv-t   visualViewport.offsetTop  → how far the window has been
+                                            shoved down inside the layout
+                                            viewport to reveal the field
 
-     Why document coordinates, and not `position: fixed`. Fixed is fixed to
-     the LAYOUT viewport — except that browsers disagree about what that
-     means while a keyboard is up, and the disagreement is not academic.
-     ADDING visualViewport.offsetTop to a fixed element moved the menu
-     button 62px DOWN in one browser: it had already anchored it, so the
-     offset was a second correction stacked on a first. NOT adding it threw
-     the whole hero off the top of the screen in another: it had not
-     anchored it, and nothing brought it back. Both measured off screen
-     recordings, a day apart, in opposite directions. There is no value for
-     that offset that is right in both, because "where is a fixed element"
-     has two answers.
+     and the screen is `position: fixed; top: 0; height: var(--vv-h)` with
+     `transform: translateY(var(--vv-t))`. Fixed puts its origin at the top
+     of the LAYOUT viewport; the translate carries it to the top of the
+     VISUAL one; the height makes it exactly as tall as what can be seen.
 
-     So stop asking the question. `position: absolute` resolves against the
-     document, and scrollY + offsetTop is the document y of the window's
-     top in every browser, by the definitions of those two numbers. The
-     hero and the menu button are placed at an explicit document
-     coordinate, measured rather than assumed, and nothing here depends on
-     how any browser anchors anything.
+     Why fixed and a transform, after trying almost everything else:
+
+       ·  It is right under BOTH mechanisms WebKit can use to get a covered
+          field into view. If it shoves the visual viewport, offsetTop says
+          so and the translate answers it. If it SCROLLS THE DOCUMENT, a
+          fixed element does not move with the document at all, so there is
+          nothing to answer — and offsetTop is 0, so nothing is answered.
+          One formula, both mechanisms, no branch.
+
+       ·  It has no containing block to get wrong. The version before this
+          was `position: absolute` at `scrollY + offsetTop`, which is a
+          DOCUMENT coordinate — but an absolute box resolves against its
+          nearest positioned ancestor, and here that is .shell-card, not
+          the document. The instant the browser scrolled the document to
+          reveal the field, scrollY went into the number and .shell-card
+          did not move, so the screen was pushed down by exactly that much
+          and went off the bottom. Intermittently, because it depended on
+          the browser deciding to scroll. A fixed box has one containing
+          block and it is the viewport.
+
+       ·  The translate is a compositor property, so the correction costs
+          no layout.
+
+     ALL iOS BROWSERS ARE WEBKIT — Safari and the in-app browsers alike —
+     so there is one engine here and one behaviour. Anything that looked
+     like a difference between them was a difference between two versions
+     of this file, which is why index.html is now served no-cache
+     (vercel.json): a phone holding yesterday's HTML asks for yesterday's
+     scripts, and no amount of fixing this file reaches it.
 
      PINCH-ZOOM is the one thing that must not be mistaken for the window
      being covered: visualViewport shrinks because it is scaled, not
@@ -379,11 +394,11 @@
       // that has nothing to do with a keyboard
       const zoomed = vv.scale > 1.01;
       const h = Math.round(zoomed ? window.innerHeight : vv.height);
-      const t = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
+      const t = Math.round(zoomed ? 0 : vv.offsetTop);
       if (h === wh && t === wt) return false;
       wh = h; wt = t;
-      root.style.setProperty('--win-h', h + 'px');
-      root.style.setProperty('--win-top', t + 'px');
+      root.style.setProperty('--vv-h', h + 'px');
+      root.style.setProperty('--vv-t', t + 'px');
       return true;
     };
 
@@ -488,5 +503,35 @@
 
     // and the box the page opens at
     syncKB();
+
+    /* ---- ?vv — a readout of what the window is actually reporting, on the
+       device, in the browser that is misbehaving. Every fix in this block
+       before it was reasoned from a screen recording, and a recording shows
+       what happened without ever saying why. Costs nothing when the flag is
+       absent, which is always unless somebody typed it. ---- */
+    if (new URLSearchParams(location.search).has('vv')) {
+      const box = document.createElement('pre');
+      box.style.cssText = 'position:fixed;left:6px;top:56px;z-index:999;margin:0;' +
+        'padding:6px 8px;font:600 10px ui-monospace,monospace;line-height:1.45;' +
+        'background:rgba(0,0,0,.82);color:#0f0;border-radius:6px;white-space:pre;' +
+        'pointer-events:none';
+      document.body.appendChild(box);
+      const paint = () => {
+        const st = document.getElementById('home');
+        const r = st ? st.getBoundingClientRect() : { top: 0, height: 0 };
+        const bar = document.querySelector('.ai-inputbar');
+        const b = bar ? bar.getBoundingClientRect() : { bottom: 0 };
+        box.textContent =
+          'innerH   ' + window.innerHeight + '\n' +
+          'vv.h     ' + Math.round(vv.height) + '\n' +
+          'vv.top   ' + Math.round(vv.offsetTop) + '\n' +
+          'scrollY  ' + Math.round(window.scrollY) + '\n' +
+          'stage    ' + Math.round(r.top) + ' h' + Math.round(r.height) + '\n' +
+          'bar.bot  ' + Math.round(b.bottom) + '\n' +
+          'gap      ' + Math.round(vv.height - b.bottom);
+        requestAnimationFrame(paint);
+      };
+      paint();
+    }
   }
 })();

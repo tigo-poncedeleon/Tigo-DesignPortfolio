@@ -52,17 +52,16 @@
      this height, and the hero was drawn taller or shorter than the screen:
      the name off the top, the composer under the keyboard.
 
-     --win-h is visualViewport.height, read straight off the window by
+     --vv-h is visualViewport.height, read straight off the window by
      js/mobile.js. It IS the height of what can be seen, in every browser,
      with or without a keyboard, whatever the toolbars are doing, and
      whether or not the viewport meta's interactive-widget request was
      honoured. Nothing is derived from it and nothing is taken off it.
 
-     --win-top is where that window STARTS, in document coordinates. Both
-     numbers come from js/mobile.js; the reasoning for measuring rather
-     than relying on `position: fixed` is written there, and the short
-     version is that two browsers gave two opposite answers to the same
-     question and a document coordinate has only one.
+     --vv-t is how far that window has been SHOVED down inside the layout
+     viewport to reveal a focused field. Both come from js/mobile.js, and
+     the reasoning for this exact pair — fixed origin, translated onto the
+     visual viewport — is written there at length.
      ============================================================ */
   /* ---- (GONE: `overflow: hidden` on the home screen's html and body.
      It was meant to stop the page's last few dozen pixels of travel, on the
@@ -73,8 +72,8 @@
 
      The travel is gone by a better route — #home.stage is out of flow
      below, so the document has no height of its own to scroll through —
-     and the shove is answered rather than prevented: --win-top is where
-     the window actually is, and the hero is placed there.) ---- */
+     and the shove is answered rather than prevented: --vv-t is how far
+     the window moved, and the hero is translated to match.) ---- */
 
   /* …but the shell must stop standing 100vh tall under it. On iOS 100vh is
      the LARGE viewport — the height with the browser's toolbars hidden —
@@ -85,26 +84,29 @@
      flow there is nothing else on this screen asking for height, so this
      is the last thing holding the document open. */
   html.is-phone[data-m-screen="home"] .shell { min-height: 0; }
+  /* the screen is fixed now, so it contributes nothing to the document at
+     all — there is no height here for the page to scroll through. */
 
   html.is-phone #home.stage {
-    /* ABSOLUTE, at an explicit document coordinate — not fixed, and not in
-       flow. Fixed was the mistake underneath every version of this: what a
-       fixed element is anchored to while a keyboard is up is a thing
-       browsers disagree about, so the same offset that corrected one of
-       them double-corrected the other, and removing it threw the hero off
-       the top of the screen in the first. --win-top is the document y of
-       the top of the visible window (scrollY + visualViewport.offsetTop),
-       which every browser agrees on because it is just those two numbers
-       added up. Placed there, the hero is where the window is, and no
-       browser gets a say in it.
-       Out of flow also means the document has no height of its own here —
-       which is what stops the page having a few dozen pixels of travel and
-       a scrollbar to flash, without locking anything. */
-    position: absolute;
-    top: var(--win-top, 0px);
+    /* FIXED, and translated onto the visual viewport.
+
+       `top: 0` puts the origin at the top of the LAYOUT viewport; the
+       translate carries it to the top of the VISUAL one; the height makes
+       it exactly as tall as what can be seen. Three lines, and they are
+       right under both of the mechanisms WebKit uses to get a covered
+       field into view — see js/mobile.js for why, and for why the
+       `position: absolute` version this replaces went off the bottom of
+       the screen the moment the browser scrolled the document.
+
+       The translate is a compositor property, so following the window
+       costs no layout; only the height does, and only because the
+       transcript genuinely has to resize. */
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    height: var(--win-h, 100dvh);
+    height: var(--vv-h, 100dvh);
+    transform: translateY(var(--vv-t, 0px));
     overflow: hidden;
 
     /* ---- AND NOTHING HERE TRANSITIONS.
@@ -130,7 +132,7 @@
 
   html.is-phone #home .scroll-hint { display: none; }
 
-  /* ---- every other screen is at least a windowful. Not --win-h: these two
+  /* ---- every other screen is at least a windowful. Not --vv-h: these two
      SCROLL, so their height is their content's and 100dvh is only a floor;
      and neither holds a field, so neither can raise a keyboard. ---- */
   html.is-phone .work-stage,
