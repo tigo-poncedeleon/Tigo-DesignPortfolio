@@ -356,10 +356,15 @@
       if (next === kb) return;               // this IS the coalescer: iOS fires
       kb = next;                             // a burst of these per keyboard and
       root.style.setProperty('--kb', kb + 'px');   // only the changes cost anything
-      // 80 rather than 0: a stray pixel or two of rounding is not a
-      // keyboard, and nothing should flip a class over it. No keyboard is
-      // anywhere near this short.
-      root.classList.toggle('kb-up', kb > 80);
+
+      // (GONE: an `html.kb-up` class set off the same threshold. Its one
+      // reader was a rule that docked the composer flush to the keyboard,
+      // and that rule was a second animation on a gesture that should only
+      // ever have one — see the note in css/mobile.css. The guards below
+      // read the number directly, which is what they always did.)
+      //
+      // 80 rather than 0 in each of them: a stray pixel or two of rounding
+      // is not a keyboard. No keyboard is anywhere near this short.
 
       // Safari scrolls the DOCUMENT to bring a focused field into view, and
       // on the home screen — one screen, nothing under it — that can only
@@ -376,6 +381,22 @@
         scroll.scrollTop = scroll.scrollHeight;
       }
     };
+
+    // …and again when the screen has finished making room. The pin above
+    // lands against the box's height AT THE MOMENT the keyboard is
+    // reported, and the box spends the next fifth of a second shrinking to
+    // its real one (css/mobile.css eases #home.stage's height) — so the
+    // last bubble creeps a few pixels below the fold on the way down. One
+    // listener on the end of that ease puts it back, exactly once.
+    const home = document.getElementById('home');
+    if (home && scroll) {
+      home.addEventListener('transitionend', (e) => {
+        if (e.propertyName !== 'height' || e.target !== home) return;
+        if (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40 + kb) {
+          scroll.scrollTop = scroll.scrollHeight;
+        }
+      });
+    }
 
     // Called straight off the event rather than deferred to a frame: the
     // only work here is one custom property, the guard above already drops

@@ -48,10 +48,22 @@
   html.is-phone #home.stage {
     height: calc(100dvh - var(--kb, 0px));
     overflow: hidden;
-    /* iOS reports the new height when the keyboard has finished sliding,
-       not while it slides, so the stage would otherwise SNAP a quarter of
-       a second after the keyboard had already covered it. Given a curve of
-       its own, the late arrival reads as the screen making room. */
+    /* THE ONLY THING THAT MOVES FOR THE KEYBOARD, and that is what makes
+       it seamless rather than merely animated.
+
+       Nothing else is given a transition of its own on this gesture. The
+       composer's bottom inset, the transcript's floor, the name pair's
+       50% and the corner buttons are all measured against this box, so
+       one animated property carries every one of them, in one layout, on
+       one curve — they cannot drift out of step because there is only one
+       step. (The rule that used to break this is recorded above.)
+
+       A transition at all, rather than tracking the events raw, because
+       iOS may report the new height only once the keyboard has finished
+       sliding — raw, the screen would snap a quarter-second after the
+       keyboard had already covered it. Where the reports DO arrive
+       continuously this smooths them instead. --ease-lift decelerates, so
+       either way it settles into place rather than arriving at speed. */
     transition: height var(--t-snap) var(--ease-lift);
   }
   html.is-phone #home .scroll-hint { display: none; }
@@ -221,11 +233,26 @@
     transform: translateY(calc(-1 * var(--ask-hop)));
   }
   html.is-phone #home.is-asking .ai-composer { transform: none; }
-  /* …and the hop is spent the moment the keyboard is up. It is the breath
-     before anything is asked, and a caret in the field means the asking has
-     started — so the box goes flush to its dock and the keyboard becomes the
-     floor it stands on. js/mobile.js sets kb-up off the measurement. */
-  html.is-phone.kb-up .ai-stage.is-hero .ai-composer { transform: none; }
+
+  /* (GONE: `html.kb-up … .ai-composer { transform: none }`, which spent the
+     hop when the keyboard came up so the box went flush to the keyboard's
+     edge. It was the SEAM.
+
+     The keyboard already moves everything on this screen by exactly one
+     property — the stage's height, below — and every piece follows from
+     that in a single layout pass: the composer's bottom inset, the
+     transcript's floor, the name pair's 50%. One property, one curve.
+     Spending the hop as well started a SECOND animation on the same
+     gesture, on the composer's own `transform` transition, which is
+     --t-rise/--ease-rise (0.6s, a spring) against the height's
+     --t-snap/--ease-lift (0.22s, a settle). Two clocks, two curves, one
+     event: the box slid down toward the keyboard for a third of a second
+     after the screen had finished making room for it.
+
+     Keeping the hop is also simply the better place for the box. It rides
+     28px clear of the keyboard rather than sitting on it, which is what
+     "move the prompt box higher" asks for, and it costs the name nothing —
+     the pair re-centres in whatever is left and stays well above it.) */
 
   /* ============================================================
      …and everything that hangs off the bar hangs ABOVE it, in both
