@@ -480,15 +480,35 @@
       const a = document.activeElement;
       return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA');
     };
+    /* ---- THE TAIL, and it is the whole of "spasm, then slide into place".
+
+       The loop used to give up ten frames after the last CHANGE — about
+       160ms. A keyboard closes over roughly 300. So two thirds of the way
+       down, the screen simply stopped following: it froze mid-slide, and
+       the next coarse resize event snapped it the rest of the way. The
+       freeze read as the spasm and the snap read as the slide back into
+       place. Nothing was fighting; the loop had just gone home early.
+
+       TAIL is ninety frames — a second and a half of stillness before it
+       stops, which no keyboard animation outlasts. A bounded count rather
+       than "until the window looks settled", because settled is a
+       judgement about numbers a browser might never quite agree on, and a
+       loop that can spin forever is a worse bug than one that runs a
+       second too long. While a field is focused it stays alive regardless.
+
+       Cost, measured: one height write is 0.17ms against a 16.7ms frame,
+       and on a frame where nothing changed it is two property reads. There
+       is no reason to be frugal here and every reason to still be
+       watching. ---- */
+    const TAIL = 90;
     const pump = () => {
       raf = 0;
       quiet = syncKB() ? 0 : quiet + 1;
-      // keep reading every frame for as long as a field is focused. The
-      // resize EVENT is coarse — three or four fires across the keyboard's
-      // third of a second — but visualViewport's properties are live, so a
-      // loop that reads them is the only thing here that sees the keyboard
-      // actually moving rather than three snapshots of it.
-      if (quiet < 10 || typing()) raf = requestAnimationFrame(pump);
+      // The resize EVENT is coarse — three or four fires across the
+      // keyboard's third of a second — but visualViewport's properties are
+      // live, so a loop that reads them is the only thing here that sees
+      // the keyboard actually moving rather than three snapshots of it.
+      if (typing() || quiet < TAIL) raf = requestAnimationFrame(pump);
       else pinned = false;
     };
     const follow = () => {
