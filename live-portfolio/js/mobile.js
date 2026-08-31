@@ -394,7 +394,7 @@
       // keyboard's own height is deciding whether there IS one — nothing in
       // CSS asks for the number any more. 80 rather than 0 because a stray
       // pixel of toolbar is not a keyboard.
-      const covered = window.innerHeight - h > 80;
+      const covered = window.innerHeight - wh > 80;
 
       // …the document, if it also moved. On the home screen there is
       // nothing under the fold to reveal, so any document scroll here is
@@ -407,7 +407,7 @@
       // Same 40px slack ai-chat.js uses for the same judgement.
       if (scroll && covered &&
           scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight
-            < 40 + (window.innerHeight - h)) {
+            < 40 + (window.innerHeight - wh)) {
         scroll.scrollTop = scroll.scrollHeight;
       }
       return true;
