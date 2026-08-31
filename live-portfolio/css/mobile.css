@@ -58,46 +58,59 @@
      this height, and the hero was drawn taller or shorter than the screen:
      the name off the top, the composer under the keyboard.
 
-     --vh is visualViewport.height, read straight off the window by
+     --win-h is visualViewport.height, read straight off the window by
      js/mobile.js. It IS the height of what can be seen, in every browser,
      with or without a keyboard, whatever the toolbars are doing, and
      whether or not the viewport meta's interactive-widget request was
      honoured. Nothing is derived from it and nothing is taken off it.
 
-     …and NOTHING is offset by visualViewport.offsetTop. That was here,
-     and on a screen recording it moved the menu button 62px down the
-     instant the keyboard opened — the browser had already anchored it, and
-     the compensation was a second correction on top of a first. The answer
-     is not a better correction but removing what it corrected for: THE
-     HOME SCREEN DOES NOT SCROLL (below), and a browser with nothing to
-     scroll has no reason to shove the window.
+     --win-top is where that window STARTS, in document coordinates. Both
+     numbers come from js/mobile.js; the reasoning for measuring rather
+     than relying on `position: fixed` is written there, and the short
+     version is that two browsers gave two opposite answers to the same
+     question and a document coordinate has only one.
      ============================================================ */
-  /* ---- THE HOME SCREEN DOES NOT SCROLL. Not "has nothing to scroll to" —
-     cannot, at the document level, at all.
+  /* ---- (GONE: `overflow: hidden` on the home screen's html and body.
+     It was meant to stop the page's last few dozen pixels of travel, on the
+     theory that a browser with nothing to scroll would have no reason to
+     shove the window to reveal the focused field. The theory was wrong and
+     a screen recording said so: Safari shoves anyway, and with the page
+     pinned it shoved the entire hero off the top of the screen.
 
-     It always had nothing under it, but the DOCUMENT was still a little
-     taller than the window: .shell stands 100vh tall, and on iOS 100vh is
-     the LARGE viewport, the one you get with the browser's toolbars
-     hidden. Against a window that is shorter than that by however much
-     toolbar is currently showing, the page had a few dozen pixels of
-     travel — enough for a scrollbar to flash, enough to drag the toolbar
-     through its collapse, and enough that every keyboard transition landed
-     on a page that was also settling. That is the whole of what read as
-     cheap: not one bad animation, but three things moving at once.
+     The travel is gone by a better route — #home.stage is out of flow
+     below, so the document has no height of its own to scroll through —
+     and the shove is answered rather than prevented: --win-top is where
+     the window actually is, and the hero is placed there.) ---- */
 
-     So the shell is the window's height here and the document is pinned.
-     It also takes the ground out from under the offsetTop problem above —
-     nothing to scroll, nothing to shove. .ai-scroll is the only scroller
-     left on this screen, and it contains its own overscroll. ---- */
-  html.is-phone[data-m-screen="home"],
-  html.is-phone[data-m-screen="home"] body {
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
+  /* …but the shell must stop standing 100vh tall under it. On iOS 100vh is
+     the LARGE viewport — the height with the browser's toolbars hidden —
+     so against a window shortened by whatever toolbar is showing, the
+     document had a few dozen pixels of travel: a scrollbar flashing, the
+     toolbar dragging through its collapse, and every keyboard transition
+     landing on a page that was itself still settling. With the hero out of
+     flow there is nothing else on this screen asking for height, so this
+     is the last thing holding the document open. */
   html.is-phone[data-m-screen="home"] .shell { min-height: 0; }
 
   html.is-phone #home.stage {
-    height: var(--vh, 100dvh);
+    /* ABSOLUTE, at an explicit document coordinate — not fixed, and not in
+       flow. Fixed was the mistake underneath every version of this: what a
+       fixed element is anchored to while a keyboard is up is a thing
+       browsers disagree about, so the same offset that corrected one of
+       them double-corrected the other, and removing it threw the hero off
+       the top of the screen in the first. --win-top is the document y of
+       the top of the visible window (scrollY + visualViewport.offsetTop),
+       which every browser agrees on because it is just those two numbers
+       added up. Placed there, the hero is where the window is, and no
+       browser gets a say in it.
+       Out of flow also means the document has no height of its own here —
+       which is what stops the page having a few dozen pixels of travel and
+       a scrollbar to flash, without locking anything. */
+    position: absolute;
+    top: var(--win-top, 0px);
+    left: 0;
+    right: 0;
+    height: var(--win-h, 100dvh);
     overflow: hidden;
 
     /* ---- THE KEYBOARD'S OWN CURVE, and these two properties are the only
@@ -111,7 +124,11 @@
        rule that used to break this — the composer docking flush on
        kb-up — is recorded further down.)
 
-       ONE property, and short. The window is not reported once at the end
+       Both properties, and short. --win-top and --win-h arrive in the
+       same event, so they ease together or the hero jumps and then
+       settles.
+
+       Short, because The window is not reported once at the end
        of the keyboard's slide — measured off a recording it arrives in
        three or four steps across about a third of a second, which is
        roughly thirteen frames a second and visibly steppy if taken raw.
@@ -120,7 +137,8 @@
        enough to bridge one step to the next. At the quarter-second it was,
        each new report restarted a long ease toward a target that had
        already moved, and the stack of them read as a scratchy settle. */
-    transition: height var(--kb-t) var(--kb-ease);
+    transition: height var(--kb-t) var(--kb-ease),
+                top var(--kb-t) var(--kb-ease);
   }
   /* …but not on the first measurement. js/mobile.js sizes the hero to the
      window before it arms this, so the opening frame is the right height
@@ -130,7 +148,7 @@
 
   html.is-phone #home .scroll-hint { display: none; }
 
-  /* ---- every other screen is at least a windowful. Not --vh: these two
+  /* ---- every other screen is at least a windowful. Not --win-h: these two
      SCROLL, so their height is their content's and 100dvh is only a floor;
      and neither holds a field, so neither can raise a keyboard. ---- */
   html.is-phone .work-stage,

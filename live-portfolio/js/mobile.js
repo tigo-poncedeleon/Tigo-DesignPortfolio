@@ -335,26 +335,32 @@
      `position: fixed` does not know about it, which is how the menu button
      slid off the top of the screen and took the name and role with it.
 
-     ONE number, read straight off the window, nothing derived:
+     TWO numbers, and that they are DOCUMENT COORDINATES is the whole
+     point of them:
 
-       --vh   how tall the window is   →   the hero's height
+       --win-top   the document y of the top of the visible window,
+                   = window.scrollY + visualViewport.offsetTop
+       --win-h     how tall that window is,
+                   = visualViewport.height
 
-     AND NOT visualViewport.offsetTop, which this had and which was the
-     worst of the faults it caused. The reasoning was sound: the browser
-     scrolls the visual viewport inside the layout one to reveal a focused
-     field, `position: fixed` is fixed to the LAYOUT viewport, so a fixed
-     button should add that offset back to stay on screen. Measured off a
-     screen recording, it moved the menu button exactly 62 CSS px DOWN the
-     instant the keyboard opened — precisely the offset being added. The
-     browser had already anchored the button and the flow correctly, and
-     the compensation was a second correction stacked on a first. A control
-     that jumps a quarter of an inch every time the keyboard arrives is far
-     worse than one that is occasionally a pixel out.
+     Why document coordinates, and not `position: fixed`. Fixed is fixed to
+     the LAYOUT viewport — except that browsers disagree about what that
+     means while a keyboard is up, and the disagreement is not academic.
+     ADDING visualViewport.offsetTop to a fixed element moved the menu
+     button 62px DOWN in one browser: it had already anchored it, so the
+     offset was a second correction stacked on a first. NOT adding it threw
+     the whole hero off the top of the screen in another: it had not
+     anchored it, and nothing brought it back. Both measured off screen
+     recordings, a day apart, in opposite directions. There is no value for
+     that offset that is right in both, because "where is a fixed element"
+     has two answers.
 
-     What replaces it is not a better correction. It is removing the thing
-     being corrected for: the home screen cannot scroll at all now
-     (css/mobile.css), and a browser with nothing to scroll has no reason
-     to shove the window in the first place.
+     So stop asking the question. `position: absolute` resolves against the
+     document, and scrollY + offsetTop is the document y of the window's
+     top in every browser, by the definitions of those two numbers. The
+     hero and the menu button are placed at an explicit document
+     coordinate, measured rather than assumed, and nothing here depends on
+     how any browser anchors anything.
 
      PINCH-ZOOM is the one thing that must not be mistaken for the window
      being covered: visualViewport shrinks because it is scaled, not
@@ -365,13 +371,18 @@
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
     const home = document.getElementById('home');
-    let vh = -1;
+    let wh = -1, wt = -1;
 
     const syncKB = () => {
-      const h = Math.round(vv.scale > 1.01 ? window.innerHeight : vv.height);
-      if (h === vh) return;                  // this IS the coalescer
-      vh = h;
-      root.style.setProperty('--vh', h + 'px');
+      // scaled, not covered: a pinched-in viewport is short for a reason
+      // that has nothing to do with a keyboard
+      const zoomed = vv.scale > 1.01;
+      const h = Math.round(zoomed ? window.innerHeight : vv.height);
+      const t = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
+      if (h === wh && t === wt) return;      // this IS the coalescer
+      wh = h; wt = t;
+      root.style.setProperty('--win-h', h + 'px');
+      root.style.setProperty('--win-top', t + 'px');
 
       // is something covering the screen? The only use left for the
       // keyboard's own height is deciding whether there IS one — nothing in
@@ -412,6 +423,9 @@
 
     vv.addEventListener('resize', syncKB);
     vv.addEventListener('scroll', syncKB);
+    // --win-top counts document scroll too, and that can move without the
+    // visual viewport moving at all
+    window.addEventListener('scroll', syncKB, { passive: true });
     // …and a screen change closes the keyboard without necessarily firing
     // either of them in an order we can rely on
     window.addEventListener('phone:screen', syncKB);

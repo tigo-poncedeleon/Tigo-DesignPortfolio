@@ -164,14 +164,6 @@
      ============================================================ */
   .m-menu {
     position: fixed;
-    /* A CONSTANT. It briefly added visualViewport.offsetTop here, to keep a
-       layout-viewport-fixed button on the top line of what can actually be
-       seen — and on a screen recording that moved it 62px down the instant
-       the keyboard opened, because the browser had already anchored it and
-       the offset was a second correction on a first. The button must not
-       move when the keyboard arrives. It does not move at all now: this is
-       one number that never changes, and there is no transition on `top`
-       for anything to animate even if it did. */
     top: var(--m-btn-top);
     left: var(--m-btn-side);
     z-index: 80;                    /* over the panel (70) and .read-progress (45) */
@@ -196,6 +188,25 @@
                 color var(--t-micro) ease,
                 background-color var(--t-micro) ease;
   }
+  /* ---- …except on the home screen, where it is placed at a document
+     coordinate instead, for the reason js/mobile.js sets out at length:
+     `position: fixed` is anchored to something browsers disagree about
+     while a keyboard is up, and the home screen is the only one here that
+     ever raises one. --win-top is the document y of the top of the visible
+     window, so this lands 12px below it whatever the browser thinks.
+
+     It rides the same curve as the hero (css/mobile.css) because it is
+     answering the same event, and the hero carries #ai-reset — so all
+     three move as one thing or none of them moves at all. ---- */
+  html.is-phone[data-m-screen="home"] .m-menu {
+    position: absolute;
+    top: calc(var(--win-top, 0px) + var(--m-btn-top));
+    transition: opacity var(--t-fade) ease,
+                color var(--t-micro) ease,
+                background-color var(--t-micro) ease,
+                top var(--kb-t, 0.16s) var(--kb-ease, ease-out);
+  }
+
   .m-menu.is-lit { opacity: 1; }
   .m-menu svg { display: block; width: 20px; height: 20px; }
   .m-menu:active { background: var(--wash-solid); color: var(--ink); }
