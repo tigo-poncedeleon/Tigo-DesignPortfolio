@@ -296,13 +296,24 @@
 
      THE MEASUREMENT, and why it is safe to run everywhere:
 
-       kb = innerHeight − visualViewport.height − visualViewport.offsetTop
+       kb = innerHeight − visualViewport.height
 
      innerHeight is the layout viewport; visualViewport.height is how much
-     of it you can actually see. Their difference IS the keyboard. And it
-     is self-correcting: where interactive-widget IS honoured, innerHeight
-     shrinks too, the difference stays at zero, and nothing is subtracted
-     twice. One expression, both platforms, no sniffing.
+     of it you can actually see. What is missing is what is covering it,
+     which is the keyboard. And it is self-correcting: where
+     interactive-widget IS honoured, innerHeight shrinks too, the
+     difference stays at zero, and nothing is subtracted twice. One
+     expression, both platforms, no sniffing.
+
+     NOT minus vv.offsetTop, which this had at first and which is wrong in
+     exactly the moment it matters. offsetTop is how far Safari has scrolled
+     the VISUAL viewport inside the layout one to bring the focused field
+     into view — it says nothing about how tall the keyboard is, and
+     subtracting it makes the keyboard measure short by however far the page
+     was shoved. Short measurement, stage not shortened enough, field still
+     under the keyboard, so Safari shoves further: the two feed each other.
+     The height of the covered strip does not depend on where the window is
+     looking.
 
      Two things it must not mistake for a keyboard:
        ·  PINCH-ZOOM, where visualViewport.height is smaller because it is
@@ -319,7 +330,7 @@
     const syncKB = () => {
       // a pinch is not a keyboard
       const next = vv.scale > 1.01 ? 0
-        : Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+        : Math.max(0, Math.round(window.innerHeight - vv.height));
       if (next === kb) return;               // this IS the coalescer: iOS fires
       kb = next;                             // a burst of these per keyboard and
       root.style.setProperty('--kb', kb + 'px');   // only the changes cost anything

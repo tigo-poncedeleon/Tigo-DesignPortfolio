@@ -296,18 +296,7 @@
   .m-drawer .m-row,
   .m-drawer .m-ico,
   .m-drawer .m-head-name,
-  .m-drawer .m-head-role,
-  .m-drawer .st-lead,
-  .m-drawer .st-sub,
-  .m-drawer .side-label { color: var(--ink); }
-  /* the status marker is a dot of the same ink, filled for the present
-     and hollow for the not-yet — the one distinction in here that is
-     shape rather than colour, so it survives */
-  .m-drawer .st-dot { background: var(--ink); }
-  .m-drawer .st-row.is-ahead .st-dot {
-    background: none;
-    box-shadow: inset 0 0 0 1.5px var(--ink);
-  }
+  .m-drawer .m-head-role { color: var(--ink); }
 
   .m-label {
     margin: 0 0 4px;
@@ -351,38 +340,21 @@
      step down from it. See ONE INK above — the classes are still set by
      js/drawer.js and still carry aria-current; nothing paints them.) */
 
-  /* ============================================================
-     THE FOOT — the status rows, and nothing under them.
+  /* (GONE: `.m-foot` and everything in it — statusHTML()'s "now" section
+     and, before that, a black "new chat" pill beneath it.
 
-     statusHTML() comes straight from js/shell.js, markup and all, and
-     its own comment is the reason: status belongs at the bottom of a
-     column with navigation above it, and parking it there gives the
-     column a weighted floor instead of a long fall to nothing. The
-     reference's bottom-left avatar is an account switcher; there is
-     no account here, and the honest translation of "the thing at the
-     foot of the rail" is the thing already at the foot of the rail.
-     ============================================================ */
-  .m-foot {
-    flex: none;
-    padding: 12px 10px 0;
-    border-top: 1px solid var(--shell-line);
-  }
-  .m-foot .side-status { margin: 0; }
-  .m-foot .side-label {
-    margin: 0 0 2px;
-    padding: 0 10px;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-  }
-  /* the rows are the rail's, given a phone's height */
-  .m-foot .st-row { padding: 8px 10px; border-radius: 8px; }
-  .m-foot .st-row:active { background: rgba(var(--ink-rgb), 0.05); }
+     The rail's own argument for a weighted floor is an argument about a
+     RAIL: a persistent column with nav above it should not end in a long
+     fall to nothing. A drawer has no long fall — it is shut except in the
+     second you opened it to go somewhere — so the floor was holding down
+     a column that was never falling, and spending a third of a phone
+     screen to do it. The status lines still live on About, in the letter,
+     where someone is actually asking.
 
-  /* (GONE: `.m-new`, the black "new chat" pill that stood under the
-     status rows. The reference has one because its drawer lists
-     conversations; this site has one conversation, and the way to clear
-     it — #ai-reset — is already in the corner of the screen the pill
-     would have taken you to.) */
+     The pill went for its own reason: the site has one conversation, and
+     the way to clear it is already in the corner of the screen the pill
+     led to. Two doors to one action, and the quieter one was in the wrong
+     room.) */
 }
 
 /* ---- no travel for a visitor who does not want any. The panel is

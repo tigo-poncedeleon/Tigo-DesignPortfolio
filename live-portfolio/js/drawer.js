@@ -124,15 +124,24 @@
         '<span class="m-head-role">product design engineer</span>' +
       '</span>' +
     '</a>' +
-    '<nav class="m-scroll" aria-label="Site">' + GROUPS.map(groupHTML).join('') + '</nav>' +
-    // (GONE: a black "new chat" pill under the status rows. It was the
-    // reference's, and the reference needs one because its drawer lists
-    // conversations and you have to be able to start another. This site
-    // has ONE conversation and the way to clear it is already on the
-    // screen the pill would have taken you to — #ai-reset, in the corner
-    // opposite the button that opens this. Two doors to one action, and
-    // the quieter one was in the wrong room.)
-    '<div class="m-foot">' + S.statusHTML() + '</div>';
+    '<nav class="m-scroll" aria-label="Site">' + GROUPS.map(groupHTML).join('') + '</nav>';
+
+    // (GONE: the whole foot — statusHTML()'s "now" section, and before that
+    // a black "new chat" pill under it.
+    //
+    // The pill was the reference's, and the reference needs one because its
+    // drawer lists conversations; this site has ONE, and the way to clear it
+    // is already on the screen the pill led to (#ai-reset, in the corner
+    // opposite the button that opens this).
+    //
+    // The status rows were the rail's, and the rail's argument for them is
+    // about a RAIL: a persistent column with navigation above it wants a
+    // weighted floor rather than a long fall to nothing. A drawer has no
+    // long fall — it is shut except in the second you opened it to go
+    // somewhere — so the floor was holding down a column that was never
+    // falling, and spending a third of a phone screen to do it. The same
+    // two lines are still on About, in the letter, where someone reading
+    // about him is actually asking.)
 
   document.body.append(menu, scrim, drawer);
 

@@ -78,6 +78,20 @@
     // Both numbers come from the SAME rect: `main` is scaled by `zoom`
     // (js/stage-fit.js), so a visual top over a layout height would be
     // wrong by the scale factor on every screen that is not 1280 wide.
+    //
+    // …AND NOT ON A PHONE. Below 700px the hero is not something you scroll
+    // past: it is one tapped screen with `overflow: hidden` and nothing
+    // under it (js/mobile.js, css/mobile.css), so the hand-over to Work
+    // this clock exists to make can never happen. What it did instead was
+    // fire on a scroll nobody asked for — iOS scrolls the document to
+    // reveal a focused field, and for the length of that scroll the whole
+    // composer was dimmed toward the background, mid-sentence, every time
+    // the keyboard opened. Same guard fitHero already carries above.
+    if (window.matchMedia('(max-width: 700px)').matches) {
+      stage.style.removeProperty('--hero-fade');
+      return;
+    }
+
     const OUT = 0.7;
     let raf = 0;
     const track = () => {

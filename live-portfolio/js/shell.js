@@ -1230,5 +1230,10 @@
   // Read-only by convention: nothing outside this file writes to TREE.
   window.Shell = { get page() { return page; }, get title() { return title; },
                    lightUp, toggleRail, markCurrent, setPage, restY, land,
-                   TREE, ANCESTORS, SOCIAL, G, svg, esc, statusHTML };
+                   TREE, ANCESTORS, SOCIAL, G, svg, esc };
+  // (statusHTML was published here too, for a moment, so the phone drawer
+  // could stand the rail's "now" rows at its foot. The drawer has no foot —
+  // that weighted floor is an argument about a persistent column, and a
+  // drawer is shut except in the second you opened it — so this is the
+  // rail's own again.)
 })();
