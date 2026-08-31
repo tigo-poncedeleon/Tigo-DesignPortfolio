@@ -388,86 +388,39 @@
     const home = document.getElementById('home');
     let wh = -1, wt = -1;
 
-    /* ---- THE SHOVE IS IGNORED UNLESS IT PERSISTS.
+    /* ---- (GONE, and this is the whole lesson of this block: an
+       ANTICIPATED height, which shrank the box on focus by a remembered
+       keyboard so the composer lifted on the tap; and a SETTLE, which
+       ignored a visual-viewport shove unless it held for 250ms.
 
-       WebKit shoves the visual viewport down to reveal a field it thinks
-       the keyboard is covering. Ours is never covered — the hero IS the
-       window, so the composer is above the keyboard by construction — and
-       the browser un-shoves a moment later once it has seen the new
-       layout. So the shove is a correction for a problem we do not have,
-       and it lasts a few frames.
+       Each was a reasonable idea and together they were the spasm. Traced
+       off a screen recording, the composer's top through one keyboard:
 
-       Following it faithfully is what made the menu button twitch: the
-       window jumps down and back, we translate down and back one frame
-       behind it, and one frame of that is a visible flinch on a control
-       that should be nailed to the corner. So a non-zero offset has to
-       hold still for HOLD ms before it is believed. Going back to zero is
-       believed instantly — that direction is never wrong, and waiting on
-       it would leave the screen misplaced.
+           1854 → 949 → 857 → 2069 → 1850 → 433 → 1640 → 1599 → 1557
 
-       If a browser ever shoves and MEANS it, this is late by HOLD and then
-       correct. That trade is the right way round: a rare, brief
-       misplacement beats a twitch on every single keystroke. ---- */
-    /* ---- …AND THE SHOVE IS PRE-EMPTED, WHICH IS THE REAL ANSWER.
+       — flying across nearly the whole screen and back, ten frames of it.
+       Not lag: a fight. `vv.height` passes through every value between
+       full and settled as the keyboard slides, and the anticipated height
+       was swapped in or out depending on which side of a threshold each
+       frame's reading fell — so the box alternated between the guess and
+       the truth, frame by frame. The settle then held its own stale value
+       across the same frames, and its timer only advanced while the rAF
+       loop happened to be alive, which is what made it every-other-time.
 
-       Ignoring a shove only chooses which artefact you get: follow it and
-       the button flinches, ignore it and the button sits above the window
-       for a few frames. Both are consequences of the same thing — at the
-       instant of focus the composer really IS where the keyboard is about
-       to be, and the browser is right to do something about it.
-
-       So do not be there. On the first touch of the field, before the
-       keyboard has moved a pixel, shrink the window box by what the
-       keyboard is about to take. The composer lifts immediately, the field
-       is already clear, and the browser has nothing to reveal — so it
-       never shoves, and there is no correction to make or to ignore.
-
-       This is also the whole of why it now feels instant rather than
-       chased: the layout is right BEFORE the keyboard animates, and the
-       keyboard slides up into a space already made for it, instead of the
-       page hurrying after it three reports later.
-
-       The guess only has to be close, and it is measured: every keyboard
-       this device has actually shown is remembered, so it is exact from
-       the second time onward. GUESS is a first-run fallback — real iPhone
-       keyboards with the predictive bar run 291–346px on a 844pt screen,
-       and 0.36 of the window lands inside that on every size. The true
-       height replaces it the moment the window reports. ---- */
-    const KB_KEY = 'kb.h';
-    const GUESS = () => {
-      const saved = parseInt(sessionStorage.getItem(KB_KEY) || '0', 10);
-      return saved > 80 ? saved : Math.round(window.innerHeight * 0.36);
-    };
-    let anticipating = 0;
-
-    const HOLD = 250;
-    let shove = 0;          // what we believe the offset to be
-    let pending = -1;       // a value seen but not yet believed
-    let since = 0;
-
-    const settleShove = (raw, now) => {
-      if (raw === 0) { pending = -1; return 0; }        // instantly believed
-      if (raw !== pending) { pending = raw; since = now; }
-      return (now - since >= HOLD) ? raw : shove;       // otherwise: not yet
-    };
+       Both are gone. What is left below is a pure function of the live
+       viewport with no memory at all: read the two numbers, write the two
+       numbers. A thing with no state cannot get into a wrong one, cannot
+       oscillate between two answers, and cannot behave differently on the
+       second try than the first. That property is worth more here than
+       any amount of cleverness about what the keyboard is about to do.) */
 
     // ---- write the window's box, and say whether it moved.
     const write = () => {
       // scaled, not covered: a pinched-in viewport is short for a reason
       // that has nothing to do with a keyboard
       const zoomed = vv.scale > 1.01;
-      let h = Math.round(zoomed ? window.innerHeight : vv.height);
-      // …unless we are still waiting for the keyboard we already made room
-      // for. Until it actually arrives the window still reports its full
-      // height, and believing that would drop the composer back down and
-      // then lift it again — the bounce this is here to avoid.
-      if (anticipating && h > window.innerHeight - 80) h = anticipating;
-      else if (h < window.innerHeight - 80) {
-        anticipating = 0;                       // it landed; the real number wins
-        try { sessionStorage.setItem(KB_KEY, String(window.innerHeight - h)); } catch (e) {}
-      }
-      const raw = Math.round(zoomed ? 0 : vv.offsetTop);
-      const t = shove = settleShove(raw, performance.now());
+      const h = Math.round(zoomed ? window.innerHeight : vv.height);
+      const t = Math.round(zoomed ? 0 : vv.offsetTop);
       if (h === wh && t === wt) return false;
       wh = h; wt = t;
       root.style.setProperty('--vv-h', h + 'px');
@@ -478,16 +431,10 @@
     const syncKB = () => {
       if (!write()) return false;
 
-      // is something covering the screen? The only use left for the
-      // keyboard's own height is deciding whether there IS one — nothing in
-      // CSS asks for the number any more. 80 rather than 0 because a stray
-      // pixel of toolbar is not a keyboard.
-      const covered = window.innerHeight - wh > 80;
-
-      // …the document, if it also moved. On the home screen there is
-      // nothing under the fold to reveal, so any document scroll here is
-      // the browser guessing, and the stage has already made room.
-      if (covered && at === 'home' && window.scrollY) window.scrollTo(0, 0);
+      // (GONE: a window.scrollTo(0, 0) that fired whenever the screen was
+      // covered. The hero is position: fixed — document scroll cannot move
+      // it — so there was nothing for this to correct, and a scroll the
+      // page did not ask for is one more thing moving at once.)
 
       // the transcript just got shorter by the height of a keyboard. A
       // reader who was at the bottom of it should still be at the bottom of
@@ -529,10 +476,19 @@
        the last change and it stops, so this is not a permanent rAF.
        ============================================================ */
     let raf = 0, quiet = 0, pinned = false;
+    const typing = () => {
+      const a = document.activeElement;
+      return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA');
+    };
     const pump = () => {
       raf = 0;
       quiet = syncKB() ? 0 : quiet + 1;
-      if (quiet < 10) raf = requestAnimationFrame(pump);
+      // keep reading every frame for as long as a field is focused. The
+      // resize EVENT is coarse — three or four fires across the keyboard's
+      // third of a second — but visualViewport's properties are live, so a
+      // loop that reads them is the only thing here that sees the keyboard
+      // actually moving rather than three snapshots of it.
+      if (quiet < 10 || typing()) raf = requestAnimationFrame(pump);
       else pinned = false;
     };
     const follow = () => {
@@ -559,14 +515,8 @@
     window.addEventListener('scroll', follow, { passive: true });
     // …and focus is the EARLIEST warning there is — early enough to make
     // the room BEFORE the keyboard needs it (see the note above).
-    document.addEventListener('focusin', (e) => {
-      const t = e.target;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) {
-        anticipating = Math.max(120, window.innerHeight - GUESS());
-      }
-      follow();
-    }, true);
-    document.addEventListener('focusout', () => { anticipating = 0; follow(); }, true);
+    document.addEventListener('focusin', follow, true);
+    document.addEventListener('focusout', follow, true);
 
     // …and again when the screen has finished making room. The pin above
     // lands against the box's height AT THE MOMENT the window is reported,
