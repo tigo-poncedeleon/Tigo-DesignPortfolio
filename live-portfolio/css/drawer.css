@@ -201,10 +201,9 @@
   html.is-phone[data-m-screen="home"] .m-menu {
     position: absolute;
     top: calc(var(--win-top, 0px) + var(--m-btn-top));
-    transition: opacity var(--t-fade) ease,
-                color var(--t-micro) ease,
-                background-color var(--t-micro) ease,
-                top var(--kb-t, 0.16s) var(--kb-ease, ease-out);
+    /* `top` is deliberately NOT in this transition list. It is where the
+       window is, reported every frame by js/mobile.js — easing it would
+       draw the button somewhere the window is not. */
   }
 
   .m-menu.is-lit { opacity: 1; }

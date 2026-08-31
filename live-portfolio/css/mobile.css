@@ -15,17 +15,11 @@
    ============================================================ */
 @media (max-width: 700px) {
 
-  /* the keyboard's clock. Matched to iOS rather than drawn from the site's
-     own motion tokens, because it is not the site's motion — it is a panel
-     the operating system is sliding, and the screen making room for it
-     should arrive with it rather than a beat behind. */
-  :root {
-    /* short on purpose — see the note on #home.stage's transition: this
-       bridges the gaps between the window's own reports rather than
-       animating anything, so it must never outlast the gap it bridges */
-    --kb-t: 0.16s;
-    --kb-ease: cubic-bezier(0.17, 0.59, 0.4, 1);
-  }
+  /* (GONE: --kb-t / --kb-ease, an iOS-matched curve for easing the hero
+     between the window's reports. Nothing eases now — see the note on
+     #home.stage. A curve that has to guess what the keyboard is doing
+     between two coarse samples can only ever approximate it; reading the
+     live viewport every frame IS it.) */
 
   /* (GONE 2026-08-30: --m-nav-h and --m-nav-band, the 90px the floating
      tab pill took out of the foot of every screen. The bar is deleted and
@@ -113,38 +107,26 @@
     height: var(--win-h, 100dvh);
     overflow: hidden;
 
-    /* ---- THE KEYBOARD'S OWN CURVE, and these two properties are the only
-       things on this screen that ride it.
+    /* ---- AND NOTHING HERE TRANSITIONS.
 
-       Everything else follows from LAYOUT: the composer's bottom inset,
-       the transcript's floor, the name pair's 50%, #ai-reset's corner are
-       all measured against this box, so one eased height and one eased
-       translate carry every one of them, in one pass, on one curve. They
-       cannot drift out of step because there is only one step. (A second
-       rule that used to break this — the composer docking flush on
-       kb-up — is recorded further down.)
+       This is the third answer to the keyboard and the first that is not
+       an interpolation. The two before it eased between the window's own
+       reports, which arrive three or four times across the keyboard's
+       third of a second, and both were wrong in the same structural way:
+       the composer sits at this box's FLOOR, which is top + height, and
+       top and height were separate transitions. Any moment one ran ahead
+       of the other their sum was nonsense, and the box flew about 280px
+       past its mark and eased back — measured, every single time:
 
-       Both properties, and short. --win-top and --win-h arrive in the
-       same event, so they ease together or the hero jumps and then
-       settles.
+           711 → 691 → 1156 → 1704 → 1618 → 1526 → 1474 → 1447 → 1424
 
-       Short, because The window is not reported once at the end
-       of the keyboard's slide — measured off a recording it arrives in
-       three or four steps across about a third of a second, which is
-       roughly thirteen frames a second and visibly steppy if taken raw.
-       The ease is here to INTERPOLATE those steps into continuous motion,
-       not to perform an animation of its own, so it is only just long
-       enough to bridge one step to the next. At the quarter-second it was,
-       each new report restarted a long ease toward a target that had
-       already moved, and the stack of them read as a scratchy settle. */
-    transition: height var(--kb-t) var(--kb-ease),
-                top var(--kb-t) var(--kb-ease);
-  }
-  /* …but not on the first measurement. js/mobile.js sizes the hero to the
-     window before it arms this, so the opening frame is the right height
-     rather than an animation of the page assembling itself out of a wrong
-     one. */
-  html.is-phone:not(.kb-armed) #home.stage { transition: none; }
+       You cannot ease two numbers independently when what matters is their
+       sum. js/mobile.js follows the window in a rAF loop instead, so both
+       are written in the same frame from the same reading and their sum is
+       never wrong — and because visualViewport's properties are live even
+       when its event is coarse, that loop tracks the real keyboard at the
+       frame rate. The motion is the OS's own, not an approximation of it,
+       which is the only way this is ever going to look right. ---- */  }
 
   html.is-phone #home .scroll-hint { display: none; }
 

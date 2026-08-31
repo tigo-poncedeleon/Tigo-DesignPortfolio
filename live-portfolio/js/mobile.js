@@ -373,16 +373,22 @@
     const home = document.getElementById('home');
     let wh = -1, wt = -1;
 
-    const syncKB = () => {
+    // ---- write the window's box, and say whether it moved.
+    const write = () => {
       // scaled, not covered: a pinched-in viewport is short for a reason
       // that has nothing to do with a keyboard
       const zoomed = vv.scale > 1.01;
       const h = Math.round(zoomed ? window.innerHeight : vv.height);
       const t = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
-      if (h === wh && t === wt) return;      // this IS the coalescer
+      if (h === wh && t === wt) return false;
       wh = h; wt = t;
       root.style.setProperty('--win-h', h + 'px');
       root.style.setProperty('--win-top', t + 'px');
+      return true;
+    };
+
+    const syncKB = () => {
+      if (!write()) return false;
 
       // is something covering the screen? The only use left for the
       // keyboard's own height is deciding whether there IS one — nothing in
@@ -404,7 +410,62 @@
             < 40 + (window.innerHeight - h)) {
         scroll.scrollTop = scroll.scrollHeight;
       }
+      return true;
     };
+
+    /* ============================================================
+       FOLLOW THE WINDOW BY FRAME, AND DO NOT ANIMATE IT.
+
+       The `resize` event is coarse — measured off a screen recording it
+       fires three or four times across the keyboard's third of a second,
+       which is about thirteen frames a second. Easing between those steps
+       was the obvious answer and it was wrong, in a way the recording
+       showed exactly: the composer sits at the stage's FLOOR, which is
+       top + height, and top and height were two separate transitions. Any
+       moment one was ahead of the other their sum was nonsense, so the box
+       flew ~280px past where it was going and eased back. Every time.
+
+           711 → 691 → 1156 → 1704 → 1618 → 1526 → 1474 → 1447 → 1424
+
+       You cannot ease two numbers independently when what matters is their
+       sum. And you do not need to: visualViewport's PROPERTIES are live
+       even though its event is not. Read in a rAF loop they track the
+       keyboard continuously, at the frame rate, because they are being
+       driven by the keyboard itself. So the loop is the animation — the
+       real one, not an interpolation of it — and nothing in CSS
+       transitions at all. top and height are then always written in the
+       same frame from the same reading, and their sum is never wrong.
+
+       The loop runs only while something is moving: ten quiet frames after
+       the last change and it stops, so this is not a permanent rAF.
+       ============================================================ */
+    let raf = 0, quiet = 0;
+    const pump = () => {
+      raf = 0;
+      quiet = syncKB() ? 0 : quiet + 1;
+      if (quiet < 10) raf = requestAnimationFrame(pump);
+    };
+    const follow = () => {
+      quiet = 0;
+      // SYNCHRONOUSLY first, and the loop after. The loop is what makes the
+      // motion smooth, but it is not what makes it correct: rAF does not run
+      // in a tab that is not being painted, and a window that only ever
+      // updated from inside one would simply never update there. Every
+      // event lands the right answer on its own; the frames in between are
+      // the improvement.
+      syncKB();
+      if (!raf) raf = requestAnimationFrame(pump);
+    };
+
+    // the events say "something is about to move"; the loop finds out what.
+    vv.addEventListener('resize', follow);
+    vv.addEventListener('scroll', follow);
+    window.addEventListener('scroll', follow, { passive: true });
+    // …and focus is the EARLIEST warning there is. iOS does not report the
+    // window until the keyboard is already sliding; by starting here the
+    // loop is running before the first pixel of it moves.
+    document.addEventListener('focusin', follow, true);
+    document.addEventListener('focusout', follow, true);
 
     // …and again when the screen has finished making room. The pin above
     // lands against the box's height AT THE MOMENT the window is reported,
@@ -421,21 +482,11 @@
       });
     }
 
-    vv.addEventListener('resize', syncKB);
-    vv.addEventListener('scroll', syncKB);
-    // --win-top counts document scroll too, and that can move without the
-    // visual viewport moving at all
-    window.addEventListener('scroll', syncKB, { passive: true });
-    // …and a screen change closes the keyboard without necessarily firing
-    // either of them in an order we can rely on
-    window.addEventListener('phone:screen', syncKB);
+    // a screen change closes the keyboard without necessarily firing
+    // anything above in an order we can rely on
+    window.addEventListener('phone:screen', follow);
 
-    // The FIRST measurement lands cold — the hero is simply the size of the
-    // window, with no ease, because there is nothing for it to ease from.
-    // Only once it is standing at the right size does the curve go on, so
-    // the opening frame can never be an animation of the page assembling
-    // itself out of a wrong height.
+    // and the box the page opens at
     syncKB();
-    root.classList.add('kb-armed');
   }
 })();
