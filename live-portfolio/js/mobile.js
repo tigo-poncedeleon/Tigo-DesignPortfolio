@@ -553,7 +553,10 @@
       const top = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
       if (kb === wh && top === wt) return false;
       wh = kb; wt = top;
-      root.style.setProperty('--kb', kb + 'px');
+      // (--kb is no longer published: the screen is sized to --win-h, which
+      // already excludes the keyboard, and a second subtraction downstream
+      // took it off twice. The number is still computed because the focus
+      // cap below is expressed in it.)
       root.style.setProperty('--doc-top', top + 'px');
       root.style.setProperty('--win-h', live + 'px');
       return true;

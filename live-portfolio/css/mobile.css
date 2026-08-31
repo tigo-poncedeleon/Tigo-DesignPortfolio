@@ -360,18 +360,22 @@
     overscroll-behavior: contain;
   }
 
-  /* ---- …and THIS is what the keyboard moves: the chat area's floor.
-     Everything the composer is measured against — its own bottom inset,
-     the transcript's floor, --dock-h — hangs off the bottom of this box,
-     so one inset carries all of it. #ai-reset sits at its TOP, which does
-     not move, so the button stays put while the conversation rises. ---- */
-  html.is-phone .ai-stage.is-hero { bottom: var(--kb, 0px); }
+  /* ---- (GONE: `.ai-stage.is-hero { bottom: var(--kb) }` and a --kb term
+     in the name pair's centring below it.
 
-  /* the name pair centres in what is LEFT, not in the whole screen —
-     otherwise it would sit behind the keyboard rather than above it */
-  html.is-phone #home .frame-top {
-    top: calc((100% - var(--kb, 0px)) / 2 - var(--ask-rise, 42px));
-  }
+     They were the right answer to a DIFFERENT model — the one where the
+     screen filled the whole layout viewport and the keyboard had to be
+     inset from inside it. This screen is sized to --win-h, which is the
+     visible window and already excludes the keyboard, so taking --kb off
+     again subtracted it twice. The readout named it exactly:
+
+         stage 0 h358      the screen, correct
+         bar.bot -31       the composer, above the top of the display
+         gap 389           which is 337 of keyboard plus its own 52
+
+     The chat area fills this box and the composer sits at its floor, as
+     it always did. One subtraction, in the height, and nothing downstream
+     needs to know a keyboard exists.) ---- */
 
   /* the dock itself — the one declaration the block above is written for */
   html.is-phone .ai-stage.is-hero .ai-composer {
