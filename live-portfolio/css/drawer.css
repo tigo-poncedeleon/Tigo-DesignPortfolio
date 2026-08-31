@@ -192,13 +192,10 @@
      coordinate instead, for the reason js/mobile.js sets out at length:
      `position: fixed` is anchored to something browsers disagree about
      while a keyboard is up, and the home screen is the only one here that
-     ever raises one. It is fixed to the top of the layout viewport and
-     given nothing that changes, so it does not move for a keyboard at
-     all — which is the point.
-
-     It rides the same curve as the hero (css/mobile.css) because it is
-     answering the same event, and the hero carries #ai-reset — so all
-     three move as one thing or none of them moves at all. ---- */
+     ever raises one. It is placed off the same --doc-top the hero itself
+     is, with nothing that eases or reacts — so it does not move for a
+     keyboard at all, which is the point. The hero carries #ai-reset, so
+     all three hold one line or none of them moves at all. ---- */
   html.is-phone[data-m-screen="home"] .m-menu {
     /* The hero's coordinate exactly (css/mobile.css) — absolute, at the
        document y of the top of the visible window. Not fixed: on iOS a
@@ -216,11 +213,12 @@
        off a recording this button wandered ±13px over four hundred
        milliseconds every time a keyboard arrived.
 
-       The hero is fixed at the same origin and only its HEIGHT changes, so
-       its top edge never moves either — which means this button and
-       #ai-reset (an absolute child of that box) sit on one line and stay
-       there because neither of them has anything to react to. The shove
-       is prevented upstream instead; see js/mobile.js. */
+       The hero's own top is the same --doc-top, so this button and
+       #ai-reset (an absolute child of that box) are drawn from one number
+       and cannot come apart — and on this screen that number holds at 0,
+       because the document is locked and the browser is never given a
+       reason to shove. The shove is prevented upstream rather than
+       answered here; see js/mobile.js. */
     position: absolute;
     top: calc(var(--doc-top, 0px) + var(--m-btn-top));
   }

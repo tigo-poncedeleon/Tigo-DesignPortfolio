@@ -337,22 +337,30 @@
 
      TWO numbers, both read straight off the visual viewport:
 
-       --kb    innerHeight − visualViewport.height   → the keyboard's
-               height, which insets the chat area
+       --win-h     visualViewport.height → the height of what the visitor
+               can see, in every browser, keyboard or no keyboard,
+               toolbar or no toolbar
        --doc-top   scrollY + visualViewport.offsetTop → the DOCUMENT y of
                the top of the visible window, which is where the screen and
                the menu button are placed
-     and the screen is `position: ABSOLUTE`, at an explicit document
-     coordinate, sized to the visible window. `position: fixed` is not used
-     anywhere on this screen, and that is the point rather than an
-     accident: **on iOS a fixed element is unreliable while a keyboard is
-     open** — it is anchored to the LAYOUT viewport, which is itself
-     displaced relative to what can be seen, and WebKit is additionally
-     known to drift fixed layers during a keyboard. Measured off a
-     recording, the whole screen ended up above the top by more than a
-     keyboard's height, which no amount of `inset: 0` prevents: filling the
-     layout viewport does not help when the layout viewport is the thing
-     that moved.
+     and the screen is `position: ABSOLUTE`, at that document coordinate,
+     sized to that height. The chat area fills the box and the composer
+     sits at its floor, so the keyboard is subtracted exactly once —
+     inside --win-h — and nothing downstream needs to know a keyboard
+     exists. (--kb, the measured keyboard itself, is not published any
+     more: against a box already sized to the visible window, insetting
+     the chat by it took the keyboard off twice. See the GONE note in
+     write().)
+
+     `position: fixed` is not used anywhere on this screen, and that is
+     the point rather than an accident: **on iOS a fixed element is
+     unreliable while a keyboard is open** — it is anchored to the LAYOUT
+     viewport, which is itself displaced relative to what can be seen, and
+     WebKit is additionally known to drift fixed layers during a keyboard.
+     Measured off a recording, a fixed version of this screen ended up
+     above the top by more than a keyboard's height, which no amount of
+     `inset: 0` prevents: filling the layout viewport does not help when
+     the layout viewport is the thing that moved.
 
      Document coordinates have no such ambiguity. scrollY + offsetTop is
      the document y of the top of the visible window in every browser, by
@@ -364,52 +372,33 @@
      that ancestor `static` on this screen, so the coordinate means what
      it says.
 
-     What `--kb` insets is the CHAT AREA inside the box
-     (`.ai-stage.is-hero { bottom: var(--kb) }`) and the name pair's
-     centring — so the box's own top edge never moves relative to the
-     window, and the two corner buttons sitting on it cannot either.
+     In practice --doc-top simply stays 0 here: the document cannot
+     scroll on this screen (css/mobile.css locks it, and syncKB below
+     puts back anything a browser manages anyway), and the composer is
+     already clear of the keyboard by construction, so the browser has
+     nothing to reveal and no reason to shove. The coordinate is the
+     safety net under that guarantee, not the mechanism — if a browser
+     moves the window anyway, the screen is placed where it went.
 
-     This is the third model and the first that satisfies both halves of
-     what is wanted at once, so the reasoning is worth keeping:
+     This is the fourth model and the first that satisfies both halves of
+     what is wanted at once, so the graveyard is worth keeping:
 
-       ·  Sizing the screen to visualViewport.height left the rest of the
-          layout viewport EMPTY below it. The browser scrolled down into
-          that empty region and the whole screen went above the top —
+       ·  Sizing the screen to visualViewport.height ALONE left the rest
+          of the layout viewport EMPTY below it. The browser scrolled down
+          into that empty region and the whole screen went above the top —
           measured, the composer's control row ended up behind the status
           bar.
        ·  Translating the screen back by visualViewport.offsetTop fixed
           that and cost a frame, and a frame on a control nailed to a
           corner is the flinch.
-
-       ·  A screen that always fills the layout viewport has neither
-          problem. There is no empty region to scroll into, so the shove
-          has no reason to happen; and because the box never moves or
-          resizes, the two corner buttons cannot move whatever it does.
-          Only the chat area's bottom inset changes, which is exactly the
-          thing that should animate.
-
-     Why fixed and a transform, after trying almost everything else:
-
-       ·  It is right under BOTH mechanisms WebKit can use to get a covered
-          field into view. If it shoves the visual viewport, offsetTop says
-          so and the translate answers it. If it SCROLLS THE DOCUMENT, a
-          fixed element does not move with the document at all, so there is
-          nothing to answer — and offsetTop is 0, so nothing is answered.
-          One formula, both mechanisms, no branch.
-
-       ·  It has no containing block to get wrong. The version before this
-          was `position: absolute` at `scrollY + offsetTop`, which is a
-          DOCUMENT coordinate — but an absolute box resolves against its
-          nearest positioned ancestor, and here that is .shell-card, not
-          the document. The instant the browser scrolled the document to
-          reveal the field, scrollY went into the number and .shell-card
-          did not move, so the screen was pushed down by exactly that much
-          and went off the bottom. Intermittently, because it depended on
-          the browser deciding to scroll. A fixed box has one containing
-          block and it is the viewport.
-
-       ·  The translate is a compositor property, so the correction costs
-          no layout.
+       ·  Filling the layout viewport (`position: fixed; inset: 0`) and
+          insetting the chat by a measured --kb had no empty region and
+          no translate — and then iOS displaced the layout viewport
+          itself, which is the fixed-element failure above.
+       ·  A box at the window's own document coordinate, sized to the
+          window, has none of the three. Nothing is left empty, nothing
+          is answered a frame late, and no browser's opinion of `fixed`
+          is asked.
 
      ALL iOS BROWSERS ARE WEBKIT — Safari and the in-app browsers alike —
      so there is one engine here and one behaviour. Anything that looked
@@ -426,33 +415,33 @@
   const vv = window.visualViewport;
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
-    const home = document.getElementById('home');
     let wh = -1, wt = -1;
 
-    /* ---- ONE number leaves this file, and visualViewport.offsetTop is
-       deliberately not it.
+    /* ---- NOTHING here REACTS to visualViewport.offsetTop, even though
+       --doc-top carries it.
 
        offsetTop is how far the browser has shoved the window down to
-       reveal a focused field, and translating the page by it was correct
-       in the sense that it put the content back where the window was —
-       but it is answered a frame late, and that frame is a visible flinch
-       on two controls that should be nailed to their corners. Traced off a
-       recording, the menu button wandered ±13px over about four hundred
-       milliseconds while the keyboard arrived.
+       reveal a focused field, and translating the page by it as it
+       changed was correct in the sense that it put the content back where
+       the window was — but it is answered a frame late, and that frame is
+       a visible flinch on two controls that should be nailed to their
+       corners. Traced off a recording, the menu button wandered ±13px
+       over about four hundred milliseconds while the keyboard arrived.
 
-       So nothing here reacts to it. The hero is fixed at the top of the
-       layout viewport and only its HEIGHT changes, which means the two
-       corner buttons — one fixed at the same origin, one an absolute child
-       of a box whose top never moves — cannot move at all, by
-       construction rather than by correction. What moves is the content
-       below them, which is the whole of what should.
+       So the shove is PREVENTED rather than compensated: the home screen
+       cannot scroll (css/mobile.css) and the composer is already clear of
+       the keyboard by construction, so the browser has nothing to reveal
+       and --doc-top holds at 0. The hero and the menu button are both
+       placed off that one number, and #ai-reset is an absolute child of
+       the hero — so the three hold one line because nothing they depend
+       on ever changes, by construction rather than by correction. What
+       moves is the content below them, which is the whole of what should.
 
-       This is only safe because the shove is now prevented rather than
-       compensated: the box is capped on focus (see below), so the field is
-       already clear and the browser never asks. If that ever stops being
-       true the symptom will be the page sitting low during a keyboard,
-       not a twitch — and the fix is the scroll lock in css/mobile.css and
-       the scrollTop pin below, not chasing offsetTop again. ---- */
+       The offsetTop term is the net under that guarantee: if a browser
+       shoves anyway, the symptom will be the page sitting low during a
+       keyboard, not a twitch — and the fix is the scroll lock in
+       css/mobile.css and the scrollTop pin below, not chasing offsetTop
+       again. ---- */
 
     /* ---- (GONE, and this is the whole lesson of this block: an
        ANTICIPATED height, which shrank the box on focus by a remembered
@@ -538,7 +527,6 @@
          on a layout that no longer exists, and the right answer is to put
          it back. Checked every frame by the loop, not just on an event. */
       if (at === 'home' && window.scrollY) window.scrollTo(0, 0);
-
 
       // the transcript just got shorter by the height of a keyboard. A
       // reader who was at the bottom of it should still be at the bottom of
@@ -642,20 +630,13 @@
     document.addEventListener('focusin', follow, true);
     document.addEventListener('focusout', follow, true);
 
-    // …and again when the screen has finished making room. The pin above
-    // lands against the box's height AT THE MOMENT the window is reported,
-    // and the box spends the next quarter-second easing to its real one
-    // (css/mobile.css) — so the last bubble creeps a few pixels below the
-    // fold on the way down. One listener on the end of that ease puts it
-    // back, exactly once.
-    if (home && scroll) {
-      home.addEventListener('transitionend', (e) => {
-        if (e.propertyName !== 'height' || e.target !== home) return;
-        if (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40) {
-          scroll.scrollTop = scroll.scrollHeight;
-        }
-      });
-    }
+    /* (GONE: a transitionend listener on #home that re-pinned the
+       transcript when the stage finished EASING to its new height. It was
+       written for the first keyboard ease and outlived it dead: nothing
+       on the stage transitions any more — the ease was tried twice and
+       reverted both times, the rAF follow above IS the motion — so the
+       event never fired. The pin inside syncKB() already holds the reader
+       to the floor for every frame of the movement.) */
 
     // a screen change closes the keyboard without necessarily firing
     // anything above in an order we can rely on

@@ -52,33 +52,29 @@
      this height, and the hero was drawn taller or shorter than the screen:
      the name off the top, the composer under the keyboard.
 
-     --kb is innerHeight − visualViewport.height, read straight off the window by
-     js/mobile.js. It IS the height of what can be seen, in every browser,
-     with or without a keyboard, whatever the toolbars are doing, and
-     whether or not the viewport meta's interactive-widget request was
-     honoured. Nothing is derived from it and nothing is taken off it.
+     So no arithmetic. js/mobile.js reads the visible window itself and
+     hands it over whole, as two custom properties:
 
-     `--kb` is the keyboard's own height and it insets the CHAT AREA;
-     `--doc-top` and `--win-h` place and size the screen in document
-     coordinates. Nothing here translates by
-     visualViewport.offsetTop: that is answered a frame late, and the frame
-     is a visible flinch on the two corner buttons. And nothing resizes the
-     screen either: that left an empty strip of layout viewport for the
-     browser to scroll into, which put the composer behind the status bar.
-     A constant box with a moving inset has neither failure.
+       --win-h    visualViewport.height — the height of what can be seen,
+                  in every browser, with or without a keyboard, whatever
+                  the toolbars are doing, and whether or not the viewport
+                  meta's interactive-widget request was honoured
+       --doc-top  scrollY + visualViewport.offsetTop — the DOCUMENT y of
+                  the top of the visible window
+
+     and they place and size this screen outright. Nothing is derived from
+     either and nothing is taken off them: the box IS the window, the chat
+     fills the box, and the composer sits at its floor. The keyboard is
+     subtracted exactly once — inside --win-h — which is why there is no
+     --kb anywhere any more (see the GONE note on the chat area below).
+
+     Nothing here translates by visualViewport.offsetTop: that is answered
+     a frame late, and the frame is a visible flinch on the two corner
+     buttons. And nothing sizes the screen to the LAYOUT viewport: that
+     left an empty strip below the box for the browser to scroll into,
+     which put the composer behind the status bar. A box that is exactly
+     the window has neither failure.
      ============================================================ */
-  /* ---- (GONE: `overflow: hidden` on the home screen's html and body.
-     It was meant to stop the page's last few dozen pixels of travel, on the
-     theory that a browser with nothing to scroll would have no reason to
-     shove the window to reveal the focused field. The theory was wrong and
-     a screen recording said so: Safari shoves anyway, and with the page
-     pinned it shoved the entire hero off the top of the screen.
-
-     The travel is gone by a better route — #home.stage is out of flow
-     below, so the document has no height of its own to scroll through —
-     and the shove is now PREVENTED rather than answered — the box is
-     capped on focus, so the field is clear before the keyboard moves and
-     the browser never asks.) ---- */
 
   /* …but the shell must stop standing 100vh tall under it. On iOS 100vh is
      the LARGE viewport — the height with the browser's toolbars hidden —
@@ -98,7 +94,15 @@
      acting on a layout that no longer exists. Taking the overflow away
      means it cannot happen, and js/mobile.js puts scrollTop back every
      frame in case a browser manages it anyway. Belt and braces, because
-     the failure mode is the whole screen leaving the display. ---- */
+     the failure mode is the whole screen leaving the display.
+
+     (A lock stood here once before and was removed for shoving: with the
+     page pinned, Safari answered a focused field by displacing the visual
+     viewport instead, and nothing answered THAT. The difference now is
+     that nothing needs the shove — the composer is never covered — and if
+     one happens anyway, --doc-top counts it and the screen is placed
+     where the window went. The lock closes the common path; the
+     coordinate is the net under it.) ---- */
   html.is-phone[data-m-screen="home"],
   html.is-phone[data-m-screen="home"] body {
     overflow: hidden;
@@ -110,23 +114,10 @@
      version of this resolved against, which pushed the screen off the
      bottom the moment the document scrolled. */
   html.is-phone[data-m-screen="home"] .shell-card { position: static; }
-  /* the screen is fixed now, so it contributes nothing to the document at
-     all — there is no height here for the page to scroll through. */
+  /* the screen is out of flow, so it contributes nothing to the document
+     at all — there is no height here for the page to scroll through. */
 
   html.is-phone #home.stage {
-    /* FIXED, and translated onto the visual viewport.
-
-       `top: 0` puts the origin at the top of the LAYOUT viewport; the
-       translate carries it to the top of the VISUAL one; the height makes
-       it exactly as tall as what can be seen. Three lines, and they are
-       right under both of the mechanisms WebKit uses to get a covered
-       field into view — see js/mobile.js for why, and for why the
-       `position: absolute` version this replaces went off the bottom of
-       the screen the moment the browser scrolled the document.
-
-       The translate is a compositor property, so following the window
-       costs no layout; only the height does, and only because the
-       transcript genuinely has to resize. */
     /* ABSOLUTE, AT A DOCUMENT COORDINATE — and not fixed, deliberately.
 
        On iOS a `position: fixed` box is anchored to the LAYOUT viewport,
@@ -174,7 +165,8 @@
        never wrong — and because visualViewport's properties are live even
        when its event is coarse, that loop tracks the real keyboard at the
        frame rate. The motion is the OS's own, not an approximation of it,
-       which is the only way this is ever going to look right. ---- */  }
+       which is the only way this is ever going to look right. ---- */
+  }
 
   html.is-phone #home .scroll-hint { display: none; }
 
@@ -451,11 +443,12 @@
      rather than as one button and one corner.
 
      ABSOLUTE, deliberately, not fixed. .ai-stage.is-hero is inset: 0 of
-     a 100dvh #home, so absolute lands in exactly the same place — and
-     stays immune to the drawer's push, which makes .shell the
-     containing block for anything fixed inside it (css/drawer.css).
-     It also disappears with the home screen for free: a child of a
-     display:none section is not rendered.
+     a #home sized to the visible window, so absolute lands in exactly
+     the same place — with no stake in what iOS thinks `fixed` means
+     while a keyboard is up (see #home.stage above; the drawer's push,
+     which was the original reason to avoid fixed here, is retired —
+     css/drawer.css). It also disappears with the home screen for free:
+     a child of a display:none section is not rendered.
      ============================================================ */
   html.is-phone .ai-reset {
     /* THE MENU BUTTON'S TWIN, and every number here is that button's own
@@ -495,11 +488,11 @@
 }
 
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) {
-  /* the screen makes room for the keyboard instantly rather than easing
-     into it — it is a layout correction, and a visitor who has asked for
-     no motion should not be given a quarter-second of it every time they
-     tap the field */
-  html.is-phone #home.stage { transition: none; }
+  /* (GONE: `#home.stage { transition: none; }`, which zeroed the keyboard
+     ease for visitors who ask for no motion. The ease itself was tried
+     and reverted — nothing on the stage transitions now — so all the rule
+     still reached was the stage's load fade, which every other screen
+     keeps under this query too.) */
 
   .m-work-item { transition: opacity 0.25s ease; translate: none; }
 
