@@ -337,11 +337,32 @@
 
      TWO numbers, both read straight off the visual viewport:
 
-       --vv-h   visualViewport.height     → the screen's height
-     and the screen is `position: fixed; top: 0; height: var(--vv-h)`.
-     Fixed pins its top edge to the layout viewport — which is why the two
-     corner buttons never move — and the height makes it as tall as what
-     can be seen, which is what animates.
+       --kb   innerHeight − visualViewport.height   → the keyboard's height,
+              which insets the chat area (nothing is resized or moved)
+     and the screen NEVER RESIZES. `#home.stage` is `position: fixed;
+     inset: 0` — always the whole layout viewport, at every moment, with or
+     without a keyboard. What the number insets is the CHAT AREA inside it
+     (`.ai-stage.is-hero { bottom: var(--kb) }`), and the name pair's
+     centring.
+
+     This is the third model and the first that satisfies both halves of
+     what is wanted at once, so the reasoning is worth keeping:
+
+       ·  Sizing the screen to visualViewport.height left the rest of the
+          layout viewport EMPTY below it. The browser scrolled down into
+          that empty region and the whole screen went above the top —
+          measured, the composer's control row ended up behind the status
+          bar.
+       ·  Translating the screen back by visualViewport.offsetTop fixed
+          that and cost a frame, and a frame on a control nailed to a
+          corner is the flinch.
+
+       ·  A screen that always fills the layout viewport has neither
+          problem. There is no empty region to scroll into, so the shove
+          has no reason to happen; and because the box never moves or
+          resizes, the two corner buttons cannot move whatever it does.
+          Only the chat area's bottom inset changes, which is exactly the
+          thing that should animate.
 
      Why fixed and a transform, after trying almost everything else:
 
@@ -472,7 +493,7 @@
       let kb = 0;
       try { kb = parseInt(sessionStorage.getItem(KB_KEY) || '0', 10); } catch (e) {}
       if (!(kb > 80)) kb = Math.round(window.innerHeight * 0.36);
-      cap = Math.max(140, window.innerHeight - kb);
+      cap = Math.min(kb, Math.max(0, window.innerHeight - 140));
     };
 
     // ---- write the window's box, and say whether it moved.
@@ -497,10 +518,16 @@
         try { sessionStorage.setItem(KB_KEY, String(covered)); } catch (e) {}
       }
       lastLive = live;
-      const h = cap ? Math.min(live, cap) : live;
-      if (h === wh) return false;
-      wh = h;
-      root.style.setProperty('--vv-h', h + 'px');
+      // the keyboard's own height, which is the one thing that moves.
+      // max(), not min(), because this is the inset rather than the height
+      // — the same monotonic rule the other way up: on focus it goes
+      // straight to what the keyboard will take, and a live reading only
+      // ever deepens it. It cannot alternate.
+      const liveKb = Math.max(0, window.innerHeight - live);
+      const kb = cap ? Math.max(liveKb, cap) : liveKb;
+      if (kb === wh) return false;
+      wh = kb;
+      root.style.setProperty('--kb', kb + 'px');
       return true;
     };
 

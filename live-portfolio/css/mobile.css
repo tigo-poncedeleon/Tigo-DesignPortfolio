@@ -52,19 +52,19 @@
      this height, and the hero was drawn taller or shorter than the screen:
      the name off the top, the composer under the keyboard.
 
-     --vv-h is visualViewport.height, read straight off the window by
+     --kb is innerHeight − visualViewport.height, read straight off the window by
      js/mobile.js. It IS the height of what can be seen, in every browser,
      with or without a keyboard, whatever the toolbars are doing, and
      whether or not the viewport meta's interactive-widget request was
      honoured. Nothing is derived from it and nothing is taken off it.
 
-     ONE number, and only the height. Nothing here translates by
-     visualViewport.offsetTop any more: that is answered a frame late, and
-     the frame is a visible flinch on the two corner buttons. With only the
-     height moving, a box fixed at the top of the layout viewport has a top
-     edge that never moves — so the buttons cannot move by construction,
-     and what animates is the content below them. js/mobile.js sets out why
-     that is safe (the shove is prevented, not compensated).
+     ONE number — `--kb`, the keyboard's own height — and it insets the
+     chat area rather than resizing the screen. Nothing here translates by
+     visualViewport.offsetTop: that is answered a frame late, and the frame
+     is a visible flinch on the two corner buttons. And nothing resizes the
+     screen either: that left an empty strip of layout viewport for the
+     browser to scroll into, which put the composer behind the status bar.
+     A constant box with a moving inset has neither failure.
      ============================================================ */
   /* ---- (GONE: `overflow: hidden` on the home screen's html and body.
      It was meant to stop the page's last few dozen pixels of travel, on the
@@ -105,11 +105,19 @@
        The translate is a compositor property, so following the window
        costs no layout; only the height does, and only because the
        transcript genuinely has to resize. */
+    /* THE WHOLE LAYOUT VIEWPORT, ALWAYS. It does not resize for the
+       keyboard and it does not move — which is precisely why the two
+       corner buttons cannot. What the keyboard insets is the CHAT AREA
+       inside this box (.ai-stage.is-hero, below) and the name pair's
+       centring; the box itself is a constant.
+
+       Sizing this box to the window instead left the rest of the layout
+       viewport empty underneath it, and the browser scrolled down into
+       that empty region: measured off a recording, the composer's control
+       row ended up behind the status bar. Filling the viewport leaves
+       nothing to scroll into. */
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--vv-h, 100dvh);
+    inset: 0;
     overflow: hidden;
 
     /* ---- AND NOTHING HERE TRANSITIONS.
@@ -135,7 +143,7 @@
 
   html.is-phone #home .scroll-hint { display: none; }
 
-  /* ---- every other screen is at least a windowful. Not --vv-h: these two
+  /* ---- every other screen is at least a windowful. No --kb here: these two
      SCROLL, so their height is their content's and 100dvh is only a floor;
      and neither holds a field, so neither can raise a keyboard. ---- */
   html.is-phone .work-stage,
@@ -315,6 +323,19 @@
        chat — the hero itself has nowhere to go (overflow: hidden, exactly
        one screen) and should never look like it does. */
     overscroll-behavior: contain;
+  }
+
+  /* ---- …and THIS is what the keyboard moves: the chat area's floor.
+     Everything the composer is measured against — its own bottom inset,
+     the transcript's floor, --dock-h — hangs off the bottom of this box,
+     so one inset carries all of it. #ai-reset sits at its TOP, which does
+     not move, so the button stays put while the conversation rises. ---- */
+  html.is-phone .ai-stage.is-hero { bottom: var(--kb, 0px); }
+
+  /* the name pair centres in what is LEFT, not in the whole screen —
+     otherwise it would sit behind the keyboard rather than above it */
+  html.is-phone #home .frame-top {
+    top: calc((100% - var(--kb, 0px)) / 2 - var(--ask-rise, 42px));
   }
 
   /* the dock itself — the one declaration the block above is written for */
