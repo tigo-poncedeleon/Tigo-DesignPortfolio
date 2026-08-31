@@ -58,10 +58,13 @@
      whether or not the viewport meta's interactive-widget request was
      honoured. Nothing is derived from it and nothing is taken off it.
 
-     --vv-t is how far that window has been SHOVED down inside the layout
-     viewport to reveal a focused field. Both come from js/mobile.js, and
-     the reasoning for this exact pair — fixed origin, translated onto the
-     visual viewport — is written there at length.
+     ONE number, and only the height. Nothing here translates by
+     visualViewport.offsetTop any more: that is answered a frame late, and
+     the frame is a visible flinch on the two corner buttons. With only the
+     height moving, a box fixed at the top of the layout viewport has a top
+     edge that never moves — so the buttons cannot move by construction,
+     and what animates is the content below them. js/mobile.js sets out why
+     that is safe (the shove is prevented, not compensated).
      ============================================================ */
   /* ---- (GONE: `overflow: hidden` on the home screen's html and body.
      It was meant to stop the page's last few dozen pixels of travel, on the
@@ -72,8 +75,9 @@
 
      The travel is gone by a better route — #home.stage is out of flow
      below, so the document has no height of its own to scroll through —
-     and the shove is answered rather than prevented: --vv-t is how far
-     the window moved, and the hero is translated to match.) ---- */
+     and the shove is now PREVENTED rather than answered — the box is
+     capped on focus, so the field is clear before the keyboard moves and
+     the browser never asks.) ---- */
 
   /* …but the shell must stop standing 100vh tall under it. On iOS 100vh is
      the LARGE viewport — the height with the browser's toolbars hidden —
@@ -106,7 +110,6 @@
     left: 0;
     right: 0;
     height: var(--vv-h, 100dvh);
-    transform: translateY(var(--vv-t, 0px));
     overflow: hidden;
 
     /* ---- AND NOTHING HERE TRANSITIONS.

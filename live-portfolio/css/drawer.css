@@ -192,19 +192,28 @@
      coordinate instead, for the reason js/mobile.js sets out at length:
      `position: fixed` is anchored to something browsers disagree about
      while a keyboard is up, and the home screen is the only one here that
-     ever raises one. --vv-t is how far the window has been shoved, so this
-     lands on the same line as the hero whatever the browser does.
+     ever raises one. It is fixed to the top of the layout viewport and
+     given nothing that changes, so it does not move for a keyboard at
+     all — which is the point.
 
      It rides the same curve as the hero (css/mobile.css) because it is
      answering the same event, and the hero carries #ai-reset — so all
      three move as one thing or none of them moves at all. ---- */
   html.is-phone[data-m-screen="home"] .m-menu {
-    /* the hero's formula exactly (css/mobile.css): fixed to the layout
-       viewport, translated onto the visual one. Same two numbers, same
-       frame, so this button and the hero — and #ai-reset, which the hero
-       carries — cannot come apart. No transition: --vv-t is where the
-       window IS, and easing it would draw the button where it is not. */
-    transform: translateY(var(--vv-t, 0px));
+    /* NOTHING. No transform, no transition, nothing that answers the
+       keyboard — and that is the rule, not an omission.
+
+       It used to translate by visualViewport.offsetTop to stay on the
+       window's top line when the browser shoved it. Correct on paper and a
+       flinch in practice: the shove is answered a frame late, and traced
+       off a recording this button wandered ±13px over four hundred
+       milliseconds every time a keyboard arrived.
+
+       The hero is fixed at the same origin and only its HEIGHT changes, so
+       its top edge never moves either — which means this button and
+       #ai-reset (an absolute child of that box) sit on one line and stay
+       there because neither of them has anything to react to. The shove
+       is prevented upstream instead; see js/mobile.js. */
   }
 
   .m-menu.is-lit { opacity: 1; }

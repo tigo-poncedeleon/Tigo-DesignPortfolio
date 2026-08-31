@@ -338,14 +338,10 @@
      TWO numbers, both read straight off the visual viewport:
 
        --vv-h   visualViewport.height     → the screen's height
-       --vv-t   visualViewport.offsetTop  → how far the window has been
-                                            shoved down inside the layout
-                                            viewport to reveal the field
-
-     and the screen is `position: fixed; top: 0; height: var(--vv-h)` with
-     `transform: translateY(var(--vv-t))`. Fixed puts its origin at the top
-     of the LAYOUT viewport; the translate carries it to the top of the
-     VISUAL one; the height makes it exactly as tall as what can be seen.
+     and the screen is `position: fixed; top: 0; height: var(--vv-h)`.
+     Fixed pins its top edge to the layout viewport — which is why the two
+     corner buttons never move — and the height makes it as tall as what
+     can be seen, which is what animates.
 
      Why fixed and a transform, after trying almost everything else:
 
@@ -386,7 +382,32 @@
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
     const home = document.getElementById('home');
-    let wh = -1, wt = -1;
+    let wh = -1;
+
+    /* ---- ONE number leaves this file, and visualViewport.offsetTop is
+       deliberately not it.
+
+       offsetTop is how far the browser has shoved the window down to
+       reveal a focused field, and translating the page by it was correct
+       in the sense that it put the content back where the window was —
+       but it is answered a frame late, and that frame is a visible flinch
+       on two controls that should be nailed to their corners. Traced off a
+       recording, the menu button wandered ±13px over about four hundred
+       milliseconds while the keyboard arrived.
+
+       So nothing here reacts to it. The hero is fixed at the top of the
+       layout viewport and only its HEIGHT changes, which means the two
+       corner buttons — one fixed at the same origin, one an absolute child
+       of a box whose top never moves — cannot move at all, by
+       construction rather than by correction. What moves is the content
+       below them, which is the whole of what should.
+
+       This is only safe because the shove is now prevented rather than
+       compensated: the box is capped on focus (see below), so the field is
+       already clear and the browser never asks. If that ever stops being
+       true the symptom will be the page sitting low during a keyboard,
+       not a twitch — and the fix would be to make the cap work, not to
+       start chasing offsetTop again. ---- */
 
     /* ---- (GONE, and this is the whole lesson of this block: an
        ANTICIPATED height, which shrank the box on focus by a remembered
@@ -477,11 +498,9 @@
       }
       lastLive = live;
       const h = cap ? Math.min(live, cap) : live;
-      const t = Math.round(zoomed ? 0 : vv.offsetTop);
-      if (h === wh && t === wt) return false;
-      wh = h; wt = t;
+      if (h === wh) return false;
+      wh = h;
       root.style.setProperty('--vv-h', h + 'px');
-      root.style.setProperty('--vv-t', t + 'px');
       return true;
     };
 
