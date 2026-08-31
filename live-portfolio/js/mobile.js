@@ -414,12 +414,69 @@
        second try than the first. That property is worth more here than
        any amount of cleverness about what the keyboard is about to do.) */
 
+    /* ---- MAKE THE ROOM ON THE TAP, SO THE BROWSER NEVER SHOVES.
+
+       WebKit shoves the visual viewport down to reveal a focused field it
+       thinks the keyboard covers — and at the instant of the tap it is
+       right, because the composer really is sitting where the keyboard is
+       about to be. Content then appears to jump UP by the shove and come
+       back down as we answer it a frame later. That up-and-back is what
+       takes the two corner buttons off the screen and returns them.
+
+       No amount of answering it faster wins; the answer is to give the
+       browser nothing to reveal. On focus the box is capped at what will
+       be left once the keyboard is up, so the field is already clear
+       before the keyboard has moved, and no shove is ever requested.
+
+       A MINIMUM, and that is the whole difference from the version of this
+       that had to be torn out. That one SWAPPED between the guess and the
+       live reading depending on which side of a threshold each frame fell,
+       so as the keyboard slid through every intermediate height the box
+       alternated between the two — the spasm. min() cannot do that: as the
+       keyboard opens the live reading falls past the cap and takes over,
+       and the box only ever goes down. Monotonic in, monotonic out, no
+       state to get stuck in, nothing to disagree with.
+
+       The cap is measured, not guessed, after the first use — every
+       keyboard this device shows is remembered. The first-run fallback of
+       0.36 deliberately UNDER-estimates (real keyboards are 0.34–0.41 of
+       the screen), because under-guessing means the live reading wins and
+       the result is exact; over-guessing would leave the composer a little
+       high until blur. ---- */
+    const KB_KEY = 'kb.h';
+    let cap = 0;                       // 0 = not anticipating anything
+    let lastLive = -1;                 // for spotting a SETTLED reading
+
+    const armCap = () => {
+      let kb = 0;
+      try { kb = parseInt(sessionStorage.getItem(KB_KEY) || '0', 10); } catch (e) {}
+      if (!(kb > 80)) kb = Math.round(window.innerHeight * 0.36);
+      cap = Math.max(140, window.innerHeight - kb);
+    };
+
     // ---- write the window's box, and say whether it moved.
     const write = () => {
       // scaled, not covered: a pinched-in viewport is short for a reason
       // that has nothing to do with a keyboard
       const zoomed = vv.scale > 1.01;
-      const h = Math.round(zoomed ? window.innerHeight : vv.height);
+      const live = Math.round(zoomed ? window.innerHeight : vv.height);
+      /* …and remember what this device's keyboard actually takes, so the
+         cap above is exact from the second tap onward.
+
+         Only a SETTLED reading counts — the same height twice running.
+         Recording every reading meant recording the ones the keyboard
+         passes through on its way DOWN as well: the last value written on
+         a close was whatever the animation happened to be at when it
+         crossed the threshold, so the remembered height came out as 84
+         instead of 336 and the next tap barely lifted at all. Two equal
+         readings in a row is the whole of "it has stopped moving", and it
+         needs no timer to say so. */
+      const covered = window.innerHeight - live;
+      if (covered > 80 && live === lastLive) {
+        try { sessionStorage.setItem(KB_KEY, String(covered)); } catch (e) {}
+      }
+      lastLive = live;
+      const h = cap ? Math.min(live, cap) : live;
       const t = Math.round(zoomed ? 0 : vv.offsetTop);
       if (h === wh && t === wt) return false;
       wh = h; wt = t;
@@ -535,8 +592,12 @@
     window.addEventListener('scroll', follow, { passive: true });
     // …and focus is the EARLIEST warning there is — early enough to make
     // the room BEFORE the keyboard needs it (see the note above).
-    document.addEventListener('focusin', follow, true);
-    document.addEventListener('focusout', follow, true);
+    document.addEventListener('focusin', (e) => {
+      const el = e.target;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) armCap();
+      follow();
+    }, true);
+    document.addEventListener('focusout', () => { cap = 0; follow(); }, true);
 
     // …and again when the screen has finished making room. The pin above
     // lands against the box's height AT THE MOMENT the window is reported,
