@@ -254,8 +254,30 @@
     if (!id || !SCREENS.some((s) => s.id === id)) return;   // let it navigate
     e.preventDefault();
     e.stopPropagation();
-    if (id === at) {                         // the screen you are already on
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === at) {
+      // ---- the screen you are already on.
+      //
+      // This used to scroll to the top and say nothing, and saying nothing
+      // was the bug: it stopPropagation'd the click (two lines up, so the
+      // shell's own delegate never sees it) and then returned without
+      // calling show(), so `phone:screen` was never dispatched — and that
+      // event is how js/drawer.js knows to close. Tapping "Home" from the
+      // drawer while on Home did nothing at all: the panel just sat there,
+      // over the page it was being asked to go back to.
+      //
+      // On HOME it also does not mean "scroll to the top", because Home
+      // does not scroll — it is one screen with overflow: hidden. What the
+      // top of Home is, once you have used it, is the empty composer: a
+      // transcript is what this page LOOKS like after a question, and
+      // going back to Home is the ask. So Home resets the chat, which is
+      // the same thing #ai-reset does in the corner.
+      if (id === 'home' && window.AIChat && window.AIChat.reset) {
+        window.AIChat.reset();
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      // …and either way, say so. The drawer is listening.
+      window.dispatchEvent(new CustomEvent('phone:screen', { detail: { id: at } }));
       return;
     }
     show(id, { restore: false });

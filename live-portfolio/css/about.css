@@ -753,19 +753,20 @@
     line-height: 26px;
   }
   .story-bio p + p { margin-top: 18px; }
-  /* the hedcut was floated into a 215px measure, which left the opening
-     paragraph wrapping four words to a line. It sits above the words here,
-     centred, at the size it is drawn for — and the letter gets its full
-     column back. */
-  .about-portrait {
-    position: relative;
-    top: auto;
-    left: auto;
-    float: none;
-    width: 148px;
-    height: 190px;                     /* keeps the 330:421 face ratio */
-    margin: 0 auto 24px;
-  }
+  /* THE FACE IS CUT HERE. It was floated into the letter on a laptop and
+     then set centred above the words on a phone, at 148x190 — which is a
+     third of the first screen of the bio spent on a portrait, before a
+     word of the letter has been read. On a laptop it earns that: it sits
+     in the margin of a wide column, the words run around it, and it costs
+     the reading nothing. Stacked into a single 375px column it is not in
+     the margin any more, it IS the top of the page, and the letter starts
+     below the fold.
+
+     js/about.js returns before the engine on this width to match, so the
+     canvas is never baked and js/portrait.js is never asked for a face —
+     the img underneath is a fallback for a bake that no longer happens,
+     so the whole figure goes rather than just the canvas. */
+  .about-portrait { display: none; }
 
   /* 02 · craft — the four ink cards deal into a centred column */
   .craft-grid {

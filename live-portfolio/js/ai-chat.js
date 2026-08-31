@@ -675,10 +675,12 @@
   restore();
 
   // ask() is the door every external link comes through (?q=, ⌘K, ai.html's
-  // redirect). (reset() was published here for a moment, for a "new chat"
-  // pill in the phone drawer; the pill is gone — #ai-reset is already on the
-  // screen it would have led to — and resetChat has one caller again.)
-  window.AIChat = { ask: submitQuestion };
+  // redirect). reset() is for the phone: tapping Home in the drawer while
+  // already on Home means "back to the beginning", and the beginning of a
+  // page that IS a chat is the empty composer (js/mobile.js). It is the
+  // export rather than a synthesised click on #ai-reset because that button
+  // only exists while a conversation does.
+  window.AIChat = { ask: submitQuestion, reset: resetChat };
 
   // ai.html survives as a redirect for every OG card and external link that
   // already exists in the world. It lands here now rather than opening a

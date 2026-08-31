@@ -167,6 +167,15 @@
   // ---- the portrait. The engine lives in js/portrait.js so the rail's 26px
   // head and this 330px one are the same renderer at two sizes; the knobs
   // below are still line-portrait.js's, passed through unchanged. ----
+  //
+  // …AND NOT ON A PHONE. The face is cut below 700px (css/about.css hides
+  // the figure), so everything from here down is work for something nobody
+  // will see: a 16KB engine, a source image decoded, a canvas baked at
+  // device resolution, a ResizeObserver, and a pointer loop turning a head
+  // toward a cursor that does not exist on a touch screen. MOBILE is
+  // already measured at the top of this file.
+  if (MOBILE) return;
+
   const view = document.getElementById('about-face');
   const fallback = document.querySelector('.about-portrait img');
   if (!view || !view.getContext || !window.Portrait) return;
@@ -204,9 +213,12 @@
     window.Portrait.kill();
   });
 
-  // ≤700px About is a SCREEN you tap to (js/mobile.js), so unless the
-  // visitor landed on it directly this canvas sits in a display:none
-  // section at load with no pixels to bake into. Bake when there is a box.
+  // (The two-listener arm below was written for the PHONE: About is a
+  // screen you tap to, so this canvas sat in a display:none section at load
+  // with no pixels to bake into, and it needed telling when a box arrived.
+  // The face is cut on phones now and this file returns above, so what is
+  // left here answers the ordinary case — a box that is not ready on the
+  // first pass — and armFace's own guard is what it leans on.)
   //
   // TWO ways of hearing about it, deliberately. The pager's own event is
   // the one that is guaranteed: it is dispatched synchronously the instant
