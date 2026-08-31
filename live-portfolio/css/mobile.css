@@ -20,7 +20,10 @@
      the operating system is sliding, and the screen making room for it
      should arrive with it rather than a beat behind. */
   :root {
-    --kb-t: 0.25s;
+    /* short on purpose — see the note on #home.stage's transition: this
+       bridges the gaps between the window's own reports rather than
+       animating anything, so it must never outlast the gap it bridges */
+    --kb-t: 0.16s;
     --kb-ease: cubic-bezier(0.17, 0.59, 0.4, 1);
   }
 
@@ -61,15 +64,40 @@
      whether or not the viewport meta's interactive-widget request was
      honoured. Nothing is derived from it and nothing is taken off it.
 
-     --vv-top is where that window starts, for when the browser scrolls the
-     visual viewport inside the layout one to reveal the focused field. It
-     is the same offset the menu button adds to its own top
-     (css/drawer.css), which is what keeps that button and #ai-reset — an
-     absolute child of this box — on one line.
+     …and NOTHING is offset by visualViewport.offsetTop. That was here,
+     and on a screen recording it moved the menu button 62px down the
+     instant the keyboard opened — the browser had already anchored it, and
+     the compensation was a second correction on top of a first. The answer
+     is not a better correction but removing what it corrected for: THE
+     HOME SCREEN DOES NOT SCROLL (below), and a browser with nothing to
+     scroll has no reason to shove the window.
      ============================================================ */
+  /* ---- THE HOME SCREEN DOES NOT SCROLL. Not "has nothing to scroll to" —
+     cannot, at the document level, at all.
+
+     It always had nothing under it, but the DOCUMENT was still a little
+     taller than the window: .shell stands 100vh tall, and on iOS 100vh is
+     the LARGE viewport, the one you get with the browser's toolbars
+     hidden. Against a window that is shorter than that by however much
+     toolbar is currently showing, the page had a few dozen pixels of
+     travel — enough for a scrollbar to flash, enough to drag the toolbar
+     through its collapse, and enough that every keyboard transition landed
+     on a page that was also settling. That is the whole of what read as
+     cheap: not one bad animation, but three things moving at once.
+
+     So the shell is the window's height here and the document is pinned.
+     It also takes the ground out from under the offsetTop problem above —
+     nothing to scroll, nothing to shove. .ai-scroll is the only scroller
+     left on this screen, and it contains its own overscroll. ---- */
+  html.is-phone[data-m-screen="home"],
+  html.is-phone[data-m-screen="home"] body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  html.is-phone[data-m-screen="home"] .shell { min-height: 0; }
+
   html.is-phone #home.stage {
     height: var(--vh, 100dvh);
-    transform: translateY(var(--vv-top, 0px));
     overflow: hidden;
 
     /* ---- THE KEYBOARD'S OWN CURVE, and these two properties are the only
@@ -83,21 +111,16 @@
        rule that used to break this — the composer docking flush on
        kb-up — is recorded further down.)
 
-       Height AND transform together, not height alone: on a browser that
-       shoves the window to reveal the field, both numbers arrive in the
-       same event, and easing one while snapping the other is a jump
-       followed by a settle.
-
-       0.25s is iOS's keyboard, and the curve is a hard decelerate with no
-       overshoot — the panel is sliding to a stop, not springing. It is
-       deliberately NOT one of the site's own eases: those are the
-       vocabulary of this site's motion, and this one is matching somebody
-       else's animation frame for frame. Eased at all, rather than tracking
-       raw, because iOS may report the new window only once the keyboard
-       has finished sliding; raw, the screen would snap a quarter-second
-       late. Where the reports do arrive continuously, this smooths them. */
-    transition: height var(--kb-t) var(--kb-ease),
-                transform var(--kb-t) var(--kb-ease);
+       ONE property, and short. The window is not reported once at the end
+       of the keyboard's slide — measured off a recording it arrives in
+       three or four steps across about a third of a second, which is
+       roughly thirteen frames a second and visibly steppy if taken raw.
+       The ease is here to INTERPOLATE those steps into continuous motion,
+       not to perform an animation of its own, so it is only just long
+       enough to bridge one step to the next. At the quarter-second it was,
+       each new report restarted a long ease toward a target that had
+       already moved, and the stack of them read as a scratchy settle. */
+    transition: height var(--kb-t) var(--kb-ease);
   }
   /* …but not on the first measurement. js/mobile.js sizes the hero to the
      window before it arms this, so the opening frame is the right height
@@ -373,9 +396,10 @@
     /* THE MENU BUTTON'S TWIN, and every number here is that button's own
        (css/drawer.css --m-btn-*), so the pair cannot drift apart. They did
        drift: this one is an absolute child of the hero and that one is
-       fixed to the layout viewport, and the moment the visual viewport was
-       offset the two were drawn on different lines. The hero now carries
-       --vv-top and the menu adds it, so both land on the same line again.
+       fixed to the layout viewport, and they were drawn on different lines
+       whenever those two frames disagreed. They agree now for a simpler
+       reason than the offset they briefly shared — the home screen cannot
+       scroll, so the two frames never come apart in the first place.
 
        OPAQUE, not 0.94 of the background. The transcript runs under it now
        (--scroll-top above), and at 94% a message showed through the button

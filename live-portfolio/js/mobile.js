@@ -335,35 +335,43 @@
      `position: fixed` does not know about it, which is how the menu button
      slid off the top of the screen and took the name and role with it.
 
-     Two numbers, both read straight off the window, nothing derived:
-       --vh      how tall the window is   → the hero's height
-       --vv-top  where the window starts  → the hero's offset, and the
-                                            menu button's (css/drawer.css)
+     ONE number, read straight off the window, nothing derived:
 
-     PINCH-ZOOM is the one thing that must not be mistaken for either:
-     visualViewport shrinks because it is scaled, not because anything is
-     covering it. vv.scale says so, and we stand down and report the
-     layout viewport instead.
+       --vh   how tall the window is   →   the hero's height
+
+     AND NOT visualViewport.offsetTop, which this had and which was the
+     worst of the faults it caused. The reasoning was sound: the browser
+     scrolls the visual viewport inside the layout one to reveal a focused
+     field, `position: fixed` is fixed to the LAYOUT viewport, so a fixed
+     button should add that offset back to stay on screen. Measured off a
+     screen recording, it moved the menu button exactly 62 CSS px DOWN the
+     instant the keyboard opened — precisely the offset being added. The
+     browser had already anchored the button and the flow correctly, and
+     the compensation was a second correction stacked on a first. A control
+     that jumps a quarter of an inch every time the keyboard arrives is far
+     worse than one that is occasionally a pixel out.
+
+     What replaces it is not a better correction. It is removing the thing
+     being corrected for: the home screen cannot scroll at all now
+     (css/mobile.css), and a browser with nothing to scroll has no reason
+     to shove the window in the first place.
+
+     PINCH-ZOOM is the one thing that must not be mistaken for the window
+     being covered: visualViewport shrinks because it is scaled, not
+     because anything is over it. vv.scale says so, and we stand down and
+     report the layout viewport instead.
      ============================================================ */
   const vv = window.visualViewport;
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
     const home = document.getElementById('home');
-    let vh = -1, vTop = -1;
+    let vh = -1;
 
     const syncKB = () => {
-      const zoomed = vv.scale > 1.01;
-      const h = Math.round(zoomed ? window.innerHeight : vv.height);
-      const t = Math.round(zoomed ? 0 : vv.offsetTop);
-
-      if (h !== vh) {
-        vh = h;
-        root.style.setProperty('--vh', h + 'px');
-      }
-      if (t !== vTop) {
-        vTop = t;
-        root.style.setProperty('--vv-top', t + 'px');
-      }
+      const h = Math.round(vv.scale > 1.01 ? window.innerHeight : vv.height);
+      if (h === vh) return;                  // this IS the coalescer
+      vh = h;
+      root.style.setProperty('--vh', h + 'px');
 
       // is something covering the screen? The only use left for the
       // keyboard's own height is deciding whether there IS one — nothing in
