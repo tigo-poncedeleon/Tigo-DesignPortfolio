@@ -16,13 +16,10 @@
 @media (max-width: 700px) {
 
   /* (GONE: --kb-t / --kb-ease, an iOS-matched curve for easing the hero
-     between the window's reports — and then a spell of easing NOTHING,
-     on the theory that reading the live viewport every frame was the
-     real animation. Both halves of that story ended: measured in a real
-     WebKit, the viewport's numbers never move at all — one snap, no
-     frames between — so the ease is back, but as ONE transition on ONE
-     number. See the note on #home.stage for why one is the most it is
-     ever allowed to be.) */
+     between the window's reports. Nothing eases now — see the note on
+     #home.stage. A curve that has to guess what the keyboard is doing
+     between two coarse samples can only ever approximate it; reading the
+     live viewport every frame IS it.) */
 
   /* (GONE 2026-08-30: --m-nav-h and --m-nav-band, the 90px the floating
      tab pill took out of the foot of every screen. The bar is deleted and
@@ -158,41 +155,26 @@
     height: var(--win-h, 100dvh);
     overflow: hidden;
 
-    /* ---- ONE TRANSITION, ON ONE NUMBER.
+    /* ---- AND NOTHING HERE TRANSITIONS.
 
-       The keyboard does not hand this page an animation to follow. Traced
-       per-frame in a real WebKit: visualViewport.height goes from the old
-       window to the new one in a single step — 659 → 391, nothing between
-       — landing at the END of the keyboard's slide opening and at the
-       START of it closing. Following it "live" (the previous answer here)
-       therefore drew a teleport: the composer popped in a beat after the
-       keyboard arrived and vanished behind it the instant it left. The
-       snap was the scratchiness.
-
-       So the one step is eased. HEIGHT ALONE — this is load-bearing. The
-       composer sits at this box's FLOOR, top + height, and the first
-       attempt at easing ran top and height on separate clocks; whenever
-       one was ahead of the other their sum was nonsense and the box flew
-       ~280px past its mark, every time:
+       This is the third answer to the keyboard and the first that is not
+       an interpolation. The two before it eased between the window's own
+       reports, which arrive three or four times across the keyboard's
+       third of a second, and both were wrong in the same structural way:
+       the composer sits at this box's FLOOR, which is top + height, and
+       top and height were separate transitions. Any moment one ran ahead
+       of the other their sum was nonsense, and the box flew about 280px
+       past its mark and eased back — measured, every single time:
 
            711 → 691 → 1156 → 1704 → 1618 → 1526 → 1474 → 1447 → 1424
 
-       You cannot ease two numbers whose SUM is the thing being placed.
-       You can ease one. js/mobile.js clamps --doc-top to 0 on this screen
-       (the document cannot scroll here, so 0 is the answer before it is
-       read), which leaves the floor a function of height and nothing
-       else — one number, one clock, no sum to get wrong. The two corner
-       buttons hang off the top edge, which never moves, so they have
-       nothing to answer during any of this.
-
-       260ms on a hard decelerate: the close matters most — the keyboard's
-       own exit measures ~250–300ms, and the composer riding down WITH it
-       instead of teleporting under it is the whole feel of this — and the
-       same curve opening reads as the composer stepping up out of the
-       keyboard's way a breath after it lands. (prefers-reduced-motion
-       zeroes this below, as before.) ---- */
-    transition: height 0.26s cubic-bezier(0.24, 1, 0.32, 1);
-  }
+       You cannot ease two numbers independently when what matters is their
+       sum. js/mobile.js follows the window in a rAF loop instead, so both
+       are written in the same frame from the same reading and their sum is
+       never wrong — and because visualViewport's properties are live even
+       when its event is coarse, that loop tracks the real keyboard at the
+       frame rate. The motion is the OS's own, not an approximation of it,
+       which is the only way this is ever going to look right. ---- */  }
 
   html.is-phone #home .scroll-hint { display: none; }
 

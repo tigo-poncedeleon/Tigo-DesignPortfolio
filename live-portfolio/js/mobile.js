@@ -429,38 +429,6 @@
     const home = document.getElementById('home');
     let wh = -1, wt = -1;
 
-    /* ---- THE CLOSE IS ANNOUNCED LATE, so it is begun early.
-
-       Measured, per-frame, against a screen recording joined sample to
-       sample: when the keyboard dismisses, its exit animation runs and
-       FINISHES — the keyboard is visibly gone — and visualViewport goes on
-       reporting the covered height for ~790ms more before its one late
-       resize finally tells the truth. A page that waits to be told holds
-       the composer in mid-air over nothing for most of a second and then
-       moves it. No loop fixes that; the data simply is not there yet.
-
-       But this half of the story needs no guessing: the height the window
-       is RETURNING to is the height it had before the keyboard came, and
-       that number was in hand before the keyboard existed. So `idle`
-       snapshots the window's height at focusin — which lands before the
-       keyboard's own resize does, also measured — and on a blur that
-       actually ends typing, `hold` publishes it immediately, through the
-       same wh/wt the guard compares. The transition in css/mobile.css
-       makes that publish a glide, and it begins when the keyboard begins
-       leaving, which is the whole point.
-
-       hold is OPTIMISM, not authority. The first live reading that
-       differs from the stale value it papered over (heldVh) clears it and
-       truth resumes — so on an engine that reports the close promptly it
-       lives for a frame and changes nothing, and wherever it was wrong
-       the browser's own number wins the moment it exists. A re-focus
-       clears it too: that keyboard never left, the live reading comes
-       back, and the same transition carries the composer back up over it.
-       This is the one piece of memory in this block, and it bought back
-       eight hundred measured milliseconds of a composer floating over a
-       keyboard that had already gone. ---- */
-    let idle = 0, armed = false, hold = 0, heldVh = 0;
-
     /* ---- ONE number leaves this file, and visualViewport.offsetTop is
        deliberately not it.
 
@@ -529,12 +497,7 @@
       // scaled, not covered: a pinched-in viewport is short for a reason
       // that has nothing to do with a keyboard
       const zoomed = vv.scale > 1.01;
-      const raw = Math.round(zoomed ? window.innerHeight : vv.height);
-      // the optimistic close (see `hold` above) stands only until there is
-      // real news — a reading that differs from the stale one it papered
-      // over — or a pinch, which reads a different number entirely
-      if (hold && (zoomed || raw !== heldVh)) hold = 0;
-      const live = hold || raw;
+      const live = Math.round(zoomed ? window.innerHeight : vv.height);
       /* (GONE: a focus-time CAP on the keyboard's height, remembered in
          sessionStorage, that lifted the composer on the tap before the
          keyboard existed. It became dead weight the moment --kb stopped
@@ -544,23 +507,8 @@
          height froze while the real window kept shrinking. Measured, the
          gap under the composer walked 52, 24, -4 … -228 as the keyboard
          opened. A guard must compare exactly what it guards.) */
-      /* ---- on HOME, the top is not read at all: it is 0, by construction.
-         The document there cannot scroll (css/mobile.css) and any scroll
-         the browser manages anyway is put back below — so scrollY is
-         always a browser acting on a layout that no longer exists, and
-         offsetTop is a shove there was nothing to reveal for. Publishing
-         the live sum anyway had a hole in it: the read landed one line
-         BEFORE the putback, so the frame between them drew the screen and
-         BOTH corner buttons scrollY pixels low, and the next frame
-         snapped them back — a one-frame hop on two controls that are
-         supposed to be nailed down. The clamp closes it: what is known to
-         be the answer is not worth mis-measuring. Still a pure function —
-         of the screen and the scale, with no memory — and the guard still
-         compares exactly the two numbers published. Everywhere else (and
-         pinched, where a pan is honest movement) the live read stands. */
-      const top = (at === 'home' && !zoomed)
-        ? 0
-        : Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
+      // where the visible window starts, in DOCUMENT coordinates
+      const top = Math.round(window.scrollY + (zoomed ? 0 : vv.offsetTop));
       if (live === wh && top === wt) return false;
       wh = live; wt = top;
       // TWO properties, and they are exactly the two the guard above
@@ -606,35 +554,30 @@
     };
 
     /* ============================================================
-       FOLLOW THE WINDOW BY FRAME — FOR TRUTH, NOT FOR MOTION.
+       FOLLOW THE WINDOW BY FRAME, AND DO NOT ANIMATE IT.
 
-       This loop was built on the theory that visualViewport's PROPERTIES
-       are live even though its `resize` event is coarse, so reading them
-       every frame would BE the keyboard's own animation. Measured — a
-       per-rAF trace in the iOS Simulator, real WebKit, real keyboard —
-       the theory is false: vv.height does not pass through a single
-       intermediate value. It reports the old window, then the new one,
-       once, in one frame (659 → 391, nothing between), landing at the
-       END of the keyboard's slide on the way up and at the START of it
-       on the way down. A loop cannot draw an animation out of a number
-       that never moves; that snap was the whole of the "scratchy".
-
-       So the MOTION lives in css/mobile.css now: one short transition,
-       on the stage's height alone. The sum-of-two-transitions disaster
-       that killed easing the first time (top + height on separate
-       clocks, the box flying ~280px past its mark:
+       The `resize` event is coarse — measured off a screen recording it
+       fires three or four times across the keyboard's third of a second,
+       which is about thirteen frames a second. Easing between those steps
+       was the obvious answer and it was wrong, in a way the recording
+       showed exactly: the composer sits at the stage's FLOOR, which is
+       top + height, and top and height were two separate transitions. Any
+       moment one was ahead of the other their sum was nonsense, so the box
+       flew ~280px past where it was going and eased back. Every time.
 
            711 → 691 → 1156 → 1704 → 1618 → 1526 → 1474 → 1447 → 1424
 
-       ) cannot recur, because --doc-top is clamped to 0 on this screen
-       in write() above — the floor is ONE number now, and one number is
-       exactly what a transition is allowed to carry.
+       You cannot ease two numbers independently when what matters is their
+       sum. And you do not need to: visualViewport's PROPERTIES are live
+       even though its event is not. Read in a rAF loop they track the
+       keyboard continuously, at the frame rate, because they are being
+       driven by the keyboard itself. So the loop is the animation — the
+       real one, not an interpolation of it — and nothing in CSS
+       transitions at all. top and height are then always written in the
+       same frame from the same reading, and their sum is never wrong.
 
-       The loop stays, for everything that must be TRUE rather than
-       smooth: every event still lands the right answer synchronously,
-       scroll is still put back the frame it appears, and the transcript
-       is still pinned to its foot through the whole movement. Ten quiet
-       frames — ninety, see TAIL — after the last change it stops.
+       The loop runs only while something is moving: ten quiet frames after
+       the last change and it stops, so this is not a permanent rAF.
        ============================================================ */
     let raf = 0, quiet = 0, pinned = false;
     const typing = () => {
@@ -699,32 +642,6 @@
     document.addEventListener('focusin', follow, true);
     document.addEventListener('focusout', follow, true);
 
-    // ---- the optimistic close's two halves (the `hold` note above).
-    // Snapshot: at focusin the keyboard's resize has not landed yet —
-    // measured — so wh IS the idle window. `armed` survives a hop from
-    // field to field: the blur below sees typing continue and stands down,
-    // so the snapshot stays the true idle height, not a covered one.
-    document.addEventListener('focusin', () => {
-      hold = 0;               // a re-focus means that keyboard never left
-      if (!armed) { idle = wh; armed = true; }
-    }, true);
-    // Publish: a beat after blur, so activeElement shows where focus
-    // LANDED — a hop to another field is not a closing keyboard, and a
-    // blur with nothing to restore (hardware keyboard, nothing moved) is
-    // not worth a write.
-    document.addEventListener('focusout', () => {
-      setTimeout(() => {
-        if (typing()) return;
-        armed = false;
-        if (at !== 'home' || vv.scale > 1.01) return;
-        if (!idle || idle === wh) return;
-        heldVh = Math.round(vv.height);
-        if (idle === heldVh) return;
-        hold = idle;
-        follow();
-      }, 0);
-    }, true);
-
     // …and again when the screen has finished making room. The pin above
     // lands against the box's height AT THE MOMENT the window is reported,
     // and the box spends the next quarter-second easing to its real one
@@ -752,71 +669,6 @@
        before it was reasoned from a screen recording, and a recording shows
        what happened without ever saying why. Costs nothing when the flag is
        absent, which is always unless somebody typed it. ---- */
-    /* ---- ?vvrec — the same readout as a RECORDING, for a harness that can
-       drive a real keyboard (the iOS Simulator) and read the result as data
-       rather than as a screenshot. One sample per rAF: the raw viewport
-       numbers (scrollY and offsetTop SEPARATELY — which transient fires
-       decides which fix is right), the laid-out boxes of the stage, the menu
-       button and the composer, and the time since the last tick — because
-       "stepped values sampled at 60fps" and "continuous values sampled at
-       13fps" are different diseases and only dt tells them apart. Plus a
-       strip of ten binary squares encoding the sample index, so a screen
-       recording's frames can be mapped back to trace rows and "the layout
-       stepped" can be told from "the render stepped". Ships dormant behind
-       its flag, like ?vv above; costs nothing unless somebody typed it. ---- */
-    if (new URLSearchParams(location.search).has('vvrec')) {
-      const bits = [];
-      const strip = document.createElement('div');
-      strip.style.cssText = 'position:fixed;left:6px;top:64px;z-index:999;' +
-        'display:flex;pointer-events:none';
-      for (let i = 0; i < 10; i++) {
-        const b = document.createElement('div');
-        b.style.cssText = 'width:16px;height:16px;background:#fff;' +
-          'outline:1px solid #888';
-        strip.appendChild(b); bits.push(b);
-      }
-      document.body.appendChild(strip);
-      let buf = [], events = [], n = 0, last = 0;
-      ['resize', 'scroll'].forEach((t) =>
-        vv.addEventListener(t, () => events.push({ t: performance.now(), e: 'vv-' + t })));
-      window.addEventListener('scroll',
-        () => events.push({ t: performance.now(), e: 'scroll' }), { passive: true });
-      ['focusin', 'focusout'].forEach((t) =>
-        document.addEventListener(t, () => events.push({ t: performance.now(), e: t }), true));
-      const flush = () => {
-        if (!buf.length && !events.length) return;
-        const body = JSON.stringify({ samples: buf, events: events });
-        buf = []; events = [];
-        navigator.sendBeacon('/trace', body);
-      };
-      const rec = () => {
-        const now = performance.now();
-        const st = document.getElementById('home');
-        const r = st ? st.getBoundingClientRect() : { top: 0, height: 0 };
-        const m = document.querySelector('.m-menu');
-        const mr = m ? m.getBoundingClientRect() : { top: 0 };
-        const bar = document.querySelector('.ai-inputbar');
-        const br = bar ? bar.getBoundingClientRect() : { bottom: 0 };
-        buf.push({
-          n: n, t: Math.round(now * 10) / 10, dt: Math.round((now - last) * 10) / 10,
-          ih: window.innerHeight, vh: Math.round(vv.height * 100) / 100,
-          vt: Math.round(vv.offsetTop * 100) / 100, sy: window.scrollY,
-          st: Math.round(r.top * 10) / 10, sh: Math.round(r.height * 10) / 10,
-          mt: Math.round(mr.top * 10) / 10, cb: Math.round(br.bottom * 10) / 10,
-        });
-        last = now;
-        for (let i = 0; i < 10; i++) {
-          bits[i].style.background = (n >> i) & 1 ? '#000' : '#fff';
-        }
-        n++;
-        if (buf.length >= 240) flush();
-        requestAnimationFrame(rec);
-      };
-      document.addEventListener('visibilitychange', flush);
-      window.addEventListener('pagehide', flush);
-      rec();
-    }
-
     if (new URLSearchParams(location.search).has('vv')) {
       const box = document.createElement('pre');
       box.style.cssText = 'position:fixed;left:6px;top:56px;z-index:999;margin:0;' +
