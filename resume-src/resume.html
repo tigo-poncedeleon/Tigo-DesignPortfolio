@@ -11,14 +11,15 @@
   if (location.search.indexOf('sf') !== -1)
     document.documentElement.setAttribute('data-variant', 'sf');
 </script>
-<meta name="description" content="A designer who ships the code — research and product thinking through to React in production, in service of software that is both useful and pleasurable." />
+<meta name="description" content="Designer who ships the code, from research and product thinking to working, delightful software." />
 <style>
 /* ============================================================
    Resume — the portfolio's design language on Letter paper.
    Everything here is lifted from live-portfolio/css: the --bg /
    --ink tokens, weight 400 throughout (hierarchy comes from SIZE
-   and TONE, never bold), the .xp-ledger's numbered rows +
-   hairlines, the .xp-date chip recipe, and the .craft-chip pill.
+   and TONE, never bold), the .xp-ledger's ruled rows and
+   hairlines, the eyebrow label idiom, and the quiet right
+   margin of .xp-date / .xp-loc.
    No accent colour: the page is ink on paper throughout.
 
    ATS NOTES — read before editing. This page is parsed by resume
@@ -51,13 +52,16 @@
 :root {
   --bg:     #fdfdfd;
   --ink:    #404040;
-  --rule:   #e3e3e3;
-  --chip-b: #d9d9d9;
-  --co:     #404040;                  /* employer / institution */
-  --role:   rgba(0, 0, 0, 0.42);      /* the quiet half of a title pair */
-  --body:   #5e5e5e;                  /* the readable body tone */
-  --meta:   rgba(0, 0, 0, 0.42);
-  --num:    rgba(0, 0, 0, 0.35);
+  /* TWO rule weights, and the difference is the whole navigation system:
+     --rule draws every row hairline, --rule-strong draws ONLY the line under
+     a section label. One page-wide stack of identical hairlines gave the eye
+     nowhere to land. Never draw a row with --rule-strong. */
+  --rule:   #ededed;
+  --rule-strong: #b0b0b0;
+  --co:     #404040;                  /* employer / institution — 10.2:1 */
+  --role:   #6f6f6f;                  /* the quiet half of a title pair — 4.9:1 */
+  --body:   #5e5e5e;                  /* the readable body tone — 6.4:1 */
+  --meta:   rgba(0, 0, 0, 0.42);      /* locations only — 3.0:1, and quiet on purpose */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -85,11 +89,6 @@
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
                system-ui, sans-serif;
 }
-/* ---- the applications copy: standard-cased section headings and a
-   standard-cased city, which is what a parser's section dictionary and
-   location gazetteer expect. text-transform changes the glyphs that get
-   painted, so whichever casing is chosen lands in the text stream too. ---- */
-:root:not([data-variant="sf"]) .label { text-transform: capitalize; }
 
 html, body {
   background: var(--bg);
@@ -115,72 +114,90 @@ html, body {
 }
 
 /* ---- header: the site's title pair (.about-title / .work-title) — one
-   name, one quiet phrase beside it on the same baseline ---- */
+   name, one quiet phrase beside it on the same baseline.
+
+   NO em dash here, unlike every row below it (2026-09-01, user's call). The
+   rows need one because employer and role are the same size and would run
+   together; the masthead does not, because 24px against 15px already reads as
+   two things. What replaces it is SPACE — the gap has to stay clearly wider
+   than a word space or the pair reads as a run-on. That is what the 18px is
+   for; don't tighten it back to a normal gap. ---- */
 .head {
   display: flex;
   align-items: baseline;
-  gap: 7px;                 /* + the &nbsp; between them ≈ the old 11px */
+  gap: 18px;                /* + the &nbsp; between them ≈ 22px — this gap IS
+                               the separator now that the dash is gone */
+  /* nowrap: the pair is one line or it is wrong. A longer role title
+     overflows the sheet SILENTLY rather than wrapping — re-measure if this
+     text changes (the figure is in resume-src/README.md). */
   white-space: nowrap;
 }
 .head h1 {
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 400;
-  color: #5e5e5e;
-  letter-spacing: -0.1px;
+  color: var(--ink);        /* the darkest thing on the page — it was set in
+                               the BODY tone, one step lighter than the
+                               employers listed under it */
+  letter-spacing: -0.15px;  /* tracking tightens as type grows (styles.css) */
 }
 .head p {
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.3);
+  font-size: 15px;
+  /* a JOB TITLE, so it sits where every other job title on this page sits.
+     It was rgba(0,0,0,0.3) — 2.1:1, the faintest thing on the sheet, which is
+     an odd place to put the two words the whole page is arguing for. */
+  color: var(--role);
 }
-/* NOTE: the location is not its own object — it is the tail of this phrase,
-   joined by the same em dash that binds every other entity to its qualifier
-   on this page ("Vicino AI — UX Engineer Intern"), so the header reads as one
-   breath instead of leaving a chunk stranded in the corner. */
+/* NOTE: no location here — the city a parser needs is in the right margin of
+   every row below (Chicago, IL twice), which is where it also belongs
+   visually. The header is name + role and nothing else. */
 
-.summary {
-  margin-top: 9px;
-  max-width: 690px;
-  font-size: 12.4px;
-  line-height: 18px;
-  color: var(--body);
-}
 
-/* ---- contact as chips: the .xp-date recipe, all three reading alike ---- */
+/* ---- contact: one quiet run, middot-separated. It was chipped, which made
+   the least-scanned line on the page its loudest object and left it competing
+   with the section labels. The separators carry &nbsp; on BOTH sides so a real
+   space still lands in the text stream either way (ATS note 3). ---- */
 .contact {
-  margin-top: 10px;
+  margin-top: 11px;
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
-  /* the &nbsp; separators are anonymous flex items, so they are the only
-     thing this font-size reaches — the chips set their own. Keeps the real
-     space in the text stream (ATS note 3) while costing ~2px instead of ~6. */
-  font-size: 9px;
+  gap: 0;
+  /* 12.6px, a step ABOVE the 12.2px body: these are the four things a reader
+     is meant to act on, and at 11.6 they were the smallest text on the page. */
+  font-size: 12.6px;
 }
 .contact a,
 .contact span {
-  display: inline-block;
-  padding: 4px 10px;
-  font-size: 11.6px;
+  font-size: 12.6px;
   color: var(--body);
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid var(--chip-b);
-  border-radius: 6.625px;
   text-decoration: none;
   white-space: nowrap;
 }
 
-/* ---- section label: lowercase and quiet (.craft-label / .learned-label),
-   over the ledger's drawn hairline ---- */
-.section { margin-top: 11px; }
+/* ---- section label: the site's eyebrow idiom (nextlevel .board-eyebrow,
+   vicino .accept-label) — small tracked caps in full ink, over the one rule
+   on the page heavier than a hairline. It differentiates by SHAPE, which is
+   what lets the no-bold rule stand: at 10.5px it is SMALLER than the 12.2px
+   body it introduces, and still the first thing the eye finds.
+
+   ATS: the tracking is capped at what survives text extraction. Chrome writes
+   letter-spaced text as individually positioned glyphs, and an extractor
+   inserts a space once the gap passes ~25% of a space width — too much
+   tracking and "EXPERIENCE" comes back out as "E X P E R I E N C E", which
+   matches no parser's section dictionary. This value was measured through
+   verify.sh; raise it and you have to re-measure. Both builds are uppercase
+   now — the old per-variant casing rule is gone. ---- */
+.section { margin-top: 26px; }
 .label {
-  font-size: 12.4px;
-  color: var(--meta);
-  padding-bottom: 7px;
-  border-bottom: 1px solid var(--rule);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule-strong);
 }
 
-/* ---- the ledger: one ruled typographic column, a margin numeral per row,
-   dates and location in the right margin (css/about.css .xp-*) ---- */
+/* ---- the ledger: one ruled typographic column, dates and location in the
+   right margin (css/about.css .xp-*) ---- */
 .row {
   display: flex;
   align-items: flex-start;
@@ -190,14 +207,6 @@ html, body {
 }
 .section .row:last-child { border-bottom: 0; padding-bottom: 4px; }
 
-.num {
-  flex: none;
-  width: 22px;
-  padding-top: 2px;
-  font-size: 11.6px;
-  color: var(--num);
-  font-variant-numeric: tabular-nums;
-}
 .main { flex: 1; min-width: 0; }
 
 /* the title pair again, one step down: employer in the ink tone, the role
@@ -214,7 +223,7 @@ html, body {
 .detail {
   margin-top: 4px;
   font-size: 12.2px;
-  line-height: 17px;
+  line-height: 18px;
   color: var(--body);
 }
 .detail em { font-style: normal; color: var(--co); }
@@ -223,7 +232,8 @@ ul { margin-top: 5px; list-style: none; }
 li {
   padding-left: 13px;
   font-size: 12.2px;
-  line-height: 17.6px;
+  /* ~88 characters to the line — long enough to want more than 1.44 */
+  line-height: 18.4px;
   color: var(--body);
 }
 li + li { margin-top: 3px; }
@@ -238,28 +248,27 @@ li::before {
   margin-left: -13px;
   margin-right: 9.6px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.42);   /* 0.28 was 1.8:1 — gone at 3.4px on paper */
   vertical-align: 0.28em;
 }
 
-/* right margin: date chip over location (.xp-when) */
+/* right margin: date over location (.xp-when). No chip — the dates read as
+   quiet text in the margin, same as the location under them. */
 .when {
   flex: none;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 5px;
-  padding-top: 1px;
+  gap: 2px;
+  padding-top: 2px;
 }
 .date {
-  display: inline-block;
-  padding: 3px 9px;
   font-size: 11.6px;
   color: var(--body);
-  background: rgba(0, 0, 0, 0.03);
-  border: 0.663px solid var(--chip-b);
-  border-radius: 6.625px;
   white-space: nowrap;
+  /* right-aligned column: "Jun 2026 - Aug 2026" has to stack cleanly over
+     "Nov 2025 - Present". This came off with the .num column and was missed. */
+  font-variant-numeric: tabular-nums;
 }
 .loc {
   font-size: 11.6px;
@@ -267,7 +276,9 @@ li::before {
   white-space: nowrap;
 }
 
-/* ---- skills: the .craft-chip pill, grouped under lowercase labels ---- */
+/* ---- skills: a comma-set run per group, under the same quiet labels. No
+   pills — the commas do the separating, and a scanner reads a skills list
+   in the delimiter it expects. ---- */
 .craft {
   display: flex;
   align-items: baseline;
@@ -280,21 +291,15 @@ li::before {
   flex: none;
   width: 82px;
   font-size: 12.2px;
-  color: var(--meta);
+  color: var(--role);       /* a label you scan by — --meta is 3.0:1 and
+                               belongs to locations, not to navigation */
 }
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;                 /* + the &nbsp; between chips ≈ the old 6px */
-}
-.chip {
-  padding: 3.5px 10px;
-  font-size: 11.6px;
+.craft-list {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.2px;
+  line-height: 18px;
   color: var(--body);
-  background: rgba(233, 233, 233, 0.48);
-  border: 1px solid var(--chip-b);
-  border-radius: 20px;
-  white-space: nowrap;
 }
 
 
@@ -303,29 +308,40 @@ li::before {
 <div class="sheet">
 
   <header class="head">
-    <h1>Santiago (Tigo) Ponce de León</h1>&nbsp;<p>Product Design Engineer &mdash; Chicago, Illinois</p>
+    <h1>Santiago (Tigo) Ponce de León</h1>&nbsp;<p>Product Design Engineer</p>
   </header>
 
-  <p class="summary">A designer who ships the code &mdash; research and product thinking
-  through to React in production, in service of software that is both useful and pleasurable.</p>
-
   <nav class="contact">
-    <a href="tel:+15037067254">+1 503-706-7254</a>&nbsp;<a href="mailto:tigoponcedeleon@uchicago.edu">tigoponcedeleon@uchicago.edu</a>&nbsp;<a href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>&nbsp;<a href="https://linkedin.com/in/tigoponcedeleon">linkedin.com/in/tigoponcedeleon</a>
+    <a href="tel:+15037067254">+1 503-706-7254</a>&nbsp;&middot;&nbsp;<a href="mailto:tigoponcedeleon@uchicago.edu">tigoponcedeleon@uchicago.edu</a>&nbsp;&middot;&nbsp;<a href="https://tigoponcedeleon.com">tigoponcedeleon.com</a>&nbsp;&middot;&nbsp;<a href="https://linkedin.com/in/tigoponcedeleon">linkedin.com/in/tigoponcedeleon</a>
   </nav>
+
+  <section class="section">
+    <p class="label">education</p>
+    <div class="row">
+      <div class="main">
+        <p class="co">University of Chicago <span>&mdash; B.A. Media Arts &amp; Design and Computer Science</span></p>
+        <p class="detail">Coursework: Human-Computer Interaction, Internet Art &amp; Web Design, Visual Systems<br />
+        Honors: Spain Foreign Language Acquisition Grant &mdash; study in Madrid, Summer 2025</p>
+      </div>
+      <div class="when">
+        <span class="date">Expected May 2027</span>
+        <span class="loc">Chicago, IL</span>
+      </div>
+    </div>
+  </section>
 
   <section class="section">
     <p class="label">experience</p>
 
     <div class="row">
-      <span class="num">01</span>
       <div class="main">
         <p class="co">Vicino AI <span>&mdash; UX Engineer Intern</span></p>
         <ul>
-          <li>Designing product experiences across key workflows for an AI-powered video and
+          <li>Designed product experiences across key workflows for an AI-powered video and
           marketing platform, turning agentic creative concepts into user-centered interfaces.</li>
-          <li>Building front-end UI components in React, bridging Figma designs and production
+          <li>Built front-end UI components in React, bridging Figma designs and production
           code to accelerate design-to-engineer handoff.</li>
-          <li>Shaping and documenting the platform's visual language and interaction patterns
+          <li>Shaped and documented the platform's visual language and interaction patterns
           into a scalable component library used across feature pages.</li>
         </ul>
       </div>
@@ -336,7 +352,6 @@ li::before {
     </div>
 
     <div class="row">
-      <span class="num">02</span>
       <div class="main">
         <p class="co">PantryPal <span>&mdash; Product Designer and iOS Developer</span></p>
         <ul>
@@ -344,10 +359,8 @@ li::before {
           already owns into personalized recipes, cutting food waste through inventory reuse.</li>
           <li>Writing the production iOS app in Swift and SwiftUI &mdash; designing and coding the
           same screens &mdash; with an App Store release targeted for August 2026.</li>
-          <li>Ran user interviews and moderated usability tests between design rounds, rebuilding
-          ingredient entry and recipe matching around where people actually got stuck.</li>
-          <li>Built the design system behind the app: wireframes through high-fidelity UI, a
-          documented component library, and interaction patterns now implemented in SwiftUI.</li>
+          <li>Ran user interviews and usability tests between design rounds, and built the system
+          they fed: wireframes through high-fidelity UI, now implemented in SwiftUI.</li>
         </ul>
       </div>
       <div class="when">
@@ -357,7 +370,6 @@ li::before {
     </div>
 
     <div class="row">
-      <span class="num">03</span>
       <div class="main">
         <p class="co">University of Chicago <span>&mdash; UX Researcher</span></p>
         <ul>
@@ -374,7 +386,6 @@ li::before {
     </div>
 
     <div class="row">
-      <span class="num">04</span>
       <div class="main">
         <p class="co">Next Level Drone Cleaning <span>&mdash; Founding Visual Designer</span></p>
         <ul>
@@ -392,42 +403,18 @@ li::before {
   </section>
 
   <section class="section">
-    <p class="label">education</p>
-    <div class="row">
-      <span class="num">&mdash;</span>
-      <div class="main">
-        <p class="co">University of Chicago <span>&mdash; B.A. Media Arts &amp; Design and Computer Science</span></p>
-        <p class="detail">Coursework: Human-Computer Interaction, Internet Art &amp; Web Design, Visual Systems<br />
-        Honors: Spain Foreign Language Acquisition Grant &mdash; study in Madrid, Summer 2025</p>
-      </div>
-      <div class="when">
-        <span class="date">Expected May 2027</span>
-        <span class="loc">Chicago, IL</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
     <p class="label">skills</p>
     <div class="craft">
-      <span class="craft-label">product</span>&nbsp;<div class="chips">
-        <span class="chip">User Research</span>&nbsp;<span class="chip">Wireframing</span>&nbsp;<span class="chip">Interaction Design</span>&nbsp;<span class="chip">Design Systems</span>&nbsp;<span class="chip">Usability Testing</span>
-      </div>
+      <span class="craft-label">product</span>&nbsp;<span class="craft-list">User Research, Wireframing, Interaction Design, Design Systems, Usability Testing</span>
     </div>
     <div class="craft">
-      <span class="craft-label">engineering</span>&nbsp;<div class="chips">
-        <span class="chip">Swift</span>&nbsp;<span class="chip">SwiftUI</span>&nbsp;<span class="chip">React</span>&nbsp;<span class="chip">HTML / CSS / JavaScript</span>&nbsp;<span class="chip">Python</span>&nbsp;<span class="chip">C#</span>&nbsp;<span class="chip">Git</span>&nbsp;<span class="chip">Xcode</span>
-      </div>
+      <span class="craft-label">engineering</span>&nbsp;<span class="craft-list">Swift, SwiftUI, React, HTML / CSS / JavaScript, Python, Git, Xcode</span>
     </div>
     <div class="craft">
-      <span class="craft-label">design</span>&nbsp;<div class="chips">
-        <span class="chip">Figma</span>&nbsp;<span class="chip">Prototyping</span>&nbsp;<span class="chip">Adobe Creative Cloud</span>
-      </div>
+      <span class="craft-label">design</span>&nbsp;<span class="craft-list">Figma, Prototyping, Adobe Creative Cloud</span>
     </div>
     <div class="craft">
-      <span class="craft-label">languages</span>&nbsp;<div class="chips">
-        <span class="chip">Spanish &mdash; professional working</span>&nbsp;<span class="chip">English &mdash; fluent</span>
-      </div>
+      <span class="craft-label">languages</span>&nbsp;<span class="craft-list">Spanish &mdash; professional working, English &mdash; fluent</span>
     </div>
   </section>
 
