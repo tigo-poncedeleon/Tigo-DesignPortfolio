@@ -157,11 +157,23 @@ actually checks. (Measured: ink centre, caption centre and address centre all
 land on the same pixel.) `text-align` cannot move the svg, which is a block, so
 it takes `margin: 0 auto`.
 
-The same quiet zone sets the gap under the code. `.qr-cap` has **no top margin**,
-and that is a floor rather than a preference: the svg's bottom quiet zone already
-puts ~9px of clear space under the ink, which is exactly the 4 modules the spec
-wants. That white space *is* the gap. Pulling the caption up with a negative
-margin eats the quiet zone and costs scans on a code this small.
+**The gap under the code is at its floor, and the floor is the quiet zone.**
+What the eye reads as the gap is ink to ink — the code's last dark row to the top
+of the caps — and that cannot go below 4 modules, which is 9.7px on an 80px box.
+Closer and the caption starts crowding the bottom-left finder pattern.
+
+There is a little slack that is *not* quiet zone: a line box is taller than its
+caps, so at 11.6px roughly 2px of empty leading sits above the cap-height.
+`.qr-cap` takes `margin-top: -1.5px` to reclaim most of it. Measured off the
+rendered PDF, that lands both builds at **11.0px ink-to-ink against the 9.7px
+floor** — tighter than it was, with something left for print variance. `-2px`
+puts Inter exactly on 9.70 with nothing to spare, so do not go further without
+re-measuring the render.
+
+The caption's own leading is 12px — tighter than the 11.6px type it sets — so the
+label and the address read as one caption rather than two stacked labels. **If
+this block ever has to feel tighter again, that leading is the honest lever, not
+the margin.**
 
 It is **baked into the HTML as a static inline SVG** — a `<path>` of module
 squares. There is no QR library here and no render-time dependency; the modules

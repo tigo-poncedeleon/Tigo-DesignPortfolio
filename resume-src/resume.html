@@ -316,22 +316,31 @@ li::before {
    well as encoded because a resume parser CANNOT read the code — it is an
    image — so this is the only form of the link a machine ever sees. It drops
    the scheme, the same way the contact run says "tigoponcedeleon.com".
-   Both lines share the margin's quiet tone and a tight 13px leading so they
-   read as one caption rather than two stacked labels. */
+   Both lines share the margin's quiet tone on 12px leading — tighter than their
+   own font size — so they read as one caption rather than two stacked labels. */
 .qr-cap,
 .qr-url {
   display: block;
-  line-height: 13px;
+  line-height: 12px;
   color: var(--meta);
   white-space: nowrap;
 }
 .qr-cap {
-  /* No margin — and this is a floor, not a preference. The svg's bottom quiet
-     zone already puts ~10px of clear space under the ink, which is exactly the
-     4 modules the spec wants. That white space IS the gap. Pull the caption up
-     with a negative margin and you are eating the quiet zone, which costs
-     scans on a code this small. */
-  margin-top: 0;
+  /* -2px, and the number is derived, not taste. What the eye reads as the gap
+     is INK to INK: the code's last dark row to the top of the caps. The floor
+     on that is the 4-module quiet zone, 9.7px on an 80px box — closer and the
+     text starts crowding the code's finder patterns.
+
+     But a line box is taller than its caps: at 11.6px there is ~2px of empty
+     leading above the cap-height, which is dead space, not quiet zone. Pulling
+     the block up by that much tightens what the eye sees while leaving the
+     clear space around the ink untouched. MEASURED off the rendered PDF at
+     -1.5px: 11.0px ink-to-ink in Inter, 12.3px in SF Pro — both clear of
+     the floor, with Inter the binding one. Do NOT go further without
+     re-measuring the render: -2px lands Inter exactly on 9.7, with nothing
+     left for print variance. The gap is at its floor — if this block ever has
+     to feel tighter again, the honest lever is the leading below, not this. */
+  margin-top: -1.5px;
   font-size: 11.6px;
 }
 .qr-url { font-size: 10.5px; }
