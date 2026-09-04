@@ -132,8 +132,26 @@ about four characters of headroom before it wraps and costs a row.
 
 PantryPal shipped, so its margin carries a QR to
 `https://apple.co/3SprtQ8` (which resolves to
-`apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028`), captioned
-`App Store`, under that row's date and location.
+`apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028`), under that
+row's date and location, captioned on two lines:
+
+```
+App Store
+apple.co/3SprtQ8
+```
+
+**The address is written out as well as encoded, and that is not redundancy.**
+A resume parser cannot read the code — it is an image — so the typed line is the
+only form of the link a machine ever sees, and the only one a reader can use
+without a phone. It drops the scheme, the same way the contact run says
+`tigoponcedeleon.com`. Both lines share the margin's quiet tone on a tight 13px
+leading so they read as one caption rather than two stacked labels.
+
+The whole block is **flush right, not centred**. The margin column hangs off a
+single edge — date, location, code, caption, address — and centring the code
+inside its own box put its right edge a few px inside that line, which wobbles.
+`text-align: right` cannot move the svg (it is a block), so it takes
+`margin-left: auto`.
 
 It is **baked into the HTML as a static inline SVG** — a `<path>` of module
 squares. There is no QR library here and no render-time dependency; the modules
@@ -152,9 +170,12 @@ screen, where a QR is useless. Chrome writes that as a real PDF annotation, whic
 is why `check.py`'s link count is **5** and not 4. If that number drops back to
 4, the anchor was lost.
 
-`.qr`'s `margin-top: 8px` is not a round number by accident: it lands the margin
-column at exactly the height of the bullets beside it, so **the code costs the
-page zero height.**
+`.qr`'s `margin-top` is not a round number by accident — it is tuned against the
+height of the bullets beside it. The code alone cost the page nothing; the second
+caption line takes the margin column past the bullets and costs about 10px, which
+the page has room for. If it ever needs to be free again, shrink the code before
+touching the type: at 80px a module is ~0.67mm, and the floor for phone cameras
+is ~0.4mm, so there is room to go down.
 
 #### Regenerating it
 
