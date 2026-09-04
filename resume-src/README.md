@@ -36,9 +36,26 @@ extracted text — it is the only way to see what an ATS gets.
 
 A good run reports one page for both, `Type3` for the website copy (expected,
 with the "no text layer by design" note), `Type0 / Inter-Regular` for the
-applications copy, and text that reads top to bottom in document order with
-each job's bullets directly under that job. Any real problem prints `FAIL`
-and exits non-zero.
+applications copy, **`links 5`** on both, and text that reads top to bottom in
+document order with each job's bullets directly under that job. Any real problem
+prints `FAIL` and exits non-zero.
+
+**verify.sh does not check the QR** — it cannot see images. After any change
+that touches the code or the layout around it, decode it back out of the
+*rendered PDF*:
+
+1. `sips -s format png -Z 2400 <pdf> --out <png>` for a high-resolution page 1.
+2. Read the module grid out of those pixels and compare it to the matrix in
+   `resume.html`. The QR's position comes from a headless probe
+   (`.qr svg`'s `getBoundingClientRect()`); the PNG is 1855px wide for an 816px
+   page, so the scale is `png_width / 816`.
+3. Confirm the matrix itself still decodes to the right URL. Chrome's built-in
+   `BarcodeDetector` does this — but **it requires a secure context**, so it is
+   `undefined` on a `file://` page. Run it on an `https://` tab, drawing the
+   matrix to a canvas at the page's own `#404040`-on-`#fdfdfd` colors.
+
+Last run: 625/625 modules matched in both builds with the quiet zone clear, and
+the matrix decoded to `https://apple.co/3SprtQ8`.
 
 The helpers: `check.py` inspects one PDF, `stamp.py` adds Title/Author/
 Subject/Keywords via a PDF incremental update (Chrome writes none of those),
@@ -110,6 +127,51 @@ don't quietly tighten it back to a normal one.
 Measured 2026-09-01: the title line uses 562px of 704 in Inter (522 in SF Pro)
 and the contact run 654px (646 in SF). The contact line is the binding one —
 about four characters of headroom before it wraps and costs a row.
+
+### The App Store code
+
+PantryPal shipped, so its margin carries a QR to
+`https://apple.co/3SprtQ8` (which resolves to
+`apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028`), captioned
+`App Store`, under that row's date and location.
+
+It is **baked into the HTML as a static inline SVG** — a `<path>` of module
+squares. There is no QR library here and no render-time dependency; the modules
+are vector, so the code prints at the paper's resolution instead of an image's.
+Four properties are load-bearing:
+
+| | why |
+| --- | --- |
+| `viewBox="0 0 33 33"` for a 25-module code | the extra 8 units are the **4-module quiet zone** the spec requires on every side, baked in so no later layout change can crowd it and silently stop the code scanning |
+| error correction **M**, not H | H pushes the grid to 29×29, shrinking every module by 16%. At this size the bigger modules beat the extra redundancy — the code is 80px, so a module is ~0.67mm against a ~0.4mm floor for phone cameras |
+| `display: block` on the svg | inline SVG sits on the text baseline and drags a phantom descender behind it — the same trap that once cost 19px |
+| `--ink`, not black | `#404040` on `#fdfdfd` is 10.2:1, far more than a scanner needs, and it keeps the page's palette rather than dropping the one pure-black object onto a sheet that has none |
+
+It is wrapped in an `<a>`, so it is a **link as well as a code** — it works on a
+screen, where a QR is useless. Chrome writes that as a real PDF annotation, which
+is why `check.py`'s link count is **5** and not 4. If that number drops back to
+4, the anchor was lost.
+
+`.qr`'s `margin-top: 8px` is not a round number by accident: it lands the margin
+column at exactly the height of the bullets beside it, so **the code costs the
+page zero height.**
+
+#### Regenerating it
+
+If the URL changes, do not hand-edit the path. Open the Browser pane on
+`https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js`,
+then:
+
+```js
+const src = await (await fetch(location.href)).text(); (0,eval)(src);
+const q = qrcode(0, 'M'); q.addData('<the new url>'); q.make();
+// read q.getModuleCount() and q.isDark(r, c) into a matrix
+```
+
+Merge each row's dark runs into one rect (`M{x} {y}h{n}v1h-{n}z`, offset by the
+4-module quiet zone) and paste the path in. **Then verify by decoding it back
+out of the rendered PDF**, not out of the source — see the verification note
+below.
 
 ### The ink ladder
 
