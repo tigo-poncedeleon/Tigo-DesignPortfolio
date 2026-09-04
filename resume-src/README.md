@@ -147,11 +147,21 @@ without a phone. It drops the scheme, the same way the contact run says
 `tigoponcedeleon.com`. Both lines share the margin's quiet tone on a tight 13px
 leading so they read as one caption rather than two stacked labels.
 
-The whole block is **flush right, not centred**. The margin column hangs off a
-single edge — date, location, code, caption, address — and centring the code
-inside its own box put its right edge a few px inside that line, which wobbles.
-`text-align: right` cannot move the svg (it is a block), so it takes
-`margin-left: auto`.
+The block is **centred, and the quiet zone is why.** The svg box is 33 units
+wide for a 25-module code, so roughly 12% of it at each edge is deliberate white
+space — the ink stops about 10px short of the box on every side. Aligning the
+*box* flush right with the date and location therefore left the visible code
+hanging 10px inside that line and reading as a misalignment. Centring instead
+puts the ink's centre on the caption's centre, which is the alignment the eye
+actually checks. (Measured: ink centre, caption centre and address centre all
+land on the same pixel.) `text-align` cannot move the svg, which is a block, so
+it takes `margin: 0 auto`.
+
+The same quiet zone sets the gap under the code. `.qr-cap` has **no top margin**,
+and that is a floor rather than a preference: the svg's bottom quiet zone already
+puts ~9px of clear space under the ink, which is exactly the 4 modules the spec
+wants. That white space *is* the gap. Pulling the caption up with a negative
+margin eats the quiet zone and costs scans on a code this small.
 
 It is **baked into the HTML as a static inline SVG** — a `<path>` of module
 squares. There is no QR library here and no render-time dependency; the modules

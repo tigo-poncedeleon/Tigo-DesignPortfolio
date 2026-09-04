@@ -302,14 +302,16 @@ li::before {
      still sits close to the height of the bullets beside it. */
   margin-top: 6px;
   color: var(--ink);
-  /* flush RIGHT, not centred. The whole margin column is right-aligned — the
-     date and the location hang off one edge — and centring the code inside its
-     own box put its right edge a few px inside that line, which wobbles. The
-     svg needs margin-left:auto because text-align cannot move a block. */
-  text-align: right;
+  /* CENTRED, and the reason is the quiet zone. The svg box is 33 units wide for
+     a 25-module code, so ~12% of it at each edge is deliberate white space —
+     the ink stops ~10px short of the box. Aligning the BOX flush right with the
+     date and location therefore left the visible code hanging 10px inside that
+     line, reading as a misalignment. Centring the box instead puts the ink's
+     centre on the caption's centre, which is the alignment the eye checks. */
+  text-align: center;
   text-decoration: none;
 }
-.qr svg { display: block; margin-left: auto; }
+.qr svg { display: block; margin: 0 auto; }
 /* Two lines: what it is, then where it goes. The address is written out as
    well as encoded because a resume parser CANNOT read the code — it is an
    image — so this is the only form of the link a machine ever sees. It drops
@@ -324,7 +326,12 @@ li::before {
   white-space: nowrap;
 }
 .qr-cap {
-  margin-top: 5px;
+  /* No margin — and this is a floor, not a preference. The svg's bottom quiet
+     zone already puts ~10px of clear space under the ink, which is exactly the
+     4 modules the spec wants. That white space IS the gap. Pull the caption up
+     with a negative margin and you are eating the quiet zone, which costs
+     scans on a code this small. */
+  margin-top: 0;
   font-size: 11.6px;
 }
 .qr-url { font-size: 10.5px; }
