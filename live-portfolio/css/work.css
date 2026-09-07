@@ -23,28 +23,38 @@
   flex: none;
   width: 100%;
   /* The picture row's height, shared with .pick-stage below so the panel
-     cannot drift out of step with what it holds. It is 380 because that is
-     what the TALLEST shot needs (the monitor is 379), and the row's height
-     is the one number that decides everything else here: the shots centre in
-     it, and the index and the note centre on the shots. At 440 the row was
-     60px taller than anything in it, so the monitor floated 30px below the
-     content step and the words — centred on a line 30px lower still — began
-     155px under the header. Cut to the picture, the tallest shot starts
-     exactly on the step and the words sit on its middle. */
-  --pick-h: 380px;
-  /* as tall as its contents and no taller: header rhythm + stepper + the
-     shared floor (styles.css) — the same sum Play's slide is built from, so
-     the two read as siblings when you scroll past them.
+     cannot drift out of step with what it holds. It used to be a flat 380 —
+     what the tallest shot needed back when the note column squeezed the
+     stage to 528px wide and the monitor was width-bound at 455x379.
+
+     The note is gone, so the picture is height-bound now and the row's
+     height is the whole of how big it gets. Rather than guess a number,
+     take the screen: --hero-h is one screen of card, in card px, published
+     on :root by js/main.js (which names this file as the reason it lives on
+     the root rather than on #home) and re-measured on every resize. Minus
+     everything in the panel that is not the picture — the header step, the
+     row of names, the gap under it, the shared floor — that is exactly the
+     room the shot has, so the panel lands on one screen at any window and
+     the shot is always as large as that window allows. */
+  /* Three columns, so the picture is WIDTH-bound by the middle track and
+     extra height stops buying anything past the point where the widest
+     shot fills its column: Vicino is 1.2:1, so a 640px track caps it at
+     533 tall. The clamp still tracks the window — the panel owns exactly
+     one screen, the way it did when the note column was last here — and
+     the ceiling is set where the width cap bites. --hero-h is one screen of
+     card in card px, published on :root by js/main.js. */
+  --pick-h: clamp(400px, calc(var(--hero-h, 832px) - 272px), 720px);
+  /* as tall as its contents and no taller: header rhythm + the names + the
+     stepper + the shared floor (styles.css). Work and Play were built from
+     the same sum so the two read as siblings; Work's is now driven by the
+     window instead of a constant, but it still resolves to one screen, and
+     one screen is what Play's 680 was always approximating.
 
      It used to carry `min-height: var(--hero-h)` as well, to own a whole
      screen: a section shorter than the window is CENTRED when you navigate
      to it (js/shell.js restY), and that hung a band of empty page over the
-     title. But Play is shorter than the window too and never got the same
-     treatment — so the cure applied to one of a matched pair, and the price
-     was 273px of nothing under the stepper against Play's 152. Between Work
-     and Play the page opened up to 313px of air where every other seam is
-     190. The pair matters more than the arrival: both are sized to their
-     contents now, and both centre the same way when you jump to them. */
+     title. The clamp above makes the min-height moot — the panel IS one
+     screen now, by construction, rather than being padded up to one. */
   height: calc(var(--content-top) + var(--pick-h) + var(--stage-floor));
 }
 
@@ -87,24 +97,58 @@
   left: 50%;
   transform: translateX(-50%);
   width: var(--measure);
+  /* Index, picture, note. The tracks are tighter than the 232/1fr/268 and
+     48px gutters this started life with: the left column only carries a
+     mark and a name now, so it does not need the 232 it started with, and
+     every pixel taken off the sides is a pixel the middle track — and
+     therefore the picture — gets back. 1124 − 190 − 190 − 104 leaves the
+     stage 640 wide, against the 528 it used to have. 190 is what the note
+     needs now that it sets no paragraph: two short lines, and the left
+     column's own pill wants 182.
+
+     The 52px gutters are the point of that arithmetic. At 30 the Vicino
+     shot — the widest of the three, and cropped hard to its own ink, so it
+     carries no margin of its own — came within a hair of both columns and
+     the row read as three things touching. Widening the gutters inside a
+     fixed measure has to come out of somewhere; taking it off the side
+     columns costs the picture 20px of width, taking it off the middle
+     would have cost 104.
+
+     The two side tracks MUST be equal. They were 180 and 244, which is a
+     perfectly good pair of columns and put the middle track's centre 32px
+     to the left of the container's — so the picture hung left of the title
+     centred above it, on a page where everything else shares one centre
+     line. Whatever these two are, they are the same number. */
   display: grid;
-  grid-template-columns: 232px 1fr 268px;
+  grid-template-columns: 190px 1fr 190px;
   /* all three columns on one line — the index and the note read as captions
-     to the picture, so they belong on its middle, not hung off the top of it
-     where they left the whole left side of the row empty. What made this sit
-     too low was the ROW, not the centring; see --pick-h above. */
+     to the picture, so they belong on its middle */
   align-items: center;
-  gap: 48px;
+  gap: 52px;
 }
 
 /* ---- the index ---- */
-.pick-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+/* ---- the index. No card around each project — a bordered card here
+   competed with the picture it is only meant to label, and boxed three
+   items that were already legible as a list. What the lit row does carry
+   is a soft fill, because ink alone was not enough to say WHICH project
+   you are looking at: the name darkening from 0.40 to full is a difference
+   you have to go looking for, and the pill is one you cannot miss. Fill
+   and ink together, the way the rail marks the page you are on. ---- */
+.pick-list {
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
 .pick-row {
-  width: 100%;
   display: flex;
-  align-items: baseline;
+  /* one line of text against a 40px tile, so the two centre on each other */
+  align-items: center;
   gap: 14px;
-  padding: 12px 14px;
+  /* the padding is the lit row's pill, so it is on every row whether or not
+     the fill is showing — otherwise the names would step sideways as you
+     browse */
+  padding: 11px 14px;
   background: none;
   border: 0;
   border-radius: 10px;
@@ -113,31 +157,74 @@
   line-height: 1.2;
   text-align: left;
   text-decoration: none;
-  color: rgba(var(--ink-rgb), 0.48);
+  color: rgba(var(--ink-rgb), 0.40);
   cursor: pointer;
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
 }
-.pick-n {
+/* ---- the mark.
+
+   The three source icons are not a set: PantryPal is a flat App Store
+   export, the other two are 3D renders carrying gloss, a rim light and a
+   drop shadow, and all three baked DIFFERENT corner radii into the art
+   (26.5%, 28.5%, 23.8%). Left alone they read as three icons from three
+   places. Media/icon-*.webp are therefore pre-normalised to flat, fully
+   opaque SQUARES with no rounding of their own, and every edge you see
+   here is drawn by this rule — one radius, one hairline, one shadow.
+
+   The outer box-shadow is a deliberate, scoped exception to the site's
+   no-shadow rule (see css/vicino.css:219): these are product marks, not
+   the site's own surfaces, and an app icon that sits flat on the page
+   reads as a sticker. Do not spread this value to anything else.
+
+   ::after carries the hairline because an inset shadow paints BENEATH its
+   element's content, so on .pick-ico itself the <img> would cover it. */
+.pick-ico {
+  position: relative;
+  display: block;
   flex: none;
-  font-size: 12.5px;
-  font-variant-numeric: tabular-nums;
-  color: rgba(var(--ink-rgb), 0.30);
-  transition: color var(--t-micro) ease;
+  /* an inner tile the row is built around, not a bullet beside a name */
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(var(--ink-rgb), 0.08);
+  transition: box-shadow var(--t-micro) ease;
 }
-.pick-row:hover { color: var(--ink); }
+.pick-ico > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pick-ico::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 0.5px rgba(var(--ink-rgb), 0.12);
+  pointer-events: none;
+}
+
+.pick-row:hover { color: rgba(var(--ink-rgb), 0.70); }
 /* the one you are on darkens to full ink on the site's warm chip, and the
    two you are not on stay ash — the list reads as one lit name among grey
    ones, which is the same figure/ground the rail and the nav words use.
    The accent used to do this job here, but the name is the loudest thing
    in the column and orange on it made the index compete with the picture
-   it is only meant to label. The number stays grey on every row: it is a
-   position marker, not part of the name. */
+   it is only meant to label. Only the words change: see the note on the
+   marks below for why they hold full strength on every row. */
 .pick-row.is-current {
   color: var(--ink);
   background: rgba(var(--ink-rgb), 0.06);
 }
-.pick-row.is-current .pick-n { color: var(--muted); }
+/* the marks never dim with their names. Fading them was tried and it read
+   as broken rather than as quiet: a black tile at 0.62 is just a grey one,
+   so the two unlit projects lost the very thing the icon was added to give
+   them. The pill and the name carry the state; the products stay lit. */
+.pick-row.is-current .pick-ico { box-shadow: 0 1px 3px rgba(var(--ink-rgb), 0.10); }
 .pick-row:focus-visible { outline-offset: 1px; }
+
+/* ---- the words in a row. The name is the row; the role and the year are
+   the only thing the deleted note column kept, moved under the name where
+   they read as a subtitle to it rather than as a paragraph competing with
+   the picture. They stay a step quieter than the name on every row,
+   including the lit one — this is the label, not the headline. ---- */
+.pick-name { display: block; font-size: 18px; line-height: 1.25; white-space: nowrap; }
 
 /* ---- the stage: all three stacked, only the current one lit, so the swap
    is a cross-fade in place rather than a reflow. The shots sit on the
@@ -148,13 +235,14 @@
    The three now share one centre, whichever project is up. ---- */
 .pick-stage {
   position: relative;
+  width: 100%;
   height: var(--pick-h);
   display: grid;
   place-items: center;
   /* the painted size of the shot that is up — the opening one's, until
      js/work-pick.js measures. Only .pick-open reads it; see there. */
-  --shot-w: 455px;
-  --shot-h: 379px;
+  --shot-w: 640px;
+  --shot-h: 533px;
 }
 .pick-shot {
   grid-area: 1 / 1;
@@ -181,13 +269,16 @@
    picture — a screen, a device, a mark — and one shared ceiling makes the
    logo loom and the monitor look timid. Each is set to the size it wants to
    be looked at. */
-/* the Vicino shot is cropped to its ink (2048×1706, Aug 2026) — as a square
-   it carried 12% of empty margin top and bottom, which no layout can see:
-   the box began at 152 and the monitor began 60px lower. 379 keeps the
-   monitor at exactly the size it was drawn at when the margin was in. */
-.work-img-vicino img { max-height: 379px; }   /* a whole screen; give it room */
-.work-img-pantry img { max-height: 380px; }   /* a phone, already tall */
-.work-img-drone  img { max-height: 285px; }   /* a mark, not a scene */
+   These were flat px (379 / 380 / 285) while --pick-h was a flat 380. It
+   moves with the window now, so they are written as fractions of it —
+   left as constants they would have silently capped every shot at its old
+   size and the whole widening would have done nothing. */
+.work-img-vicino img { max-height: var(--pick-h); }  /* a whole screen; give it room */
+.work-img-pantry img { max-height: var(--pick-h); }  /* a phone, already tall */
+/* a mark, not a scene: the roundel is the only piece here that is a logo
+   rather than a thing that was designed to be looked at full size, and at
+   the full row height it stops being a mark and becomes a billboard. */
+.work-img-drone  img { max-height: calc(var(--pick-h) * 0.82); }
 .pick-stage:hover .pick-shot.is-current img { scale: 1.015; }
 
 /* the corner glyph the work cards always wore, kept on the stage.
@@ -224,7 +315,20 @@
 }
 .pick-stage:hover .pick-open { opacity: 1; color: var(--ink); transform: translate(1px, -1px); }
 
-/* ---- the note ---- */
+/* ---- the note: what the job was. The name is the card on the left, so
+   this column never repeats it — it carries only the three things the left
+   column cannot: the role, when it ran, and a line about what the work was.
+   All three cards share one box and cross-fade in place, the way the shots
+   do, so switching projects never reflows the row. ---- */
+/* ---- the note sits STILL. It briefly hung off whichever row was lit, so
+   the role and the name you had clicked shared an axis — but that meant the
+   whole column stepped up and down the page as you browsed, and a block of
+   text that moves when you hover something else reads as a glitch, not as
+   an alignment. It is centred in place now: one position, the same for all
+   three, on the axis the index and the picture already share.
+
+   All three cards stack in one box and cross-fade, so switching never
+   reflows the row. ---- */
 .pick-note { position: relative; align-self: center; }
 .pick-card {
   position: absolute;
@@ -238,33 +342,30 @@
 }
 .pick-card.is-current { opacity: 1; translate: 0 -50%; pointer-events: auto; }
 .pick-card:not(.is-current) { translate: 0 calc(-50% + 8px); }
-.pick-card h3 {
-  font-size: 21px;
+/* The note is a role and its dates — the sentence that used to sit under
+   them is gone, so this column is now the shortest thing in the row and
+   the picture is the only thing being read. What survives of the old
+   note's shape is the step between the two lines it still has: a heading
+   at 20 against a meta line at 13.25 and 0.46, which is the same big drop
+   that gave the old block a way in. */
+.pick-role {
+  font-size: 20px;
   font-weight: 400;
-  letter-spacing: -0.005em;
   line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
-.pick-role {
+.pick-when {
   margin-top: 6px;
   font-size: 13.25px;
-  color: rgba(var(--ink-rgb), 0.48);
-}
-.pick-copy {
-  margin-top: 14px;
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: rgba(var(--ink-rgb), 0.62);
+  line-height: 1.35;
+  color: rgba(var(--ink-rgb), 0.46);
 }
 
 /* No entrance — the title and the stepper are simply on the page when you
    reach them (styles.css). The stepper's own hover and browse transitions
    are untouched; only the arrival is gone. */
 .work-pick.is-plain * { transition: none !important; }
-
-@media (prefers-reduced-motion: reduce) {
-  .work-card:hover .work-card-art img { scale: none; }
-}
 
 /* ============================================================
    MOBILE (≤700px) — the grid unrolls into a single column; each
@@ -307,12 +408,18 @@
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  /* the names go back to a column: there is no room to sit three of them
+     side by side, and js/mobile.js has usually taken this whole stepper
+     away before it can matter (this block only ever fires in a narrow
+     DESKTOP-loaded window, which snapshots its width at load) */
+  .pick-list { width: 100%; }
+  .pick-row { width: 100%; }
+  .pick-note { min-height: 176px; }
   .pick-stage { height: 300px; }
   .pick-shot img,
   .work-img-vicino img,
   .work-img-pantry img,
   .work-img-drone img { max-height: 300px; }
-  .pick-note { min-height: 168px; }
   .pick-open { opacity: 0.9; }
   .pick-row:active { background: rgba(var(--ink-rgb), 0.06); }
 }

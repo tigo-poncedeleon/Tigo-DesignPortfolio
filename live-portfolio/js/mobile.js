@@ -105,21 +105,32 @@
 
       const meta = document.createElement('div');
       meta.className = 'm-work-meta';
-      const n = row.querySelector('.pick-n');
+      // the app icon takes the slot the position number used to hold — it
+      // labels the row better than a numeral did, and like the shot above
+      // it the node is MOVED off the desktop markup, not cloned
+      const ico = row.querySelector('.pick-ico');
       meta.innerHTML =
-        '<p class="m-work-n">' + (n ? n.textContent : '') + '</p>' +
         '<h3 class="m-work-name"></h3>' +
         '<p class="m-work-role"></p>' +
-        '<p class="m-work-copy"></p>' +
         '<p class="m-work-go">read the case study <span aria-hidden="true">&rarr;</span></p>';
-      const put = (sel, from) => {
+      // the name is the row on the left, the role and the dates are the note
+      // column on the right, so this reads from both — and role and when
+      // rejoin on one line here, where there is no narrow column to keep
+      // them apart.
+      const put = (sel, from, root) => {
         const el = meta.querySelector(sel);
-        const src = card.querySelector(from);
+        const src = (root || card).querySelector(from);
         if (el && src) el.textContent = src.textContent.trim();
       };
-      put('.m-work-name', 'h3');
-      put('.m-work-role', '.pick-role');
-      put('.m-work-copy', '.pick-copy');
+      put('.m-work-name', '.pick-name', row);
+      const role = card.querySelector('.pick-role');
+      const when = card.querySelector('.pick-when');
+      if (role) {
+        meta.querySelector('.m-work-role').textContent =
+          [role.textContent.trim(), when && when.textContent.trim()]
+            .filter(Boolean).join(' \u00b7 ');
+      }
+      if (ico) meta.insertBefore(ico, meta.firstChild);
 
       a.append(fig, meta);
       list.appendChild(a);

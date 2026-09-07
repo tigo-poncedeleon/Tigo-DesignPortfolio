@@ -216,7 +216,7 @@
       { id: 'home', href: 'index.html#home', text: 'Home', icon: 'home' },
       { id: 'work', href: 'index.html#work', text: 'Work', icon: 'work', kids: [
         { id: 'vicino', href: 'vicino.html', text: 'Vicino AI', icon: 'vicino' },
-        { id: 'pantrypal', href: 'pantrypal.html', text: 'Pantry Pal', icon: 'tomato' },
+        { id: 'pantrypal', href: 'pantrypal.html', text: 'PantryPal', icon: 'tomato' },
         { id: 'nextlevel', href: 'nextlevel.html', text: 'Next Level', icon: 'drone' },
       ] },
       // Play sits before About, matching the order the page scrolls in —
@@ -331,26 +331,99 @@
   // chip, because both had to fit inside the rail's column. Only the toggle
   // lives there now, and 44px of it never threatens MIN.)
 
-  // ONE FRAME. The rail toggle used to be a FLIP: snap the layout, glide a
-  // compositor transform over it, swap the zoom back in at rest — plus a
-  // cross-document handshake so a case study in the overlay rode the same
-  // clock. It was correct on paper and measured clean, and it never once
-  // stopped looking broken: every ride had to keep four things in step (the
-  // rail's slide, the card's reflow, the stage's zoom, the overlay frame's
-  // edge), and each fix for one of them desynced another.
+  // ONE FRAME, STILL — and now two things ride it.
   //
-  // So there is no ride. The class flips, the layout lands, the zoom lands,
-  // the reading line is held — all in the SAME frame, in this one task.
-  // Nothing animates, so nothing can fall out of step; the only thing the
-  // eye can catch is a single clean change of size, which reads as fast
-  // rather than as broken. (The rail's own width/margin transitions are
-  // gone from shell.css for the same reason.)
+  // The rail toggle used to be a FLIP that eased the ZOOM: snap the layout,
+  // glide a compositor transform over it, swap the zoom back in at rest —
+  // plus a cross-document handshake so a case study in the overlay rode the
+  // same clock. It was correct on paper and measured clean, and it never
+  // once stopped looking broken: every ride had to keep four things in step
+  // (the rail's slide, the card's reflow, the stage's zoom, the overlay
+  // frame's edge), and each fix for one of them desynced another.
+  //
+  // The law that came out of that has not moved: THE LAYOUT LANDS IN ONE
+  // FRAME. The class flips, the card reflows, stage-fit picks the new zoom
+  // and holds the reading line — all in this one synchronous task, before
+  // anything is allowed to animate. Nothing eased is ever also laid out.
+  //
+  // What HAS changed is that the layout landing in one frame was being shown
+  // to the visitor. The rail glided and the page it uncovered jumped: closing
+  // it moves the stage's scale about 13% (js/stage-fit.js), so the whole
+  // document snapped to a new size while the panel took 0.3s to get out of
+  // the way. One piece rode, one piece cut.
+  //
+  // So both ride. After the layout is final, each of the two gets a
+  // compositor transform carrying it back to where it LOOKED a moment ago,
+  // and both are released on the same clock. That is a plain FLIP on two
+  // elements — no zoom in the transition, no second document (the iframe
+  // overlay is retired), nothing to fall out of step with, because the thing
+  // they used to desync from no longer moves. It is the same idiom
+  // js/typewriter.js runs for the opening, which is the version that works.
+  //
+  // The counter-transform is exact rather than approximate. A point p in the
+  // stage's own grid was at `oldLeft + z0*p` and is now at `newLeft + z1*p`;
+  // with transform-origin at 0 0, `translate(d) scale(k)` puts every p back
+  // at once when k = z0/z1 and d = (oldLeft - newLeft)/z1. The divide by z1
+  // is because `zoom` lives on this very element, so a translate written
+  // here is spent in the stage's own pixels and arrives z1 times bigger —
+  // measured, not assumed (100px of translate moves 112.5px at zoom 1.125).
+  //
+  // Interrupt-safe by construction: `was` is read from the live boxes, so a
+  // ride already in flight is measured where it has got to, not where it
+  // started, and the in-flight transforms are cleared BEFORE the class flips
+  // so stage-fit's reading-line hold measures a true box rather than a
+  // travelling one.
+
+  // the ride's own timer, module-scoped so a second click cancels the first
+  // one's cleanup instead of letting it land in the middle of the new ride
+  let rideTimer = 0;
+  // the scale a mid-flight element is currently DRAWN at, which is not the
+  // scale stage-fit thinks it is: `.a` of the live matrix is whatever the
+  // transition has interpolated to this instant
+  const drawnScale = (el) => {
+    if (!el) return 1;
+    const t = getComputedStyle(el).transform;
+    if (!t || t === 'none') return 1;
+    try { return new DOMMatrixReadOnly(t).a || 1; } catch (err) { return 1; }
+  };
+  const railStage = () => document.querySelector('.shell-card > main');
+  // put an element back exactly where it is, with nothing in flight
+  const unpose = (el) => {
+    if (!el) return;
+    el.getAnimations().forEach((a) => {
+      if (a.transitionProperty === 'transform') a.cancel();
+    });
+    el.style.transition = 'none';
+    el.style.transform = '';
+    el.style.transformOrigin = '';
+  };
+
   const toggleRail = () => {
     const next = !root.classList.contains('rail-closed');
     const side = document.querySelector('.shell-side');
+    const stage = railStage();
     const eased = side && !reduced() && window.innerWidth > 700;
-    const from = eased ? side.getBoundingClientRect().left : 0;
 
+    // 1. where things LOOK right now — read before anything is disturbed, so
+    //    an interrupted ride is picked up where the eye last saw it
+    const was = eased ? {
+      side: side.getBoundingClientRect().left,
+      stage: stage && stage.getBoundingClientRect(),
+      // drawn scale = the zoom stage-fit set, times whatever a ride in
+      // flight has scaled it by on top
+      scale: ((window.ShellFit && window.ShellFit.card) || 1) * drawnScale(stage),
+    } : null;
+
+    // 2. and now nothing is in flight. This has to happen BEFORE the class
+    //    flips: stage-fit's reading-line hold measures the stage's box, and a
+    //    box that is still carrying a transition's transform would send the
+    //    scroll correction to the wrong place.
+    unpose(side);
+    unpose(stage);
+    if (rideTimer) { clearTimeout(rideTimer); rideTimer = 0; }
+    root.classList.remove('rail-riding');
+
+    // 3. the layout, all of it, in this one task
     root.classList.toggle('rail-closed', next);
     const tool = document.querySelector('.side-tool[data-act="rail"]');
     if (tool) {
@@ -362,41 +435,104 @@
     // this document's stage: new scale + the reading-line hold, now
     if (window.__shellFit) window.__shellFit();
 
-    // …and now the ONE thing that eases: the rail itself, sliding between
-    // where it was and where it now is. A plain FLIP on a single element —
-    // no zoom, no reflow, no second document, nothing to fall out of step
-    // with. That is the whole difference from the version that had to be
-    // deleted: the layout is already final and correct when this starts,
-    // so the glide is pure compositor work and cannot desync from anything.
-    // The page keeps its size the instant you click; the panel takes 0.3s
-    // to get out of (or into) the way, which is the part the eye wanted.
-    if (eased) {
-      const dx = from - side.getBoundingClientRect().left;
-      if (dx) {
-        side.getAnimations().forEach((a) => {
-          if (a.transitionProperty === 'transform') a.cancel();
-        });
-        side.style.transition = 'none';
-        side.style.transform = 'translateX(' + dx + 'px)';
-        void side.offsetWidth;                     // commit the start pose
-        // TRANSFORM ONLY — no opacity in this transition. Animating opacity
-        // makes the layer non-opaque, and both Chrome and Firefox drop
-        // subpixel (LCD) text antialiasing on a non-opaque layer: every
-        // label in the rail goes thin and grainy for the length of the
-        // slide and then snaps crisp, which is exactly the "scratchy, not
-        // crisp" this reads as — in BOTH browsers, which is how we know it
-        // was never the tile-memory story. The rail's background is opaque,
-        // so a pure translate keeps the text rendering at full quality the
-        // whole way across.
-        side.style.transition = 'transform var(--t-glide) var(--ease-glide)';
-        side.style.transform = '';
-        const clear = () => { side.style.transition = side.style.transform = ''; };
-        side.addEventListener('transitionend', (e) => {
-          if (e.target === side && e.propertyName === 'transform') clear();
-        }, { once: true });
-        setTimeout(clear, 450);       // transitionend has no delivery guarantee
+    // unpose left `transition: none` on both; every way out of here has to
+    // hand that back or the next hover/first-paint fade lands instantly
+    const settle = () => {
+      if (side) side.style.transition = '';
+      if (stage) stage.style.transition = '';
+    };
+    if (!eased) { settle(); return; }
+
+    // 4. …and now the ride, and everything that moves is on this one line.
+    //    Opening springs: the panel travels its own width and lands on its
+    //    stop with 3% of overshoot. Closing is the same spring damped flat —
+    //    an overshoot on the way out would be spent off-screen where nobody
+    //    can see it — and a little shorter, because there is less to watch.
+    const timing = next
+      ? 'var(--t-rail-out) var(--ease-rail-out)'
+      : 'var(--t-rail) var(--ease-rail)';
+    const rode = [];
+    const start = (el, from, curve) => {
+      el.style.transition = 'none';
+      el.style.transform = from;
+      rode.push([el, curve]);
+    };
+
+    // the panel. TRANSFORM ONLY — no opacity in this transition. Animating
+    // opacity makes the layer non-opaque, and both Chrome and Firefox drop
+    // subpixel (LCD) text antialiasing on a non-opaque layer: every label in
+    // the rail goes thin and grainy for the length of the slide and then
+    // snaps crisp. The rail's background is opaque, so a pure translate keeps
+    // the type rendering at full quality the whole way across.
+    const dx = was.side - side.getBoundingClientRect().left;
+    if (Math.abs(dx) >= 0.5) {
+      start(side, 'translateX(' + dx.toFixed(2) + 'px)', 'transform ' + timing);
+    }
+
+    // the frame, on the panel's own curve — the SAME one, both directions.
+    //
+    // It has been three things. A plain deceleration first, on the theory
+    // that only one piece should bump, and that read as two events: the panel
+    // struck its stop while the page was still arriving behind it. Then the
+    // panel's spring going in and a deceleration coming out, which fixed the
+    // arrival and left the departure mismatched. Now: whatever the panel is
+    // doing, the frame is doing. Both curves are the step response of the
+    // same spring (see styles.css), so there is nothing to mismatch — going
+    // out it simply has no overshoot to share.
+    //
+    // What the shared overshoot costs is smaller than it sounds. It is 3% of
+    // a ride that is a 13% scale change, so the page passes about 0.4% under
+    // its final size at the peak — under a pixel on a line of body copy. You
+    // read it as the whole frame arriving at one stop, not as type wobbling.
+    if (stage && was.stage) {
+      const now = stage.getBoundingClientRect();
+      const s1 = (window.ShellFit && window.ShellFit.card) || 1;
+      const k = was.scale / s1;
+      const ox = (was.stage.left - now.left) / s1;   // spent in the stage's
+      const oy = (was.stage.top - now.top) / s1;     // own px, hence / s1
+      if (Math.abs(k - 1) > 0.002 || Math.abs(ox) >= 0.5 || Math.abs(oy) >= 0.5) {
+        stage.style.transformOrigin = '0 0';
+        start(stage,
+          'translate(' + ox.toFixed(2) + 'px, ' + oy.toFixed(2) + 'px) scale(' + k.toFixed(5) + ')',
+          'transform ' + timing);
       }
     }
+
+    if (!rode.length) { settle(); return; }
+
+    // whichever of the two is NOT riding this time still has unpose's
+    // `transition: none` on it, and nothing below will take it off
+    [side, stage].forEach((el) => {
+      if (el && !rode.some((r) => r[0] === el)) el.style.transition = '';
+    });
+
+    // rail-riding carries will-change, and it goes on BEFORE the commit on
+    // purpose: promoted in the same recalc as the start pose, the compositor
+    // has both layers rastered before the first frame of the ride asks for
+    // them. Added after the commit it was promoting DURING the ride, which
+    // costs a frame at exactly the moment the eye is watching — and on a
+    // ten-chapter case study the stage is a large layer to hand over late.
+    root.classList.add('rail-riding');
+    void root.offsetWidth;              // ONE commit, so both starts are the
+                                        // same instant
+    rode.forEach(([el, curve]) => {
+      el.style.transition = curve;
+      el.style.transform = '';
+    });
+
+    // one shared timer rather than a transitionend each: they are on one
+    // clock by construction, and transitionend has no delivery guarantee.
+    // Read from the token so retuning the spring cannot clip the ride —
+    // the 450ms that used to sit here was sized for --t-glide's 0.3s.
+    const secs = parseFloat(getComputedStyle(root)
+      .getPropertyValue(next ? '--t-rail-out' : '--t-rail')) || 0.42;
+    rideTimer = setTimeout(() => {
+      rideTimer = 0;
+      root.classList.remove('rail-riding');
+      rode.forEach(([el]) => {
+        el.style.transition = el.style.transform = el.style.transformOrigin = '';
+      });
+    }, secs * 1000 + 90);
   };
   try {
     if (sessionStorage.getItem(RAIL_KEY) === '1') root.classList.add('rail-closed');

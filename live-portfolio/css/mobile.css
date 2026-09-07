@@ -233,14 +233,15 @@
   .m-work-item[data-case="nextlevel"] .m-work-shot img { max-height: 180px; }
   .m-work-item:active .m-work-shot img { scale: 0.985; }
 
-  .m-work-n {
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    color: var(--g-400);
-    font-variant-numeric: tabular-nums;
+  /* the same tile as the desktop index, sized up to hold its own against a
+     24px name */
+  .m-work-item .pick-ico {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
   }
   .m-work-name {
-    margin-top: 6px;
+    margin-top: 12px;
     font-size: 24px;
     font-weight: 400;
     line-height: 30px;
@@ -252,12 +253,6 @@
     font-size: 14px;
     line-height: 20px;
     color: var(--g-400);
-  }
-  .m-work-copy {
-    margin-top: 12px;
-    font-size: 16px;
-    line-height: 25px;
-    color: var(--g-700);
   }
   .m-work-go {
     margin-top: 14px;

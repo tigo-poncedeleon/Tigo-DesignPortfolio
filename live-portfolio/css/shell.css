@@ -185,6 +185,32 @@ html.rail-dragging .side-grip { transition: none; }
 .shell:has(.side-grip:hover) .shell-side,
 html.rail-dragging .shell-side { border-right-color: var(--orange); }
 
+/* ---- and while the frame is RIDING (js/shell.js toggleRail, for exactly
+   the length of the spring) two things step out of the way.
+
+   The grip, because it is a lie for that beat: the seam you can see is the
+   rail's own border-right, and that is travelling on the compositor, while
+   this fixed 1px is not. It draws nothing at rest, so hiding it costs
+   nothing and stops a col-resize cursor appearing ten pixels from any edge
+   the eye can find.
+
+   The stage, because it is offset from its own hit boxes for the same beat
+   — it is being carried back to where it looked a moment ago — so a click
+   would land on whatever is now under the pointer rather than what is drawn
+   there. The document still scrolls; only the picking stops. ---- */
+html.rail-riding .side-grip { opacity: 0; pointer-events: none; }
+html.rail-riding .shell-card > main { pointer-events: none; }
+
+/* And both riding layers are promoted for the length of the ride and not one
+   frame longer. js/shell.js puts this class on BEFORE it commits the start
+   pose, so the raster is done before the first frame needs it — the stage on
+   a ten-chapter case study is a large layer to hand to the compositor while
+   it is already moving. Left on permanently it would be a permanently
+   promoted copy of the whole document, which is why it lives on a class that
+   comes off when the ride ends. */
+html.rail-riding .shell-side,
+html.rail-riding .shell-card > main { will-change: transform; }
+
 /* Closed means CLOSED — the page gets the whole screen. It SLIDES out
    rather than vanishing: a negative margin equal to its own width, so the
    panel travels left under the card's edge while the card grows into the
@@ -227,8 +253,11 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   width: 1px;
   background: transparent;
   cursor: col-resize;
+  /* on the RIDE's clock, not the glide's. Everything the toggle sets in
+     motion now runs on one timer; a 0.3s fade under a 0.56s slide was a
+     second, shorter event happening inside the first one. */
   transition: background-color var(--t-micro) ease,
-              opacity var(--t-glide) ease;
+              opacity var(--t-rail-out) ease;
 }
 .side-grip::before {
   content: '';
@@ -262,8 +291,13 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   color: var(--g-500);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* the opacity is .rail-open's, and it is on the ride's clock for the same
+     reason the grip is. --t-rail-out rather than --t-rail on purpose: coming
+     back it should arrive with the panel it replaces, and going away it
+     should be gone BEFORE the panel lands, because by then the rail's own
+     toggle is standing in the same 28px square. */
   transition: color var(--t-micro) ease, background-color var(--t-micro) ease,
-              opacity var(--t-glide) ease;
+              opacity var(--t-rail-out) ease;
 }
 .side-tool:hover,
 .side-tool:focus-visible,
@@ -274,6 +308,12 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
 }
 .side-tool svg,
 .rail-open svg { display: block; width: 19px; height: 19px; }
+
+/* The button does NOT perform. A lean toward the direction of travel and a
+   spring on the press were both tried and cut: the panel is the thing that
+   moves, and a glyph rehearsing the movement a millimetre at a time before
+   it happens is a second, smaller announcement of the same event. The
+   hover's colour and ground say everything a 28px square needs to say. */
 
 /* ---- and the way back in.
    Fixed to the frame's own corner rather than to the card, so it does not

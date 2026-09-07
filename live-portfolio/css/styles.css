@@ -119,6 +119,62 @@
   --ease-rise:   cubic-bezier(0.22, 1, 0.36, 1);
   --ease-draw:   cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* ---- the rail's toggle: ONE second-order system, in two states.
+     Both curves below are the step response of a damped spring — the same
+     equation, different damping — which is why the panel and the frame that
+     rides with it feel like one physical thing rather than two eased boxes.
+     A spring's step response leaves the start with zero velocity, so it eases
+     IN for free; the shape is the settle, not the departure.
+
+     THE VERSION BEFORE THIS ONE WAS JERKY, and it is worth writing down why,
+     because the numbers look reasonable until you watch them. It was 0.42s
+     with a 6.3% overshoot, and it spent 81% of its travel in the first 24% of
+     its time: a snap, then a wobble, then a long quiet tail. Two events, not
+     one. The fix was not a different easing family — it was the same family
+     slowed down and damped up, so the motion is monotone where the eye is
+     watching and the overshoot is a landing rather than a rebound:
+
+       in   ζ=0.745  →  3.0% over, peak at 0.35s. 0.20 / 0.67 / 1.01 / 1.02
+                        of the way at 10 / 25 / 50 / 75% of the ride.
+       out  ζ=1.0    →  critically damped, no overshoot at all, and almost
+                        exactly the same rise. 0.23 / 0.66 / 0.94 / 0.99.
+
+     Out does not bump because nothing is landing: the panel is leaving, and a
+     rebound at the edge of the glass is a bounce off nothing. But it is the
+     same curve family at the same gentleness, so closing does not feel like a
+     different control from opening. It is shorter (0.44 against 0.56) only
+     because there is less to look at on the way out.
+
+     THE FRAME RIDES BOTH, on the same clock and the same curve. The card's
+     width and the stage's zoom are carried by js/shell.js toggleRail as a
+     compositor transform, and giving them their own easing — even a good one
+     — read as the panel striking its stop while the page was still arriving
+     behind it. One curve, one movement. The overshoot costs the page 3% of a
+     13% scale change, which is 0.4% under its final size at the peak: under a
+     pixel on a line of body copy.
+
+     The note above says overshoot past 0.3s reads as wobble. At 6% it did.
+     At 3%, on a spring that is 98% settled before it gets there, it reads as
+     weight. ---- */
+  --t-rail:        0.56s;
+  --t-rail-out:    0.44s;
+  /* Sampled at ~14ms, which is inside a frame at 60Hz, so the piecewise-linear
+     interpolation between stops has no corner the eye can find. First use of
+     linear() on the site; the @supports below covers what cannot. */
+  --ease-rail:     linear(0, 0.0166, 0.0602, 0.1228, 0.1977, 0.2795, 0.3638,
+                          0.4474, 0.5278, 0.6032, 0.6725, 0.735, 0.7905,
+                          0.8388, 0.8802, 0.9152, 0.9442, 0.9678, 0.9866,
+                          1.0011, 1.012, 1.0198, 1.0251, 1.0282, 1.0297,
+                          1.0299, 1.0291, 1.0275, 1.0255, 1.0232, 1.0207,
+                          1.0181, 1.0157, 1.0133, 1.0111, 1.0091, 1.0073,
+                          1.0057, 1.0044, 1.0032, 1);
+  --ease-rail-out: linear(0, 0.033, 0.1101, 0.2077, 0.311, 0.4114, 0.504,
+                          0.5867, 0.6586, 0.7202, 0.7721, 0.8154, 0.8512,
+                          0.8805, 0.9044, 0.9238, 0.9394, 0.9519, 0.962,
+                          0.97, 0.9764, 0.9814, 0.9854, 0.9886, 0.991,
+                          0.993, 0.9945, 0.9957, 0.9967, 0.9974, 0.998,
+                          0.9984, 1);
+
   /* ---- THE SPACING LADDER — two rules, and they are the whole thing:
 
        under 32px, spacing moves in steps of 2.
@@ -200,6 +256,20 @@
      1124, so the column edge stepped in and out as you scrolled past the
      heading between them. Both are drawn from this now. ---- */
   --measure: 1124px;
+}
+
+/* A browser too old for linear() gets the nearest cubics on the house ladder:
+   --ease-glide is the mildest back-ease we have (1.2, against --ease-pop's
+   1.56, which at this length is the wobble the block above spent its life
+   getting rid of), and --ease-lift is a plain soft ease-out for the way back.
+   Both drift toward the mark rather than arriving and settling on it — one
+   cubic cannot do what a sampled spring does — but neither is jerky, which is
+   the property that matters. Nothing else on the site depends on this. */
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root {
+    --ease-rail:     var(--ease-glide);
+    --ease-rail-out: var(--ease-lift);
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }

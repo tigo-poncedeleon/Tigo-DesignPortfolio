@@ -33,11 +33,11 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=97" />
-  <link rel="stylesheet" href="css/shell.css?v=117" />
+  <link rel="stylesheet" href="css/styles.css?v=100" />
+  <link rel="stylesheet" href="css/shell.css?v=120" />
   <link rel="stylesheet" href="css/ai.css?v=61" />
   <link rel="stylesheet" href="css/about.css?v=80" />
-  <link rel="stylesheet" href="css/work.css?v=120" />
+  <link rel="stylesheet" href="css/work.css?v=135" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
        of the document below 700px), so its 26KB of court geometry is 26KB
        a phone would parse and render-block on for nothing. `media` says so:
@@ -47,7 +47,7 @@
   <link rel="stylesheet" href="css/case-overlay.css?v=18" />
   <!-- LAST: the phone re-casts the one document as three tapped screens, so
        its overrides answer for the blocks in every sheet above -->
-  <link rel="stylesheet" href="css/mobile.css?v=23" />
+  <link rel="stylesheet" href="css/mobile.css?v=27" />
   <!-- the phone's whole navigation: one button in the corner and the
        panel it opens (js/drawer.js). Phone-only — every rule inside is in
        one @media block, and above 700px the rail is still the nav. -->
@@ -273,11 +273,10 @@
       <h1 class="sr-only">Work</h1>
 
 
-      <!-- ONE SCREEN. The three projects sit side by side as doors — a
-           quiet grid of tiles in the courts' own manner. Clicking one
-           expands its case study over the page (js/case-overlay.js); the
-           cards keep the old slide ids so every #vicino/#pantrypal/#drone
-           link that exists in the world still lands here. -->
+      <!-- ONE SCREEN. An index of three projects, the one you are on shown
+           large beside it, and its note on the right; the rows keep the old
+           slide ids so every #vicino/#pantrypal/#drone link that exists in
+           the world still lands here. -->
       <div class="work-scroll" id="work-scroll">
         <section class="work-slide" id="work" aria-label="Selected work">
           <header class="work-title">
@@ -285,13 +284,12 @@
             <p>selected projects</p>
           </header>
 
-          <!-- The stepper. Three projects as a numbered index on the left,
-               the one you are on shown large in the middle, its note to the
-               right — the same shape the case studies use for their own
-               screens, turned on the work that contains them. Hover or
-               arrow through to browse; click either the name or the
-               picture to open — the names are real links to the studies,
-               so the browser owns the navigation.
+          <!-- The stepper. Three columns: the projects as an index of
+               cards on the left, the one you are on shown large in the
+               middle, and what the job was — role, when, and a line about
+               it — on the right. Hover or arrow through to browse; click
+               either the name or the picture to open — the names are real
+               links to the studies, so the browser owns the navigation.
 
                The .work-img-* classes are LOAD-BEARING: js/case-overlay.js
                keys its CASES map off them to know which thumbnail a case
@@ -301,21 +299,30 @@
               <li>
                 <a class="pick-row is-current" href="vicino.html"
                    id="vicino" data-case="vicino" aria-current="true">
-                  <span class="pick-n">01</span>
+                  <span class="pick-ico" aria-hidden="true">
+                    <img src="Media/icon-vicino.webp" alt="" width="256" height="256"
+                         loading="lazy" decoding="async" />
+                  </span>
                   <span class="pick-name">Vicino AI</span>
                 </a>
               </li>
               <li>
                 <a class="pick-row" href="pantrypal.html"
                    id="pantrypal" data-case="pantrypal" aria-current="false">
-                  <span class="pick-n">02</span>
-                  <span class="pick-name">Pantry Pal</span>
+                  <span class="pick-ico" aria-hidden="true">
+                    <img src="Media/icon-pantrypal.webp" alt="" width="256" height="256"
+                         loading="lazy" decoding="async" />
+                  </span>
+                  <span class="pick-name">PantryPal</span>
                 </a>
               </li>
               <li>
                 <a class="pick-row" href="nextlevel.html"
                    id="drone" data-case="nextlevel" aria-current="false">
-                  <span class="pick-n">03</span>
+                  <span class="pick-ico" aria-hidden="true">
+                    <img src="Media/icon-nextlevel.webp" alt="" width="256" height="256"
+                         loading="lazy" decoding="async" />
+                  </span>
                   <span class="pick-name">Next Level</span>
                 </a>
               </li>
@@ -331,7 +338,7 @@
               <figure class="pick-shot work-img-pantry" data-case="pantrypal"
                       aria-label="Open the PantryPal case study" tabindex="-1" role="button">
                 <img loading="lazy" decoding="async" src="Media/pantry-login.webp"
-                     alt="Pantry Pal login screen on an iPhone" width="954" height="1908" />
+                     alt="PantryPal login screen on an iPhone" width="954" height="1908" />
               </figure>
               <figure class="pick-shot work-img-drone" data-case="nextlevel"
                       aria-label="Open the Next Level Drone Cleaning case study"
@@ -346,25 +353,19 @@
 
             <div class="pick-note">
               <div class="pick-card is-current" data-case="vicino">
-                <h3>Vicino AI</h3>
-                <p class="pick-role">UX Engineer Intern &middot; Summer 2026</p>
-                <p class="pick-copy">An infinite canvas where AI tools become
-                  nodes — helped build it from the ground up, plus the design
-                  system the whole product wears.</p>
+                <p class="pick-role">UX Engineer Intern</p>
+                <p class="pick-when">Summer 2026</p>
               </div>
               <div class="pick-card" data-case="pantrypal">
-                <h3>Pantry Pal</h3>
-                <p class="pick-role">Product Designer &middot; Winter 2026</p>
-                <p class="pick-copy">Six screens between a full pantry and dinner:
-                  scan what you have, get told what you can cook.</p>
+                <p class="pick-role">Product Designer</p>
+                <p class="pick-when">Winter 2026</p>
               </div>
               <div class="pick-card" data-case="nextlevel">
-                <h3>Next Level</h3>
-                <p class="pick-role">Founding Visual Designer &middot; Summer 2025</p>
-                <p class="pick-copy">A drone-cleaning company given a face — mark,
-                  palette and the whole kit it rolled out on.</p>
+                <p class="pick-role">Founding Designer</p>
+                <p class="pick-when">Summer 2025</p>
               </div>
             </div>
+
           </div>
         </section>
       </div>
@@ -745,13 +746,13 @@
        in js/shell.js, which is where they were copied from.) -->
 
   <script src="js/portrait.js?v=11"></script>
-  <script src="js/shell.js?v=104"></script>
+  <script src="js/shell.js?v=108"></script>
   <script src="js/drawer.js?v=4"></script>
   <!-- ≤700px only, and the position in this list is load-bearing: AFTER
        shell.js (whose rail it reads), BEFORE every file below that would
        otherwise wire itself to the stepper or the game boards it takes
        away. -->
-  <script src="js/mobile.js?v=31"></script>
+  <script src="js/mobile.js?v=35"></script>
   <script src="js/globe.js?v=8"></script>
   <script src="js/stage-fit.js?v=17"></script>
   <script src="js/frame-clock.js?v=4"></script>
@@ -760,7 +761,7 @@
   <script src="js/timeline.js?v=21"></script>
   <script src="js/about.js?v=15"></script>
   <script src="js/work.js?v=113"></script>
-  <script src="js/work-pick.js?v=4"></script>
+  <script src="js/work-pick.js?v=9"></script>
   <script src="js/records.js?v=3"></script>
   <script src="js/pong.js?v=7"></script>
   <script src="js/snake.js?v=102"></script>

@@ -1,7 +1,6 @@
 // The work stepper — three projects as an index, one shown large, its note
-// beside it. The same shape the case studies use for their own screens,
-// turned on the work that contains them: browse the row of names and the
-// stage answers, then click through to the study itself.
+// beside it: browse the row of names and both the stage and the note
+// answer, then click through to the study itself.
 //
 // Selecting is HOVER as well as click, so the whole row is browsable
 // without committing to anything, and the arrow keys walk it. Only a real
