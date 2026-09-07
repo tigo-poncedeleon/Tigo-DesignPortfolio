@@ -137,6 +137,22 @@
     if (img.complete) return;
     img.addEventListener('load', fit, { once: true });
   });
+
+  // ...and so can things that are NOT a window resize. Toggling the rail
+  // renarrows the card, which rescales it, which re-measures --hero-h,
+  // which moves --pick-h and therefore what "contain" resolves to — all
+  // without a resize event ever firing. The badge is hung off --shot-w/h,
+  // so a measurement that is one layout out of date parks it inside the
+  // picture instead of off its corner. Watch the box itself rather than
+  // trying to enumerate everything that can change it: the stage for its
+  // height, and the shots because a per-piece ceiling can move one of them
+  // while the stage holds still. fit() only writes custom properties the
+  // badge reads, so this cannot feed back into its own trigger.
+  if (window.ResizeObserver && stage) {
+    const ro = new ResizeObserver(fit);
+    ro.observe(stage);
+    pick.querySelectorAll('.pick-shot img').forEach((img) => ro.observe(img));
+  }
   addEventListener('resize', fit, { passive: true });
   fit();
 
