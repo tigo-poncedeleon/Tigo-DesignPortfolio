@@ -43,6 +43,23 @@
   const attachRow = document.getElementById('ai-attach-row');
   if (!scroll) return;
 
+  /* ---- focus(), on a laptop only.
+
+     Every place this file used to reach for the field — after an answer,
+     on reset, after a mood pick, a photo, a dictation, on the ?ask=
+     landing — did it so the visitor could keep typing without a click.
+     On a phone the same call is the worst thing on the screen: Android
+     raises a keyboard nobody asked for, and iOS raises none but
+     js/mobile.js's keyboard lock is taken on focusin regardless, so the
+     document stopped scrolling under a lock that nothing then lifted.
+     That was "can't scroll after asking the AI". The field is one tap
+     away there; nothing here needs to reach for it. ---- */
+  const PHONE = window.matchMedia('(max-width: 700px)').matches;
+  const refocus = () => {
+    if (!input || PHONE) return;
+    input.focus({ preventScroll: true });
+  };
+
   /* ============================================================
      Idle, and asking.
 
@@ -103,7 +120,7 @@
     setSubtitle(SUB_LIVE);          // drops the offline notice with the rest
     hero.classList.remove('is-asking', 'is-instant');
     asking = false;
-    if (input) input.focus({ preventScroll: true });
+    refocus();
   }
 
   if (resetBtn) resetBtn.addEventListener('click', resetChat);
@@ -181,7 +198,7 @@
       try { sessionStorage.setItem(PERSONA_KEY, persona); } catch (err) { /* fine */ }
       paintPersona();
       closePersonaMenu();
-      if (input) input.focus({ preventScroll: true });
+      refocus();
     });
   }
 
@@ -229,7 +246,7 @@
       rec.onerror = () => stopListening();
       rec.onend = () => {
         stopListening();
-        if (input) input.focus({ preventScroll: true });
+        refocus();
       };
       try { rec.start(); } catch (err) { stopListening(); }
     });
@@ -299,7 +316,7 @@
         };
         showPhotoChip();
         paintSend();
-        if (input) input.focus({ preventScroll: true });
+        refocus();
       };
       img.src = reader.result;         // a format the browser can't decode
     };                                 // simply never fires onload — no photo
@@ -632,7 +649,7 @@
     if (sendBtn) sendBtn.disabled = false;
     // preventScroll: focus() otherwise scrolls even overflow:hidden ancestors,
     // shoving the whole stage up on short viewports
-    if (input) input.focus({ preventScroll: true });
+    refocus();
   }
 
   /* ---- restore a transcript from earlier in the session ---- */
@@ -689,7 +706,7 @@
   const P = new URLSearchParams(location.search);
   if (P.has('q')) {
     submitQuestion(P.get('q'));
-  } else if (P.has('ask') && input) {
-    input.focus({ preventScroll: true });
+  } else if (P.has('ask')) {
+    refocus();                          // a phone lands on the field, not IN it
   }
 })();

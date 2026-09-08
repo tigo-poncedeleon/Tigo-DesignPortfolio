@@ -59,13 +59,12 @@
 
      TWO STATES, and the second one is the whole of the old block:
 
-       ·  IN FLOW, 100dvh. The ordinary state, and the one that makes the
+       ·  IN FLOW, 100svh. The ordinary state, and the one that makes the
           page a page: the hero is the first thing in a document that then
           goes on to Work and About, and scrolling takes you out of it.
-          100dvh rather than --win-h on purpose — dvh is the browser's own
-          dynamic viewport, so it tracks a collapsing toolbar without this
-          layout having to re-measure, and nothing below the hero shifts
-          while you scroll past it.
+          A viewport unit rather than --win-h on purpose — the layout
+          answers for itself here and nothing has to re-measure. svh and
+          not dvh, because dvh was the jank: see the rule itself below.
 
        ·  html.kb-lock: ABSOLUTE, at --doc-top, --win-h tall, with the
           document pinned. Set by js/mobile.js for exactly as long as a
@@ -116,9 +115,26 @@
      because that is the only state that reads the coordinate.
      ============================================================ */
   html.is-phone #home.stage {
-    /* one screen, in flow, with the rest of the site under it */
+    /* one screen, in flow, with the rest of the site under it.
+
+       svh, NOT dvh — and this was the scroll jank. The DYNAMIC viewport
+       is the one that tracks the browser's toolbar: it is short with the
+       toolbar showing and grows by the toolbar's height as the toolbar
+       collapses on the first flick down the page. A hero sized to it
+       grows by that much IN THE MIDDLE OF THE SCROLL, and everything
+       under it — Work's title, the row under the thumb — is shoved down
+       by 60-100px while the finger is still moving, then shoved back up
+       when the toolbar returns. The SMALL viewport is the height with
+       the toolbar showing, which is what is on the screen at the top of
+       the page where this box is the whole screen; it does not move for
+       a toolbar, so nothing under it moves either. Once the toolbar has
+       collapsed the visitor is already scrolled and the hero is behind
+       them. (100vh first for the one iOS that predates svh — there it is
+       the LARGE viewport, a little tall, and better than a box that
+       breathes.) */
     position: relative;
-    height: 100dvh;
+    height: 100vh;
+    height: 100svh;
     overflow: hidden;
     /* it is drawn OVER the page beneath while the lock takes it out of
        flow, so it cannot be transparent then */
@@ -188,6 +204,17 @@
     overscroll-behavior: none;
   }
   html.is-phone.kb-lock .shell-card { position: static; }
+  /* …and the FINGER is told the same thing the scroll pin above tells the
+     browser. iOS honours overflow:hidden on the root unevenly for touch —
+     a drag on the locked hero still rubber-banded the document, and the
+     per-frame pin snapped it back, which read as the page fighting the
+     thumb while the keyboard was up. touch-action is honoured: the hero
+     takes no pan at all while it is placed at a document coordinate,
+     and only the transcript inside it scrolls (pan-y, with its own
+     overscroll contained below). Taps are not touch-actions, so every
+     button on the composer still works. */
+  html.is-phone.kb-lock #home.stage { touch-action: pinch-zoom; }
+  html.is-phone.kb-lock #home.stage .ai-scroll { touch-action: pan-y; }
   /* …and with the hero out of flow, nothing else on the locked screen is
      asking for height. On iOS 100vh is the LARGE viewport — the height
      with the toolbars hidden — so leaving this standing gave the pinned
@@ -199,8 +226,10 @@
   /* ---- every other screen is at least a windowful. No --kb here: these two
      SCROLL, so their height is their content's and 100dvh is only a floor;
      and neither holds a field, so neither can raise a keyboard. ---- */
+  /* svh for the same reason as the hero: a floor that grows with the
+     toolbar is a floor that moves the page under the finger */
   html.is-phone .work-stage,
-  html.is-phone .about-stage { min-height: 100dvh; }
+  html.is-phone .about-stage { min-height: 100vh; min-height: 100svh; }
 
   /* ============================================================
      WORK — the three projects, scrolled straight through.

@@ -488,22 +488,87 @@
        is not at.
        ============================================================ */
     let lockY = 0;
+    // the window's height when the lock was taken, and the last moment it
+    // was seen SHORTER than that — see the release in pump() below
+    let lockH = 0, shrunkAt = 0, graceT = 0;
     const locked = () => root.classList.contains('kb-lock');
     const inHome = (el) => !!el && !!homeEl && homeEl.contains(el) &&
       (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+    // a pinch is not a keyboard
+    const zoomed = () => vv.scale > 1.01;
 
     const lock = () => {
       if (locked()) return;
       lockY = homeEl ? Math.round(homeEl.getBoundingClientRect().top + window.scrollY) : 0;
+      // the taller of the two: they agree whenever there is no keyboard,
+      // and when the lock is retaken UNDER one (follow(), below) only
+      // innerHeight still says how tall the window was without it
+      lockH = Math.round(Math.max(vv.height, window.innerHeight));
+      shrunkAt = performance.now();
       window.scrollTo(0, lockY);
       root.classList.add('kb-lock');
+      // the frame loop below carries the release while the page is being
+      // painted; this one timer carries it where the loop cannot run — a
+      // tab in the background, a page focused by script before it has
+      // ever been shown. Timers run there, rAF does not.
+      armGrace();
     };
     const unlock = () => {
       if (!locked()) return;
+      clearTimeout(graceT);
       root.classList.remove('kb-lock');
       // …and back to where the lock was taken. The hero re-enters the flow
       // in the same frame, so this is a restoration, not a jump.
       window.scrollTo(0, lockY);
+    };
+
+    /* ---- THE LOCK IS THE KEYBOARD'S, NOT THE FIELD'S.
+
+       It is taken on focusin because that is the earliest warning a
+       keyboard gives — but focus and keyboard are not the same event, and
+       a lock that only ever let go on focusout froze the whole page in
+       every case where they came apart:
+
+         ·  focus() from script (after an answer, on ?ask=, on reset)
+            focuses the field but iOS raises no keyboard for it. The page
+            was overflow:hidden, the hero out of flow and the scroll
+            pinned every frame, and nothing lifted it until a tap landed
+            somewhere else. "Can't scroll after asking the AI."
+         ·  Android's back button dismisses the keyboard and leaves the
+            field focused. Same freeze, until a tap elsewhere.
+         ·  a hardware keyboard raises nothing at all.
+
+       So the lock watches the window it was taken for: if the visual
+       viewport has not been shorter than it was at lock time for the
+       better part of a second, there is no keyboard, and the lock is
+       given back — the field keeps its focus, the page keeps its scroll.
+       Measured against lockH rather than innerHeight because Android
+       (interactive-widget=resizes-content) shrinks innerHeight WITH the
+       keyboard, so the two numbers agree there and would never read as
+       "shrunk". Time rather than frames: a 120Hz screen runs twice the
+       frames in the same keyboard animation.
+
+       And the way back in — a field that is still focused when a keyboard
+       does arrive (a second tap on it fires no focusin) — is retaken from
+       the viewport's own report in follow(). ---- */
+    const KB_SLACK = 60;        // px shorter than lockH that counts as a keyboard
+    const KB_GRACE = 900;       // ms with no keyboard before the lock lets go
+    const keyboardUp = () => !zoomed() && vv.height < lockH - KB_SLACK;
+    const releaseIfIdle = (now, fromTimer) => {
+      if (!locked()) return;
+      if (keyboardUp()) shrunkAt = now;
+      else if (now - shrunkAt > KB_GRACE) { unlock(); return; }
+      // the timer keeps itself alive for as long as the lock does — one
+      // check a second, and nothing at all once the lock is given back
+      if (fromTimer) armGrace();
+    };
+    // the same check on a timer, re-armed by every viewport event while
+    // the lock is on: the frame loop carries it wherever the page is being
+    // painted, and this carries it where rAF does not run — a background
+    // tab, a page focused by script before it has ever been shown
+    const armGrace = () => {
+      clearTimeout(graceT);
+      graceT = setTimeout(() => releaseIfIdle(performance.now(), true), KB_GRACE + 100);
     };
 
     /* ---- NOTHING here REACTS to visualViewport.offsetTop, even though
@@ -622,6 +687,10 @@
          on a layout that no longer exists, and the right answer is to put
          it back. Checked every frame by the loop, not just on an event. */
       if (window.scrollY !== lockY) window.scrollTo(0, lockY);
+      // …and the same reveal-scroll can land on the hero itself: it is
+      // overflow:hidden, which a finger cannot scroll but a focus() can,
+      // and a hero scrolled inside its own clip stays that way for good.
+      if (homeEl && homeEl.scrollTop) homeEl.scrollTop = 0;
 
       // the transcript just got shorter by the height of a keyboard. A
       // reader who was at the bottom of it should still be at the bottom of
@@ -692,6 +761,9 @@
     const pump = () => {
       raf = 0;
       quiet = syncKB() ? 0 : quiet + 1;
+      // a lock with no keyboard under it is a frozen page — see the note
+      // on releaseIfIdle above
+      releaseIfIdle(performance.now());
       // The resize EVENT is coarse — three or four fires across the
       // keyboard's third of a second — but visualViewport's properties are
       // live, so a loop that reads them is the only thing here that sees
@@ -704,6 +776,17 @@
       else pinned = false;
     };
     const follow = () => {
+      // the way back in after a release: the composer is still focused and
+      // a keyboard has arrived without a focusin to announce it (a second
+      // tap on a focused field raises one silently). innerHeight rather
+      // than lockH here — there is no lock to measure against yet — which
+      // means Android never re-locks this way, and does not need to: its
+      // layout viewport shrinks with the keyboard, so 100svh already IS the
+      // window and the composer is above the keyboard by layout alone.
+      if (!locked() && !zoomed() && inHome(document.activeElement) &&
+          vv.height < window.innerHeight - 100) {
+        lock();
+      }
       // decide ONCE, before anything moves, whether this reader is at the
       // foot of the conversation — and hold that answer until the window
       // has finished moving. Same 40px slack ai-chat.js uses.
@@ -718,6 +801,7 @@
       // event lands the right answer on its own; the frames in between are
       // the improvement.
       syncKB();
+      if (locked()) armGrace();
       if (!raf) raf = requestAnimationFrame(pump);
     };
 

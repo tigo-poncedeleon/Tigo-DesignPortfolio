@@ -105,6 +105,12 @@
        tab order. This is the pair that answers both. */
     visibility: hidden;
     overscroll-behavior: contain;
+    /* the browser owns the vertical (the column scrolls) and the script
+       owns the horizontal (swipe to close, js/drawer.js). Without this the
+       browser was free to claim a sideways drag as a pan of nothing and
+       cancel the pointer stream mid-swipe, so the panel let go of the
+       finger halfway across. */
+    touch-action: pan-y;
     transition: translate var(--t-lift) var(--ease-lift),
                 visibility var(--t-lift);
   }
