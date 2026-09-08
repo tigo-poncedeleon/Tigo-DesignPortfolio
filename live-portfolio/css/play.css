@@ -657,8 +657,7 @@ html.theater-open { overflow: hidden; }
   .theater-stage { transition: opacity 0.25s ease; }
 }
 @media (max-width: 700px) {
-  .theater,
-  .board-expand { display: none; }
+  .theater { display: none; }
 }
 
 /* ============================================================

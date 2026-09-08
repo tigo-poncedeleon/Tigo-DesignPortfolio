@@ -636,8 +636,8 @@
     if (!side) return;
     let n = 0;
     const groups = TREE.map((g) =>
-      // the label doubles as the group's name in the DOM — js/nav-progress.js
-      // finds the pages group by it rather than by position in the tree
+      // the label doubles as the group's name in the DOM, so a group can be
+      // found by name rather than by its position in the tree
       '<section class="side-group" data-group="' + esc(g.label) + '" ' +
         'style="--n:' + (n++) + '">' +
         '<h2 class="side-label">' + esc(g.label) + '</h2>' +

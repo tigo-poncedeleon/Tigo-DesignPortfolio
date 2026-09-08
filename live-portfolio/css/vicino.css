@@ -685,11 +685,6 @@ html.is-scrolling .case-stage *::after {
   fill: #17171a;
   text-anchor: middle;
 }
-/* the epilogue pen — the design system's own teal ink. The lettering
-   is EXACTLY the black text's treatment (fill-only, same wobble); the
-   group stroke is for the pen's arrows and circles, never the glyphs */
-.vi-sketch .vi-note text { fill: var(--vi-ink); stroke: none; }
-
 /* the node vocabulary, one slow lap — the cursor pauses it */
 .node-strip {
   position: absolute;

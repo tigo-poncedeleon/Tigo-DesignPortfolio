@@ -37,7 +37,6 @@
     text: 'rgba(155,156,241,0.4)', image: 'rgba(139,214,217,0.4)',
     video: 'rgba(255,179,102,0.4)', model3d: 'rgba(124,192,232,0.4)',
   };
-  const EDGE_STROKE = '#9b9cf1';         /* Figma 118:474 — soft purple */
   const MODELS = {
     image: ['flux-2-pro', 'gpt-image-2', 'ideogram-v3', 'recraft-v4'],
     video: ['veo3.1', 'kling3.0', 'seedance2.0'],
@@ -73,7 +72,6 @@
   const CLICK_PX = 5;                    // ≤5px is a click, not a drag
   const PORT_R = 24;                     // handle hit area — port snap reach
   const RANK_GAP = 80, NODE_GAP = 60;    // auto-arrange: dagre's numbers
-  const HEAD_H = 48;                     // node header height (Board.css)
   const PORT_TOP = 64;                   // first handle: header 48 + 16
   const PORT_STEP = 36;                  // secondary handle at 100
 

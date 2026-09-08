@@ -263,10 +263,13 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
    nothing reflows on the way out */
 .shell-side > * { flex-shrink: 0; }
 
-/* ---- the resize handle, which is INVISIBLE at rest ----
-   It stands ON the card's right border pixel (hence the -1px), and at rest
-   it is pure hit area. Hovered or dragging, its ::after paints the accent
-   over the straight run of that edge — inset by gap + radius at each end,
+/* ---- the resize handle, which is INVISIBLE until you DRAG it ----
+   It stands ON the card's right border pixel (hence the -1px), and short of
+   an actual drag it is pure hit area. Merely passing the pointer over the
+   seam used to light the accent up the whole edge, which read as the card
+   changing state when nothing had happened yet — the cursor already says
+   the edge is grabbable. So only a drag paints: its ::after runs the accent
+   over the straight part of that edge — inset by gap + radius at each end,
    so it stops exactly where the corner arcs begin.
 
    FIXED, not absolute: the document is the scroller, so an absolute handle
@@ -304,7 +307,6 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   opacity: 0;
   transition: opacity var(--t-micro) ease;
 }
-.side-grip:hover::after,
 html.rail-dragging .side-grip::after { opacity: 1; }
 
 /* ---- the toggle, on its own row above the letterhead ----
@@ -454,7 +456,7 @@ html.theater-open .rail-open { opacity: 0; pointer-events: none; }
 /* The nav thread — an orange line that tracked reading progress down the
    gutter beside the page rows — is gone. It needed a gutter to live in,
    and the rows gave that column up so every group could start on the same
-   left edge as its label. js/nav-progress.js is no longer loaded. */
+   left edge as its label. js/nav-progress.js was deleted with it. */
 .shell-side.is-lit .side-group { opacity: 1; }
 
 /* On the home page's first visit the panel itself is the movement — it
@@ -592,7 +594,7 @@ html.intro-glide :is(.shell-side, .side-grip) { transition: none; }
 }
 .globe-card.is-landed .globe-arc { opacity: 1; }
 
-/* Tigo: a hollow dot, the site's .dot.hollow manner */
+/* Tigo: a hollow dot */
 .globe-home circle {
   fill: var(--bg);
   stroke: var(--g-700);

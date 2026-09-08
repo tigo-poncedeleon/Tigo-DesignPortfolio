@@ -15,7 +15,6 @@
   // sidebar menu tracking the current one (Figma 1436:260). The chapters
   // have no entrance to arm — they are on the page (css/styles.css) — so
   // the only thing watching them now is the spy. ----
-  const scroller = document.getElementById('about-scroll');
   const slides = Array.from(document.querySelectorAll('.about-slide'));
 
   // ≤700px the chapters unroll into one document scroll (see about.css) —

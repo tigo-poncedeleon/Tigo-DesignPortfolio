@@ -14,7 +14,8 @@ const SYSTEM_PROMPT =
   "of Chicago, graduating Spring 2027. He believes software should be both " +
   "useful and pleasurable, and that every design decision should serve that. He " +
   "sees AI as the defining technology of this age and wants to help shape it.\n\n" +
-  "EXPERIENCE: UX Engineer Intern at Vicino AI, summer 2026 in Bellevue, WA — " +
+  "EXPERIENCE: UX Engineer Intern at Vicino AI in Bellevue, WA — he started in " +
+  "June 2026 and is there now: " +
   "agentic workflows for an AI marketing generation and analytics platform, " +
   "plus a Figma-to-React component library. Product Designer of PantryPal, winter 2025–26 — an " +
   "end-to-end AI recipe app (computer vision stocks your digital pantry, a " +
@@ -31,7 +32,7 @@ const SYSTEM_PROMPT =
   "summer 2025 in Madrid on a Foreign Language Acquisition Grant from UChicago.\n\n" +
   "TRAVEL & PLACES: grew up in Portland, Oregon; lives in Chicago; studied in " +
   "Madrid (a favorite memory: summer nights out near the Templo de Debod); " +
-  "heads to Bellevue, WA for summer 2026.\n\n" +
+  "and has been in Bellevue, WA since June 2026.\n\n" +
   "TASTE: A film lover (Letterboxd regular) — his four favorites are Y Tu Mamá " +
   "También, Drive My Car, Mulholland Drive, and Paris, Texas; he leans toward " +
   "arthouse directors like Wenders, Lynch, Cuarón, and Hamaguchi. A steady " +

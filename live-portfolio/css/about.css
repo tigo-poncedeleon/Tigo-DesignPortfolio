@@ -290,36 +290,6 @@
   50%      { translate: 0 4px; }
 }
 
-/* ============================================================
-   Line-art system — thin ink strokes, drawn. They used to draw THEMSELVES
-   as the slide arrived (dashoffset 1 → 0, guides and dots fading in after);
-   the slides do not arrive any more, so the ink is simply on the paper.
-   The dasharray stays on .stroke: it is what the hover redraws run on
-   (.craft-card:hover, above).
-   ============================================================ */
-.stroke {
-  fill: none;
-  stroke: var(--g-700);
-  stroke-width: 1.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
-.guide {
-  fill: none;
-  stroke: var(--g-250);
-  stroke-width: 1.2;
-  stroke-dasharray: 2 5;
-  stroke-linecap: round;
-}
-.dot { fill: var(--g-700); }
-.dot.hollow {
-  fill: var(--bg);
-  stroke: var(--g-700);
-  stroke-width: 1.2;
-}
-
 .slide-link {
   font-size: 13.25px;                  /* it rides the cap line */
   color: var(--g-700);
@@ -328,112 +298,6 @@
 }
 .slide-link:hover,
 .slide-link:focus-visible { color: var(--orange); }
-
-/* ============================================================
-   skills — four illustration cards, drawn in thin ink
-   ============================================================ */
-.craft-grid {
-  position: absolute;
-  top: 164px;
-  left: var(--ax);
-  transform: translateX(-50%);
-  display: flex;
-  gap: 18px;
-}
-.craft-card {
-  width: 240px;
-  height: 460px;
-  padding: 26px 20px;
-  background: rgba(var(--line-rgb), 0.23);
-  border: 2px solid var(--g-130);
-  border-radius: 31px;
-  transition: transform var(--t-lift) var(--ease-lift),
-              border-color var(--t-micro) ease,
-              opacity var(--t-fade) ease calc(var(--n) * 0.09s),
-              translate var(--t-rise) var(--ease-rise) calc(var(--n) * 0.09s);
-}
-.craft-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(var(--ink-rgb), 0.12);
-}
-.craft-illo {
-  height: 190px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.craft-illo svg {
-  width: 160px;
-  height: 160px;
-}
-/* on hover the illustration REDRAWS itself — the page's draw-in replayed
-   under the cursor: ink strokes wipe and re-flow in sequence, the dotted
-   construction guides march while the pen works, and the anchor dots
-   pop back in once the ink has landed */
-.craft-card:hover .craft-illo .stroke {
-  animation: craft-redraw 0.9s var(--ease-draw) both;
-}
-.craft-card:hover .craft-illo .stroke.s2 { animation-delay: 0.12s; }
-.craft-card:hover .craft-illo .stroke.s3 { animation-delay: 0.24s; }
-.craft-card:hover .craft-illo .guide {
-  animation: guide-march 1.4s linear infinite;
-}
-.craft-card:hover .craft-illo .dot {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: dot-pop var(--t-pop) var(--ease-pop) 0.5s both;
-}
-.craft-card:hover .craft-illo .dot.hollow { animation-delay: 0.66s; }
-@keyframes craft-redraw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
-}
-@keyframes guide-march {
-  to { stroke-dashoffset: -14; }        /* two 2-on/5-off periods */
-}
-@keyframes dot-pop {
-  0%   { opacity: 0; transform: scale(0); }
-  60%  { opacity: 1; transform: scale(1.45); }
-  100% { opacity: 1; transform: scale(1); }
-}
-.craft-label {
-  display: block;
-  margin-top: 14px;
-  font-size: 16px;
-  color: rgba(var(--ink-rgb), 0.48);
-}
-.craft-chips {
-  margin-top: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-/* the ai suggestion chip, small — each one pops in with a little
-   overshoot once its card's illustration has drawn (delays ride the
-   card's --n plus the chip's own place in line) ---- */
-.craft-chip {
-  padding: 6px 12px;
-  font-size: 14px;
-  color: var(--g-700);
-  background: rgba(var(--line-rgb), 0.48);
-  border: 1px solid var(--g-250);
-  border-radius: 20px;
-  white-space: nowrap;
-  transition: background-color var(--t-micro) ease, color var(--t-micro) ease,
-              border-color var(--t-micro) ease,
-              opacity 0.4s ease var(--cd, 0.9s),
-              translate 0.4s var(--ease-pop) var(--cd, 0.9s);
-}
-.craft-chip:nth-child(1) { --cd: calc(var(--n) * 0.09s + 0.75s); }
-.craft-chip:nth-child(2) { --cd: calc(var(--n) * 0.09s + 0.83s); }
-.craft-chip:nth-child(3) { --cd: calc(var(--n) * 0.09s + 0.91s); }
-.craft-chip:nth-child(4) { --cd: calc(var(--n) * 0.09s + 0.99s); }
-.craft-chip:nth-child(5) { --cd: calc(var(--n) * 0.09s + 1.07s); }
-.craft-chip:hover {
-  background: rgba(var(--ink-rgb), 0.06);   /* the sitewide grey hover wash */
-  border-color: rgba(var(--ink-rgb), 0.2);
-  color: var(--ink);
-}
 
 /* ============================================================
    04 · contact — a small white LETTER: to-line, an open page to
@@ -773,22 +637,6 @@
      so the whole figure goes rather than just the canvas. */
   .about-portrait { display: none; }
 
-  /* 02 · craft — the four ink cards deal into a centred column */
-  .craft-grid {
-    position: static;
-    transform: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .craft-card {
-    width: min(300px, 100%);
-    height: auto;
-    padding: 22px 20px 24px;
-  }
-  .craft-illo { height: 160px; }
-  .craft-illo svg { width: 140px; height: 140px; }
-
   .slide-link {
     position: static;
     display: block;
@@ -796,15 +644,6 @@
     margin-top: 26px;
     text-align: center;
   }
-  /* the resume pair stacks on a phone — one door per line, centred */
-  .slide-links {
-    position: static;
-    transform: none;
-    display: block;
-    white-space: normal;
-  }
-  .slide-links .slide-link + .slide-link { margin-top: 14px; }
-
   /* 04 · contact — the letter fills the width, socials beneath */
   .compose {
     position: static;
@@ -833,7 +672,7 @@
 @media (prefers-reduced-motion: reduce) {
   .about-scroll { scroll-behavior: auto; }
   .about-title, .about-portrait, .story-bio,
-  .tl-item, .craft-card, .craft-chip, .slide-link,
+  .tl-item, .slide-link,
   .compose, .social-row {
     transition: opacity 0.25s ease;
     translate: none;
@@ -849,12 +688,8 @@
   .about-portrait { cursor: default; }
   .about-portrait.is-spun { animation: none; }
   .compose-send.is-sent-anim svg { animation: none; }
-  .craft-chip:hover { transform: none; }
   .compose-send:hover, .compose-send:focus-visible { transform: none; }
   .social:hover, .social:focus-visible { translate: none; }
-  .stroke { transition: none; stroke-dashoffset: 0; }
-  .guide, .dot { transition: none; opacity: 1; }
-  .craft-card:hover .craft-illo :is(.stroke, .guide, .dot) { animation: none; }
   .scroll-hint { transition: opacity 0.25s ease; }
   .scroll-hint svg { animation: none; }
 }
