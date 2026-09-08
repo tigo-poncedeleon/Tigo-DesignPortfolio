@@ -25,7 +25,10 @@ window.Portrait = (() => {
   const TONE_GAMMA = 1.15;
   const TONE_LOW_PCT = 0.04;
   const TONE_HIGH_PCT = 0.97;
-  const INK = '#141414';
+  // the ink is a TOKEN now (--portrait-ink, styles.css / palettes.css): the
+  // engraving was tuned on #141414 and that is still Paper's value, but a
+  // dark palette needs it light, and the bake reads it fresh each time
+  const INK_FALLBACK = '#141414';
 
   // Bake at twice the canvas and box-filter down exactly once. Drawing the
   // ribbons near their final size and halving is what antialiases them; the
@@ -176,7 +179,7 @@ window.Portrait = (() => {
     octx.fillRect(0, 0, TEX_W, TEX_H);
     octx.restore();
 
-    octx.fillStyle = INK;
+    octx.fillStyle = getComputedStyle(document.body).getPropertyValue('--portrait-ink').trim() || INK_FALLBACK;
     const spacing = g.pitch * ss;        // whole device px x whole supersample
     const topPad = g.top * ss;
     const maxThick = spacing * o.maxThickFrac;
@@ -336,15 +339,20 @@ window.Portrait = (() => {
   let watching = false;
   let refitTimer = 0;
 
-  const refit = () => {
+  const refit = (force) => {
     refitTimer = 0;
     watched.forEach((entry) => {
       if (!entry.el.isConnected) return;
       const g = measure(entry.el, entry.opts);
-      if (!g || (g.w === entry.el.width && g.h === entry.el.height)) return;
+      if (!g) return;
+      // same size, same bake — unless the INK changed under it (a palette
+      // swap, js/palette.js), which is the one thing size cannot tell us
+      if (!force && g.w === entry.el.width && g.h === entry.el.height) return;
       paint(entry.el, bake(entry.opts, g), g);
     });
   };
+  // re-bake every watched face at its current size — for a palette swap
+  const repaint = () => { clearTimeout(refitTimer); refit(true); };
 
   const watch = (canvas, opts) => {
     watched.push({ el: canvas, opts: opts });
@@ -380,7 +388,7 @@ window.Portrait = (() => {
   return {
     isDead: () => dead,
     kill: () => { dead = true; },
-    load, sample, measure, bake, paint, render, watch, look,
+    load, sample, measure, bake, paint, render, watch, look, repaint,
     MINI_LOOK: MINI_LOOK,
   };
 })();

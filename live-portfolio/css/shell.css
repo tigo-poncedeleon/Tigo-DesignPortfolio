@@ -1,7 +1,7 @@
 /* ============================================================
-   The shell — one rail, full-bleed.
+   The shell — one rail, floating.
 
-   A column down the left and the content card filling the rest. That is
+   A column down the left and the content filling the rest. That is
    the whole frame.
 
    It was a mini browser for a while: a chrome strip of tabs over the same
@@ -12,10 +12,13 @@
    centimetres higher, and it charged a clip path, an SVG seam, a per-tab
    scroll record and a second history model for the privilege.
 
-   So: no strip, no tabs, no hole in anything. The rail IS the shell, it
-   runs the full height of the window, and the one seam left in the frame
-   is its own right edge — which a border can draw, because there is
-   nothing for it to jump over any more.
+   Then it was a full-height column with one seam, its own right edge.
+   Now the rail is a CARD: a bone panel with a hairline all round and
+   rounded corners, standing --rail-gap inside the window on three sides,
+   the way a Tahoe sidebar floats inside its window. The page is the
+   ground it stands on — .shell paints --bg, and the rail is the one bone
+   object on it. There is no seam left to draw; the card's own edge is
+   the frame.
    ============================================================ */
 
 :root {
@@ -38,10 +41,11 @@
      nudged by eye.
 
      The NAME is not what sets it, which is the surprise here: the
-     letterhead's widest line is the ROLE, and the column's widest is the
-     status foot, from its own indent. A rail cut at the name's exact end
-     would ellipsise both. Tight enough that the column reads as the
-     width of its own type, wide enough that nothing is cut.
+     letterhead's widest line is the ROLE (it clips at 168), and since the
+     status foot went (2026-09-07) nothing else in the column comes close.
+     A rail cut at the name's exact end would ellipsise the role. Tight
+     enough that the column reads as the width of its own type, wide
+     enough that nothing is cut.
 
      (The blank that used to hang under the name is gone, so the ⌘K hint
      and its is-tight width trade went with it — the shortcut still
@@ -49,6 +53,12 @@
   --shell-rail:     174px;       /* the visitor owns this — drag the seam */
   --shell-rail-min: 150px;       /* the record of js/shell.js's MIN */
   --shell-rail-max: 420px;
+  /* The card's standoff from the window's edge (top, left, bottom — never
+     right: the page starts where the card ends, so closing the rail
+     reclaims the whole width and the intro's dead-centre hold still holds).
+     The radius is .globe-card's, the site's one other floating surface. */
+  --rail-gap:       var(--sp-8);
+  --rail-radius:    14px;
   --card-w:         1280px;
   --card-h:         832px;
   --card-pad:       0px;         /* breathing room inside the card */
@@ -64,22 +74,26 @@
   --shell-surface: var(--g-100);
   /* the sitewide rgba(var(--ink-rgb), .06) grey hover chip, flattened over
      the furniture. Computed, not eyeballed. */
-  --wash-solid:    #e4e3de;
+  --wash-solid:    #e2e2e2;
   --shell-line:    var(--g-250);               /* stone — hairline borders */
-  --shell-dim:     var(--g-400);               /* mist — group labels, meta */
+  --shell-dim:     var(--g-550);               /* mist — group labels, meta.
+                                     g-400's 2.4:1 was under the 3:1 large-text
+                                     bar on Paper and read as fog on a hue. */
 }
 
 /* ---- the window ----
    Full-bleed: the shell IS the viewport. No transform, no radius, no
    border, no shadow — so the chrome and the rail render at true 1:1 and
    their text is never resampled. `.shell-card > main` is the only scaled
-   element on the page (js/stage-fit.js). ---- */
+   element on the page (js/stage-fit.js).
+   It paints the PAGE colour, not the furniture's: the rail is a card now,
+   and the gap around it has to show the ground the page is on. ---- */
 .shell {
   position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--shell-surface);
+  background: var(--bg);
 }
 
 /* The DOCUMENT scrolls now — one continuous vertical scroll through every
@@ -147,15 +161,28 @@ html.intro-pending .rail-open { opacity: 0; pointer-events: none; }
   /* sticky, not fixed: it stays in flow, so html.rail-closed's negative
      margin still pulls it out and the card still reflows to fill the gap */
   position: sticky;
-  top: 0;
-  height: 100vh;                /* the whole window: there is nothing above it */
+  top: var(--rail-gap);
+  /* THE WINDOW'S HEIGHT, less the standoff above and below. It tried being
+     as tall as its content (a widget parked in a corner) and centred (a
+     card adrift) — both awkward, both the same mistake: a short column is
+     a column with nothing to say. So it is full height again and FILLED:
+     tools row, letterhead, the nav — and what fills the rest is still
+     being decided. */
+  height: calc(100vh - 2 * var(--rail-gap));
+  margin: var(--rail-gap) 0 var(--rail-gap) var(--rail-gap);
   z-index: 10;
   background: var(--shell-surface);
-  /* THE SEAM, and it is one line of CSS again. It used to be a path in an
-     SVG overlay, re-cut every frame, because it had to climb the active
-     tab — a hole in the cream, and no border can follow a hole. With the
-     strip gone the seam is just this edge, top to bottom. */
-  border-right: 1px solid var(--shell-line);
+  /* THE CARD'S EDGE. The seam used to be one border-right, top to bottom
+     of the window; the card draws all four, and the corners are round.
+     There is nothing to climb and nothing to meet, so a border can do it. */
+  border: 1px solid var(--shell-line);
+  border-radius: var(--rail-radius);
+  /* clip, not hidden: hidden would make the rail a scroll container that a
+     focus() or scrollIntoView could silently scroll. Nothing inside reaches
+     the corners anyway (8px padding, and every row has its own radius) —
+     this is for Blink, which cannot prove a rounded box opaque and would
+     drop LCD text for the length of the ride without a clip to reason from. */
+  overflow: clip;
   width: var(--shell-rail);
   flex: none;
   display: flex;
@@ -181,9 +208,10 @@ html.intro-pending .rail-open { opacity: 0; pointer-events: none; }
    orange line visibly lags the edge it is supposed to BE. */
 html.rail-dragging .shell-side,
 html.rail-dragging .side-grip { transition: none; }
-/* and while you are on it, the edge you are moving says so */
-.shell:has(.side-grip:hover) .shell-side,
-html.rail-dragging .shell-side { border-right-color: var(--orange); }
+/* and while you are on it, the edge you are moving says so — drawn by the
+   grip's own ::after (below), not by tinting the card's border: a tinted
+   border-right on a rounded box meets the top and bottom borders in a
+   diagonal grey-to-ink join across each corner arc. */
 
 /* ---- and while the frame is RIDING (js/shell.js toggleRail, for exactly
    the length of the spring) two things step out of the way.
@@ -236,19 +264,20 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
 .shell-side > * { flex-shrink: 0; }
 
 /* ---- the resize handle, which is INVISIBLE at rest ----
-   The line it sits on is the rail's own border-right, so this element is
-   pure hit area: it draws nothing, and hovering it is what turns that
-   border to the accent.
+   It stands ON the card's right border pixel (hence the -1px), and at rest
+   it is pure hit area. Hovered or dragging, its ::after paints the accent
+   over the straight run of that edge — inset by gap + radius at each end,
+   so it stops exactly where the corner arcs begin.
 
    FIXED, not absolute: the document is the scroller, so an absolute handle
    is as tall as the whole PAGE, which is pointless — you can only grab what
    is on screen. The drag is unaffected either way: it reads e.clientX
-   against the shell's own rect, both viewport-relative already. */
+   against the rail's own rect, both viewport-relative already. */
 .side-grip {
   position: fixed;
-  left: var(--shell-rail);
-  top: 0;
-  bottom: 0;
+  left: calc(var(--shell-rail) + var(--rail-gap) - 1px);
+  top: var(--rail-gap);
+  bottom: var(--rail-gap);
   z-index: 30;
   width: 1px;
   background: transparent;
@@ -264,6 +293,19 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
   position: absolute;
   inset: 0 -4px;
 }
+.side-grip::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 1px;
+  top: var(--rail-radius);
+  bottom: var(--rail-radius);
+  background: var(--orange);
+  opacity: 0;
+  transition: opacity var(--t-micro) ease;
+}
+.side-grip:hover::after,
+html.rail-dragging .side-grip::after { opacity: 1; }
 
 /* ---- the toggle, on its own row above the letterhead ----
    It is 28px on a 168px column, so it does not compete with the name; it
@@ -323,8 +365,11 @@ html.rail-closed .side-grip { left: 0; opacity: 0; pointer-events: none; }
    of them would be one too many. ---- */
 .rail-open {
   position: fixed;
-  left: 10px;
-  top: 8px;
+  /* the toggle's own square: the card's standoff, its 1px border, the
+     rail's 8px side padding and .side-tools' 2px (x); standoff, border and
+     .side-tools' 8px top (y) */
+  left: calc(var(--rail-gap) + 11px);
+  top: calc(var(--rail-gap) + 9px);
   z-index: 40;
   opacity: 0;
   pointer-events: none;
@@ -342,7 +387,7 @@ html.theater-open .rail-open { opacity: 0; pointer-events: none; }
    it like everything else:
      primary      14px   / --g-900   rows, the status leads, and the name
                                      (whose ONLY distinction is weight 500)
-     meta         11.5px / --g-400   labels, the role, subs
+     meta         11.5px / --shell-dim  labels, the role, subs
    (Both went up half a step when the hero came down three: the rail and
    the card are read together on this site — the chat is the home page —
    and 13.5 beside a 28px name read as a footnote beside a headline. The
@@ -866,78 +911,232 @@ html.theater-open .globe-card { display: none; }
    starting a second left edge you can see from across the column. */
 .side-kids .side-row { padding-left: 22px; }
 
-/* ---- the foot: status, and only status now (the ask chip moved up
-   under the name) ---- */
+/* ============================================================
+   THE PALETTE — a row at the foot of the rail (js/palette.js).
+
+   The picker has been everywhere on the site in one day: a strip under
+   the composer, an orb at the hero's foot, a ring round the ask box, then
+   a tool in the composer's tray (left of the mood, then beside the
+   attach). All of them put a SITE setting somewhere that belongs to the
+   page or to a message, and all of them only existed in the home hero.
+   The foot of the sidebar is where every app keeps its settings — Slack,
+   Linear, Notion, Figma — and it is on screen on every shell page at
+   every scroll depth. So it is a nav row, cut exactly like the rows above
+   it: the orb where the glyph goes, the palette's name where the label
+   goes, at the same 30px, the same 10px inset, the same chip under the
+   hand. Pressed, the eighteen discs pop out to the RIGHT of the rail over
+   the page, bottom edge on the row's — a card cut from the mood menu's
+   cloth (js/palette.js mounts it on <body>, outside the card's zoom, and
+   places it from the row's own rect).
+
+   THE ORB is the one bright object on a greyscale rail, and it earns
+   that by being literal: its conic gradient is built in js/palette.js out
+   of the sixteen hues the card offers, in wheel order, closed back on
+   itself. Three layers, because one flat gradient reads as a sticker: a
+   BLOOM (the same wheel, blurred, spun the other way — OFF at rest, it is
+   for the hand), the WHEEL, and a GLOSS that does not spin — a fixed
+   highlight over moving colour is what reads as a lit sphere. No drop
+   shadow: this site has none.
+
+   (Before this: the "now" status foot, a palette row, and a chessboard
+   with a twelve-palette grid — all gone the same day. The row is the one
+   that came back, because it is the one that was a control.)
+   ============================================================ */
 .side-foot {
   flex: none;
+  /* the nav above is flex: 1, so this already sits on the floor; the
+     8px is the rail's own bottom padding, kept as the row's breathing room */
   padding-top: 8px;
+  opacity: 0;
 }
-
-/* ---- NOW (see statusHTML in js/shell.js for why it lives down here).
-   Two rows of plain text, no frame: the rail gave up boxes altogether —
-   the letterhead at its head is type on the bone, and the foot matches.
-   The label carries the same 11px grey the nav groups use, so the block
-   reads as one more section of the rail rather than a widget bolted on.
-   It is the last thing in the column now, so it carries no bottom margin —
-   the rail's own 8px floor is the gap. */
-.side-status { margin-bottom: 0; }
-.side-status .side-label { margin-top: 0; }
-
-.st-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background-color var(--t-micro) ease;
-}
-.st-lines {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-/* Both entries take the SAME two-line shape — a lead and a quieter second
-   line — so the block reads as one list rather than a row plus a footnote,
-   and neither string has to wrap at the rail's narrow widths.
-   The leads speak the rail's PRIMARY voice (13.5 / --g-900, the same as
-   every nav row and the name): they used to sit at 12.5 mid-grey, and
-   against the letterhead the whole foot read as the weak end of a column
-   that was supposed to be one column. Hierarchy inside the foot is the
-   subs' job. */
-.st-lead,
-.st-sub {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color var(--t-micro) ease;
-}
-.st-lead { font-size: 14px; line-height: 18px; color: var(--g-900); }
-.st-sub { font-size: 11.5px; line-height: 14px; color: var(--shell-dim); }
-
-.st-row:hover { background: rgba(var(--ink-rgb), 0.05); }
-.st-row:hover .st-lead { color: var(--ink); }
-
-/* The markers carry the tense. FILLED is what is true right now; the same
-   dot HOLLOW is the thing that has not happened yet. One shape, two states
-   — cheaper than a second glyph, and it is legible at 6px in a way a second
-   glyph would not be. Both hold still, in the same grey as the place dot in
-   the place row above: a rail that is already carrying an accent per case
-   study does not need a blinking orange light in its foot. */
-.st-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--g-250);
-}
-.st-row.is-ahead .st-dot {
+.shell-side.is-lit .side-foot { opacity: 1; }
+/* a .side-row that is a <button>: strip the UA's box and keep the row's */
+.side-palette {
+  position: relative;
+  /* the spill below sits at z -1; isolating keeps it inside the row's own
+     stack rather than dropping it behind the rail's surface */
+  isolation: isolate;
+  width: 100%;
+  border-inline: 0;
   background: none;
-  box-shadow: inset 0 0 0 1.5px var(--g-250);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  color: var(--g-900);
+  cursor: pointer;
+  padding-right: 10px;
+}
+/* THE SPILL. Every other row lights up with the same grey wash under the
+   hand; this one is the row that changes the room's colour, so its hover
+   IS colour: the orb's light spilled across the whole chip. The same
+   sixteen hues as the wheel, laid left to right from the orb (red at its
+   edge, round to pink and back to red), in the chip's exact shape — a
+   pseudo on the padding box, so it keeps the 2px channel every other
+   chip keeps. It drifts, slowly, AWAY from the orb — the wheel is turning
+   in there, and this is what it sheds. Two widths of gradient tiled and
+   walked one full width, so the loop has no seam. Pastel, not paint:
+   a third of its strength over the bone, and the ink stays ink on it. */
+.side-palette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--wheel-line);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity var(--t-snap) ease;
+  animation: pal-drift 14s linear infinite;
+  animation-play-state: paused;
+}
+/* the spill stands in for the grey wash — under the hand, on the keyboard,
+   and for as long as the card is open. background-COLOR, as every chip
+   rule in this file: the shorthand would close the channel. */
+.side-palette:hover,
+.side-palette:focus-visible,
+.side-palette[aria-expanded="true"] {
+  color: var(--ink);
+  background-color: transparent;
+}
+.side-palette:hover::before,
+.side-palette:focus-visible::before,
+.side-palette[aria-expanded="true"]::before {
+  opacity: 0.34;
+  animation-play-state: running;
+}
+.side-palette:hover .side-ico,
+.side-palette:focus-visible .side-ico,
+.side-palette[aria-expanded="true"] .side-ico { color: var(--g-700); }
+@keyframes pal-drift { to { background-position: -200% 0; } }
+
+.orb {
+  position: relative;
+  display: block;
+  /* 16 in the glyph's 18px box — the same optical size as the strokes */
+  width: 16px;
+  height: 16px;
+  transition: transform var(--t-snap) var(--ease-spring);
+}
+.orb-bloom,
+.orb-wheel,
+.orb-gloss {
+  position: absolute;
+  border-radius: 50%;
+}
+.orb-wheel {
+  inset: 0;
+  background: var(--wheel);
+  animation: orb-spin 16s linear infinite;
+}
+.orb-bloom {
+  inset: -4px;
+  background: var(--wheel);
+  filter: blur(3px);
+  opacity: 0;
+  animation: orb-spin 16s linear infinite reverse;
+  transition: opacity var(--t-snap) ease;
+}
+.orb-gloss {
+  inset: 0;
+  background:
+    radial-gradient(112% 96% at 30% 20%,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.28) 34%,
+      rgba(255, 255, 255, 0) 58%),
+    radial-gradient(100% 80% at 50% 118%,
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(255, 255, 255, 0) 55%);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.16),
+    inset 0 2px 3px rgba(255, 255, 255, 0.26);
+}
+.side-palette:hover .orb,
+.side-palette:focus-visible .orb,
+.side-palette[aria-expanded="true"] .orb { transform: scale(1.12); }
+.side-palette:hover .orb-bloom,
+.side-palette:focus-visible .orb-bloom,
+.side-palette[aria-expanded="true"] .orb-bloom { opacity: 0.62; }
+.side-palette:active .orb { transform: scale(0.94); }
+@keyframes orb-spin { to { rotate: 360deg; } }
+
+/* ---- the card: fixed to the viewport, placed by js/palette.js at the
+   rail's right edge + 8, bottom on the row's bottom ---- */
+.palette-menu {
+  position: fixed;
+  z-index: 60;
+  padding: 10px;
+  background: var(--g-050);
+  border: 1px solid var(--g-250);
+  border-radius: 14px;
+  transform-origin: bottom left;
+  animation: pal-pop var(--t-snap) var(--ease-spring);
+}
+.palette-menu[hidden] { display: none; }
+@keyframes pal-pop {
+  from { opacity: 0; transform: translateX(-6px) scale(0.97); }
+}
+/* six across by three down: eighteen is the count */
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 28px);
+  gap: 6px;
+}
+.pal-swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  /* the wheel lands row by row rather than all at once — --i is the disc's
+     place in the grid, written by js/palette.js */
+  animation: pal-in 0.26s var(--ease-spring) backwards;
+  animation-delay: calc(var(--i) * 12ms);
+}
+@keyframes pal-in {
+  from { opacity: 0; transform: scale(0.55); }
+}
+.pal-swatch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.pal-swatch span {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--sw);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), 0.16);
   transition: box-shadow var(--t-micro) ease;
 }
-.st-row.is-ahead:hover .st-dot { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.pal-swatch:hover span {
+  box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), 0.16),
+              0 0 0 2px var(--g-050), 0 0 0 3.5px var(--g-250);
+}
+/* in a MENU the chosen one is marked — that is what a menu is for */
+.pal-swatch input:checked + span {
+  box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), 0.16),
+              0 0 0 2px var(--g-050), 0 0 0 3.5px var(--g-900);
+}
+.pal-swatch input:focus-visible + span {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+}
+/* the phone has no rail (the drawer stands in), so the row goes with it;
+   the card is on <body> and only opens from the row, but say it anyway */
+html.is-phone .palette-menu { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .palette-menu, .pal-swatch { animation: none; }
+  .orb-wheel, .orb-bloom { animation: none; }
+  .orb { transition: none; }
+  /* the spill still comes up under the hand; it just does not drift */
+  .side-palette::before { animation: none; }
+}
+
 /* ============================================================
    The letterhead — a name and a role, and nothing else
 

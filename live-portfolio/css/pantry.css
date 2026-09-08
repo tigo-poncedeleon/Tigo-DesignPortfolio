@@ -10,6 +10,19 @@
    inherit the palette below — the case hands its ink up to the root for
    it. Same coral as --pp-red; keep the two in step. */
 :root { --case-accent: #eb614b; }
+/* on the dark palette the coral lifts a step, or it sinks into the canvas */
+html[data-theme="ink"] { --case-accent: #f47a66; }
+/* on a TINTED canvas (css/palettes.css — every palette but the dark one)
+   the coral has no room to be an accent — coral on orange, on pink, on
+   red — so the case's ink yields to the canvas's, and its washes become
+   ink washes. The brand pastels on the cards stay: they are the app's,
+   not the page's. */
+html[data-theme]:not([data-theme="ink"]) { --case-accent: var(--ink); }
+html[data-theme]:not([data-theme="ink"]) .case-stage {
+  --pp-red: var(--ink);
+  --pp-yellow-wash: rgba(var(--ink-rgb), 0.08);
+  --pp-yellow-line: rgba(var(--ink-rgb), 0.25);
+}
 
 .case-stage {
   /* inside the case study, the accents speak PANTRYPAL, not the site

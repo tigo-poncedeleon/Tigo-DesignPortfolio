@@ -13,6 +13,15 @@
    is appended to BODY, outside .case-stage, so the case hands its
    ink up to the root for it. */
 :root { --case-accent: #0d7685; }
+/* on the dark palette the teal lifts toward the brand cyan: #0d7685 on #161616 is 3.2:1 */
+html[data-theme="ink"] { --case-accent: #3dbccd; }
+/* on a tinted canvas the teal yields to the canvas's ink (see pantry.css) */
+html[data-theme]:not([data-theme="ink"]) { --case-accent: var(--ink); }
+html[data-theme]:not([data-theme="ink"]) .case-stage {
+  --vi-ink: var(--ink);
+  --vi-wash: rgba(var(--ink-rgb), 0.08);
+  --vi-line: rgba(var(--ink-rgb), 0.3);
+}
 
 .case-stage {
   --vi-cyan: #49e0f5;

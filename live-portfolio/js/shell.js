@@ -558,8 +558,11 @@
     });
     grip.addEventListener('pointermove', (e) => {
       if (id === null) return;
+      // against the RAIL's own left edge, not the shell's: the card stands
+      // --rail-gap inside the window, and reading its own rect means the
+      // inset is never a constant repeated in here
       const w = Math.max(MIN, Math.min(MAX,
-        e.clientX - shell.getBoundingClientRect().left));
+        e.clientX - side.getBoundingClientRect().left));
       root.style.setProperty('--shell-rail', w + 'px');
     });
     const end = () => {
@@ -616,48 +619,11 @@
     return h + '</div>';
   };
 
-  // ---- NOW: what is actually happening.
-  //
-  // It used to sit at the TOP, dressed as a nav group, and it answered the
-  // question "what is Tigo doing" with a school crest linking out to the
-  // College's catalogue of majors — biography, not status, and the one row
-  // in the rail that sent you off the site to read a list of other people's
-  // degrees. Three things changed.
-  //
-  // WHAT it says: the present-tense job, and the sentence a visitor scanning
-  // a portfolio is actually scanning for. Both facts expire, which is what
-  // makes them a NOW rather than a second identity block.
-  //
-  // WHERE it points: inward. The role opens its own case study — the now
-  // line is the shortest path into the best work on the site — and the
-  // availability line opens the mailbox.
-  //
-  // WHERE it sits: the foot. Status belongs at the bottom of a rail with
-  // navigation above it, and parking it there gives the column a weighted
-  // floor instead of a long fall to nothing.
-  //
-  // The dot is a marker, not a light: the same grey as the place dot in the
-  // chrome, filled for the present and hollow for the not-yet. It used to be
-  // orange and breathing, which spent an accent and a running animation to
-  // say what the word "now" above it already says.
-  const statusHTML = () =>
-    '<section class="side-status">' +
-      '<h2 class="side-label">now</h2>' +
-      '<a class="st-row" href="vicino.html">' +
-        '<span class="st-dot" aria-hidden="true"></span>' +
-        '<span class="st-lines">' +
-          '<span class="st-lead">UX Engineer Intern</span>' +
-          '<span class="st-sub">Vicino, Inc.</span>' +
-        '</span>' +
-      '</a>' +
-      '<a class="st-row is-ahead" href="mailto:tigoponcedeleon@gmail.com">' +
-        '<span class="st-dot" aria-hidden="true"></span>' +
-        '<span class="st-lines">' +
-          '<span class="st-lead">open to full-time</span>' +
-          '<span class="st-sub">starting summer 2027</span>' +
-        '</span>' +
-      '</a>' +
-    '</section>';
+  // (NOW — the two status rows that weighed the rail's foot, the present
+  // job and the availability line — is gone, 2026-09-07. Both facts expire.
+  // The foot holds ONE row now, and it is not rendered here: js/palette.js
+  // appends .side-foot after the nav — the palette orb with the name of
+  // the palette you wear, a control cut like the rows above it.)
 
   // (GONE 2026-08-24: REST and ASKS — the resting label and the four
   // questions the ghost writer typed. They belonged to the rail's ask
@@ -743,10 +709,7 @@
           '<span class="side-role">product design engineer</span>' +
         '</span>' +
       '</a>' +
-      '<nav class="side-scroll" id="side-scroll" aria-label="Site">' + groups + '</nav>' +
-      '<div class="side-foot">' +
-        statusHTML() +
-      '</div>';
+      '<nav class="side-scroll" id="side-scroll" aria-label="Site">' + groups + '</nav>';
 
     // the current page, and every ancestor it hangs from, wear the accent.
     // The case studies left the tree, so on their standalone pages the
@@ -1335,11 +1298,12 @@
   // ResizeObservers and a rAF chase through the intro, all to draw one
   // hairline that a border could not.
   //
-  // With no strip and no tab there is no hole: the seam is the rail's own
-  // right edge, top to bottom, and `border-right` on .shell-side says it in
-  // one line (css/shell.css). The accent on grip-hover goes with it, as
-  // does the "reach" — the stretch of column that used to run up past the
-  // tabs, which is now simply part of the edge.
+  // With no strip and no tab there is no hole: the rail is a CARD now, a
+  // bone panel with its own border all round, standing --rail-gap inside
+  // the window (css/shell.css). The accent on grip-hover is painted by the
+  // grip itself over the straight run of the card's right edge, and the
+  // "reach" — the stretch of column that used to run up past the tabs —
+  // is simply gone with the tabs.
 
 
   // restY and land are published for the same reason markCurrent is: a
@@ -1367,9 +1331,8 @@
   window.Shell = { get page() { return page; }, get title() { return title; },
                    lightUp, toggleRail, markCurrent, setPage, restY, land,
                    TREE, ANCESTORS, SOCIAL, G, svg, esc };
-  // (statusHTML was published here too, for a moment, so the phone drawer
-  // could stand the rail's "now" rows at its foot. The drawer has no foot —
-  // that weighted floor is an argument about a persistent column, and a
-  // drawer is shut except in the second you opened it — so this is the
-  // rail's own again.)
+  // (The rail's "now" rows were published here too, for a moment, so the
+  // phone drawer could stand them at its foot. They are gone from the rail
+  // now as well — see the note above buildSide — so neither column has a
+  // status foot.)
 })();

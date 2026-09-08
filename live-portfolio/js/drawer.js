@@ -126,6 +126,14 @@
     '</a>' +
     '<nav class="m-scroll" aria-label="Site">' + GROUPS.map(groupHTML).join('') + '</nav>';
 
+    // THE FOOT is not built here. js/palette.js appends `.m-foot.m-pal`
+    // after the nav — the palette, the one setting the rail keeps at ITS
+    // foot, laid out for a thumb (css/drawer.css §THE FOOT). It is the
+    // exception to the paragraph below, and the reason it is one: those
+    // two were STATUS, and this is a CONTROL. A floor of facts was
+    // weighing down a column that was never falling; a floor you press
+    // is just where the setting lives.
+    //
     // (GONE: the whole foot — statusHTML()'s "now" section, and before that
     // a black "new chat" pill under it.
     //
@@ -144,6 +152,10 @@
     // about him is actually asking.)
 
   document.body.append(menu, scrim, drawer);
+  // …and say so: js/palette.js mounts the foot on this. It reads the DOM
+  // at DOMContentLoaded and would find it anyway, but the contract is the
+  // event, not the order of two script tags.
+  window.dispatchEvent(new CustomEvent('drawer:ready', { detail: { drawer: drawer } }));
 
   /* ============================================================
      Where you are.

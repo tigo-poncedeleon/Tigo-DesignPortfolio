@@ -33,17 +33,20 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=100" />
-  <link rel="stylesheet" href="css/shell.css?v=120" />
-  <link rel="stylesheet" href="css/ai.css?v=61" />
-  <link rel="stylesheet" href="css/about.css?v=80" />
+  <link rel="stylesheet" href="css/styles.css?v=101" />
+  <!-- the four other palettes; which one is worn is set on <html> below,
+       before first paint (js/palette.js, the rail's foot) -->
+  <link rel="stylesheet" href="css/palettes.css?v=5" />
+  <link rel="stylesheet" href="css/shell.css?v=128" />
+  <link rel="stylesheet" href="css/ai.css?v=66" />
+  <link rel="stylesheet" href="css/about.css?v=81" />
   <link rel="stylesheet" href="css/work.css?v=135" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
        of the document below 700px), so its 26KB of court geometry is 26KB
        a phone would parse and render-block on for nothing. `media` says so:
        above 700 this is exactly the sheet it always was; below it the
        browser fetches at low priority and never applies it. -->
-  <link rel="stylesheet" href="css/play.css?v=126" media="(min-width: 701px)" />
+  <link rel="stylesheet" href="css/play.css?v=127" media="(min-width: 701px)" />
   <link rel="stylesheet" href="css/case-overlay.css?v=18" />
   <!-- LAST: the phone re-casts the one document as three tapped screens, so
        its overrides answer for the blocks in every sheet above -->
@@ -51,7 +54,7 @@
   <!-- the phone's whole navigation: one button in the corner and the
        panel it opens (js/drawer.js). Phone-only — every rule inside is in
        one @media block, and above 700px the rail is still the nav. -->
-  <link rel="stylesheet" href="css/drawer.css?v=12" />
+  <link rel="stylesheet" href="css/drawer.css?v=14" />
   <!-- set before first paint so the chrome and sidebar are already held at
        opacity 0 when they are built — the intro has no flash to hide.
        `is-phone` goes on in the same breath: css/mobile.css hides the three
@@ -61,9 +64,21 @@
     document.documentElement.className += ' js' +
       (sessionStorage.getItem('shell.intro') ? '' : ' intro-pending') +
       (matchMedia('(max-width: 700px)').matches ? ' is-phone' : '');
+    // the palette you chose last time, worn before the first paint
+    (function () {
+      try {
+        var t = localStorage.getItem('shell.theme');
+        if (t) {
+          document.documentElement.dataset.theme = t;
+          var m = document.querySelector('meta[name="theme-color"]');
+          var bg = { ink: '#161616', red: '#eb7770', coral: '#e87c52', orange: '#f19446', apricot: '#f5ae42', amber: '#efc64a', yellow: '#d6d054', lime: '#b9da69', chartreuse: '#97e184', green: '#71e6a2', emerald: '#46e9c0', mint: '#09e8dd', teal: '#00e5f7', cyan: '#03cefc', sky: '#34b3f7', azure: '#5aa1f6', blue: '#7c98f8', indigo: '#998ef3', violet: '#b186e8', purple: '#c57fd6', magenta: '#d579c1', pink: '#e175a7', rose: '#e8748c' }[t];
+          if (m && bg) m.setAttribute('content', bg);
+        }
+      } catch (e) { /* private mode — Paper */ }
+    })();
   </script>
   <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
-  <link rel="stylesheet" href="css/color-lab.css?v=8" />
+  <link rel="stylesheet" href="css/color-lab.css?v=10" />
   <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
        sends, and drops it outright when that hook returns null — so this is a
        real opt-out, not a send-then-discard: nothing leaves the browser.
@@ -709,7 +724,7 @@
               <svg width="27" height="27" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3z"/></svg>
             </a>
             <a class="social social-lb" href="https://letterboxd.com/tigomiamigo/" target="_blank" rel="noopener" aria-label="letterboxd">
-              <svg width="30" height="20" viewBox="0 0 36 22"><g fill="currentColor"><circle class="lb-a" cx="7" cy="11" r="6.5"/><circle class="lb-b" cx="18" cy="11" r="6.5" stroke="#f6f6f6" stroke-width="1.6"/><circle class="lb-c" cx="29" cy="11" r="6.5" stroke="#f6f6f6" stroke-width="1.6"/></g></svg>
+              <svg width="30" height="20" viewBox="0 0 36 22"><g fill="currentColor"><circle class="lb-a" cx="7" cy="11" r="6.5"/><circle class="lb-b" cx="18" cy="11" r="6.5"/><circle class="lb-c" cx="29" cy="11" r="6.5"/></g></svg>
             </a>
             <a class="social social-gr" href="https://www.goodreads.com/user/show/98420895-tigo" target="_blank" rel="noopener" aria-label="goodreads">
               <svg width="26" height="26" viewBox="0 0 24 24"><text x="12" y="19" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="bold" fill="currentColor">g</text></svg>
@@ -745,9 +760,10 @@
        icons into this bar's tabs — went with it; its glyphs live on in G,
        in js/shell.js, which is where they were copied from.) -->
 
-  <script src="js/portrait.js?v=11"></script>
-  <script src="js/shell.js?v=108"></script>
-  <script src="js/drawer.js?v=4"></script>
+  <script src="js/portrait.js?v=12"></script>
+  <script src="js/shell.js?v=113"></script>
+  <script src="js/palette.js?v=10"></script>
+  <script src="js/drawer.js?v=5"></script>
   <!-- ≤700px only, and the position in this list is load-bearing: AFTER
        shell.js (whose rail it reads), BEFORE every file below that would
        otherwise wire itself to the stepper or the game boards it takes

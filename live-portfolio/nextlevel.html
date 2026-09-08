@@ -18,22 +18,37 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=100" />
-  <link rel="stylesheet" href="css/shell.css?v=120" />
+  <link rel="stylesheet" href="css/styles.css?v=101" />
+  <!-- the four other palettes; which one is worn is set on <html> below,
+       before first paint (js/palette.js, the rail's foot) -->
+  <link rel="stylesheet" href="css/palettes.css?v=5" />
+  <link rel="stylesheet" href="css/shell.css?v=128" />
   <link rel="stylesheet" href="css/case-overlay.css?v=18" />
-  <link rel="stylesheet" href="css/nextlevel.css?v=104" />
+  <link rel="stylesheet" href="css/nextlevel.css?v=106" />
   <!-- inside the case overlay's iframe the shell stands down — set before
        first paint so no chrome ever flashes (js/case-overlay.js) -->
   <script>
     if (new URLSearchParams(location.search).has('embed'))
       document.documentElement.className += ' is-embed';
+    // the palette you chose last time, worn before the first paint
+    (function () {
+      try {
+        var t = localStorage.getItem('shell.theme');
+        if (t) {
+          document.documentElement.dataset.theme = t;
+          var m = document.querySelector('meta[name="theme-color"]');
+          var bg = { ink: '#161616', red: '#eb7770', coral: '#e87c52', orange: '#f19446', apricot: '#f5ae42', amber: '#efc64a', yellow: '#d6d054', lime: '#b9da69', chartreuse: '#97e184', green: '#71e6a2', emerald: '#46e9c0', mint: '#09e8dd', teal: '#00e5f7', cyan: '#03cefc', sky: '#34b3f7', azure: '#5aa1f6', blue: '#7c98f8', indigo: '#998ef3', violet: '#b186e8', purple: '#c57fd6', magenta: '#d579c1', pink: '#e175a7', rose: '#e8748c' }[t];
+          if (m && bg) m.setAttribute('content', bg);
+        }
+      } catch (e) { /* private mode — Paper */ }
+    })();
   </script>
   <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
   <!-- the phone's whole navigation: one button in the corner and the
        panel it opens (js/drawer.js). Phone-only — every rule inside is in
        one @media block, and above 700px the rail is still the nav. -->
-  <link rel="stylesheet" href="css/drawer.css?v=12" />
-  <link rel="stylesheet" href="css/color-lab.css?v=8" />
+  <link rel="stylesheet" href="css/drawer.css?v=14" />
+  <link rel="stylesheet" href="css/color-lab.css?v=10" />
   <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
        sends, and drops it outright when that hook returns null — so this is a
        real opt-out, not a send-then-discard: nothing leaves the browser.
@@ -484,8 +499,9 @@
        icons into this bar's tabs — went with it; its glyphs live on in G,
        in js/shell.js, which is where they were copied from.) -->
 
-  <script src="js/shell.js?v=108"></script>
-  <script src="js/drawer.js?v=4"></script>
+  <script src="js/shell.js?v=113"></script>
+  <script src="js/palette.js?v=10"></script>
+  <script src="js/drawer.js?v=5"></script>
   <script src="js/globe.js?v=8"></script>
   <script src="js/stage-fit.js?v=17"></script>
   <script src="js/frame-clock.js?v=4"></script>

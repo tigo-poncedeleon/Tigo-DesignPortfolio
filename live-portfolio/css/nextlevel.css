@@ -15,6 +15,15 @@
    inherit the palette below — the case hands its ink up to the root for
    it. Same azure as --nl-azure; keep the two in step. */
 :root { --case-accent: #2b7cc4; }
+/* on the dark palette the azure lifts two steps: #2b7cc4 on #161616 is 3.9:1 */
+html[data-theme="ink"] { --case-accent: #5fa8ea; }
+/* on a tinted canvas the azure yields to the canvas's ink (see pantry.css) */
+html[data-theme]:not([data-theme="ink"]) { --case-accent: var(--ink); }
+html[data-theme]:not([data-theme="ink"]) :is(.case-stage, .look) {
+  --nl-azure: var(--ink);
+  --nl-wash: rgba(var(--ink-rgb), 0.08);
+  --nl-line: rgba(var(--ink-rgb), 0.25);
+}
 
 .case-stage, .look {
   --nl-sky: #b8edf8;

@@ -265,6 +265,16 @@
   transition: opacity var(--t-rise) var(--ease-rise);
 }
 #home.is-asking .ai-stage.is-hero #ai-sub { opacity: 1; }
+
+/* (THE PALETTE LEFT THIS BAR, 2026-09-07. It was a tool in the tray for a
+   day — first left of the mood toggle, where it read as that word's icon,
+   then at the head beside the attach. Both were the same mistake at a
+   smaller scale than the ring and the strip before them: a SITE setting
+   inside a MESSAGE toolbar, reachable only in the home hero. It is a row
+   at the foot of the rail now — css/shell.css §THE PALETTE, js/palette.js —
+   on every shell page, at every scroll depth, where a sidebar keeps its
+   settings.) */
+
 /* …and the swap to the offline notice still crossfades through it */
 #home.is-asking .ai-stage.is-hero #ai-sub.is-swapping { opacity: 0; }
 
@@ -584,7 +594,7 @@
 /* while a reply is on its way the arrow rests */
 .ai-send[disabled] {
   cursor: default;
-  color: #c6c5c0;
+  color: var(--g-250);
 }
 .ai-input {
   flex: 1;
@@ -867,6 +877,8 @@
   .ai-word { transition: none; opacity: 1; }
   .fu-chip:hover, .fu-chip:focus-visible { transform: none; }
   .ai-persona-menu, .attach-thumb { animation: none; }
+  /* the wheel arrives rather than lands, and the orb holds still — but it
+     keeps its colour, which was the point of it */
   /* the listening state still reads — the bars just hold still */
   .ai-mic .mic-eq i { animation: none; transform: scaleY(0.7); }
 }

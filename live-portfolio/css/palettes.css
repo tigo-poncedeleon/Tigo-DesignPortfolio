@@ -1,0 +1,716 @@
+/* ============================================================
+   Palettes — twenty-four palettes, of which the composer offers twelve
+   (js/palette.js picks the row; every block here stays valid, so putting
+   a hue back is one line there).
+
+   Paper is the :root in styles.css and wears no attribute. The others
+   are one block each on html[data-theme], restating every colour
+   token the site owns: canvas, ink, the grey ramp, the four rgb channel
+   triples the washes are mixed from, and the shell's two derived
+   surfaces. Nothing else in the site knows a theme exists — every sheet
+   already speaks in tokens, so a palette is a swap of the :root and the
+   whole document follows.
+
+   These are GENERATED, not tuned by hand, and what they are generated
+   against is CONTRAST, not opacity. The first cut laid the ink over the
+   canvas at the same opacity Paper's ramp implies — but Paper has a
+   near-black ink on a near-white canvas and 15.8:1 to spend, while a hue
+   canvas has 5:1, so the same fractions bought half the contrast and the
+   secondary type went to mist: --muted read 2.5:1 on blue where Paper
+   reads 4.2:1. Each rung now SOLVES for the blend that reproduces Paper's
+   own ratio against that canvas, so muted is 4.2:1 and g-400 2.4:1 in
+   every palette on the wheel. Where a canvas cannot reach a rung — Paper's
+   g-700 wants 6.4:1 and pink only has 7.3:1 in total — the unreachable
+   rungs are spread evenly between the deepest reachable one and the ink,
+   which keeps the ladder ordered instead of collapsing its top.
+   Room to do that had to be bought: the ink of each hue is deepened until
+   it clears 9:1, but never by more than 15%, because past that a hue's ink
+   is just black and the palette stops being a colour. g-050 — "paper
+   lifted off the canvas" — and the two derived surfaces keep the fraction
+   they were cut at, on the new ink. The generator is a node script
+   (gen.mjs in the session that built this); re-run it with new anchors
+   rather than nudging a single value here.
+
+   html[data-theme] (0,1,1) outranks :root (0,1,0), so these also beat the
+   two derived tokens shell.css declares. --ember — the one hue that
+   answers to nobody (see styles.css) — is restated only where the canvas
+   is its own colour and it would vanish: the warm hues, red round to
+   yellow and pink round to rose, hand it to white.
+
+   The twenty-two hues walk the OKLCH wheel in even steps (gen-hues.mjs):
+   each canvas sits at the lightness where sRGB gives that hue the most
+   chroma — yellow is a light colour, blue a dark one — clamped to L 0.70–0.84
+   with chroma capped at 0.145 so the light hues stay colours rather than
+   fluorescence. Its ink is that hue darkened along its own chromaticity —
+   hue held exactly — until it reaches the contrast the ladder above needs.
+   Each is one hue at twelve depths: the ramp between canvas and ink is
+   what every hairline, wash, the rail and the composer are cut from, so
+   the site becomes an orange (or teal, or violet) object, not a grey site
+   with a coloured wall behind it.
+
+   Chosen under the home page's composer (js/palette.js), remembered in
+   localStorage['shell.theme'], and set on <html> before first paint by
+   the inline script in each page's <head>.
+   ============================================================ */
+
+/* ink: ink/bg 15.3:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.07:1 */
+html[data-theme="ink"] {
+  --bg:     #161616;
+  --ink:    #ececec;
+  --muted:  #797979;
+  --orange: #ffffff;
+  --error:  #ffffff;
+  --g-900: #cfcfcf;
+  --g-700: #999999;
+  --g-550: #6c6c6c;
+  --g-500: #686868;
+  --g-400: #545454;
+  --g-350: #494949;
+  --g-250: #353535;
+  --g-200: #2e2e2e;
+  --g-150: #242424;
+  --g-130: #212121;
+  --g-100: #1c1c1c;
+  --g-050: #222222;
+  --ink-rgb:    236, 236, 236;
+  --bg-rgb:     22, 22, 22;
+  --line-rgb:   36, 36, 36;
+  --orange-rgb: 255, 255, 255;
+  --shell-surface: #1d1d1d;
+  --wash-solid:    #292929;
+  --portrait-ink:  #f4f4f4;
+  color-scheme: dark;
+}
+
+/* red: ink/bg 5.7:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="red"] {
+  --bg:     #eb7770;
+  --ink:    #3a1513;
+  --muted:  #5b2825;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #481c1a;
+  --g-700: #52221f;
+  --g-550: #6d312e;
+  --g-500: #733531;
+  --g-400: #904540;
+  --g-350: #9f4d48;
+  --g-250: #c05f5a;
+  --g-200: #cc665f;
+  --g-150: #da6d67;
+  --g-130: #dd6f68;
+  --g-100: #e4736c;
+  --g-050: #ef7972;
+  --ink-rgb:    58, 21, 19;
+  --bg-rgb:     235, 119, 112;
+  --line-rgb:   218, 109, 103;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #e5746d;
+  --wash-solid:    #dc6e68;
+  --portrait-ink:  #31100e;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* coral: ink/bg 5.7:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.04:1 */
+html[data-theme="coral"] {
+  --bg:     #e87c52;
+  --ink:    #3a170a;
+  --muted:  #5a2a17;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #471e0f;
+  --g-700: #502413;
+  --g-550: #6c341f;
+  --g-500: #723721;
+  --g-400: #8e482d;
+  --g-350: #9d5133;
+  --g-250: #be6341;
+  --g-200: #ca6a45;
+  --g-150: #d6724b;
+  --g-130: #d9744c;
+  --g-100: #e0784f;
+  --g-050: #ec7f54;
+  --ink-rgb:    58, 23, 10;
+  --bg-rgb:     232, 124, 82;
+  --line-rgb:   214, 114, 75;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #e27950;
+  --wash-solid:    #d9734c;
+  --portrait-ink:  #311206;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* orange: ink/bg 6.9:1 · g-700/bg 5.1:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="orange"] {
+  --bg:     #f19446;
+  --ink:    #371a01;
+  --muted:  #663912;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #432205;
+  --g-700: #552e0c;
+  --g-550: #764419;
+  --g-500: #7c481b;
+  --g-400: #985a25;
+  --g-350: #a7642b;
+  --g-250: #c77836;
+  --g-200: #d27f3a;
+  --g-150: #df883f;
+  --g-130: #e38b41;
+  --g-100: #ea8f43;
+  --g-050: #f49647;
+  --ink-rgb:    55, 26, 1;
+  --bg-rgb:     241, 148, 70;
+  --line-rgb:   223, 136, 63;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #ec9044;
+  --wash-solid:    #e18940;
+  --portrait-ink:  #2e1400;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* apricot: ink/bg 8.3:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="apricot"] {
+  --bg:     #f5ae42;
+  --ink:    #321e00;
+  --muted:  #6d4914;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #3e2604;
+  --g-700: #4b3008;
+  --g-550: #7d5519;
+  --g-500: #82591b;
+  --g-400: #9c6d24;
+  --g-350: #ab7729;
+  --g-250: #ca8f34;
+  --g-200: #d79738;
+  --g-150: #e4a13c;
+  --g-130: #e7a43d;
+  --g-100: #eea93f;
+  --g-050: #f7b043;
+  --ink-rgb:    50, 30, 0;
+  --bg-rgb:     245, 174, 66;
+  --line-rgb:   228, 161, 60;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #efa940;
+  --wash-solid:    #e4a13c;
+  --portrait-ink:  #291800;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* amber: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="amber"] {
+  --bg:     #efc64a;
+  --ink:    #332700;
+  --muted:  #6c5817;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #3c2e03;
+  --g-700: #4e3d0a;
+  --g-550: #7c651d;
+  --g-500: #81691f;
+  --g-400: #9a7e28;
+  --g-350: #a78a2e;
+  --g-250: #c6a33a;
+  --g-200: #d1ad3e;
+  --g-150: #deb843;
+  --g-130: #e1bb45;
+  --g-100: #e8c147;
+  --g-050: #f2c94b;
+  --ink-rgb:    51, 39, 0;
+  --bg-rgb:     239, 198, 74;
+  --line-rgb:   222, 184, 67;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #e9c148;
+  --wash-solid:    #ddb743;
+  --portrait-ink:  #2b2000;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* yellow: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="yellow"] {
+  --bg:     #d6d054;
+  --ink:    #2c2a00;
+  --muted:  #615d1a;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #353304;
+  --g-700: #45420c;
+  --g-550: #6e6a21;
+  --g-500: #726f23;
+  --g-400: #89852e;
+  --g-350: #969134;
+  --g-250: #b1ab42;
+  --g-200: #bbb547;
+  --g-150: #c7c14c;
+  --g-130: #c9c34e;
+  --g-100: #d0ca51;
+  --g-050: #ddd758;
+  --ink-rgb:    44, 42, 0;
+  --bg-rgb:     214, 208, 84;
+  --line-rgb:   199, 193, 76;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #d1cb51;
+  --wash-solid:    #c6c14c;
+  --portrait-ink:  #242200;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* lime: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="lime"] {
+  --bg:     #b9da69;
+  --ink:    #242f03;
+  --muted:  #516322;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #2b3708;
+  --g-700: #384711;
+  --g-550: #5d712a;
+  --g-500: #61752d;
+  --g-400: #758b3a;
+  --g-350: #809942;
+  --g-250: #98b453;
+  --g-200: #a1bf59;
+  --g-150: #abcb60;
+  --g-130: #aece62;
+  --g-100: #b3d465;
+  --g-050: #c6e972;
+  --ink-rgb:    36, 47, 3;
+  --bg-rgb:     185, 218, 105;
+  --line-rgb:   171, 203, 96;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #b4d466;
+  --wash-solid:    #accb60;
+  --portrait-ink:  #1c2600;
+}
+
+/* chartreuse: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="chartreuse"] {
+  --bg:     #97e184;
+  --ink:    #163210;
+  --muted:  #3d6733;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #1c3a16;
+  --g-700: #284a20;
+  --g-550: #47743c;
+  --g-500: #4b7a3f;
+  --g-400: #5c914f;
+  --g-350: #669f58;
+  --g-250: #7bbb6a;
+  --g-200: #82c572;
+  --g-150: #8bd17a;
+  --g-130: #8dd37b;
+  --g-100: #92da80;
+  --g-050: #aafb95;
+  --ink-rgb:    22, 50, 16;
+  --bg-rgb:     151, 225, 132;
+  --line-rgb:   139, 209, 122;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #93db80;
+  --wash-solid:    #8cd27a;
+  --portrait-ink:  #0e2709;
+}
+
+/* green: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.06:1 */
+html[data-theme="green"] {
+  --bg:     #71e6a2;
+  --ink:    #03341b;
+  --muted:  #246a44;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #083d21;
+  --g-700: #124d2e;
+  --g-550: #2d784f;
+  --g-500: #307d52;
+  --g-400: #3f9464;
+  --g-350: #47a36f;
+  --g-250: #59bf84;
+  --g-200: #5fc98c;
+  --g-150: #67d695;
+  --g-130: #69d998;
+  --g-100: #6ddf9d;
+  --g-050: #8bffc2;
+  --ink-rgb:    3, 52, 27;
+  --bg-rgb:     113, 230, 162;
+  --line-rgb:   103, 214, 149;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #6de09d;
+  --wash-solid:    #67d696;
+  --portrait-ink:  #002f17;
+}
+
+/* emerald: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.06:1 */
+html[data-theme="emerald"] {
+  --bg:     #46e9c0;
+  --ink:    #003428;
+  --muted:  #156b56;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #033c2f;
+  --g-700: #0a4d3d;
+  --g-550: #1a7862;
+  --g-500: #1c7d66;
+  --g-400: #26967a;
+  --g-350: #2ba486;
+  --g-250: #37c19f;
+  --g-200: #3bcca7;
+  --g-150: #40d8b2;
+  --g-130: #41dbb5;
+  --g-100: #43e3bb;
+  --g-050: #67ffff;
+  --ink-rgb:    0, 52, 40;
+  --bg-rgb:     70, 233, 192;
+  --line-rgb:   64, 216, 178;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #44e4bc;
+  --wash-solid:    #40d9b3;
+  --portrait-ink:  #003428;
+}
+
+/* mint: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.06:1 */
+html[data-theme="mint"] {
+  --bg:     #09e8dd;
+  --ink:    #003330;
+  --muted:  #036a64;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #003b38;
+  --g-700: #014c48;
+  --g-550: #037872;
+  --g-500: #047d77;
+  --g-400: #05958d;
+  --g-350: #06a39b;
+  --g-250: #07c0b7;
+  --g-200: #08cbc1;
+  --g-150: #08d7cd;
+  --g-130: #08dad0;
+  --g-100: #09e2d7;
+  --g-050: #35ffff;
+  --ink-rgb:    0, 51, 48;
+  --bg-rgb:     9, 232, 221;
+  --line-rgb:   8, 215, 205;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #09e8dd;
+  --wash-solid:    #08d4ca;
+  --portrait-ink:  #003330;
+}
+
+/* teal: ink/bg 9.0:1 · g-700/bg 6.4:1 · g-400/bg 2.4:1 · bg/shell 1.06:1 */
+html[data-theme="teal"] {
+  --bg:     #00e5f7;
+  --ink:    #003236;
+  --muted:  #006971;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #003b3f;
+  --g-700: #004b50;
+  --g-550: #007780;
+  --g-500: #007b85;
+  --g-400: #00939f;
+  --g-350: #00a1ad;
+  --g-250: #00becc;
+  --g-200: #00c9d8;
+  --g-150: #00d4e5;
+  --g-130: #00d7e8;
+  --g-100: #00def0;
+  --g-050: #00e5f7;
+  --ink-rgb:    0, 50, 54;
+  --bg-rgb:     0, 229, 247;
+  --line-rgb:   0, 212, 229;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #00e5f7;
+  --wash-solid:    #00e5f7;
+  --portrait-ink:  #00e5f7;
+}
+
+/* cyan: ink/bg 8.2:1 · g-700/bg 6.3:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="cyan"] {
+  --bg:     #03cefc;
+  --ink:    #002934;
+  --muted:  #015a6f;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #00323f;
+  --g-700: #003d4c;
+  --g-550: #01667f;
+  --g-500: #016c85;
+  --g-400: #02829f;
+  --g-350: #028eaf;
+  --g-250: #02aad0;
+  --g-200: #03b4dc;
+  --g-150: #03bfe9;
+  --g-130: #03c1ed;
+  --g-100: #03c8f4;
+  --g-050: #30ffff;
+  --ink-rgb:    0, 41, 52;
+  --bg-rgb:     3, 206, 252;
+  --line-rgb:   3, 191, 233;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #03cefc;
+  --wash-solid:    #03cefc;
+  --portrait-ink:  #002934;
+}
+
+/* sky: ink/bg 6.6:1 · g-700/bg 5.0:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="sky"] {
+  --bg:     #34b3f7;
+  --ink:    #00273c;
+  --muted:  #0c4767;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #033047;
+  --g-700: #083c57;
+  --g-550: #115579;
+  --g-500: #12597e;
+  --g-400: #1a6e9a;
+  --g-350: #1f79aa;
+  --g-250: #2893cc;
+  --g-200: #2b9bd8;
+  --g-150: #2fa6e5;
+  --g-130: #30a8e8;
+  --g-100: #32adf0;
+  --g-050: #59ffff;
+  --ink-rgb:    0, 39, 60;
+  --bg-rgb:     52, 179, 247;
+  --line-rgb:   47, 166, 229;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #32aef0;
+  --wash-solid:    #2fa6e5;
+  --portrait-ink:  #00273c;
+}
+
+/* azure: ink/bg 5.9:1 · g-700/bg 4.7:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="azure"] {
+  --bg:     #5aa1f6;
+  --ink:    #0c233f;
+  --muted:  #1b3c63;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #122c4d;
+  --g-700: #173558;
+  --g-550: #234975;
+  --g-500: #264c7b;
+  --g-400: #326198;
+  --g-350: #396ca8;
+  --g-250: #4782ca;
+  --g-200: #4c8bd6;
+  --g-150: #5295e4;
+  --g-130: #5396e7;
+  --g-100: #579bee;
+  --g-050: #7bd6ff;
+  --ink-rgb:    12, 35, 63;
+  --bg-rgb:     90, 161, 246;
+  --line-rgb:   82, 149, 228;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #589ef1;
+  --wash-solid:    #5497e7;
+  --portrait-ink:  #03152b;
+}
+
+/* blue: ink/bg 5.8:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.04:1 */
+html[data-theme="blue"] {
+  --bg:     #7c98f8;
+  --ink:    #192140;
+  --muted:  #2c3763;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #202a4d;
+  --g-700: #263158;
+  --g-550: #364375;
+  --g-500: #39487c;
+  --g-400: #495a99;
+  --g-350: #5265aa;
+  --g-250: #647bca;
+  --g-200: #6b83d7;
+  --g-150: #728ce6;
+  --g-130: #748ee9;
+  --g-100: #7893f0;
+  --g-050: #96b7ff;
+  --ink-rgb:    25, 33, 64;
+  --bg-rgb:     124, 152, 248;
+  --line-rgb:   114, 140, 230;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #7994f2;
+  --wash-solid:    #738ee8;
+  --portrait-ink:  #101730;
+}
+
+/* indigo: ink/bg 5.7:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.04:1 */
+html[data-theme="indigo"] {
+  --bg:     #998ef3;
+  --ink:    #211d3e;
+  --muted:  #383260;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #2a264c;
+  --g-700: #312c55;
+  --g-550: #443d72;
+  --g-500: #484278;
+  --g-400: #5b5495;
+  --g-350: #655ea5;
+  --g-250: #7c72c7;
+  --g-200: #837ad3;
+  --g-150: #8d83e1;
+  --g-130: #8f85e4;
+  --g-100: #9489ec;
+  --g-050: #ada1ff;
+  --ink-rgb:    33, 29, 62;
+  --bg-rgb:     153, 142, 243;
+  --line-rgb:   141, 131, 225;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #958aec;
+  --wash-solid:    #8e84e2;
+  --portrait-ink:  #181531;
+}
+
+/* violet: ink/bg 5.7:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.04:1 */
+html[data-theme="violet"] {
+  --bg:     #b186e8;
+  --ink:    #291b3a;
+  --muted:  #422f5a;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #332346;
+  --g-700: #3a2950;
+  --g-550: #50396c;
+  --g-500: #553d72;
+  --g-400: #6a4f8e;
+  --g-350: #77589d;
+  --g-250: #906cbd;
+  --g-200: #9873c9;
+  --g-150: #a37bd7;
+  --g-130: #a67dd9;
+  --g-100: #ab81e1;
+  --g-050: #c092fc;
+  --ink-rgb:    41, 27, 58;
+  --bg-rgb:     177, 134, 232;
+  --line-rgb:   163, 123, 215;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #ad83e2;
+  --wash-solid:    #a57dd9;
+  --portrait-ink:  #20142f;
+}
+
+/* purple: ink/bg 5.7:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.04:1 */
+html[data-theme="purple"] {
+  --bg:     #c57fd6;
+  --ink:    #2f1835;
+  --muted:  #4a2a52;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #3a2041;
+  --g-700: #42254a;
+  --g-550: #5a3563;
+  --g-500: #5f3969;
+  --g-400: #774a82;
+  --g-350: #845391;
+  --g-250: #a066af;
+  --g-200: #aa6cb9;
+  --g-150: #b675c6;
+  --g-130: #b977c9;
+  --g-100: #be7bcf;
+  --g-050: #d087e2;
+  --ink-rgb:    47, 24, 53;
+  --bg-rgb:     197, 127, 214;
+  --line-rgb:   182, 117, 198;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #c17cd1;
+  --wash-solid:    #b876c8;
+  --portrait-ink:  #26122c;
+}
+
+/* magenta: ink/bg 5.6:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="magenta"] {
+  --bg:     #d579c1;
+  --ink:    #34172d;
+  --muted:  #512947;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #401e38;
+  --g-700: #492340;
+  --g-550: #613257;
+  --g-500: #68365c;
+  --g-400: #814674;
+  --g-350: #904f81;
+  --g-250: #ad619d;
+  --g-200: #b868a7;
+  --g-150: #c56fb2;
+  --g-130: #c771b5;
+  --g-100: #cf75bb;
+  --g-050: #de7ec9;
+  --ink-rgb:    52, 23, 45;
+  --bg-rgb:     213, 121, 193;
+  --line-rgb:   197, 111, 178;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #cf76bc;
+  --wash-solid:    #c770b4;
+  --portrait-ink:  #2b1225;
+}
+
+/* pink: ink/bg 5.6:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="pink"] {
+  --bg:     #e175a7;
+  --ink:    #371525;
+  --muted:  #55263c;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #441c2f;
+  --g-700: #4d2236;
+  --g-550: #68314a;
+  --g-500: #6e344f;
+  --g-400: #894464;
+  --g-350: #984c70;
+  --g-250: #b75e87;
+  --g-200: #c36490;
+  --g-150: #d06b9a;
+  --g-130: #d36d9c;
+  --g-100: #da71a1;
+  --g-050: #e778ab;
+  --ink-rgb:    55, 21, 37;
+  --bg-rgb:     225, 117, 167;
+  --line-rgb:   208, 107, 154;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #db72a3;
+  --wash-solid:    #d26c9b;
+  --portrait-ink:  #2e101e;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+
+/* rose: ink/bg 5.6:1 · g-700/bg 4.6:1 · g-400/bg 2.4:1 · bg/shell 1.05:1 */
+html[data-theme="rose"] {
+  --bg:     #e8748c;
+  --ink:    #39151d;
+  --muted:  #592631;
+  --orange: #000000;
+  --error:  #000000;
+  --g-900: #461c26;
+  --g-700: #50212b;
+  --g-550: #6b303c;
+  --g-500: #713341;
+  --g-400: #8d4352;
+  --g-350: #9d4c5d;
+  --g-250: #be5d71;
+  --g-200: #c96378;
+  --g-150: #d76a81;
+  --g-130: #da6c83;
+  --g-100: #e17087;
+  --g-050: #ec768f;
+  --ink-rgb:    57, 21, 29;
+  --bg-rgb:     232, 116, 140;
+  --line-rgb:   215, 106, 129;
+  --orange-rgb: 0, 0, 0;
+  --shell-surface: #e27188;
+  --wash-solid:    #d86c82;
+  --portrait-ink:  #301017;
+  --ember:     #ffffff;
+  --ember-rgb: 255, 255, 255;
+}
+

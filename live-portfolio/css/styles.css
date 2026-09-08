@@ -32,6 +32,10 @@
      A hue that is not one of those two does not belong on this site. ---- */
   --bg:     #f6f6f6;                  /* the page canvas */
   --ink:    #1c1c1c;                  /* ink — name, words, state */
+  --portrait-ink: #141414;            /* the stipple portrait's ink: the ink
+                                         pushed one step past itself, so the
+                                         engraving reads black on every
+                                         palette (js/portrait.js) */
   --muted:  #767676;                  /* ash — role, time */
   --orange: #000;     /* the accent: emphasis, state and washes. Pure black
                          is the only value darker than the ink, and that
@@ -291,7 +295,7 @@ html::-webkit-scrollbar-thumb {
   background-clip: padding-box;
   border-radius: 5px;
 }
-html::-webkit-scrollbar-thumb:hover { background: #c9c8c2; background-clip: padding-box; }
+html::-webkit-scrollbar-thumb:hover { background: var(--g-250); background-clip: padding-box; }
 /* …except in a case study, standalone or embedded: the reading rail is
    already saying where you are there, and two indicators on one edge is one
    too many. The one page keeps its bar — the sidebar's thread says which
@@ -507,6 +511,12 @@ html, body {
   #home .scroll-hint svg { animation: none; }
   #home .scroll-hint:hover svg { translate: none; }
 }
+
+/* (THE PALETTE moved into the composer 2026-09-07: it was furniture on
+   the hero — a strip, then an orb at the foot, then a ring around the
+   box — and it is a TOOL now, sitting in .ai-tools beside the mood
+   toggle with its wheel in a card under the bar. It lives in css/ai.css
+   with the rest of that bar's controls.) */
 
 /* (GONE 2026-08-24: §THE HERO ASK — a full composer under the name pair,
    the shape every model's front page wears. It was built, lived beside

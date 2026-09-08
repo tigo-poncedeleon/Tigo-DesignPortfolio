@@ -628,6 +628,11 @@
 .social-gh:hover, .social-gh:focus-visible,
 .social-gr:hover, .social-gr:focus-visible { color: var(--orange); }
 .social-lb circle { transition: fill var(--t-micro) ease; }
+/* the gaps between the three reels are cut in the CANVAS colour — a token,
+   so they stay cut on every palette (an inline stroke="#f6f6f6" would be a
+   light hairline on a dark page) */
+.social-lb .lb-b,
+.social-lb .lb-c { stroke: var(--bg); stroke-width: 1.6; }
 .social-lb:hover .lb-a, .social-lb:focus-visible .lb-a { fill: var(--orange); }
 .social-lb:hover .lb-b, .social-lb:focus-visible .lb-b { fill: var(--g-700); }
 .social-lb:hover .lb-c, .social-lb:focus-visible .lb-c { fill: var(--g-500); }

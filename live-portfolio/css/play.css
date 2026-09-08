@@ -390,7 +390,7 @@
   border: none;
   line-height: 0;
   cursor: pointer;
-  color: #45443e;
+  color: var(--g-900);
   transition: color var(--t-micro) ease;
 }
 .board-btn:hover,
@@ -576,7 +576,8 @@
 .theater {
   position: fixed;
   top: 0;
-  left: calc(var(--shell-rail, 260px) + 1px);
+  /* the card's right edge: its width plus the standoff it stands in */
+  left: calc(var(--shell-rail) + var(--rail-gap));
   right: 0;
   bottom: 0;
   z-index: 16;              /* over the card and the case frame (15) */

@@ -225,15 +225,13 @@ html.lab-dark-furn .side-row,
 html.lab-dark-furn .side-link,
 html.lab-dark-furn .side-text,
 html.lab-dark-furn .side-label,
-html.lab-dark-furn .st-lead,
 html.lab-dark-furn .side-tool,
 html.lab-dark-furn .rail-open,
 /* the ask left .side-foot for the top of the rail, so it has to be named
    here in its own right — and it is a chip now, whose typed ink and
    resting question are two different greys */
 html.lab-dark-furn .ask-input,
-html.lab-dark-furn .ask-line svg,
-html.lab-dark-furn .side-foot a { color: var(--lab-furn-ink); }
+html.lab-dark-furn .ask-line svg { color: var(--lab-furn-ink); }
 html.lab-dark-furn .ask-input::placeholder { color: var(--lab-furn-dim); }
 /* The chip's paper slab retired with the chip — the letterhead is type
    straight on the furniture, so there is no surface to invert any more.
@@ -251,7 +249,6 @@ html.lab-dark-furn .ask-line:focus-within .ask-input::placeholder {
 }
 
 html.lab-dark-furn .side-role,
-html.lab-dark-furn .st-sub,
 html.lab-dark-furn .side-ico,
 html.lab-dark-furn .side-meta,
 html.lab-dark-furn .side-tw,
