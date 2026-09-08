@@ -37,14 +37,17 @@
    does — a themed link you can hand someone.
 
    ON THE PHONE the rail is display:none and the drawer is the rail
-   (js/drawer.js). So the same setting goes to the same place there: a
-   foot pinned under the drawer's nav, cut in the drawer's own idiom —
-   a group label ("palette") and the eighteen discs laid out nine by two, all of them
-   on screen at once, because a thumb cannot hover for a name and should
-   not have to open a second thing to see a colour. No orb: the drawer is
-   one ink and the discs are already its one bright object. It does not
-   close on pick either — the drawer wears the palette too, so it IS the
-   swatch you compare by. css/drawer.css §THE FOOT.
+   (js/drawer.js). So the same setting goes to the same place there: the
+   LAST GROUP in the drawer's column, after the nav and scrolled to like
+   any other group (it was pinned to the panel's floor once, and a pinned
+   floor spends a third of a short phone's menu on a control nobody opens
+   the menu to reach). Cut in the drawer's own idiom — a group label
+   ("palette") and the eighteen discs laid out nine by two, all of them on
+   screen at once, because a thumb cannot hover for a name and should not
+   have to open a second thing to see a colour. No orb: the drawer is one
+   ink and the discs are already its one bright object. It does not close
+   on pick either — the drawer wears the palette too, so it IS the swatch
+   you compare by. css/drawer.css §THE PALETTE.
    ============================================================ */
 (function () {
   'use strict';
@@ -231,14 +234,14 @@
     label();
   };
 
-  /* ---------- the phone: a foot in the drawer ---------- */
+  /* ---------- the phone: the last group in the drawer's column ---------- */
 
   var buildPhone = function () {
-    var drawer = document.querySelector('.m-drawer');
-    if (!drawer || pgrid) return;
+    var scroll = document.querySelector('.m-drawer .m-scroll');
+    if (!scroll || pgrid) return;
 
-    var foot = document.createElement('div');
-    foot.className = 'm-foot m-pal';
+    var foot = document.createElement('section');
+    foot.className = 'm-group m-pal';
     foot.innerHTML =
       /* the label is the drawer's own (.m-label). Just "palette" — the
          worn palette's name sat at the far end of the line for an hour
@@ -248,9 +251,12 @@
       '<div class="m-pal-grid" role="radiogroup" aria-label="Palette">' +
         swatchesHTML('theme-m') +
       '</div>';
-    /* after the nav: the drawer is a flex column and the nav is its
-       flex: 1, so this lands on the floor — the rail's own arrangement */
-    drawer.appendChild(foot);
+    /* after the nav, INSIDE the scroller: one group among the drawer's
+       groups, scrolled to like any of them. (It used to be a sibling of
+       the scroller, pinned to the panel's floor by the nav's flex: 1 —
+       the rail's own arrangement, and 97px of a phone screen spent on a
+       control nobody opens the menu to reach.) */
+    scroll.appendChild(foot);
     pgrid = foot.querySelector('.m-pal-grid');
 
     pgrid.addEventListener('change', function (e) {

@@ -3,15 +3,26 @@
    and nothing above 700px can see it.
 
    The desktop site is one long document you scroll from Home into
-   Work into About. On a phone it is THREE SCREENS (js/mobile.js):
-   only one section is in the document at a time, so there is no
-   scrolling from one into the next and each screen is as tall as
-   what it actually holds. You get between them from the drawer —
-   css/drawer.css, which is loaded after this file.
+   Work into About, and SO IS THE PHONE now. It was three tapped
+   screens for a while — one section in the document at a time, the
+   drawer the only way between them — and that made the site's other
+   two thirds invisible to anyone who did not open a menu to look for
+   them. A page you can scroll says what it holds by being scrolled.
+
+   So: Home is one screen exactly (the name, and the composer docked
+   under it), and Work and About are simply under it. The drawer stays
+   as the way to JUMP — it scrolls to a section now rather than
+   swapping one in — and the hash still addresses all three.
+
+   The one thing that still takes the page out of flow is a KEYBOARD:
+   while a field on the home screen is focused, html.kb-lock pins the
+   document and places the hero at the window's own coordinate, which
+   is the whole of the block below. Nothing else on the phone is
+   positioned against the viewport.
 
    Loaded LAST, on purpose: the phone blocks already inside
    styles.css / work.css / about.css / ai.css are the base, and the
-   overrides here answer for the pager on top of them.
+   overrides here answer for the phone's layout on top of them.
    ============================================================ */
 @media (max-width: 700px) {
 
@@ -27,135 +38,132 @@
      so every screen gets the whole 100dvh back. Three rules spent this
      token and all three are simpler without it.) */
 
-  /* ---- the pager. `is-phone` is set on <html> before first paint
-     (the inline script in index.html), so the three screens you are
-     not on are already out of the document on the very first frame —
-     no flash of the whole site stacked up. Before js/mobile.js has
-     named a screen, Home is the one. ---- */
-  html.is-phone .shell-card > main > section { display: none; }
-  html.is-phone .shell-card > main > section.m-on { display: block; }
-  html.is-phone:not(.m-ready) #home.stage { display: block; }
+  /* ---- (GONE: the pager's display gating —
+       `.shell-card > main > section { display: none }` with `.m-on`
+     switching one of them back on. Every section is in the document now
+     and you scroll from one into the next, which is what the site does on
+     every other width.)
 
-  /* ---- home: one screen exactly, and nothing under it to scroll to.
-     The hint retires with the scroll it used to promise. What "one screen"
-     means is the whole of the next block. ---- */
+     PLAY is the exception, and it is not a pager rule: the boards want a
+     keyboard and a wider court, so js/mobile.js takes the whole stage out
+     of the document before the game engines boot. This holds it out of
+     the FIRST FRAME too — `is-phone` is set on <html> by the inline script
+     in index.html, before paint, so the court never flashes up in the
+     moment before the script that removes it runs. ---- */
+  html.is-phone #play-stage { display: none; }
+
+  /* ---- home: one screen exactly, and the rest of the site under it.
+     What "one screen" means is the whole of the next block. ---- */
   /* ============================================================
-     THE HERO IS THE WINDOW.
+     THE HERO IS ONE SCREEN — and, while a keyboard is up, THE WINDOW.
 
-     Not 100dvh, and not 100dvh less a measured keyboard, which is what
-     this was and why it worked in one mobile browser and not another.
-     That subtraction crossed two different ideas of the viewport — dvh is
-     the browser's DYNAMIC viewport, which follows its own toolbars and
-     does not move for a keyboard; the keyboard was measured off
-     innerHeight, the LAYOUT viewport — and the two are only equal some of
-     the time. Wherever they disagreed the difference went straight into
-     this height, and the hero was drawn taller or shorter than the screen:
-     the name off the top, the composer under the keyboard.
+     TWO STATES, and the second one is the whole of the old block:
 
-     So no arithmetic. js/mobile.js reads the visible window itself and
-     hands it over whole, as two custom properties:
+       ·  IN FLOW, 100dvh. The ordinary state, and the one that makes the
+          page a page: the hero is the first thing in a document that then
+          goes on to Work and About, and scrolling takes you out of it.
+          100dvh rather than --win-h on purpose — dvh is the browser's own
+          dynamic viewport, so it tracks a collapsing toolbar without this
+          layout having to re-measure, and nothing below the hero shifts
+          while you scroll past it.
+
+       ·  html.kb-lock: ABSOLUTE, at --doc-top, --win-h tall, with the
+          document pinned. Set by js/mobile.js for exactly as long as a
+          field on this screen holds focus.
+
+     Why the second state exists at all, since it is the more delicate:
+     the composer is docked to this box's FLOOR, and a software keyboard
+     covers the floor. index.html asks the browser to shorten the page
+     itself (`interactive-widget=resizes-content`), which is the whole
+     answer where it is honoured — and iOS Safari does not honour it.
+
+     So while a keyboard is up the box is placed and sized by measurement,
+     off two numbers js/mobile.js reads straight from the visual viewport:
 
        --win-h    visualViewport.height — the height of what can be seen,
-                  in every browser, with or without a keyboard, whatever
-                  the toolbars are doing, and whether or not the viewport
-                  meta's interactive-widget request was honoured
+                  in every browser, keyboard or no keyboard, whatever the
+                  toolbars are doing
        --doc-top  scrollY + visualViewport.offsetTop — the DOCUMENT y of
                   the top of the visible window
 
-     and they place and size this screen outright. Nothing is derived from
-     either and nothing is taken off them: the box IS the window, the chat
-     fills the box, and the composer sits at its floor. The keyboard is
-     subtracted exactly once — inside --win-h — which is why there is no
-     --kb anywhere any more (see the GONE note on the chat area below).
+     Nothing is derived from either and nothing is taken off them: the box
+     IS the window, the chat fills the box, the composer sits at its floor.
+     The keyboard is subtracted exactly once, inside --win-h, which is why
+     there is no --kb anywhere any more (see the GONE note on the chat area
+     below).
 
-     Nothing here translates by visualViewport.offsetTop: that is answered
-     a frame late, and the frame is a visible flinch on the two corner
-     buttons. And nothing sizes the screen to the LAYOUT viewport: that
-     left an empty strip below the box for the browser to scroll into,
-     which put the composer behind the status bar. A box that is exactly
-     the window has neither failure.
+     What NOT to do, all of it measured:
+
+       ·  100dvh less a measured keyboard. That subtraction crosses two
+          different ideas of the viewport — dvh does not move for a
+          keyboard, and the keyboard was measured off innerHeight, the
+          LAYOUT viewport — so wherever they disagreed the difference went
+          into this height and the hero was drawn taller or shorter than
+          the screen.
+       ·  `position: fixed`. On iOS a fixed box is anchored to the layout
+          viewport, which is ITSELF displaced while a keyboard is open;
+          measured off a recording the whole screen ended up above the top
+          of the display. `inset: 0` cannot help when the thing that moved
+          is the frame you are filling.
+       ·  translating by visualViewport.offsetTop. Correct on paper and
+          answered a frame late — a visible flinch on two corner buttons.
+
+     The absolute box does need one thing of its ancestors: NO POSITIONED
+     ONE between it and the document, or --doc-top is measured from the
+     wrong origin. .shell-card is position: relative, and an earlier
+     version of this resolved against it and was pushed off the bottom —
+     hence the `static` override, which is scoped to the locked state
+     because that is the only state that reads the coordinate.
      ============================================================ */
-
-  /* …but the shell must stop standing 100vh tall under it. On iOS 100vh is
-     the LARGE viewport — the height with the browser's toolbars hidden —
-     so against a window shortened by whatever toolbar is showing, the
-     document had a few dozen pixels of travel: a scrollbar flashing, the
-     toolbar dragging through its collapse, and every keyboard transition
-     landing on a page that was itself still settling. With the hero out of
-     flow there is nothing else on this screen asking for height, so this
-     is the last thing holding the document open. */
-  html.is-phone[data-m-screen="home"] .shell { min-height: 0; }
-
-  /* ---- …and the document cannot scroll here AT ALL.
-     The hero is absolutely positioned, so a document scroll drags it off
-     the top of the screen — which is the fault this pairs with. iOS grows
-     the scrollable area when a keyboard opens so it can scroll a covered
-     field into view; ours is never covered, so that scroll is the browser
-     acting on a layout that no longer exists. Taking the overflow away
-     means it cannot happen, and js/mobile.js puts scrollTop back every
-     frame in case a browser manages it anyway. Belt and braces, because
-     the failure mode is the whole screen leaving the display.
-
-     (A lock stood here once before and was removed for shoving: with the
-     page pinned, Safari answered a focused field by displacing the visual
-     viewport instead, and nothing answered THAT. The difference now is
-     that nothing needs the shove — the composer is never covered — and if
-     one happens anyway, --doc-top counts it and the screen is placed
-     where the window went. The lock closes the common path; the
-     coordinate is the net under it.) ---- */
-  html.is-phone[data-m-screen="home"],
-  html.is-phone[data-m-screen="home"] body {
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-  /* …and no positioned ancestor between #home.stage and the document, or
-     its --doc-top would be measured from the wrong origin. .shell-card is
-     position: relative above this width and that is what an earlier
-     version of this resolved against, which pushed the screen off the
-     bottom the moment the document scrolled. */
-  html.is-phone[data-m-screen="home"] .shell-card { position: static; }
-  /* the screen is out of flow, so it contributes nothing to the document
-     at all — there is no height here for the page to scroll through. */
-
   html.is-phone #home.stage {
-    /* ABSOLUTE, AT A DOCUMENT COORDINATE — and not fixed, deliberately.
+    /* one screen, in flow, with the rest of the site under it */
+    position: relative;
+    height: 100dvh;
+    overflow: hidden;
+    /* it is drawn OVER the page beneath while the lock takes it out of
+       flow, so it cannot be transparent then */
+    background: var(--bg);
+  }
 
-       On iOS a `position: fixed` box is anchored to the LAYOUT viewport,
-       and while a keyboard is open the layout viewport is itself displaced
-       relative to what can be seen (WebKit is also known to drift fixed
-       layers outright in that state). Measured off a recording, the whole
-       screen ended up above the top of the display by more than a
-       keyboard's height. `inset: 0` cannot help with that: filling the
-       layout viewport is no use when the layout viewport is the thing that
-       moved.
+  /* …except while the opening's veil is up. The veil is one fixed sheet at
+     z-index -1 (js/palette.js), so every box that paints its own --bg
+     between it and the eye hides it — shell.css already clears body,
+     .shell and .shell-card for exactly that reason, and the line above is
+     a FOURTH painter that rule never knew about. The cost was silent: the
+     phone's ink beat set the veil to ink and the words to paper, and then
+     drew paper over the top, so the second half of the opening was
+     near-white text on a near-white screen. The paint is only there for
+     the keyboard lock, and a keyboard cannot be up during the opening.
+     Lives here, not in shell.css, because the rule it answers is here and
+     this sheet is loaded last. */
+  html.is-phone:not(.kb-lock) body:has(> .pal-veil) #home.stage {
+    background: transparent;
+  }
 
-       --doc-top is scrollY + visualViewport.offsetTop, which IS the
-       document y of the top of the visible window, in every browser, by
-       the definitions of those two numbers. Placed there, this box is
-       where the window is and no browser gets a vote.
-
-       The proviso is that an absolute box resolves against its nearest
-       POSITIONED ancestor, and .shell-card is position: relative — an
-       earlier absolute version resolved against it and was pushed off the
-       bottom. That ancestor is made static on this screen (below) so the
-       coordinate means what it says. */
+  /* ---- the keyboard state, and nothing but a keyboard sets it. ---- */
+  html.is-phone.kb-lock #home.stage {
     position: absolute;
     top: var(--doc-top, 0px);
     left: 0;
     right: 0;
     height: var(--win-h, 100dvh);
-    overflow: hidden;
+    /* OVER the page it just left. Out of flow, the two sections under it
+       close the gap and stand exactly where this box is drawn — and
+       .work-stage is positioned too, so with both at `z-index: auto` the
+       later one in the document wins and Work is painted straight through
+       the hero. (Seen, in a screenshot: the name over a monitor.) A number
+       here is the whole fix; the background above is what it paints with. */
+    z-index: 5;
 
     /* ---- AND NOTHING HERE TRANSITIONS.
 
-       This is the third answer to the keyboard and the first that is not
-       an interpolation. The two before it eased between the window's own
-       reports, which arrive three or four times across the keyboard's
-       third of a second, and both were wrong in the same structural way:
-       the composer sits at this box's FLOOR, which is top + height, and
-       top and height were separate transitions. Any moment one ran ahead
-       of the other their sum was nonsense, and the box flew about 280px
-       past its mark and eased back — measured, every single time:
+       Two earlier answers eased between the window's own reports, which
+       arrive three or four times across the keyboard's third of a second,
+       and both were wrong in the same structural way: the composer sits at
+       this box's FLOOR, which is top + height, and top and height were
+       separate transitions. Any moment one ran ahead of the other their
+       sum was nonsense, and the box flew about 280px past its mark and
+       eased back — measured, every single time:
 
            711 → 691 → 1156 → 1704 → 1618 → 1526 → 1474 → 1447 → 1424
 
@@ -167,6 +175,24 @@
        frame rate. The motion is the OS's own, not an approximation of it,
        which is the only way this is ever going to look right. ---- */
   }
+  /* the document cannot move while the box is placed at a document
+     coordinate: a scroll would drag the hero straight off the top. iOS
+     grows the scrollable area when a keyboard opens so it can reveal a
+     covered field; ours is never covered, so that scroll is the browser
+     acting on a layout that no longer exists. js/mobile.js also puts
+     scrollTop back every frame, because the failure mode is the whole
+     screen leaving the display. */
+  html.is-phone.kb-lock,
+  html.is-phone.kb-lock body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  html.is-phone.kb-lock .shell-card { position: static; }
+  /* …and with the hero out of flow, nothing else on the locked screen is
+     asking for height. On iOS 100vh is the LARGE viewport — the height
+     with the toolbars hidden — so leaving this standing gave the pinned
+     document a few dozen pixels of travel to fight over. */
+  html.is-phone.kb-lock .shell { min-height: 0; }
 
   html.is-phone #home .scroll-hint { display: none; }
 
@@ -340,10 +366,18 @@
      band used to be — 12 of inset, 38 of button, 12 of air. */
   html.is-phone .ai-stage.is-hero .ai-scroll {
     padding-top: calc(var(--m-btn-top) + var(--m-btn) + 12px);
-    /* the transcript is the ONLY scroller on this screen. `contain` stops a
-       flick at either end of it from turning into a page bounce behind the
-       chat — the hero itself has nowhere to go (overflow: hidden, exactly
-       one screen) and should never look like it does. */
+    /* …and a flick that runs off the end of the transcript CHAINS to the
+       page, which is how you get out of a conversation and down into the
+       site. It used to be `contain` here, and that was right when the hero
+       was the whole document and a bounce behind it would have been a lie
+       about a page that could not move. The page moves now, and the
+       transcript covers most of this screen — contain would have made the
+       chat a trap you could only leave through the menu. */
+    overscroll-behavior: auto;
+  }
+  /* …except with a keyboard up, where the page is pinned and a chained
+     flick would only fight the lock */
+  html.is-phone.kb-lock .ai-stage.is-hero .ai-scroll {
     overscroll-behavior: contain;
   }
 

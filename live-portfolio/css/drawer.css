@@ -96,11 +96,9 @@
        nothing */
     padding: calc(var(--m-btn-top) + var(--m-btn) + 18px) 0
              max(14px, env(safe-area-inset-bottom, 0px));
-    /* ^ the floor is the safe area ITSELF, not 24px on top of it. It was
-       24 + inset under a last row of text; now the foot's discs end on
-       the safe-area line, where a tab bar's icons stop above the home
-       indicator. That is what buys the foot its room on an 812px phone —
-       the whole panel comes to 812 exactly (see §THE FOOT). */
+    /* ^ the floor is the safe area ITSELF, not 24px on top of it: the
+       column ends where a tab bar's icons stop, above the home indicator,
+       and the scroller carries its own 24 of air inside that. */
     translate: -100% 0;
     /* visibility, not display: a display:none panel cannot transition,
        and a panel that is merely translated off-screen is still in the
@@ -120,9 +118,10 @@
      It covers every pixel of the page, so every touch meant for the
      page lands here instead — and `touch-action: none` means the
      browser will not pan from it. That is the whole lock: no
-     overflow:hidden on <html> (iOS honours it unevenly, and it would
-     fight the pager's own per-screen scroll bank in js/mobile.js), no
-     position:fixed body swap, no scrollY bookkeeping to get wrong.
+     overflow:hidden on <html> (iOS honours it unevenly, and the page is
+     a real scrolling document now — it would have a scroll position to
+     lose), no position:fixed body swap, no scrollY bookkeeping to get
+     wrong.
      The panel's own overscroll-behavior closes the only other hole,
      and html { overscroll-behavior-y: none } (css/shell.css) already
      closed the rubber-band one.
@@ -193,15 +192,19 @@
                 color var(--t-micro) ease,
                 background-color var(--t-micro) ease;
   }
-  /* ---- …except on the home screen, where it is placed at a document
+  /* ---- …except while a KEYBOARD is up, where it is placed at a document
      coordinate instead, for the reason js/mobile.js sets out at length:
      `position: fixed` is anchored to something browsers disagree about
-     while a keyboard is up, and the home screen is the only one here that
-     ever raises one. It is placed off the same --doc-top the hero itself
-     is, with nothing that eases or reacts — so it does not move for a
-     keyboard at all, which is the point. The hero carries #ai-reset, so
-     all three hold one line or none of them moves at all. ---- */
-  html.is-phone[data-m-screen="home"] .m-menu {
+     while a keyboard is open, and the home screen's composer is the only
+     field on the phone that raises one. It is placed off the same
+     --doc-top the hero itself is, with nothing that eases or reacts — so
+     it does not move for a keyboard at all, which is the point. The hero
+     carries #ai-reset, so all three hold one line or none of them moves.
+
+     Every other moment it is FIXED, which is what it should be on a page
+     that scrolls: the way back into the menu stays in its corner while
+     Work and About go past. ---- */
+  html.is-phone.kb-lock .m-menu {
     /* The hero's coordinate exactly (css/mobile.css) — absolute, at the
        document y of the top of the visible window. Not fixed: on iOS a
        fixed box is anchored to the layout viewport, which is itself
@@ -307,8 +310,12 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     border-top: 1px solid var(--shell-line);
-    padding: 12px 0 8px;
+    /* the floor is generous because the column now ENDS in the palette
+       rather than standing on it: the last row of discs should not sit on
+       the panel's own bottom edge */
+    padding: 12px 0 24px;
   }
+  .m-nav { display: block; }
 
   /* ---- THE RHYTHM, which is the whole of what makes this read as
      organised rather than as a list that happens to have headings.
@@ -400,26 +407,27 @@
      js/drawer.js and still carry aria-current; nothing paints them.) */
 
   /* ============================================================
-     THE FOOT — the palette (js/palette.js buildPhone).
+     THE PALETTE (js/palette.js buildPhone) — the last group in the
+     column, and that is all it is.
 
-     The one thing the rail keeps at its foot, at the drawer's foot: a
-     SETTING, pinned under the nav like every app pins its settings,
-     on every shell page. It is laid out for a thumb rather than a
-     pointer: the eighteen discs are all on screen, nine by two — the
-     neutrals and the warm half of the wheel on the first line, the
-     cool half on the second — because a finger cannot hover for a
-     name and should not have to open a card to see a colour. The
-     label is the drawer's own 11px group label and says only
-     "palette" — the worn palette's name sat at the far end of the
-     line for an hour and was cut: the ring on the disc and the
-     colour of the panel itself already say which. The discs are the
-     panel's one bright object and the orb would only be a second one.
+     It was PINNED to the panel's floor for a while, on the rail's own
+     argument that a setting belongs under the nav the way an app pins
+     its settings. Pinned, it took ~97px off the top of every screen's
+     worth of navigation and stood there on every page, for a control
+     that nobody opens a menu to reach — and on a short phone that is
+     the bottom of the nav gone. So it joins the column: same 11px group
+     label, same left edge, same 28px of air above it as `elsewhere` has
+     over `pages`, and you scroll to it exactly as you scroll to
+     anything else in here.
 
-     It is the exception to the paragraph below, and the reason it is
-     one: the two things cut from this floor were STATUS. A floor of
-     facts was weighing down a column that was never falling. A floor
-     you press is just where the setting lives, and it is 97px — which,
-     with the floor below, is exactly what an 812px phone has spare.
+     It is still laid out for a thumb rather than a pointer: the
+     eighteen discs are all on the line at once, nine by two — the
+     neutrals and the warm half of the wheel on the first row, the cool
+     half on the second — because a finger cannot hover for a name and
+     should not have to open a card to see a colour. The label says only
+     "palette": the worn palette's name sat at the far end of the line
+     for an hour and was cut, since the ring on the disc and the colour
+     of the panel itself already say which.
 
      Discs 28px in cells a hair over 39 (a thumb's target, edge to edge
      with its neighbours); the grid hangs 5px past the inset on both
@@ -430,37 +438,29 @@
 
      Opening the drawer, the discs arrive AFTER the panel lands —
      shell.css's pal-in, restarted on every open by switching the
-     animation on with html.m-open, staggered a row at a time off
-     --i. It is the only thing in the panel that moves, which is what
-     makes it read as the one thing that is alive.
+     animation on with html.m-open, staggered a row at a time off --i.
+     It is the only thing in the panel that moves, which is what makes
+     it read as the one thing that is alive.
 
-     (GONE before it: statusHTML()'s "now" section and, before that, a
-     black "new chat" pill. The rail's own argument for a weighted floor
-     is an argument about a RAIL: a persistent column with nav above it
-     should not end in a long fall to nothing. A drawer has no long fall
-     — it is shut except in the second you opened it to go somewhere —
-     so the floor was holding down a column that was never falling, and
-     spending a third of a phone screen to do it. The status lines still
-     live on About, in the letter, where someone is actually asking.
-     The pill went for its own reason: the site has one conversation,
-     and the way to clear it is already in the corner of the screen the
-     pill led to.)
+     (GONE with the pinning: the hairline over it, which divided a nav
+     from a floor and now would only cut the column in half; and the
+     panel's flex arrangement around it. GONE before all of it:
+     statusHTML()'s "now" section and a black "new chat" pill — both
+     STATUS on a floor, both cut for weighing down a column that was
+     never falling. The status lines still live on About, in the letter,
+     where someone is actually asking.)
      ============================================================ */
-  .m-pal {
-    flex: none;
-    /* full bleed, like .m-scroll's: it divides the nav from the setting,
-       and that is a division of the whole panel */
-    border-top: 1px solid var(--shell-line);
-    padding: 10px var(--m-inset) 0;
-  }
-  .m-pal-label {
-    padding: 0;                     /* the foot carries the inset */
-    margin: 0 0 5px;
-  }
+  /* the group's own air above it — .m-group + .m-group cannot reach it
+     (the nav is between them in the DOM), so the number is written out
+     rather than inherited, and it is the same 28 */
+  .m-pal { margin-top: 28px; }
+  .m-pal-label { margin: 0 0 5px; }   /* .m-label carries the inset */
   .m-pal-grid {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    margin: 0 -5px;
+    /* the inset, less the cell's own 5px of overhang, so the first disc's
+       EDGE lands on the column all the labels and glyphs hang off */
+    margin: 0 calc(var(--m-inset) - 5px);
   }
   .m-pal .pal-swatch {
     width: auto;

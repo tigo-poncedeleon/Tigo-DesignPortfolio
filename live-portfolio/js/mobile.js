@@ -1,17 +1,27 @@
 // THE PHONE (≤700px) — and nothing above it.
 //
 // On a laptop this site is one long document: Home, Work, About and Play
-// scroll into one another. None of that survives a phone well, so below
-// 700px the same markup is re-cast as THREE SCREENS — no scrolling from one
-// section into the next, one thing at a time:
+// scroll into one another. ON A PHONE IT IS THE SAME DOCUMENT — minus Play
+// — and this file re-cuts the pieces for a 390px screen rather than taking
+// them apart:
 //
-//   home   the name, one screen, and the composer docked under it
-//   work   the three projects, scrolled straight through
+//   home   the name, ONE SCREEN exactly, with the composer docked under it
+//   work   the three projects, unrolled from the desktop stepper
 //   about  the letter and the chronology
 //
-// You get between them from the DRAWER (js/drawer.js), which is the phone's
-// whole navigation now. The bottom tab bar this file used to drive was
-// deleted with it — see the (GONE) block in index.html.
+// (GONE: THREE TAPPED SCREENS. For a while only one of those sections was in
+// the document at a time and the DRAWER was the only way between them. It
+// read as a tidy app and it hid two thirds of the site: a visitor who
+// scrolls — which is every visitor, on the first screen, before they have
+// looked for a menu — found that the page did not move and left. A page
+// says what it holds by being scrolled. So the sections are all in the
+// document, the hero is one screen tall with the rest under it, and the
+// pager below is now a SCROLLER: same hashes, same drawer rows, same
+// `phone:screen` event, but `show()` scrolls to a section instead of
+// swapping one in. The per-screen scroll memory went with it — a document
+// remembers where you were by itself.)
+//
+// The drawer (js/drawer.js) stays as the way to JUMP.
 //
 // Play retires entirely here (the boards want a keyboard and a wider
 // court) — the whole stage is taken out of the document before the game
@@ -143,11 +153,14 @@
   }
 
   /* ============================================================
-     The pager
-     Three screens, one at a time. The hash stays the address — every
-     link that already exists in the world (index.html#bio from the case
-     studies, about.html's redirect, #vicino from work.html) lands on the
-     right screen, and back/forward walk them.
+     The pager, which is now a SCROLLER.
+
+     Three sections, all of them in the document, one under the next. The
+     hash stays the address — every link that already exists in the world
+     (index.html#bio from the case studies, about.html's redirect, #vicino
+     from work.html) lands on the right section, and back/forward walk
+     them — but landing on one is a SCROLL now rather than a swap, and you
+     can arrive at any of them by simply scrolling there.
      ============================================================ */
   const SCREENS = [
     { id: 'home',  el: document.getElementById('home'),                hash: '#home' },
@@ -189,63 +202,78 @@
     return OF_HASH[u.hash.slice(1)] || null;
   };
 
-  const scrollOf = {};                       // where each screen was left
+  // the document y of a section's top. Read live rather than cached: the
+  // hero is 100dvh and the two below it grow as their images decode.
+  const topOf = (el) => Math.round(el.getBoundingClientRect().top + window.scrollY);
+
   let at = null;
+
+  // ---- WHERE YOU ARE, said once per change.
+  //
+  // `phone:screen` is load-bearing for two other files: js/drawer.js marks
+  // the current row off it and closes the panel, and js/about.js waits on
+  // it for a box to bake the hedcut into. It is dispatched on the CHANGE
+  // only — never per scroll frame — so those two keep the contract they
+  // were written against.
+  const setAt = (id, opts) => {
+    const o = opts || {};
+    if (id === at && !o.force) return;
+    at = id;
+    root.dataset.mScreen = id;
+    window.dispatchEvent(new CustomEvent('phone:screen', { detail: { id: id } }));
+  };
 
   const show = (id, opts) => {
     const next = SCREENS.find((s) => s.id === id) || SCREENS[0];
     if (!next) return;
     const o = opts || {};
 
-    if (at && at !== next.id) {
-      scrollOf[at] = window.scrollY;
-    }
-    SCREENS.forEach((s) => s.el.classList.toggle('m-on', s === next));
+    // (m-ready survives as a state hook only: it used to hold the pager's
+    // display gating off until a screen had been named, and there is no
+    // gating left to hold.)
     root.classList.add('m-ready');
-    root.dataset.mScreen = next.id;
 
     // The entrances are gated on .revealed, which each stage's own
-    // IntersectionObserver hands out as you scroll to it. A screen that is
-    // display:none until the instant you tap its tab is a poor thing to
-    // make that promise about — if the observer is a frame late, or never
-    // fires, the screen is BLANK. The pager knows what it just put on
-    // screen, so it says so itself and the observers become the belt to
-    // this pair of braces. A FRAME later, deliberately: the element has to
-    // have been laid out at opacity 0 for one frame or the transition has
-    // nothing to run from and the screen simply snaps in.
-    requestAnimationFrame(() => {
-      next.el.classList.add('revealed');
-      // NOT .ai-stage: the composer answers to shell.js's lightUp(), which
-      // waits for the typewriter. Revealing it here would put a field under
-      // the name before the name has typed a character.
-      next.el.querySelectorAll('.about-slide, .work-slide')
-        .forEach((s) => s.classList.add('revealed'));
-    });
-
-    // (GONE: the loop that lit the bottom bar's current tab. The drawer
-    // marks itself off the `phone:screen` event dispatched below — one
-    // listener, in the file that owns the rows, instead of this file
-    // reaching across into markup it did not build.)
+    // IntersectionObserver hands out as you scroll to it. Jumping straight
+    // to a section can land past the moment that observer would have
+    // fired, and a section that is still at opacity 0 when you arrive is a
+    // BLANK screen. The scroller knows what it just went to, so it says so
+    // itself and the observers become the belt to this pair of braces.
+    next.el.classList.add('revealed');
+    // NOT .ai-stage: the composer answers to shell.js's lightUp(), which
+    // waits for the typewriter. Revealing it here would put a field under
+    // the name before the name has typed a character.
+    next.el.querySelectorAll('.about-slide, .work-slide')
+      .forEach((s) => s.classList.add('revealed'));
 
     const first = at === null;
-    at = next.id;
+    // instantly, not smoothly: this runs while the drawer is sliding shut
+    // over the top of it, and a half-second ease under a closing panel is
+    // a page that appears to still be moving when the panel has gone.
+    if (o.scroll !== false) window.scrollTo(0, topOf(next.el));
+    setAt(next.id, { force: true });
 
-    // Say so out loud. A screen that was display:none had no layout box, so
-    // anything that had to MEASURE itself could not — js/about.js bakes the
-    // hedcut into a canvas and needs real pixels to bake into. Announced
-    // synchronously, after the class toggle, so a listener reading
-    // clientWidth in the handler already gets the real number.
-    window.dispatchEvent(new CustomEvent('phone:screen', { detail: { id: at } }));
-
-    // a screen you come back to remembers where you were reading; a screen
-    // you open for the first time starts at the top
-    if (!o.keepScroll) {
-      window.scrollTo(0, o.restore === false ? 0 : (scrollOf[next.id] || 0));
-    }
     if (!first && o.silent !== true && location.hash !== next.hash) {
       history.pushState(null, '', next.hash);
     }
   };
+
+  /* ---- …and the other direction: a scroll tells the drawer where you
+     ended up. A 0-height band across the middle of the window, and
+     whichever section is crossing it is the one you are on — cheaper than
+     a scroll handler and it cannot disagree with itself. The URL is left
+     alone here on purpose: rewriting the hash on every scroll would fill
+     the history with places nobody asked to go. ---- */
+  if (window.IntersectionObserver && SCREENS.length > 1) {
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const hit = SCREENS.find((s) => s.el === en.target);
+        if (hit) setAt(hit.id);
+      });
+    }, { rootMargin: '-45% 0px -55% 0px' });
+    SCREENS.forEach((s) => spy.observe(s.el));
+  }
 
   // ---- ONE delegate now, for every link on the document that names a
   // screen: the drawer's rows, the hero's own anchors, a redirect landing.
@@ -253,9 +281,10 @@
   // bar. screenOf answers for both spellings, so one is enough.)
   //
   // Capture phase, so shell.js's own document-level anchor delegate never
-  // sees these clicks and never tries to smooth-scroll to a section that is
-  // not on screen. js/drawer.js knows about this and does not compete: it
-  // closes off the `phone:screen` event below rather than off the click.
+  // sees these clicks and never tries to smooth-scroll to a section with
+  // its own idea of where the section is. js/drawer.js knows about this and
+  // does not compete: it closes off the `phone:screen` event rather than
+  // off the click.
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -265,33 +294,19 @@
     if (!id || !SCREENS.some((s) => s.id === id)) return;   // let it navigate
     e.preventDefault();
     e.stopPropagation();
-    if (id === at) {
-      // ---- the screen you are already on.
-      //
-      // This used to scroll to the top and say nothing, and saying nothing
-      // was the bug: it stopPropagation'd the click (two lines up, so the
-      // shell's own delegate never sees it) and then returned without
-      // calling show(), so `phone:screen` was never dispatched — and that
-      // event is how js/drawer.js knows to close. Tapping "Home" from the
-      // drawer while on Home did nothing at all: the panel just sat there,
-      // over the page it was being asked to go back to.
-      //
-      // On HOME it also does not mean "scroll to the top", because Home
-      // does not scroll — it is one screen with overflow: hidden. What the
-      // top of Home is, once you have used it, is the empty composer: a
-      // transcript is what this page LOOKS like after a question, and
-      // going back to Home is the ask. So Home resets the chat, which is
-      // the same thing #ai-reset does in the corner.
-      if (id === 'home' && window.AIChat && window.AIChat.reset) {
-        window.AIChat.reset();
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-      // …and either way, say so. The drawer is listening.
-      window.dispatchEvent(new CustomEvent('phone:screen', { detail: { id: at } }));
-      return;
+    // ---- HOME, tapped while you are already on it, is the ask again.
+    //
+    // Home does not scroll within itself — it is one screen — so "back to
+    // the top of Home" is only ever the empty composer: a transcript is
+    // what this page LOOKS like after a question, and going home is the
+    // ask. So it resets the chat, which is the same thing #ai-reset does
+    // in the corner. (It must still call show() afterwards either way, or
+    // `phone:screen` never fires and the drawer sits there open over the
+    // page it was asked to go back to — that was a real bug.)
+    if (id === 'home' && at === 'home' && window.AIChat && window.AIChat.reset) {
+      window.AIChat.reset();
     }
-    show(id, { restore: false });
+    show(id);
   }, true);
 
   window.addEventListener('popstate', () => {
@@ -300,10 +315,22 @@
 
   // ---- landing. ?ask=1 (ai.html's redirect) is a home landing now — home
   // IS the chat — and ?q=… still asks its question on arrival.
+  //
+  // The browser's own hash restoration is not trusted here: the sections
+  // below the hero are still growing as their images decode, so a scroll
+  // taken at parse time lands somewhere else by the time the page settles.
+  // A landing on Home does not scroll at all.
   const params = new URLSearchParams(location.search);
   const landing = params.has('ask') ? 'home'
     : (OF_HASH[location.hash.slice(1)] || 'home');
-  show(landing, { silent: true, restore: false });
+  show(landing, { silent: true, scroll: landing === 'home' ? false : true });
+  if (landing !== 'home') {
+    // …and again once everything above it has its real height. Cheap, and
+    // it is the difference between #bio landing on the letter and landing
+    // a third of the way down it.
+    addEventListener('load', () => { if (at === landing) window.scrollTo(0, topOf(
+      SCREENS.find((s) => s.id === landing).el)); });
+  }
 
   // (?q= is not replayed here any more. It used to be, because the seed had
   // to survive the sheet being lifted into a section on this width; the
@@ -312,6 +339,13 @@
 
   /* ============================================================
      THE WINDOW, MEASURED — and nothing subtracted from anything.
+
+     ALL OF THIS RUNS UNDER ONE CLASS. `html.kb-lock` is on for exactly as
+     long as a field on the home screen holds focus, and off the rest of
+     the time — which is the whole of the rest of the site, where the page
+     is an ordinary scrolling document and nothing here has anything to
+     say about it. Everything below measures and pins; a page you are
+     reading must be allowed to move.
 
      The home screen is exactly one screen with the composer docked to its
      floor, so the moment a software keyboard opens, the field is behind it
@@ -383,13 +417,19 @@
      that ancestor `static` on this screen, so the coordinate means what
      it says.
 
-     In practice --doc-top simply stays 0 here: the document cannot
-     scroll on this screen (css/mobile.css locks it, and syncKB below
-     puts back anything a browser manages anyway), and the composer is
-     already clear of the keyboard by construction, so the browser has
-     nothing to reveal and no reason to shove. The coordinate is the
-     safety net under that guarantee, not the mechanism — if a browser
-     moves the window anyway, the screen is placed where it went.
+     In practice --doc-top simply holds at the y the lock was taken at:
+     the document cannot scroll while the lock is on (css/mobile.css takes
+     the overflow away, and syncKB below puts back anything a browser
+     manages anyway), and the composer is already clear of the keyboard by
+     construction, so the browser has nothing to reveal and no reason to
+     shove. The coordinate is the safety net under that guarantee, not the
+     mechanism — if a browser moves the window anyway, the screen is
+     placed where it went.
+
+     That y is not always 0 any more, and this is the one thing the
+     scrolling page changed here: the lock is taken by scrolling the hero
+     to the top of the window FIRST and remembering where that was, so the
+     lock and the coordinate agree from the first frame.
 
      This is the fourth model and the first that satisfies both halves of
      what is wanted at once, so the graveyard is worth keeping:
@@ -426,7 +466,45 @@
   const vv = window.visualViewport;
   if (vv) {
     const scroll = document.getElementById('ai-scroll');
+    const homeEl = document.getElementById('home');
     let wh = -1, wt = -1;
+
+    /* ============================================================
+       THE LOCK, and it is the whole of what a keyboard costs this page.
+
+       Taken on focusin, given back on focusout, and while it is on the
+       page is exactly what it used to be all the time: the document
+       pinned, the hero placed at the window's own document coordinate,
+       the two corner buttons drawn off the same number.
+
+       lockY is remembered rather than assumed to be 0. The hero is the
+       first thing in the document, but "the first thing" is not a
+       promise about a pixel — and the lock has to put the document back
+       exactly where it took it, or letting go of a keyboard scrolls the
+       page for no reason a visitor can see.
+
+       Scrolled to lockY FIRST, then the class: the browser is never given
+       a frame in which the hero is at a document coordinate the document
+       is not at.
+       ============================================================ */
+    let lockY = 0;
+    const locked = () => root.classList.contains('kb-lock');
+    const inHome = (el) => !!el && !!homeEl && homeEl.contains(el) &&
+      (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+
+    const lock = () => {
+      if (locked()) return;
+      lockY = homeEl ? Math.round(homeEl.getBoundingClientRect().top + window.scrollY) : 0;
+      window.scrollTo(0, lockY);
+      root.classList.add('kb-lock');
+    };
+    const unlock = () => {
+      if (!locked()) return;
+      root.classList.remove('kb-lock');
+      // …and back to where the lock was taken. The hero re-enters the flow
+      // in the same frame, so this is a restoration, not a jump.
+      window.scrollTo(0, lockY);
+    };
 
     /* ---- NOTHING here REACTS to visualViewport.offsetTop, even though
        --doc-top carries it.
@@ -439,10 +517,11 @@
        corners. Traced off a recording, the menu button wandered ±13px
        over about four hundred milliseconds while the keyboard arrived.
 
-       So the shove is PREVENTED rather than compensated: the home screen
-       cannot scroll (css/mobile.css) and the composer is already clear of
-       the keyboard by construction, so the browser has nothing to reveal
-       and --doc-top holds at 0. The hero and the menu button are both
+       So the shove is PREVENTED rather than compensated: the document
+       cannot scroll while the lock is on (css/mobile.css) and the composer
+       is already clear of the keyboard by construction, so the browser has
+       nothing to reveal and --doc-top holds at the y the lock was taken
+       at. The hero and the menu button are both
        placed off that one number, and #ai-reset is an absolute child of
        the hero — so the three hold one line because nothing they depend
        on ever changes, by construction rather than by correction. What
@@ -520,6 +599,11 @@
     };
 
     const syncKB = () => {
+      // unlocked, this whole block has nothing to say: the hero is 100dvh
+      // in flow and answers to no measurement of ours. Writing --doc-top
+      // on every scroll frame of an ordinary page read would be a style
+      // recalculation per frame for a property nothing is reading.
+      if (!locked()) return false;
       if (!write()) return false;
 
       /* ---- CANCEL THE REVEAL-SCROLL. This came out once, when the hero
@@ -537,7 +621,7 @@
          construction, so any document scroll here is the browser acting
          on a layout that no longer exists, and the right answer is to put
          it back. Checked every frame by the loop, not just on an event. */
-      if (at === 'home' && window.scrollY) window.scrollTo(0, 0);
+      if (window.scrollY !== lockY) window.scrollTo(0, lockY);
 
       // the transcript just got shorter by the height of a keyboard. A
       // reader who was at the bottom of it should still be at the bottom of
@@ -579,10 +663,11 @@
        the last change and it stops, so this is not a permanent rAF.
        ============================================================ */
     let raf = 0, quiet = 0, pinned = false;
-    const typing = () => {
-      const a = document.activeElement;
-      return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA');
-    };
+    /* (GONE: typing(), which kept the loop alive for ANY focused field on
+       the document. About's contact form has three of them and wants
+       nothing from this block — the page just scrolls there. locked() is
+       the honest test: this loop is the keyboard's, and the composer is
+       the only field that takes the lock.) */
     /* ---- THE TAIL, and it is the whole of "spasm, then slide into place".
 
        The loop used to give up ten frames after the last CHANGE — about
@@ -611,7 +696,11 @@
       // keyboard's third of a second — but visualViewport's properties are
       // live, so a loop that reads them is the only thing here that sees
       // the keyboard actually moving rather than three snapshots of it.
-      if (typing() || quiet < TAIL) raf = requestAnimationFrame(pump);
+      // locked() rather than typing(): the loop is the KEYBOARD's, and the
+      // only field that takes the lock is the composer. About's contact
+      // form raises a keyboard too and wants nothing from this — the page
+      // simply scrolls there, as it does on every other site.
+      if (locked() || quiet < TAIL) raf = requestAnimationFrame(pump);
       else pinned = false;
     };
     const follow = () => {
@@ -638,8 +727,19 @@
     window.addEventListener('scroll', follow, { passive: true });
     // …and focus is the EARLIEST warning there is — early enough to make
     // the room BEFORE the keyboard needs it (see the note above).
-    document.addEventListener('focusin', follow, true);
-    document.addEventListener('focusout', follow, true);
+    document.addEventListener('focusin', (e) => {
+      if (inHome(e.target)) lock();
+      follow();
+    }, true);
+    document.addEventListener('focusout', () => {
+      // a tick, because focusout fires BEFORE the next element has focus —
+      // tapping from the field to the mood button would otherwise take the
+      // lock off and put it straight back on, with a scroll each way
+      setTimeout(() => {
+        if (!inHome(document.activeElement)) unlock();
+        follow();
+      }, 0);
+    }, true);
 
     /* (GONE: a transitionend listener on #home that re-pinned the
        transcript when the stage finished EASING to its new height. It was
@@ -653,8 +753,9 @@
     // anything above in an order we can rely on
     window.addEventListener('phone:screen', follow);
 
-    // and the box the page opens at
-    syncKB();
+    // and one reading at load, so the two properties hold a real number
+    // before the first lock is ever taken
+    write();
 
     /* ---- ?vv — a readout of what the window is actually reporting, on the
        device, in the browser that is misbehaving. Every fix in this block

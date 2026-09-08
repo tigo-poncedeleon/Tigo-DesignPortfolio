@@ -124,15 +124,26 @@
         '<span class="m-head-role">product design engineer</span>' +
       '</span>' +
     '</a>' +
-    '<nav class="m-scroll" aria-label="Site">' + GROUPS.map(groupHTML).join('') + '</nav>';
+    // ONE SCROLLER, and everything below the letterhead is in it: the nav
+    // and, appended after it by js/palette.js, the palette. The <nav> is
+    // kept as its own element inside — the palette is a setting, not a
+    // destination, and it has no business inside a landmark that says
+    // "Site". What it IS is another group in the same column, reached the
+    // same way as every other one: by scrolling to it.
+    '<div class="m-scroll">' +
+      '<nav class="m-nav" aria-label="Site">' + GROUPS.map(groupHTML).join('') + '</nav>' +
+    '</div>';
 
-    // THE FOOT is not built here. js/palette.js appends `.m-foot.m-pal`
-    // after the nav — the palette, the one setting the rail keeps at ITS
-    // foot, laid out for a thumb (css/drawer.css §THE FOOT). It is the
-    // exception to the paragraph below, and the reason it is one: those
-    // two were STATUS, and this is a CONTROL. A floor of facts was
-    // weighing down a column that was never falling; a floor you press
-    // is just where the setting lives.
+    // THE PALETTE is not built here. js/palette.js appends `.m-group.m-pal`
+    // into the scroller, after the nav, and it is a group in the column
+    // rather than a floor under it (css/drawer.css §THE PALETTE).
+    //
+    // (It WAS pinned to the panel's floor, on the rail's own argument that
+    // a setting belongs under the nav the way an app pins its settings.
+    // Pinned, it cost the column ~97px of its height on every screen, for
+    // a control nobody opens the menu to reach — and on a short phone that
+    // is the bottom of the nav gone. As a group it is simply the last
+    // thing in the column, read the same way as the two above it.)
     //
     // (GONE: the whole foot — statusHTML()'s "now" section, and before that
     // a black "new chat" pill under it.
