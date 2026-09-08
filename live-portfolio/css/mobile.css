@@ -204,6 +204,23 @@
     overscroll-behavior: none;
   }
   html.is-phone.kb-lock .shell-card { position: static; }
+  /* …and NOTHING UNDER THE HERO IS DRAWN while it is the window.
+
+     Out of flow, the hero is exactly the visual viewport — and the two
+     sections under it close the gap and stand at the top of the document,
+     directly beneath its floor. The visual viewport is not the whole of
+     what the display shows: iOS ends it at the top of the keyboard's
+     accessory band (the floating autofill pills, which have the page
+     showing around them), and during the keyboard's slide it ends
+     wherever the keyboard has got to. In both, whatever was under the
+     hero's floor was on screen — Work's first picture and its app icon,
+     under the composer, with the keyboard up. The page under the window
+     is blank on purpose: it is pinned, nothing there can be reached, and
+     a picture of another section under a field you are typing into is a
+     seam. visibility, not display: the layout must not move — the pin
+     and --doc-top are measured against it. */
+  html.is-phone.kb-lock .work-stage,
+  html.is-phone.kb-lock .about-stage { visibility: hidden; }
   /* …and the FINGER is told the same thing the scroll pin above tells the
      browser. iOS honours overflow:hidden on the root unevenly for touch —
      a drag on the locked hero still rubber-banded the document, and the
