@@ -269,7 +269,9 @@
     color: inherit;
     -webkit-tap-highlight-color: transparent;
   }
-  .m-work-item + .m-work-item { border-top: 1px solid var(--g-150); }
+  /* :not(:first-child), not `+`: the App Store link below sits BETWEEN
+     two rows, and adjacency would have handed the row after it no rule */
+  .m-work-item:not(:first-child) { border-top: 1px solid var(--g-150); }
   .m-work-item:first-child { padding-top: 6px; }
   .m-work-item:last-child { padding-bottom: 24px; }
 
@@ -333,6 +335,32 @@
     color: var(--orange);
   }
   .m-work-go span { margin-left: 2px; }
+
+  /* ---- the one project that shipped carries the App Store under it.
+     It is a sibling of its row rather than a child — a link inside a
+     link is not a thing HTML will hold — so the row above gives up most
+     of its bottom padding to keep the badge attached to the project it
+     belongs to, and the badge carries the rest of the gap down to the
+     next rule. Apple's artwork is used whole, and needs nothing under
+     it: it is already a pill with its own hairline and lettering. ---- */
+  .m-work-item:has(+ .m-work-store) { padding-bottom: 16px; }
+  .m-work-store {
+    display: block;
+    width: fit-content;
+    padding-bottom: 34px;
+    border-radius: 9px;        /* the badge's own corner, so the ring traces it */
+    -webkit-tap-highlight-color: transparent;
+  }
+  .m-work-store img {
+    display: block;
+    height: 44px;              /* clears Apple's 40px floor */
+    width: auto;               /* the width/height attrs hold the ratio */
+    filter: drop-shadow(0 4px 10px rgba(28, 22, 18, 0.2));
+    transition: scale var(--t-lift) var(--ease-lift);
+  }
+  /* there is no hover on a thumb — the press is the whole of the feedback,
+     and it is the same press the shots above it answer with */
+  .m-work-store:active img { scale: 0.985; }
 
   /* About's own phone layout — and the pin it used to keep from the
      desktop — lives with the rest of About, in css/about.css. The one
@@ -572,4 +600,5 @@
   .m-work-item { transition: opacity 0.25s ease; translate: none; }
 
   .m-work-item:active .m-work-shot img { scale: none; }
+  .m-work-store:active img { scale: none; }
 }

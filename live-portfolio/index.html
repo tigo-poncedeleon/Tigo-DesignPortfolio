@@ -40,7 +40,7 @@
   <link rel="stylesheet" href="css/shell.css?v=135" />
   <link rel="stylesheet" href="css/ai.css?v=66" />
   <link rel="stylesheet" href="css/about.css?v=82" />
-  <link rel="stylesheet" href="css/work.css?v=135" />
+  <link rel="stylesheet" href="css/work.css?v=136" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
        of the document below 700px), so its 26KB of court geometry is 26KB
        a phone would parse and render-block on for nothing. `media` says so:
@@ -50,7 +50,7 @@
   <link rel="stylesheet" href="css/case-overlay.css?v=18" />
   <!-- LAST: the phone re-casts the one document as three tapped screens, so
        its overrides answer for the blocks in every sheet above -->
-  <link rel="stylesheet" href="css/mobile.css?v=31" />
+  <link rel="stylesheet" href="css/mobile.css?v=32" />
   <!-- the phone's whole navigation: one button in the corner and the
        panel it opens (js/drawer.js). Phone-only — every rule inside is in
        one @media block, and above 700px the rail is still the nav. -->
@@ -375,6 +375,18 @@
               <div class="pick-card" data-case="pantrypal">
                 <p class="pick-role">Product Designer</p>
                 <p class="pick-when">Winter 2026</p>
+                <!-- One of the three shipped, and this is the only place
+                     on the site where all three stand side by side — so the
+                     ledger that says what the job was gets one more line
+                     under it, saying where the work ended up. It sits IN
+                     the card rather than hanging off it; see css/work.css
+                     for why that is the whole of the layout. -->
+                <a class="pick-store" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028"
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="Download PantryPal on the App Store — opens the App Store in a new tab">
+                  <img src="Media/appstore-badge.svg" alt="" width="120" height="40"
+                       loading="lazy" decoding="async" />
+                </a>
               </div>
               <div class="pick-card" data-case="nextlevel">
                 <p class="pick-role">Founding Designer</p>
@@ -769,7 +781,7 @@
        shell.js (whose rail it reads), BEFORE every file below that would
        otherwise wire itself to the stepper or the game boards it takes
        away. -->
-  <script src="js/mobile.js?v=41"></script>
+  <script src="js/mobile.js?v=42"></script>
   <script src="js/globe.js?v=8"></script>
   <script src="js/stage-fit.js?v=17"></script>
   <script src="js/frame-clock.js?v=4"></script>

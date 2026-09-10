@@ -144,6 +144,27 @@
 
       a.append(fig, meta);
       list.appendChild(a);
+
+      // ---- and for the one project that shipped, the App Store under it.
+      // It has to be a SIBLING of the row, not a child: the row is itself
+      // an <a> into the case study, and a link inside a link is not a
+      // thing HTML will hold — the browser would tear the two apart. So
+      // the badge is built fresh here rather than moved off the desktop
+      // card, so none of css/work.css's placement comes with it and has
+      // to be undone. The <img> is cloned, so the path to the artwork
+      // still has exactly one home, in index.html.
+      const store = card.querySelector('.pick-store');
+      const badge = store && store.querySelector('img');
+      if (store && badge) {
+        const s = document.createElement('a');
+        s.className = 'm-work-store';
+        s.href = store.href;
+        s.target = '_blank';
+        s.rel = 'noopener noreferrer';
+        s.setAttribute('aria-label', store.getAttribute('aria-label') || '');
+        s.appendChild(badge.cloneNode(true));
+        list.appendChild(s);
+      }
     });
 
     if (list.children.length) {

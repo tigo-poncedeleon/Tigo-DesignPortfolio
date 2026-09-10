@@ -362,6 +362,64 @@
   color: rgba(var(--ink-rgb), 0.46);
 }
 
+/* ---- one of the three shipped, and gets a way in under its ledger.
+
+   It sits IN the card, in flow, and that is the whole of the layout: the
+   three note cards stack in one box and each centres itself on the row's
+   middle line (top: 50%, translate: -50%), so a card with a badge under
+   it centres AS A BLOCK, on the same line the index and the picture
+   already share. Hung off the bottom instead — which is where this
+   started — the words stayed on the axis and the badge piled up below it,
+   and the column read as sinking off the middle of a row where nothing
+   else does.
+
+   The cost is that the role line no longer lands at one height on all
+   three projects: PantryPal's block is taller, so its first line starts
+   higher. That is paid on a CROSS-FADE, not a move — one block dissolves
+   into another, and neither is ever seen travelling — which is a trade
+   worth making for a row that is actually centred.
+
+   Apple's badge is used whole: their guidelines allow it to be scaled and
+   nothing else. It also needs nothing under it — it is already a black
+   pill with its own hairline and its own lettering, which is what carries
+   it across all of the site's canvases, the near-black one included, and
+   a plate would only have been a box in a box. ---- */
+.pick-store {
+  display: block;
+  width: fit-content;
+  margin-top: var(--sp-24);
+  border-radius: 9px;        /* the badge's own corner, so the ring traces it */
+  filter: drop-shadow(0 4px 10px rgba(28, 22, 18, 0.2));
+  /* a faded card must not still be in the tab order, and opacity alone
+     leaves it there — so visibility carries the reachability, held open
+     until the fade has finished and switched on the instant it returns */
+  visibility: hidden;
+  transition: translate var(--t-snap) var(--ease-spring),
+              filter 0.28s ease,
+              visibility 0s linear var(--t-glide);
+}
+.pick-card.is-current .pick-store {
+  visibility: visible;
+  transition: translate var(--t-snap) var(--ease-spring),
+              filter 0.28s ease;
+}
+.pick-store img {
+  display: block;
+  height: 44px;              /* clears Apple's 40px floor */
+  width: auto;               /* the width/height attrs hold the ratio */
+}
+/* it lifts off its shadow under the cursor and goes back down on a
+   press — the courts' own manner, in the smallest possible form */
+.pick-store:hover {
+  translate: 0 -2px;
+  filter: drop-shadow(0 9px 16px rgba(28, 22, 18, 0.28));
+}
+.pick-store:active {
+  translate: 0 0;
+  transition-duration: 0.09s;
+  filter: drop-shadow(0 2px 5px rgba(28, 22, 18, 0.24));
+}
+
 /* No entrance — the title and the stepper are simply on the page when you
    reach them (styles.css). The stepper's own hover and browse transitions
    are untouched; only the arrival is gone. */
