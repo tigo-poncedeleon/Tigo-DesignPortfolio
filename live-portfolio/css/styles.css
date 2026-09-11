@@ -319,6 +319,14 @@ html.is-embed::-webkit-scrollbar { width: 0; height: 0; display: none; }
 input:focus-visible,
 textarea:focus-visible { outline: none; }
 
+/* "Copied!" — the second and a half a label spends confirming that the
+   address went to the clipboard (js/shell.js). It lives here, in the one
+   stylesheet every page loads, rather than three times over: the rail's
+   label, the drawer's label and the letter's `to` chip are drawn by three
+   different files and all say the same word the same way. Full ink against
+   labels that are all muted, which is the whole of the emphasis it needs. */
+.is-copied { color: var(--orange); }
+
 /* screen-reader-only text — names the page for assistive tech where no
    visible element does (each page keeps exactly one h1) */
 .sr-only {

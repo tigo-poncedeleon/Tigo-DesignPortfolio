@@ -334,13 +334,29 @@
   font-size: 16px;
   color: rgba(var(--ink-rgb), 0.48);
 }
+/* The `to` line is a control now — it copies the address (js/shell.js) —
+   so it is a <button>, and these first three lines are the tax on that:
+   a button arrives with the platform's own font and its own idea of
+   alignment, and the chip has to keep the letter's. Everything below them
+   is the pill exactly as it was drawn when it was a span. */
 .to-chip {
+  font: inherit;
+  text-align: center;
+  appearance: none;
   padding: 4px 10px;
   font-size: 13.25px;
   color: var(--g-700);
   background: rgba(var(--ink-rgb), 0.04);
   border: 0.663px solid var(--g-250);
   border-radius: 6.625px;
+  cursor: pointer;
+  transition: border-color var(--t-micro) ease, background var(--t-micro) ease;
+}
+/* the one hint that it is a control at all: the pill firms up under the
+   pointer, the same move .compose and .from-input make on focus */
+.to-chip:hover {
+  background: rgba(var(--ink-rgb), 0.07);
+  border-color: rgba(var(--ink-rgb), 0.24);
 }
 .compose-from {
   display: flex;

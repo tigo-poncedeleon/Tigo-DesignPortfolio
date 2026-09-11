@@ -66,7 +66,11 @@
   const rowHTML = (row) =>
     '<a class="m-row" href="' + S.esc(row.href) + '"' +
       (row.id ? ' data-page="' + S.esc(row.id) + '"' : '') +
-      (row.ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+      (row.ext ? ' target="_blank" rel="noopener"' : '') +
+      // the mail row copies its address instead of opening a draft; the
+      // delegate that does it lives in js/shell.js, beside the TREE this
+      // row came from, so both columns get the behaviour from one place
+      (row.copy ? ' data-copy="' + S.esc(row.copy) + '"' : '') + '>' +
       '<span class="m-ico">' +
         S.svg(row.brand ? S.SOCIAL[row.brand] : (S.G[row.icon] || S.G.link),
               row.brand ? 1.7 : 1.9) +
@@ -341,13 +345,18 @@
      Two mechanisms, and together they are order-independent. In-page
      rows are claimed by js/mobile.js's capture-phase delegate, which
      stopPropagations them — those arrive as `phone:screen` above.
-     Everything mobile.js does not claim (the resume PDF, the mailbox,
-     the four profiles) falls through its early
-     returns with the event intact and reaches this listener normally.
+     Everything mobile.js does not claim (the resume PDF, the four
+     profiles) falls through its early returns with the event intact and
+     reaches this listener normally.
 
      An external row is left open on purpose: it opens a new tab, this
      one does not navigate, and closing the menu underneath would be a
-     change the visitor did not ask for. ---- */
+     change the visitor did not ask for. THE MAIL ROW is the same case
+     for a different reason: it copies the address in place and says so
+     on its own label (js/shell.js), and a drawer that slid shut on the
+     same tap would take that word off the screen before it was read. It
+     never reaches this listener either — shell.js's delegate claims the
+     click in the capture phase, exactly as mobile.js claims its own. ---- */
   window.addEventListener('phone:screen', () => close({ restore: false }));
   drawer.addEventListener('click', (e) => {
     const a = e.target.closest('a[href]');

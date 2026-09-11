@@ -33,13 +33,13 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=112" />
+  <link rel="stylesheet" href="css/styles.css?v=113" />
   <!-- the four other palettes; which one is worn is set on <html> below,
        before first paint (js/palette.js, the rail's foot) -->
   <link rel="stylesheet" href="css/palettes.css?v=5" />
   <link rel="stylesheet" href="css/shell.css?v=135" />
   <link rel="stylesheet" href="css/ai.css?v=66" />
-  <link rel="stylesheet" href="css/about.css?v=82" />
+  <link rel="stylesheet" href="css/about.css?v=83" />
   <link rel="stylesheet" href="css/work.css?v=136" />
   <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
        of the document below 700px), so its 26KB of court geometry is 26KB
@@ -703,7 +703,13 @@
           <form class="compose" id="compose" novalidate>
             <div class="compose-to">
               <span class="to-label">to</span>
-              <span class="to-chip">tigoponcedeleon@gmail.com</span>
+              <!-- the one place on the site that prints the address in full,
+                   so it is the one place a visitor will try to click to take
+                   it: the chip copies itself (js/shell.js). A real button
+                   because that is what it does now — type="button" so it can
+                   sit inside the letter without ever sending it. -->
+              <button class="to-chip" type="button" title="Copy address"
+                      data-copy="tigoponcedeleon@gmail.com">tigoponcedeleon@gmail.com</button>
             </div>
             <div class="compose-from">
               <span class="to-label">from</span>
@@ -774,9 +780,9 @@
        in js/shell.js, which is where they were copied from.) -->
 
   <script src="js/portrait.js?v=12"></script>
-  <script src="js/shell.js?v=114"></script>
+  <script src="js/shell.js?v=118"></script>
   <script src="js/palette.js?v=22"></script>
-  <script src="js/drawer.js?v=6"></script>
+  <script src="js/drawer.js?v=7"></script>
   <!-- ≤700px only, and the position in this list is load-bearing: AFTER
        shell.js (whose rail it reads), BEFORE every file below that would
        otherwise wire itself to the stepper or the game boards it takes

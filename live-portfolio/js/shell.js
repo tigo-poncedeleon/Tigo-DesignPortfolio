@@ -201,6 +201,8 @@
   //           ancestors can be lit without any JS guessing
   //   sec   — matches a section id, for the scroll-spy to light
   //   mark  — a real brand image instead of a line glyph
+  //   copy  — text the row puts on the clipboard instead of following its
+  //           href (the mail row, below)
   // ============================================================
   const TREE = [
     // No sub-sections: the pages grew single-screen grids, so the rail does
@@ -234,7 +236,13 @@
     ] },
     { label: 'elsewhere', rows: [
       { href: 'PoncedeLeon-Resume.pdf', text: 'Resume', icon: 'resume', ext: true },
-      { href: 'mailto:tigoponcedeleon@gmail.com', text: 'Email', icon: 'contact' },
+      // The mail row COPIES the address rather than opening a draft — see
+      // "the address copies itself" further down this file. The mailto
+      // stays on the href because it is still the honest fallback: with no
+      // JS, on a middle-click, or through the context menu's own "copy
+      // email address", the row means exactly what it always meant.
+      { href: 'mailto:tigoponcedeleon@gmail.com', text: 'Email', icon: 'contact',
+        copy: 'tigoponcedeleon@gmail.com' },
       { href: 'https://www.linkedin.com/in/tigoponcedeleon/', text: 'LinkedIn',
         brand: 'li', ext: true },
       { href: 'https://github.com/tigo-poncedeleon', text: 'GitHub',
@@ -605,7 +613,8 @@
         '<a class="side-link" href="' + esc(row.href) + '"' +
           (row.id ? ' data-page="' + esc(row.id) + '"' : '') +
           (row.sec ? ' data-sec="' + esc(row.sec) + '"' : '') +
-          (row.ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+          (row.ext ? ' target="_blank" rel="noopener"' : '') +
+          (row.copy ? ' data-copy="' + esc(row.copy) + '"' : '') + '>' +
           '<span class="side-ico">' + icon + '</span>' +
           '<span class="side-text">' + esc(row.text) + '</span>' +
           (row.meta ? '<span class="side-meta">' + esc(row.meta) + '</span>' : '') +
@@ -1147,6 +1156,142 @@
     // hero under a stationary scroll position
     window.addEventListener('shell:fit', onScroll);
   };
+
+  // ============================================================
+  // The address copies itself.
+  //
+  // Three places print Tigo's email — the ELSEWHERE row in the rail, the
+  // same row in the phone drawer (js/drawer.js draws it from the same
+  // TREE), and the `to` chip at the head of the letter on About. All three
+  // carry data-copy, and this one delegate answers for all three, because
+  // the behaviour is a property of the ADDRESS and not of any one place it
+  // is written.
+  //
+  // A mailto: is the wrong ask of most visitors. On a desktop with no mail
+  // client configured it opens nothing at all; on a phone it throws you out
+  // of the site into Mail with an empty draft you did not ask to write. The
+  // thing a printed address is actually for is being taken away, so taking
+  // it is what a click does: the clipboard gets the address, the label says
+  // so for a moment, and the visitor is left exactly where they were.
+  //
+  // The anchor keeps its href through all of this (see TREE) — this
+  // intercepts the click, it does not replace the link.
+  // ============================================================
+  const SAID = 'Copied!';
+  const HELD = new Map();               // label element → { text, timer }
+
+  // a polite live region, made once and shared: three controls, one voice
+  const live = document.createElement('p');
+  live.className = 'sr-only';
+  live.setAttribute('role', 'status');
+  live.setAttribute('aria-live', 'polite');
+  document.body.appendChild(live);
+
+  const say = (el) => {
+    // the word replaces the LABEL, not the whole control: in the rail and
+    // the drawer the anchor also holds a glyph, and writing over the
+    // anchor's text would take the icon down with it. The chip has no
+    // inner label — it IS its text — so there `label` is the element.
+    const label = el.querySelector('.side-text, .m-text') || el;
+    const held = HELD.get(label);
+    if (held) clearTimeout(held.timer);
+    else {
+      HELD.set(label, { text: label.textContent, timer: 0 });
+      // …and only the chip needs its box held. It is sized by its own text,
+      // so a 24-character address swapped for one short word would collapse
+      // the pill and shove the row about; the rail and drawer labels are
+      // flex children of a row that is already as wide as it is going to be
+      // (and .side-text's min-width:0 is load-bearing for its ellipsis, so
+      // it must not be pinned).
+      //
+      // offsetWidth, and not the rect: js/stage-fit.js scales the whole
+      // stage to fit the reading area, so a measured rect is in SCREEN
+      // pixels while the min-width we are about to write is read in LAYOUT
+      // ones. Handing the scaled number back produced a min-width a third
+      // short of the box and the pill collapsed anyway. offsetWidth is the
+      // untransformed border box, which is what the declaration means.
+      if (label === el) label.style.minWidth = label.offsetWidth + 'px';
+    }
+    label.textContent = SAID;
+    label.classList.add('is-copied');
+    HELD.get(label).timer = setTimeout(() => {
+      label.textContent = HELD.get(label).text;
+      label.classList.remove('is-copied');
+      label.style.minWidth = '';
+      HELD.delete(label);
+    }, 1400);
+    // the swap is silent to a screen reader on an element it is not
+    // already reading, so the confirmation is announced in its own right
+    live.textContent = 'Email address copied to clipboard';
+  };
+
+  // the old way: a throwaway field, selected, and the editor's own copy
+  // command run over it. Deprecated everywhere and still the only thing
+  // that works in the two places the modern API does not.
+  const execCopy = (text) => {
+    // selecting the field takes the caret with it, and the `to` chip sits
+    // inside a letter somebody may be halfway through writing — so whatever
+    // held focus gets it back before the frame is out
+    const had = document.activeElement;
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);       // iOS ignores select() alone
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    ta.remove();
+    if (had && had.focus) had.focus({ preventScroll: true });
+    return ok;
+  };
+
+  // The modern API first, and the old one as a REAL fallback rather than
+  // a substitute — navigator.clipboard does not only go missing, it also
+  // says no. It is absent outright off a secure origin (the site is read
+  // from file:// the whole time it is being built), and where it is
+  // present it still refuses whenever the document has lost focus. Both
+  // of those are exactly where execCommand still answers, so a rejection
+  // falls through to it rather than ending the attempt.
+  const toClipboard = (text) => {
+    const modern = navigator.clipboard && navigator.clipboard.writeText
+      ? navigator.clipboard.writeText(text)
+      : Promise.reject(new Error('no clipboard here'));
+    return modern.catch(() => (
+      execCopy(text) ? Promise.resolve() : Promise.reject(new Error('the clipboard refused'))
+    ));
+  };
+
+  // Capture phase, and it stops the click dead. Two listeners downstream
+  // would otherwise act on a click that did not navigate: js/mobile.js's
+  // screen delegate (which lets a mailto through untouched, but should not
+  // have to know that) and js/drawer.js's row handler, which shuts the
+  // drawer behind any tap — it would take "Copied!" off the screen in the
+  // same frame it arrived. The precedent is mobile.js's own delegate,
+  // which claims its clicks exactly this way.
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-copy]');
+    if (!el) return;
+    // a modified click is asking for the LINK — cmd-click, open in a new
+    // tab, save — so leave those to the href they were aimed at
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    e.stopPropagation();
+    toClipboard(el.dataset.copy).then(() => say(el), () => {
+      // refused. Where there is a mailto behind the control, take it —
+      // that is what the click used to do, and it is better than nothing
+      // happening. The chip has no href, so it selects its own text
+      // instead and hands the visitor back their own ⌘C.
+      const href = el.getAttribute('href');
+      if (href) { location.href = href; return; }
+      const sel = window.getSelection();
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      sel.removeAllRanges();
+      sel.addRange(r);
+    });
+  }, true);
 
   if (!EMBED) {
     buildSide();
