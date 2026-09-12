@@ -279,6 +279,21 @@
    rather than a thing that was designed to be looked at full size, and at
    the full row height it stops being a mark and becomes a billboard. */
 .work-img-drone  img { max-height: calc(var(--pick-h) * 0.82); }
+/* ...and being a mark is also what breaks it on the dark palette. The badge
+   was drawn for paper: navy strokes, a black wordmark, and a drone body and
+   wave left open for the white underneath to fill in. On ink that white is
+   #161616, so the strokes and the wordmark land on a ground their own value
+   and go out, and only the blue quarters survive. The other two shots are
+   photographs that bring their own ground with them, which is why this is
+   the only one that feels it.
+
+   It takes the reverse lockup instead — the one any identity ships for dark
+   grounds. Lightness flipped, hue held: the black reads white, the navy
+   lifts to a pale blue, and the brand blue comes back out the far side as
+   itself (#0195E9 → #089DF0, which is the same blue to the eye). A plate
+   under the mark would have worked too, but it would have put a 526px sheet
+   of white on the quietest page of the site. */
+html[data-theme="ink"] .work-img-drone img { filter: invert(1) hue-rotate(180deg); }
 .pick-stage:hover .pick-shot.is-current img { scale: 1.015; }
 
 /* the corner glyph the work cards always wore, kept on the stage.

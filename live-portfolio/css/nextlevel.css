@@ -36,6 +36,62 @@ html[data-theme]:not([data-theme="ink"]) :is(.case-stage, .look) {
 .case-stage :focus-visible,
 .look :focus-visible { outline-color: var(--nl-azure); }
 
+/* ---- on ink: a brand that was drawn for paper ----
+   Every piece of Next Level artwork on this page is line art on white —
+   navy strokes, a black wordmark, blue fills, and open areas the paper
+   itself was meant to fill in. Against #161616 the strokes and the wordmark
+   land on a ground their own value and go out, and the multiply that melts
+   the white plates into the parchment finishes off whatever is left: the
+   hero badge disappeared completely, and the grey colorway with it.
+
+   The artwork is doing two different jobs on this page, so it gets two
+   answers rather than one.
+
+   THE MARK, presented as the mark, takes the reverse lockup every identity
+   ships for dark grounds: lightness flipped, hue held, so the black reads
+   white, the navy lifts to a pale blue, and the brand blue comes back out
+   the far side as itself. The blend flips with it — multiply melted a white
+   plate into parchment, screen melts the now-black plate into the ink — and
+   the construction guides still show through the badge's corners, which was
+   the whole reason the hero carried a blend in the first place.
+
+   THE ARTIFACTS keep their paper instead. The sketch, the three colorways
+   and the four directions are pictures OF colour decisions: reverse them
+   and the dark blue comes out light, the character's sky turns to night,
+   and the row reads its own verdict backwards. They get the ground they
+   were drawn on, the way a brand book prints them — and the multiply goes,
+   because a blend would take the new plate down with it. */
+/* ...and that blend needs a group it can actually read. The badge floats on
+   an infinite translate/rotate, which the compositor is free to hand its own
+   layer, and a layer has no backdrop to blend against — so screen had
+   nothing to melt the plate into and the inverted black square painted
+   straight over the page. (Pausing the animation made it melt, which is how
+   this was pinned down.) Naming the group settles it: the figure's own
+   ground and the guides drawn on it become the backdrop the badge screens
+   against, so the plate melts and the brackets still read through its
+   corners. Light palettes are left alone — the same promotion can happen
+   there, but an unmelted WHITE plate on the parchment shows nothing. */
+html[data-theme="ink"] .case-hero {
+  isolation: isolate;
+  background: var(--bg);
+}
+html[data-theme="ink"] .case-hero img {
+  filter: invert(1) hue-rotate(180deg);
+  mix-blend-mode: screen;
+}
+html[data-theme="ink"] :is(.mark-sketch img, .colorway img, .wire-shot img) {
+  /* border-box so the plate is the box the layout already handed the
+     picture — padding here must not resize the row it sits in */
+  box-sizing: border-box;
+  padding: 12px 16px;
+  border-radius: 14px;
+  /* not #fff: a sheet that bright, four across, is a glare on a page this
+     dark. Far enough up the scale to carry a black wordmark, tinted a
+     step toward the brand's sky so it reads as this case's paper. */
+  background: #eef3f5;
+  mix-blend-mode: normal;
+}
+
 /* the stage fills the shell's content card, pinned to an exact
    1280x832 — so every Figma offset lands where it was drawn instead
    of stretching with the viewport (js/stage-fit.js) */

@@ -305,6 +305,13 @@
   .m-work-item[data-case="pantrypal"] .m-work-shot img { max-height: 320px; }
   /* the drone mark is a logo, not a screen — it does not want to fill */
   .m-work-item[data-case="nextlevel"] .m-work-shot img { max-height: 180px; }
+  /* and on ink it wants the reverse lockup, for the reason work.css gives
+     at .work-img-drone. The rule has to be restated rather than shared:
+     js/mobile.js moves the IMG out of the desktop figure and into its own,
+     so the class that rule hangs off never reaches the phone. */
+  html[data-theme="ink"] .m-work-item[data-case="nextlevel"] .m-work-shot img {
+    filter: invert(1) hue-rotate(180deg);
+  }
   .m-work-item:active .m-work-shot img { scale: 0.985; }
 
   /* the same tile as the desktop index, sized up to hold its own against a
