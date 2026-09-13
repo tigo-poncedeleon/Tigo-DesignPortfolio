@@ -1204,17 +1204,18 @@
 
   const GAP = 8;
   let anchor = null;                    // the control the tab is out of
+  let railGap = GAP;                    // the card's standoff, read at the click
   let frame = 0;
   let tuckTimer = 0;
 
-  // where it comes out FROM is the end of the words, not the end of the
-  // box. The rail and drawer labels are flex:1 and run to the far side of
-  // their row, so a tab measured off the label's box would float a column
-  // away from "Email"; a range over the text is the glyphs themselves
-  // (clamped to the box, for a rail narrow enough to ellipsise). The chip
-  // is a pill, and the pill is the thing.
+  // Everywhere but the rail (see place), where it comes out FROM is the end
+  // of the words, not the end of the box. The drawer's label is flex:1 and
+  // runs to the far side of its row, so a tab measured off the label's box
+  // would float a column away from "Email"; a range over the text is the
+  // glyphs themselves (clamped to the box, should a label ever ellipsise).
+  // The chip is a pill, and the pill is the thing.
   const anchorBox = (el) => {
-    const label = el.querySelector('.side-text, .m-text');
+    const label = el.querySelector('.m-text');
     if (!label) return el.getBoundingClientRect();
     const r = document.createRange();
     r.selectNodeContents(label);
@@ -1236,20 +1237,43 @@
   // there it never stayed out at all.) Following for a second and a half
   // costs one rect read a frame.
   const place = () => {
-    const box = anchorBox(anchor);
     const w = tab.offsetWidth, h = tab.offsetHeight;
-    // out to the RIGHT where there is room — beside the row, pointing back
-    // at it — and out of the TOP where there is not
-    const side = box.right + GAP + w + GAP <= window.innerWidth ? 'right' : 'top';
-    if (tab.dataset.side !== side) tab.dataset.side = side;
-    if (side === 'right') {
-      tab.style.left = (box.right + GAP) + 'px';
-      tab.style.top = (box.top + box.height / 2 - h / 2) + 'px';
+    let out, left, top;
+    if (side && side.contains(anchor)) {
+      // THE RAIL'S ROW hands the tab out PAST the rail. Beside the word it
+      // stood inside the card, in the blank run of the row, reading like a
+      // badge left on the column; out past the card's edge it is plainly
+      // something the column is handing you. Its standoff from the card is
+      // the card's own standoff from the window (--rail-gap), so the tab
+      // lands on the frame's existing rhythm rather than on a number of its
+      // own — and it is centred on the row's 30px chip, not on the label's
+      // line box, because the chip is the shape the eye lines it up with.
+      // Measured every frame like the rest, so a dragged or sliding rail
+      // takes the tab with its edge.
+      const card = side.getBoundingClientRect();
+      const chip = anchor.closest('.side-row').getBoundingClientRect();
+      out = 'rail';
+      left = card.right + railGap;
+      top = chip.top + chip.height / 2 - h / 2;
     } else {
-      const mid = box.left + box.width / 2 - w / 2;
-      tab.style.left = Math.max(GAP, Math.min(window.innerWidth - w - GAP, mid)) + 'px';
-      tab.style.top = (box.top - GAP - h) + 'px';
+      // out to the RIGHT where there is room — beside the row, pointing
+      // back at it — and out of the TOP where there is not
+      const box = anchorBox(anchor);
+      out = box.right + GAP + w + GAP <= window.innerWidth ? 'right' : 'top';
+      if (out === 'right') {
+        left = box.right + GAP;
+        top = box.top + box.height / 2 - h / 2;
+      } else {
+        const mid = box.left + box.width / 2 - w / 2;
+        left = Math.max(GAP, Math.min(window.innerWidth - w - GAP, mid));
+        top = box.top - GAP - h;
+      }
     }
+    if (tab.dataset.side !== out) tab.dataset.side = out;
+    // whole pixels: the row's centre is almost never a whole number, and a
+    // fixed layer of 12px type on a fractional offset is drawn soft
+    tab.style.left = Math.round(left) + 'px';
+    tab.style.top = Math.round(top) + 'px';
     frame = requestAnimationFrame(place);
   };
 
@@ -1262,6 +1286,9 @@
 
   const say = (el) => {
     anchor = el;
+    if (side && side.contains(el)) {
+      railGap = parseFloat(getComputedStyle(side).getPropertyValue('--rail-gap')) || GAP;
+    }
     clearTimeout(tuckTimer);
     cancelAnimationFrame(frame);
     // stood in place BEFORE it comes out, so the pop starts at the row and

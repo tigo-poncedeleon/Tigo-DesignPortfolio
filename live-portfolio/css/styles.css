@@ -357,6 +357,14 @@ textarea:focus-visible { outline: none; }
   translate: 0 6px;
   transform-origin: bottom center;
 }
+/* out of the RAIL it slides rather than grows. It starts one --rail-gap
+   back — flush with the card's edge, which is exactly where the gap
+   begins — and travels out to its standoff on the pop's overshoot, so it
+   reads as coming out from behind the column, not appearing beside it */
+.copy-tab[data-side="rail"] {
+  translate: calc(-1 * var(--rail-gap, 8px)) 0;
+  scale: 1;
+}
 .copy-tab.is-out {
   opacity: 1;
   visibility: visible;
@@ -388,6 +396,7 @@ textarea:focus-visible { outline: none; }
 @media (prefers-reduced-motion: reduce) {
   .copy-tab,
   .copy-tab[data-side="top"],
+  .copy-tab[data-side="rail"],
   .copy-tab.is-out { translate: none; scale: none; }
 }
 
