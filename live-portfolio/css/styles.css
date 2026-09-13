@@ -319,13 +319,77 @@ html.is-embed::-webkit-scrollbar { width: 0; height: 0; display: none; }
 input:focus-visible,
 textarea:focus-visible { outline: none; }
 
-/* "Copied!" — the second and a half a label spends confirming that the
-   address went to the clipboard (js/shell.js). It lives here, in the one
-   stylesheet every page loads, rather than three times over: the rail's
-   label, the drawer's label and the letter's `to` chip are drawn by three
-   different files and all say the same word the same way. Full ink against
-   labels that are all muted, which is the whole of the emphasis it needs. */
-.is-copied { color: var(--orange); }
+/* ---- "Copied!" — the little tab that comes out beside the address when a
+   click puts it on the clipboard (js/shell.js). Here, in the one stylesheet
+   every page loads, because the three things it comes out of — the rail's
+   row, the drawer's row and the letter's `to` chip — are drawn by three
+   different files.
+
+   Ink on the canvas colour, so it inverts with every palette and is the
+   one solid thing in the frame for the second and a half it is out. It
+   comes out with the site's own pop (--ease-pop, the curve the records
+   and the globe's pin land on) and goes back in on a plain ease: arriving
+   is the news, leaving is not. `visibility` waits out the tuck so the tab
+   is measurable (offsetWidth) while hidden, and never catches a pointer. */
+.copy-tab {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;                        /* over the drawer's top layer (80) */
+  padding: 4px 9px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--bg);
+  background: var(--ink);
+  border-radius: 7px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  translate: -6px 0;
+  scale: 0.85;
+  transform-origin: left center;
+  transition: opacity 0.14s ease, translate 0.18s ease, scale 0.18s ease,
+              visibility 0s linear 0.18s;
+}
+.copy-tab[data-side="top"] {
+  translate: 0 6px;
+  transform-origin: bottom center;
+}
+.copy-tab.is-out {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  scale: 1;
+  transition: opacity 0.14s ease, translate var(--t-pop) var(--ease-pop),
+              scale var(--t-pop) var(--ease-pop), visibility 0s;
+}
+/* the nub — what makes it a tab and not a toast: a small point back at the
+   thing that was copied, on whichever side the tab came out of */
+.copy-tab::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  background: inherit;
+  border-radius: 1.5px;
+  translate: 0 -50%;
+  rotate: 45deg;
+}
+.copy-tab[data-side="top"]::before {
+  left: 50%;
+  top: auto;
+  bottom: -3px;
+  translate: -50% 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .copy-tab,
+  .copy-tab[data-side="top"],
+  .copy-tab.is-out { translate: none; scale: none; }
+}
 
 /* screen-reader-only text — names the page for assistive tech where no
    visible element does (each page keeps exactly one h1) */

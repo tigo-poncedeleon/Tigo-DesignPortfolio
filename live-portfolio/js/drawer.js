@@ -352,9 +352,10 @@
      An external row is left open on purpose: it opens a new tab, this
      one does not navigate, and closing the menu underneath would be a
      change the visitor did not ask for. THE MAIL ROW is the same case
-     for a different reason: it copies the address in place and says so
-     on its own label (js/shell.js), and a drawer that slid shut on the
-     same tap would take that word off the screen before it was read. It
+     for a different reason: it copies the address in place and a small
+     tab comes out beside the row to say so (js/shell.js), and a drawer
+     that slid shut on the same tap would take the row the tab points at
+     off the screen before the word was read. It
      never reaches this listener either — shell.js's delegate claims the
      click in the capture phase, exactly as mobile.js claims its own. ---- */
   window.addEventListener('phone:screen', () => close({ restore: false }));

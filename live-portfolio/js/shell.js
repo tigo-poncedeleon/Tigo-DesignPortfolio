@@ -1171,14 +1171,29 @@
   // client configured it opens nothing at all; on a phone it throws you out
   // of the site into Mail with an empty draft you did not ask to write. The
   // thing a printed address is actually for is being taken away, so taking
-  // it is what a click does: the clipboard gets the address, the label says
-  // so for a moment, and the visitor is left exactly where they were.
+  // it is what a click does: the clipboard gets the address, a small tab
+  // comes out beside it to say so, and the visitor is left exactly where
+  // they were.
   //
   // The anchor keeps its href through all of this (see TREE) — this
   // intercepts the click, it does not replace the link.
   // ============================================================
-  const SAID = 'Copied!';
-  const HELD = new Map();               // label element → { text, timer }
+  // ---- the tab. ONE, made once and moved to whichever control was
+  // clicked: two copies a second apart should read as the same tab
+  // answering again, not as a second one stacking up beside the first.
+  //
+  // It lives on <body>, fixed, and is placed from a measured rect rather
+  // than hung inside the control, for two reasons. The rail and the drawer
+  // both clip their rows (overflow is how the labels ellipsise), so a tab
+  // inside a row would be cut off at exactly the edge it is meant to come
+  // out of. And the chip sits in a stage js/stage-fit.js scales, so a tab
+  // inside it would shrink along with the letter; on <body> it is the size
+  // it was drawn at wherever it appears.
+  const tab = document.createElement('div');
+  tab.className = 'copy-tab';
+  tab.textContent = 'Copied!';
+  tab.setAttribute('aria-hidden', 'true');     // the live region speaks for it
+  document.body.appendChild(tab);
 
   // a polite live region, made once and shared: three controls, one voice
   const live = document.createElement('p');
@@ -1187,41 +1202,73 @@
   live.setAttribute('aria-live', 'polite');
   document.body.appendChild(live);
 
-  const say = (el) => {
-    // the word replaces the LABEL, not the whole control: in the rail and
-    // the drawer the anchor also holds a glyph, and writing over the
-    // anchor's text would take the icon down with it. The chip has no
-    // inner label — it IS its text — so there `label` is the element.
-    const label = el.querySelector('.side-text, .m-text') || el;
-    const held = HELD.get(label);
-    if (held) clearTimeout(held.timer);
-    else {
-      HELD.set(label, { text: label.textContent, timer: 0 });
-      // …and only the chip needs its box held. It is sized by its own text,
-      // so a 24-character address swapped for one short word would collapse
-      // the pill and shove the row about; the rail and drawer labels are
-      // flex children of a row that is already as wide as it is going to be
-      // (and .side-text's min-width:0 is load-bearing for its ellipsis, so
-      // it must not be pinned).
-      //
-      // offsetWidth, and not the rect: js/stage-fit.js scales the whole
-      // stage to fit the reading area, so a measured rect is in SCREEN
-      // pixels while the min-width we are about to write is read in LAYOUT
-      // ones. Handing the scaled number back produced a min-width a third
-      // short of the box and the pill collapsed anyway. offsetWidth is the
-      // untransformed border box, which is what the declaration means.
-      if (label === el) label.style.minWidth = label.offsetWidth + 'px';
+  const GAP = 8;
+  let anchor = null;                    // the control the tab is out of
+  let frame = 0;
+  let tuckTimer = 0;
+
+  // where it comes out FROM is the end of the words, not the end of the
+  // box. The rail and drawer labels are flex:1 and run to the far side of
+  // their row, so a tab measured off the label's box would float a column
+  // away from "Email"; a range over the text is the glyphs themselves
+  // (clamped to the box, for a rail narrow enough to ellipsise). The chip
+  // is a pill, and the pill is the thing.
+  const anchorBox = (el) => {
+    const label = el.querySelector('.side-text, .m-text');
+    if (!label) return el.getBoundingClientRect();
+    const r = document.createRange();
+    r.selectNodeContents(label);
+    const glyphs = r.getBoundingClientRect();
+    const edge = label.getBoundingClientRect();
+    const right = Math.min(glyphs.right, edge.right);
+    return { left: glyphs.left, right, width: right - glyphs.left,
+             top: edge.top, height: edge.height };
+  };
+
+  // The tab is placed EVERY FRAME it is out, not once at the click. It is
+  // fixed and the things it points at are not: the phone drawer is still
+  // sliding in when a quick thumb reaches its mail row, the letter scrolls
+  // with the page, and iOS shifts the whole layout when its toolbar
+  // collapses. Measured once, the tab was left pointing at where the row
+  // USED to be — on a phone, off the left edge of the glass, with the
+  // drawer's starting translate baked into it. (The first answer was to
+  // tuck it on any scroll, which a phone fires without being touched, so
+  // there it never stayed out at all.) Following for a second and a half
+  // costs one rect read a frame.
+  const place = () => {
+    const box = anchorBox(anchor);
+    const w = tab.offsetWidth, h = tab.offsetHeight;
+    // out to the RIGHT where there is room — beside the row, pointing back
+    // at it — and out of the TOP where there is not
+    const side = box.right + GAP + w + GAP <= window.innerWidth ? 'right' : 'top';
+    if (tab.dataset.side !== side) tab.dataset.side = side;
+    if (side === 'right') {
+      tab.style.left = (box.right + GAP) + 'px';
+      tab.style.top = (box.top + box.height / 2 - h / 2) + 'px';
+    } else {
+      const mid = box.left + box.width / 2 - w / 2;
+      tab.style.left = Math.max(GAP, Math.min(window.innerWidth - w - GAP, mid)) + 'px';
+      tab.style.top = (box.top - GAP - h) + 'px';
     }
-    label.textContent = SAID;
-    label.classList.add('is-copied');
-    HELD.get(label).timer = setTimeout(() => {
-      label.textContent = HELD.get(label).text;
-      label.classList.remove('is-copied');
-      label.style.minWidth = '';
-      HELD.delete(label);
-    }, 1400);
-    // the swap is silent to a screen reader on an element it is not
-    // already reading, so the confirmation is announced in its own right
+    frame = requestAnimationFrame(place);
+  };
+
+  const tuck = () => {
+    tab.classList.remove('is-out');
+    // it keeps following through its own exit (0.18s, styles.css), so it
+    // goes back in to where the row IS; only then does it stop reading
+    tuckTimer = setTimeout(() => cancelAnimationFrame(frame), 240);
+  };
+
+  const say = (el) => {
+    anchor = el;
+    clearTimeout(tuckTimer);
+    cancelAnimationFrame(frame);
+    // stood in place BEFORE it comes out, so the pop starts at the row and
+    // not wherever the tab last went back in
+    place();
+    tab.classList.add('is-out');
+    tuckTimer = setTimeout(tuck, 1400);
     live.textContent = 'Email address copied to clipboard';
   };
 
