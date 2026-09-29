@@ -49,30 +49,32 @@
 
 /* ---- the pill ---- */
 .composer {
-  /* one shadow, spelled once, in four layers: a hairline for the edge, a
-     contact shadow for the weight, and two soft ones pulled in under it
-     (the negative spread) so the pill floats rather than glows. At rest the
-     same four are there at nothing, so opening only fades them up. */
-  --lift: 0 0 0 1px rgb(30 30 30 / var(--a1)),
-          0 1px 2px rgb(30 30 30 / var(--a2)),
-          0 calc(8 * var(--u)) calc(24 * var(--u)) calc(-6 * var(--u)) rgb(30 30 30 / var(--a3)),
-          0 calc(24 * var(--u)) calc(56 * var(--u)) calc(-16 * var(--u)) rgb(30 30 30 / var(--a4));
-  --a1: 0; --a2: 0; --a3: 0; --a4: 0;
+  /* No drop shadow: the open pill is white paper on the page's paper, held
+     by a single hairline, the way the tiles and the bubble sit flat. (It
+     had a four-layer float; Tigo took the shadows out.) At rest the hairline
+     is there at nothing, so opening only fades it up. */
+  --edge: 0 0 0 1px rgb(30 30 30 / var(--edge-a));
+  --edge-a: 0;
   position: relative;
   display: flex;
   align-items: center;
   gap: calc(4 * var(--u));
   min-height: var(--pill-h);
+  /* As long as the answer's measure and no longer: the words start on the
+     page's left axis and the pill ends where a line of the answer above it
+     does (24em of the frame's type, 864px), rather than running on to the
+     menu square's edge. The width counts the 24px the pill reaches out
+     past the axis. */
+  max-width: calc(24em + 24 * var(--u));
   /* The pill's padding is there all along, so nothing shifts when it opens:
      at rest it is pulled back out by a negative margin, which keeps the
-     words on the page's left axis and the pill's right end on the menu
-     square's right edge. */
+     words on the page's left axis. */
   padding: calc(10 * var(--u)) calc(10 * var(--u)) calc(10 * var(--u)) calc(24 * var(--u));
   margin: 0 0 calc(-10 * var(--u)) calc(-24 * var(--u));
   border-radius: calc(var(--pill-h) / 2);
   background: rgb(255 255 255 / 0);
-  box-shadow: var(--lift);
-  transition: background-color 0.35s ease, box-shadow 0.45s ease;
+  box-shadow: var(--edge);
+  transition: background-color 0.35s ease, box-shadow 0.35s ease;
 }
 
 /* The words first, on the axis; every tool trails at the right end. */
@@ -100,7 +102,7 @@
    a tool focused from the keyboard, the mood card up, or a touch screen. */
 .composer:is(.has-text, .has-image, .is-dropping, .is-touch, :hover,
              :has(:focus-visible:not(.prompt-input)), :has(.composer-mood.is-open)) {
-  --a1: 0.06; --a2: 0.04; --a3: 0.09; --a4: 0.1;
+  --edge-a: 0.1;
   background: rgb(255 255 255 / 1);
 
   & .prompt-field { background: #fff; }
@@ -119,7 +121,7 @@
 }
 /* a photo dragged over it: the question bubble's blue, as a ring */
 .composer.is-dropping {
-  box-shadow: 0 0 0 2px var(--bubble), var(--lift);
+  box-shadow: 0 0 0 2px var(--bubble);
 }
 
 /* ---- the tools ----
@@ -280,9 +282,9 @@
 .composer-chip[aria-expanded='true'] { background: rgb(30 30 30 / 0.05); color: var(--mark); }
 
 /* It opens upward, out of the chip, since the composer sits at the foot of
-   the page: a small white card on the pill's own four-layer shadow. */
+   the page: a small white card, flat like the pill, held by the same
+   hairline. */
 .mood-menu {
-  --a1: 0.06; --a2: 0.04; --a3: 0.1; --a4: 0.12;
   position: absolute;
   right: calc(-6 * var(--u));
   bottom: calc(100% + 18 * var(--u));
@@ -290,11 +292,7 @@
   padding: calc(6 * var(--u));
   border-radius: calc(22 * var(--u));
   background: #fff;
-  box-shadow:
-    0 0 0 1px rgb(30 30 30 / var(--a1)),
-    0 1px 2px rgb(30 30 30 / var(--a2)),
-    0 calc(8 * var(--u)) calc(24 * var(--u)) calc(-6 * var(--u)) rgb(30 30 30 / var(--a3)),
-    0 calc(24 * var(--u)) calc(56 * var(--u)) calc(-16 * var(--u)) rgb(30 30 30 / var(--a4));
+  box-shadow: 0 0 0 1px rgb(30 30 30 / 0.1);
   transform-origin: calc(100% - 40 * var(--u)) 100%;
   visibility: hidden;
   opacity: 0;
