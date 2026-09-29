@@ -10,12 +10,22 @@
 //   any route change shuts it (main.js), so Back never leaves it hanging.
 // Opened from the keyboard, focus goes to the current page's pill; opened
 // with a pointer, focus stays on the square.
+//
+// While a conversation is up on Home, the square gives its place to the
+// clear button (setChat, called by the chat). The swap is data-chat, and
+// css/nav.css moves it; here the one on its way out is made inert, and if it
+// had focus, focus goes to the one arriving, so a keyboard is never left
+// holding a button that has gone.
 
-export function initNav(menu) {
+import { reduced } from './motion.js';
+
+export function initNav(menu, { onClear } = {}) {
   const button = menu.querySelector('.menu-button');
+  const clearButton = menu.querySelector('.menu-clear');
   const list = menu.querySelector('.menu-list');
   const items = [...menu.querySelectorAll('.menu-item')];
   let isOpen = false;
+  let chat = false;
 
   function open({ focus = false } = {}) {
     if (isOpen) return;
@@ -55,6 +65,27 @@ export function initNav(menu) {
     if (isOpen && !menu.contains(e.target)) close();
   });
 
+  function setChat(on) {
+    if (chat === on) return;
+    chat = on;
+    if (on) close();
+    const leaving = on ? button : clearButton;
+    const arriving = on ? clearButton : button;
+    const hadFocus = document.activeElement === leaving;
+    menu.toggleAttribute('data-chat', on);
+    arriving.inert = false;
+    if (hadFocus) arriving.focus({ preventScroll: true });
+    leaving.inert = true;
+    // the arriving glyph draws itself in as its square pops up
+    if (!reduced()) {
+      arriving.querySelectorAll('svg line').forEach((stroke, i) => {
+        stroke.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }],
+          { duration: 420, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', delay: 140 + i * 70, fill: 'backwards' });
+      });
+    }
+  }
+  clearButton.addEventListener('click', () => onClear?.());
+
   function setCurrent(view) {
     for (const item of items) {
       if (item.dataset.route === view) item.setAttribute('aria-current', 'page');
@@ -62,5 +93,5 @@ export function initNav(menu) {
     }
   }
 
-  return { setCurrent, open, close, get isOpen() { return isOpen; } };
+  return { setCurrent, open, close, setChat, get isOpen() { return isOpen; } };
 }

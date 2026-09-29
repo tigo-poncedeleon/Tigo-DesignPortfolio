@@ -8,27 +8,33 @@
    the composer's height, and the lines sit on its foot, so the band above
    never changes size between pages.
 
-   THE COMPOSER blooms. At rest it is the frame itself: "Ask me anything"
-   in the frame's 36px on the left axis, with the block caret blinking in
-   front of it, and nothing else. The moment there is something in it (a
+   THE COMPOSER blooms. At rest it is nothing but the block caret, blinking
+   on the left axis where the frame's prompt stood. No words, no outline: the
+   caret is the whole invitation. The moment there is something in it (a
    word, a photo), or a pointer over it, or keyboard focus on one of its
-   tools, a white pill opens around the words on two soft shadows, and the
-   tools slide in at its right end one after another: add a photo, the chat's
-   mood, the microphone, send. The words never move when it opens, because
-   the pill's padding is always there, pulled back out to the axis by a
-   negative margin at rest. On a touch screen, where nothing hovers, the pill
-   simply stays open.
+   tools, a white pill opens around it, held by a hairline, and the tools
+   slide in at its right end one after another: add a photo, the chat's mood,
+   the microphone, send. The words never move when it opens, because the
+   pill's padding is always there, pulled back out to the axis by a negative
+   margin at rest. On a touch screen, where nothing hovers, the pill simply
+   stays open.
 
    This replaced a pill that was always there, full width and 80px tall with
    36px type in it. It worked, and it was the heaviest thing on the page.
    Four leaner ways were built side by side (a line with a hairline under it,
    an outlined pill, a compact Messenger-sized one, and this), and this is
-   the one Tigo kept.
+   the one Tigo kept. It had "Ask me anything" beside the caret too, until
+   Tigo took the words out for the caret alone.
 
    THE FIELD is a real <textarea>. It draws its own text, so clicking to
    place the cursor, dragging a selection, an IME's underline, paste and the
-   iOS loupe all behave natively. The only thing drawn by hand is the caret:
-   the frame's block, still blinking, just ahead of the grey "Ask me anything".
+   iOS loupe all behave natively. The only thing drawn by hand is the caret.
+
+   THE CONVERSATION is a thread down the left side of the band, as in the
+   Muse reference: your questions in the Messenger blue, the answers in the
+   grey under them. Both kinds of bubble hang out into the gutter by their
+   own padding, like the composer, so their words stand on the axis the name
+   and the composer's words stand on.
    ========================================================================== */
 
 .status {
@@ -50,7 +56,7 @@
 /* ---- the pill ---- */
 .composer {
   /* No drop shadow: the open pill is white paper on the page's paper, held
-     by a single hairline, the way the tiles and the bubble sit flat. (It
+     by a single hairline, the way the menu and the bubbles sit flat. (It
      had a four-layer float; Tigo took the shadows out.) At rest the hairline
      is there at nothing, so opening only fades it up. */
   --edge: 0 0 0 1px rgb(30 30 30 / var(--edge-a));
@@ -60,17 +66,13 @@
   align-items: center;
   gap: calc(4 * var(--u));
   min-height: var(--pill-h);
-  /* As long as the answer's measure and no longer: the words start on the
-     page's left axis and the pill ends where a line of the answer above it
-     does (24em of the frame's type, 864px), rather than running on to the
-     menu square's edge. The width counts the 24px the pill reaches out
-     past the axis. */
-  max-width: calc(24em + 24 * var(--u));
   /* The pill's padding is there all along, so nothing shifts when it opens:
      at rest it is pulled back out by a negative margin, which keeps the
-     words on the page's left axis. */
-  padding: calc(10 * var(--u)) calc(10 * var(--u)) calc(10 * var(--u)) calc(24 * var(--u));
-  margin: 0 0 calc(-10 * var(--u)) calc(-24 * var(--u));
+     words on the page's left axis and the pill's right end on the menu
+     square's right edge. (For a while it stopped at the answer's measure;
+     Tigo wanted the length back.) */
+  padding: calc(10 * var(--u)) calc(10 * var(--u)) calc(10 * var(--u)) var(--hang);
+  margin: 0 0 calc(-10 * var(--u)) calc(-1 * var(--hang));
   border-radius: calc(var(--pill-h) / 2);
   background: rgb(255 255 255 / 0);
   box-shadow: var(--edge);
@@ -385,23 +387,6 @@
 /* the native selection is the only highlight; the block hides while there is one */
 .prompt-input::selection { background: var(--bubble); color: var(--mark); }
 
-/* The placeholder stands just past the caret, so the block blinks in front
-   of the words rather than over their first letter. */
-.prompt-placeholder {
-  position: absolute;
-  left: calc(var(--caret-w) + 0.16em);
-  top: 0;
-  /* the frame's ink, let down to a placeholder's grey but no further than
-     3:1 on the paper, which is what 36px type needs to stay legible */
-  color: #908f8f;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: calc(100% - var(--caret-w) - 0.16em);
-  pointer-events: none;
-}
-.prompt.has-text .prompt-placeholder { visibility: hidden; }
-
 /* A twin of the textarea, laid out the same way and never seen. It holds the
    text up to the cursor, then a span with the rest, and the span's offset is
    where the caret goes. Same width, same wrapping, so the two break lines in
@@ -419,7 +404,7 @@
 
 /* ---- the caret. The frame's block, 0.25em wide, and exactly as tall as a
    capital: from the cap line to the baseline, both measured off the type
-   (js/prompt.js), so it stands beside "Ask" like one more letter.
+   (js/prompt.js), so it stands beside a word like one more letter.
    Under `difference`, #b6b7b7 comes out as exactly #444343 over the paper
    (250 − 182 = 68), and #bbbcbc does the same over the open pill's white
    (255 − 187 = 68); over a letter it inverts the letter — the block cursor
@@ -468,119 +453,124 @@
   .prompt-input { caret-color: auto; }
 }
 
-/* ---- the question, where the name was ----
-   Ask something and the question goes up into the name's place, in the light
-   blue bubble of the Messenger reference, and "clear" stands right beside it:
-   a pill the same height as the tiles, in the reply bubble's grey, with a
-   word on it and not just an ×, so it cannot be missed. The bubble is
-   exactly a tile's height at one line, so the question sits on the tiles'
-   line (58 to 126 in the frame). */
-.ask {
-  display: flex;
-  align-items: flex-start;
-  gap: calc(12 * var(--u));
-  min-width: 0;
-  margin-top: calc(9 * var(--u));
-  visibility: hidden;
-}
-.ask.is-on { visibility: visible; }
+/* ---- the thread ----
+   It fills the band and scrolls inside it, its scrollbar hidden. It reaches
+   out into the gutter as far as the bubbles hang, so their left edges are
+   not clipped, and it keeps a little air at its foot above the composer.
+   An edge with more thread beyond it fades out; an edge with nothing beyond
+   it stays sharp (js/chat.js sets the two classes). */
+@property --fade-top { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --fade-bottom { syntax: '<length>'; inherits: false; initial-value: 0px; }
 
-.ask-bubble {
-  flex: 0 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: calc(12 * var(--u));
-  padding: calc(12.5 * var(--u)) calc(26 * var(--u));
-  border-radius: calc(34 * var(--u));
-  background: var(--bubble);
-  color: var(--bubble-ink);
-  transform-origin: left center;
-}
-/* a photo sent with the question rides in the bubble ahead of it */
-.ask-thumb {
-  flex: none;
-  width: calc(44 * var(--u));
-  height: calc(44 * var(--u));
-  margin-left: calc(-12 * var(--u));
-  border-radius: calc(12 * var(--u));
-  object-fit: cover;
-}
-.ask-thumb[hidden] { display: none; }
-/* two lines at most; a longer question is still whole for a screen reader */
-.ask-text {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-}
-
-.ask-clear {
-  flex: none;
-  display: flex;
-  align-items: center;
-  height: var(--tile-h);
-  padding: 0 calc(22 * var(--u)) 0 var(--tile-pad);
-  border-radius: calc(34 * var(--u));
-  background: var(--pill);
-  color: var(--mark);
-  transform-origin: left center;
-  transition:
-    background-color 0.2s ease,
-    scale var(--t-pop) var(--spring-pop);
-}
-.ask-clear-icon { width: var(--icon); height: var(--icon); flex: none; }
-.ask-clear-word { padding-left: var(--pill-gap); }
-@media (hover: hover) {
-  .ask-clear:hover { background: color-mix(in oklab, var(--pill), var(--mark) 7%); }
-}
-.ask-clear:active { scale: 0.94; transition-duration: 0.2s, 90ms; }
-
-/* ---- the answer, under it ----
-   It writes itself from the top of the band down, on the left axis, in ink.
-   A long one scrolls inside the band, fading out at its foot. */
 .view-home { display: grid; }
 
-.answer {
+.thread {
+  --fade-top: 0px;
+  --fade-bottom: 0px;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;
-  padding-bottom: calc(48 * var(--u));
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48 * var(--u)), transparent);
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 48 * var(--u)), transparent);
+  margin-left: calc(-1 * var(--hang));
+  padding-bottom: calc(28 * var(--u));
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+  transition: --fade-top 0.3s ease, --fade-bottom 0.3s ease;
 }
-.answer::-webkit-scrollbar { display: none; }
+.thread::-webkit-scrollbar { display: none; }
+.thread.is-scrolled { --fade-top: calc(56 * var(--u)); }
+.thread.has-more { --fade-bottom: calc(40 * var(--u)); }
 
-.answer-text {
-  position: relative;
-  max-width: 24em;
-  white-space: pre-line;
-  overflow-wrap: break-word;
-  color: var(--ink);
+/* A turn is one question and its answer, flush left, a little apart; the
+   next turn stands further off, so the pairs read as pairs. */
+.turn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(12 * var(--u));
 }
-.answer-text:empty { display: none; }
-.answer-text.is-thinking { display: block; min-height: calc(var(--lh) * 1em); }
-.answer-text.is-error { color: var(--ink-2); }
-.answer-text a {
+.turn + .turn { margin-top: calc(36 * var(--u)); }
+
+/* ---- the bubbles ----
+   The frame's 36px type in both. A one-line bubble is exactly a menu pill's
+   68px (43 of line and 12.5 above and below), and its radius is half of
+   that, so a short question or answer is a true pill, and a long answer a
+   block with the same round corners. Their words wrap at the answer's
+   measure, 24em, the width the page's longest lines have always had. */
+.bubble {
+  position: relative;
+  max-width: min(100%, calc(24em + 2 * var(--hang)));
+  padding: calc(12.5 * var(--u)) var(--hang);
+  border-radius: calc((var(--lh) * 1em + 25 * var(--u)) / 2);
+  color: var(--bubble-ink);
+  overflow-wrap: break-word;
+}
+.bubble-q {
+  background: var(--bubble);
+  transform-origin: left bottom;
+}
+.bubble-a {
+  background: var(--pill);
+  transform-origin: left top;
+}
+/* the question's words while they fly up into it (js/chat.js): the bubble's
+   own box and wrap, without its fill */
+.bubble.is-ghost { background: transparent; }
+
+/* A photo sent with a question stands over its bubble, a small print with
+   the bubbles' round corners. Its height is fixed, so the thread never moves
+   while it loads; a very wide one is cropped rather than shrunk. */
+.turn-photo {
+  height: calc(168 * var(--u));
+  width: auto;
+  max-width: min(100%, calc(420 * var(--u)));
+  object-fit: cover;
+  border-radius: calc(22 * var(--u));
+  box-shadow: 0 0 0 1px rgb(30 30 30 / 0.06);
+}
+.turn-photo.is-flight { max-width: none; }
+
+.bubble-text {
+  position: relative;
+  min-height: calc(var(--lh) * 1em);
+  white-space: pre-line;
+}
+/* Thinking: the answer's bubble, small, with the caret breathing in it
+   where the first word will go. A little wider than tall, so it reads as a
+   bubble and not a dot. */
+.bubble-a.is-thinking { width: calc((var(--lh) * 1em + 25 * var(--u)) * 1.5); }
+/* Growing: it holds its size in style while the words arrive, and moves
+   between sizes on the settling spring (js/chat.js). */
+.bubble-a.is-growing {
+  overflow: hidden;
+  transition:
+    width var(--t-settle) var(--spring-settle),
+    height var(--t-settle) var(--spring-settle);
+}
+/* An answer that never came: the bubble's outline only, in the quieter ink */
+.bubble-a.is-error {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.12);
+  color: var(--ink-3);
+}
+
+.bubble-text a {
   text-decoration: underline;
-  text-decoration-color: var(--bubble);
-  text-decoration-thickness: 0.18em;
-  text-underline-offset: 0.12em;
+  text-decoration-color: color-mix(in oklab, var(--bubble), var(--mark) 18%);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
   text-decoration-skip-ink: none;
 }
 @media (hover: hover) {
-  .answer-text a:hover { text-decoration-color: color-mix(in oklab, var(--bubble), var(--mark) 25%); }
+  .bubble-text a:hover { text-decoration-color: var(--mark); }
 }
 
 /* ---- the one caret, while it is up in the conversation ----
-   The same 9 × 26 block as the prompt's, in plain ink (there is no letter
-   under it to invert). It waits at the head of the answer breathing, not
-   blinking — a blink asks you for something; this is the other side
-   thinking. Then it rides the end of the answer as the words arrive. */
-.answer-caret {
+   The same block as the composer's, in ink (there is no letter under it to
+   invert). It waits in the answer's bubble breathing, not blinking — a
+   blink asks you for something; this is the other side thinking. Then it
+   rides the end of the answer as the words arrive. */
+.reply-caret {
   position: absolute;
   left: 0;
   top: var(--caret-top);
@@ -589,9 +579,9 @@
   background: var(--ink);
   pointer-events: none;
 }
-.answer-caret.is-thinking { animation: caret-breathe 0.9s ease-in-out infinite alternate; }
-.answer-caret.is-riding { transition: translate 70ms linear; margin-left: calc(3 * var(--u)); }
-.answer-caret.is-flying { top: 0; margin: 0; }
+.reply-caret.is-thinking { animation: caret-breathe 0.9s ease-in-out infinite alternate; }
+.reply-caret.is-riding { transition: translate 70ms linear; margin-left: calc(3 * var(--u)); }
+.reply-caret.is-flying { top: 0; margin: 0; }
 @keyframes caret-breathe {
   from { opacity: 1; }
   to { opacity: 0.25; }
@@ -606,7 +596,7 @@
    came out 1.8px too wide and broke early — and the whole answer re-wrapped
    the moment it was flattened back to text. As inline boxes the words break
    exactly where the finished text does. */
-.answer-text .w {
+.bubble-text .w {
   position: relative;
   top: 0.12em;
   opacity: 0;
@@ -616,8 +606,8 @@
     top 0.52s var(--ease-rise),
     filter 0.52s var(--ease-rise);
 }
-.answer-text .w.on { opacity: 1; top: 0; filter: blur(0); }
-.answer-text.is-long .w { filter: none; }
+.bubble-text .w.on { opacity: 1; top: 0; filter: blur(0); }
+.bubble-text.is-long .w { filter: none; }
 
 @media (prefers-reduced-motion: reduce) {
   /* the composer still opens, but by fading alone: no slide, no pop */
@@ -636,18 +626,21 @@
      stands still, solid */
   .prompt-caret { animation: none; opacity: 1; }
   .prompt-caret.is-gliding { transition: none; }
-  .answer-caret.is-thinking { animation: none; opacity: 0.6; }
-  .ask-clear:active { scale: 1; }
+  .reply-caret.is-thinking { animation: none; opacity: 0.6; }
+  .thread { transition: none; }
 }
 
 @media (max-width: 760px) {
-  /* a phone's 20px gutter has no room for the pill to reach 24px past it */
-  .composer { padding: 6px 6px 6px 14px; margin: 0 0 -6px -14px; }
+  /* a phone's 20px gutter has room for the pill (and the bubbles) to reach
+     14px past the axis, not 24 */
+  .composer { padding: 6px 6px 6px var(--hang); margin: 0 0 -6px calc(-1 * var(--hang)); }
+  .bubble { padding: 10px var(--hang); border-radius: calc((var(--lh) * 1em + 20px) / 2); }
+  .bubble-a.is-thinking { width: calc((var(--lh) * 1em + 20px) * 1.5); }
+  .turn { gap: 8px; }
+  .turn + .turn { margin-top: 24px; }
+  .turn-photo { height: 120px; border-radius: 16px; }
   /* the mood's dot stands in for its word, where the field needs the room */
   .composer-chip { height: 36px; padding: 0 6px 0 12px; gap: 4px; }
   .composer-chip-word { display: none; }
   .mood-menu { min-width: 0; width: min(260px, calc(100vw - 40px)); }
-  .ask { margin-top: 0; }
-  .ask-bubble { padding: 10px 18px; }
-  .ask-clear { padding-right: 14px; }
 }

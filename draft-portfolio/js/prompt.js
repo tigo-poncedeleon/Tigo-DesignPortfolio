@@ -119,14 +119,14 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
 
   // ---- the block's height, from the type itself ----
   // The block spans exactly what a capital letter spans: from the cap line
-  // down to the baseline, so it stands beside "Ask" like one more letter.
+  // down to the baseline, so it stands beside a word like one more letter.
   // Both are measured rather than written as em. The cap height is the
   // font's own (0.7046em for SF), but where the baseline lands inside a 43px
   // line is the engine's business: Chrome puts it on a whole pixel, 35 of 43
   // at 36px, not the 34.3 the font's metrics would say. The block used to be
   // 0.72em hung 0.33em down, which started 2.4px under the capitals and ran
   // 3px past the baseline. The numbers are written on the root, where the
-  // answer's caret (the same block, riding the same type) reads them too.
+  // thread's caret (the same block, riding the same type) reads them too.
   const field = form.querySelector('.prompt-field');
   function measureType() {
     const size = parseFloat(getComputedStyle(field).fontSize);
@@ -194,7 +194,7 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     refresh: schedule,
     // where the caret block is on screen, for the chat's travelling caret
     caretRect() { return caret.getBoundingClientRect(); },
-    // the prompt's box, where a question's flight up into the bubble begins
+    // the field's box, where a question's flight up into its bubble begins
     textRect() { return input.getBoundingClientRect(); },
   };
 }

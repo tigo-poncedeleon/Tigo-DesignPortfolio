@@ -6,20 +6,24 @@
 // directly (live-portfolio/api/chat.js:71-74). window.AI_ENDPOINT overrides it
 // for testing, as it does on the live site.
 //
-// Asking takes the page over. The question lifts out of the prompt and flies
-// up into the NAME'S place, where a light blue bubble (the Messenger
-// reference's) opens around it, and a grey "clear" pill pops in beside it to
-// give the name back. The answer writes itself in the band underneath. The
-// caret is ONE caret throughout: it leaves the prompt with the question,
-// waits at the head of the answer (breathing, not blinking — it is thinking,
-// not asking), rides the end of the answer as it arrives, and drops back down
-// into the prompt when it is done.
+// The conversation is a thread down the left side of the page, as in the Muse
+// reference: each question in a light blue bubble, each answer in a grey one
+// under it, the newest at the foot, scrolling as it grows. The bubbles hang
+// out into the gutter by their own padding, so their words stand on the same
+// axis as the name and the composer.
 //
-// The page shows one exchange at a time, the one you just asked, because the
-// question has one place to stand. The conversation behind it is still kept
-// and sent, so a follow-up is answered in context.
+// Asking is one movement. The question lifts out of the composer and flies up
+// into its bubble, which opens around it; a small grey bubble pops in under
+// it, and the caret goes up too, to wait in it. The caret is ONE caret
+// throughout: it leaves the composer with the question, breathes in the grey
+// bubble while the answer is on its way (thinking, not asking), rides the end
+// of the answer as the bubble grows around it a line at a time, and drops
+// back down into the composer when it is done.
+//
+// While there is a conversation, the menu square gives its place to a clear
+// button (js/nav.js); this file says when.
 
-import { SPRING, EASE, animate, reduced, settle, clearInline, u } from './motion.js';
+import { SPRING, EASE, animate, reduced, u } from './motion.js';
 
 const ENDPOINT = window.AI_ENDPOINT || 'https://tigo-design-portfolio.vercel.app/api/chat';
 const STORE = 'draft.chat';
@@ -30,23 +34,19 @@ const TIMEOUT = 20000;
 const cadence = (words) => Math.min(30, Math.max(12, 3500 / words));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export function createChat({ prompt, promptForm, name, ask, answerBox, announcer, onFail }) {
-  const bubble = ask.querySelector('.ask-bubble');
-  const bubbleText = ask.querySelector('.ask-text');
-  const bubbleThumb = ask.querySelector('.ask-thumb');
-  const clearBtn = ask.querySelector('.ask-clear');
-  const answer = answerBox.querySelector('.answer-text');
-  const placeholder = promptForm.querySelector('.prompt-placeholder');
+export function createChat({ prompt, promptForm, thread, announcer, onFail, onLive }) {
+  const inner = thread.querySelector('.thread-inner');
 
-  let turns = load();   // completed pairs only: [{ q, a, photo }] (photo: a small thumbnail, or null)
+  let turns = load();   // completed pairs only: [{ q, a, photo }] (photo: a small copy, or null)
   let epoch = 0;        // bumped by "clear"; a reply from an older epoch is dropped
   let busy = false;
   let controller = null;
   let hurry = false;    // leaving Home: finish any reveal at once
   let onHome = true;
-  let asking = false;   // the question is standing in the name's place
-  let failed = false;   // the last question could not be sent
-  let following = true;
+  let live = false;     // there is a conversation on screen, so the clear button is up
+  let failed = null;    // the turn whose question could not be sent
+  let following = true; // the thread is kept scrolled to its foot
+  let lastScroll = 0;
 
   // ---- memory: the session keeps the conversation across reloads ----
   function load() {
@@ -56,7 +56,7 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     } catch { return []; }
   }
   function save() {
-    try { sessionStorage.setItem(STORE, JSON.stringify({ v: 1, turns })); } catch { /* private mode */ }
+    try { sessionStorage.setItem(STORE, JSON.stringify({ v: 1, turns })); } catch { /* private mode, or full */ }
   }
 
   // ---- the request ----
@@ -126,85 +126,134 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     if (last < text.length) el.append(text.slice(last));
   }
 
-  function caretBlock(cls) {
-    const c = document.createElement('span');
-    c.className = 'answer-caret ' + cls;
+  // ---- one turn of the thread: the question, and the answer under it ----
+  function make(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text) el.textContent = text;
+    return el;
+  }
+  function buildTurn(q, photo) {
+    const turn = make('div', 'turn');
+    let pic = null;
+    let bubble = null;
+    let words = null;
+    if (photo) {
+      pic = make('img', 'turn-photo');
+      pic.src = photo;
+      pic.alt = 'A photo you sent';
+      turn.append(pic);
+    }
+    if (q) {
+      bubble = make('p', 'bubble bubble-q');
+      words = make('span', 'bubble-words', q);
+      bubble.append(make('span', 'sr-only', 'You asked: '), words);
+      turn.append(bubble);
+    }
+    const reply = make('div', 'bubble bubble-a');
+    const body = make('p', 'bubble-text');
+    reply.append(make('span', 'sr-only', 'Answer: '), body);
+    turn.append(reply);
+    return { turn, pic, bubble, words, reply, body };
+  }
+
+  function caretBlock() {
+    const c = make('span', 'reply-caret');
     c.setAttribute('aria-hidden', 'true');
     return c;
   }
 
-  // ---- the name's place: the name, or the question ----
-  // Both stand in one grid cell. The one leaving goes up and out of focus;
-  // the one arriving comes up from below and sharpens. Neither is ever
-  // display:none, so the cell never changes height and the tiles never move.
-  function hide(el, { instant = false } = {}) {
-    settle(el);
-    el.inert = true;
-    const done = () => { el.classList.remove('is-on'); if (el === name) el.style.visibility = 'hidden'; clearInline(el); };
-    if (instant || reduced()) {
-      if (!instant) el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160 }).finished.then(done, () => {});
-      else done();
-      return;
-    }
-    const k = u();
-    el.animate([{}, { opacity: 0, translate: `0 ${-10 * k}px`, filter: 'blur(4px)' }],
-      { duration: 220, easing: EASE.exit, fill: 'forwards' })
-      .finished.then((a) => { done(); a.cancel?.(); }, () => {});
-  }
-  function show(el, { instant = false, delay = 0 } = {}) {
-    settle(el);
-    el.inert = false;
-    el.style.visibility = '';
-    el.classList.add('is-on');
-    if (instant) { clearInline(el); return; }
-    const k = u();
-    animate(el, [
-      { opacity: 0, translate: `0 ${10 * k}px`, filter: 'blur(4px)' },
-      { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
-    ], { ...SPRING.settle, delay, fill: 'backwards' });
+  // ---- the clear button: up whenever there is a conversation to clear ----
+  function paintLive() {
+    const on = onHome && inner.childElementCount > 0;
+    if (on === live) return;
+    live = on;
+    onLive?.(on);
   }
 
-  function setAsking(on, { instant = false } = {}) {
-    if (asking === on) return;
-    asking = on;
-    if (on) {
-      hide(name, { instant });
-      settle(ask);
-      ask.inert = false;
-      ask.classList.add('is-on');
-      clearInline(ask);
-      if (!instant && !reduced()) {
-        // the bubble opens around the arriving question; "clear" pops in after
-        animate(bubble, [{ opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1 }],
-          { ...SPRING.pop, delay: 140, fill: 'backwards' });
-        animate(clearBtn, [{ opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1 }],
-          { ...SPRING.pop, delay: 300, fill: 'backwards' });
-      }
-    } else {
-      hide(ask, { instant });
-      show(name, { instant, delay: instant ? 0 : 120 });
-    }
+  // ---- the thread's edges ----
+  // Words scrolled past the top, or waiting below the foot, fade out at that
+  // edge; an edge with nothing beyond it is left sharp.
+  function paintEdges() {
+    const below = thread.scrollHeight - thread.clientHeight - thread.scrollTop;
+    thread.classList.toggle('is-scrolled', thread.scrollTop > 1);
+    thread.classList.toggle('has-more', below > 1);
   }
+  new ResizeObserver(paintEdges).observe(inner);
 
   // ---- keeping the newest line in view ----
-  // While an answer writes itself, a long one is kept scrolled to its foot.
-  // Any scroll of the user's own lets go; scrolling back down takes hold.
+  // While a turn plays, the thread is eased down to its foot every frame, so
+  // it glides along with the bubbles as they grow rather than jumping a line
+  // at a time. Any scroll of the user's own lets go; scrolling back down to
+  // the foot takes hold again.
   let pinning = 0;
   function pin(on) {
     cancelAnimationFrame(pinning);
+    pinning = 0;
     if (!on) return;
     const tick = () => {
-      if (following) answerBox.scrollTop = answerBox.scrollHeight;
+      if (following) {
+        const d = thread.scrollHeight - thread.clientHeight - thread.scrollTop;
+        if (d > 0.5) thread.scrollTop += reduced() ? d : Math.max(1, d * 0.2);
+      }
       pinning = requestAnimationFrame(tick);
     };
     tick();
   }
+  function toFoot() {
+    thread.scrollTop = thread.scrollHeight;
+    paintEdges();
+  }
+  // at the end of a turn, whatever the frame rate managed, the thread comes
+  // to rest at its foot (unless you have scrolled away from it)
+  function settleFoot() {
+    if (!following || !onHome) return;
+    thread.scrollTo({ top: thread.scrollHeight, behavior: reduced() ? 'auto' : 'smooth' });
+  }
+  // a window that changes size keeps the newest line in view too
+  new ResizeObserver(() => { if (following && !pinning) toFoot(); }).observe(thread);
   const release = () => { following = false; };
-  answerBox.addEventListener('wheel', release, { passive: true });
-  answerBox.addEventListener('touchstart', release, { passive: true });
-  answerBox.addEventListener('scroll', () => {
-    if (answerBox.scrollHeight - answerBox.clientHeight - answerBox.scrollTop < 2) following = true;
+  thread.addEventListener('wheel', (e) => { if (e.deltaY < 0) release(); }, { passive: true });
+  thread.addEventListener('touchstart', release, { passive: true });
+  thread.addEventListener('scroll', () => {
+    if (thread.scrollHeight - thread.clientHeight - thread.scrollTop < 2) following = true;
+    paintEdges();
   }, { passive: true });
+
+  // ---- flights ----
+  // A fixed copy crosses the page from a rect down in the composer to where
+  // its target sits in the thread. The thread may be scrolling while it
+  // goes, so the copy moves with the scroll and lands where the target has
+  // got to. The target is measured once, before anything around it starts to
+  // pop in: a scaled rect would send the copy to the wrong size and place.
+  function fly(ghost, from, target, { size = false, frames = [{}, {}], delay = 0 } = {}) {
+    const to = target.getBoundingClientRect();
+    const scroll0 = thread.scrollTop;
+    ghost.classList.add('is-flight');
+    Object.assign(ghost.style, {
+      position: 'fixed', left: to.left + 'px', top: to.top + 'px',
+      width: to.width + 'px', height: size ? to.height + 'px' : '',
+      margin: '0', zIndex: '5', pointerEvents: 'none',
+    });
+    document.body.append(ghost);
+    const first = { translate: `${from.left - to.left}px ${from.top - to.top}px`, ...frames[0] };
+    const last = { translate: '0 0', ...frames[1] };
+    if (size) {
+      Object.assign(first, { width: from.width + 'px', height: from.height + 'px' });
+      Object.assign(last, { width: to.width + 'px', height: to.height + 'px' });
+    }
+    const flight = ghost.animate([first, last], { ...SPRING.settle, delay, fill: 'backwards' });
+    let raf = 0;
+    const follow = () => {
+      ghost.style.top = to.top - (thread.scrollTop - scroll0) + 'px';
+      raf = requestAnimationFrame(follow);
+    };
+    raf = requestAnimationFrame(follow);
+    return flight.finished.catch(() => {}).finally(() => {
+      cancelAnimationFrame(raf);
+      ghost.remove();
+    });
+  }
 
   // ---- sending ----
   // One question at a time: while an answer is on its way, submit says no
@@ -218,89 +267,71 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
 
   async function send(text, photo, mood) {
     hurry = false;
-    failed = false;
     const mine = epoch;
     const still = () => mine === epoch;
     const motion = !reduced();
-    const k = u();
 
-    // FIRST: where the typed question and the caret are now, in the composer
+    // FIRST: where the question, its photo and the caret are now, down in the
+    // composer (the photo is still showing there; it goes once this returns)
     const from = prompt.textRect();
     const fromCaret = prompt.caretRect();
-    const oldWidth = asking ? bubble.getBoundingClientRect().width : 0;
-    const hadAnswer = answer.textContent.trim().length > 0;
+    const fromPhoto = photo ? promptForm.querySelector('.composer-thumb img')?.getBoundingClientRect() : null;
+
+    // a question that could not be sent gives its place to this one
+    failed?.remove();
+    failed = null;
 
     prompt.clear();
     prompt.setWaiting(true);
 
-    // the last answer steps aside
-    if (hadAnswer && motion) {
-      const leaving = answer.cloneNode(true);
-      const r = answer.getBoundingClientRect();
-      Object.assign(leaving.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', margin: '0', pointerEvents: 'none', zIndex: '4' });
-      document.body.append(leaving);
-      leaving.animate([{ opacity: 1 }, { opacity: 0, translate: `0 ${-12 * k}px`, filter: 'blur(4px)' }],
-        { duration: 220, easing: EASE.exit, fill: 'forwards' }).finished.then(() => leaving.remove(), () => leaving.remove());
-    }
-    answer.classList.remove('is-error');
-    answer.textContent = '';
-    answerBox.scrollTop = 0;
-
-    // the question goes up into the name's place, with its photo if it has one
-    bubbleText.textContent = text;
-    bubbleThumb.hidden = !photo;
-    if (photo) bubbleThumb.src = photo.thumb;
-    else bubbleThumb.removeAttribute('src');
-    const wasAsking = asking;
-    setAsking(true);
-    const thinking = caretBlock('is-thinking');
-    answer.classList.add('is-thinking');
-    answer.append(thinking);
+    const t = buildTurn(text, photo?.thumb);
+    const caret = caretBlock();
+    caret.classList.add('is-thinking');
+    t.body.append(caret);
+    t.reply.classList.add('is-thinking');
+    inner.append(t.turn);
+    paintLive();
     following = true;
+    pin(true);
 
     if (motion) {
-      // A second question into an open bubble: the bubble resizes to it on
-      // the spring, and "clear" rides along beside it.
-      if (wasAsking && oldWidth) {
-        const newWidth = bubble.getBoundingClientRect().width;
-        if (Math.abs(newWidth - oldWidth) > 1) {
-          bubble.animate([{ width: oldWidth + 'px' }, { width: newWidth + 'px' }], SPRING.settle);
-        }
-      }
-
-      // The question itself flies: a copy of it, set as it will be in the
-      // bubble, goes from where it was typed to where it lands, and the real
-      // text is shown the moment it arrives. It is a fixed copy over
-      // everything, since it crosses the whole page.
-      const to = bubbleText.getBoundingClientRect();
-      const ghost = bubbleText.cloneNode(true);
-      if (!text) ghost.style.display = 'none';
-      Object.assign(ghost.style, {
-        position: 'fixed', left: to.left + 'px', top: to.top + 'px', width: to.width + 'px',
-        margin: '0', zIndex: '5', pointerEvents: 'none', color: getComputedStyle(bubbleText).color,
-      });
-      ghost.className = bubbleText.className;
-      document.body.append(ghost);
-      bubbleText.style.visibility = 'hidden';
+      const k = u();
       const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink');
-      ghost.animate([
-        { translate: `${from.left - to.left}px ${from.top - to.top}px`, color: ink },
-        { translate: '0 0' },
-      ], { ...SPRING.settle, fill: 'backwards' })
-        .finished.finally(() => { ghost.remove(); bubbleText.style.visibility = ''; });
+      // The question flies up into its bubble: a copy of the whole bubble,
+      // with no fill, so its words wrap exactly as they will, leaving from
+      // where they were typed. The bubble opens around them as they come.
+      if (t.bubble) {
+        const pad = getComputedStyle(t.bubble);
+        const ghost = t.bubble.cloneNode(true);
+        ghost.classList.add('is-ghost');
+        t.words.style.visibility = 'hidden';
+        fly(ghost, {
+          left: from.left - parseFloat(pad.paddingLeft),
+          top: from.top - parseFloat(pad.paddingTop),
+        }, t.bubble, { frames: [{ color: ink }, {}] })
+          .then(() => { t.words.style.visibility = ''; });
+      }
+      // The photo flies up from its place in the composer, opening out from
+      // the square crop there to its own shape. It has to know its shape
+      // first; its height is fixed (css/home.css), so nothing moves meanwhile.
+      if (t.pic && fromPhoto) {
+        t.pic.style.visibility = 'hidden';
+        const go = () => {
+          const ghost = t.pic.cloneNode();
+          ghost.alt = '';
+          fly(ghost, fromPhoto, t.pic, { size: true, frames: [{ borderRadius: 12 * k + 'px' }, {}] })
+            .then(() => { t.pic.style.visibility = ''; });
+        };
+        t.pic.decode().then(go, () => { t.pic.style.visibility = ''; });
+      }
+      // The caret goes up too, into the answer's bubble, to wait.
+      caret.style.visibility = 'hidden';
+      fly(make('span', 'reply-caret is-flying'), fromCaret, caret, { size: true, delay: 80 })
+        .then(() => { caret.style.visibility = ''; });
 
-      // The emptied field's placeholder comes back, a beat behind.
-      animate(placeholder, [
-        { opacity: 0, translate: `0 ${8 * k}px` },
-        { opacity: 1, translate: '0 0' },
-      ], { duration: 520, easing: EASE.rise, delay: 160, fill: 'backwards' });
-
-      // And the caret goes up too, to wait at the head of the answer.
-      const at = thinking.getBoundingClientRect();
-      animate(thinking, [
-        { translate: `${fromCaret.left - at.left}px ${fromCaret.top - at.top}px` },
-        { translate: '0 0' },
-      ], { ...SPRING.settle, fill: 'backwards' });
+      // Only now, with every target measured, do the bubbles pop in.
+      if (t.bubble) animate(t.bubble, [{ opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1 }], SPRING.pop);
+      animate(t.reply, [{ opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1 }], { ...SPRING.pop, delay: 200, fill: 'backwards' });
     }
 
     let reply;
@@ -308,29 +339,33 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
       reply = await request(text, photo, mood);
     } catch {
       if (!still()) return;
-      showError(text, photo);
+      showError(t, text, photo);
       return;
     }
     if (!still()) return;
 
-    await reveal(reply, still);
+    await reveal(t, caret, reply, still);
     if (!still()) return;
 
     turns.push({ q: text, a: reply, photo: photo ? photo.thumb : null });
     save();
     announcer.textContent = '';
     announcer.textContent = reply;
-    await caretHome();
+    await caretHome(caret);
     if (!still()) return;
+    pin(false);
+    settleFoot();
     busy = false;
   }
 
-  function showError(text, photo) {
-    answer.classList.remove('is-thinking');
-    answer.classList.add('is-error');
-    answer.textContent = 'couldn’t reach the assistant — press enter to try again, or clear';
-    failed = true;
+  function showError(t, text, photo) {
+    t.body.querySelector('.reply-caret')?.remove();
+    t.reply.classList.remove('is-thinking');
+    t.reply.classList.add('is-error');
+    t.body.textContent = 'couldn’t reach the assistant — press enter to try again';
+    failed = t.turn;
     busy = false;
+    pin(false);
     prompt.setWaiting(false);
     // the question (and its photo) go back into the composer, so Enter sends
     // them again
@@ -340,72 +375,97 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
 
   // ---- the answer, arriving ----
   // Every word is laid out at once, invisible, so the answer's lines are
-  // settled before any of it shows; then the words resolve one at a time,
-  // with the caret riding the end. It grows downward from the top of the band,
-  // so nothing above it ever has to move.
-  async function reveal(text, still) {
-    answer.classList.remove('is-thinking');
-    const caret = answer.querySelector('.answer-caret');
+  // settled before any of it shows. The grey bubble then opens from its small
+  // thinking size to the answer's full width, but only one line tall, and
+  // grows downward a line at a time as the words resolve into it, the caret
+  // riding the end.
+  async function reveal(t, caret, text, still) {
+    const { reply, body } = t;
     caret.classList.remove('is-thinking');
     caret.classList.add('is-riding');
 
     if (reduced()) {
-      linkify(answer, text);
-      answer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+      reply.classList.remove('is-thinking');
+      linkify(body, text);
+      reply.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
       return;
     }
+
+    // FIRST: the thinking bubble's size (its layout size, not its rect: it
+    // may still be popping in)
+    const w0 = reply.offsetWidth;
+    const h0 = reply.offsetHeight;
 
     const words = [];
     const frag = document.createDocumentFragment();
     for (const part of text.split(/(\s+)/)) {
       if (!part) continue;
       if (/^\s+$/.test(part)) { frag.append(part); continue; }
-      const w = document.createElement('span');
-      w.className = 'w';
-      w.textContent = part;
+      const w = make('span', 'w', part);
       words.push(w);
       frag.append(w);
     }
-    answer.textContent = '';
-    answer.append(frag, caret);
-    if (words.length > 80) answer.classList.add('is-long'); // no blur on a long answer
+    body.textContent = '';
+    body.append(frag, caret);
+    reply.classList.remove('is-thinking');
+    if (words.length > 80) body.classList.add('is-long'); // no blur on a long answer
 
-    const lh = parseFloat(getComputedStyle(answer).lineHeight);
+    // LAST: the finished bubble, and where every word falls in it
+    const boxStyle = getComputedStyle(reply);
+    const W = parseFloat(boxStyle.width);
+    const H = parseFloat(boxStyle.height);
+    const textW = parseFloat(getComputedStyle(body).width);
+    const lh = parseFloat(getComputedStyle(body).lineHeight);
+    const pad = H - parseFloat(getComputedStyle(body).height);
     const top0 = words[0]?.offsetTop ?? 0;
     const lineOf = words.map((w) => Math.round((w.offsetTop - top0) / lh));
-    pin(true);
+
+    // Hold the words where they wrap, and let the bubble grow around them.
+    body.style.width = textW + 'px';
+    reply.style.width = w0 + 'px';
+    reply.style.height = h0 + 'px';
+    reply.classList.add('is-growing');
+    void reply.offsetWidth;
+    reply.style.width = W + 'px';
+    let shown = 0;
+    reply.style.height = pad + lh + 'px';
 
     const step = cadence(words.length);
     for (let i = 0; i < words.length; i++) {
-      if (!still()) { pin(false); return; }
+      if (!still()) return;
       const w = words[i];
+      if (lineOf[i] > shown) {
+        shown = lineOf[i];
+        reply.style.height = Math.min(H, pad + (shown + 1) * lh) + 'px';
+      }
       w.classList.add('on');
       caret.style.translate = `${w.offsetLeft + w.offsetWidth}px ${lineOf[i] * lh}px`;
       if (!hurry) await wait(step);
     }
-    if (!hurry) await wait(520);
-    pin(false);
+    reply.style.height = H + 'px';
+    if (!hurry) await wait(600);
     if (!still()) return;
 
     // flatten: plain text again, so a copy is clean, with its links in place
-    answer.classList.remove('is-long');
-    linkify(answer, text);
-    answer.append(caret);
+    body.classList.remove('is-long');
+    linkify(body, text);
+    body.append(caret);
+    reply.classList.remove('is-growing');
+    reply.style.width = '';
+    reply.style.height = '';
+    body.style.width = '';
   }
 
-  // The caret's way home: from the end of the answer down into the prompt,
+  // The caret's way home: from the end of the answer down into the composer,
   // where it picks up its blink again.
-  async function caretHome() {
-    const caret = answer.querySelector('.answer-caret');
+  async function caretHome(caret) {
     prompt.setWaiting(false);
-    if (!caret) return;
     if (reduced() || hurry || !onHome) { caret.remove(); return; }
     const from = caret.getBoundingClientRect();
     const home = prompt.caret;
     const to = home.getBoundingClientRect();
     caret.remove();
-    const ghost = document.createElement('span');
-    ghost.className = 'answer-caret is-flying';
+    const ghost = make('span', 'reply-caret is-flying is-flight');
     Object.assign(ghost.style, {
       position: 'fixed', left: to.left + 'px', top: to.top + 'px',
       width: to.width + 'px', height: to.height + 'px', zIndex: '5',
@@ -425,57 +485,77 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     home.style.animation = '';
   }
 
-  // ---- clearing: the name comes back ----
+  // ---- clearing: the thread lifts away and the menu comes back ----
   function clear() {
     epoch++;
     controller?.abort();
     busy = false;
-    failed = false;
+    failed = null;
     turns = [];
     save();
     pin(false);
     prompt.setWaiting(false);
     prompt.caret.classList.remove('is-away');
-    setAsking(false);
-    if (answer.textContent.trim() && !reduced()) {
-      const r = answer.getBoundingClientRect();
-      const leaving = answer.cloneNode(true);
-      Object.assign(leaving.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', margin: '0', pointerEvents: 'none' });
+    for (const g of document.querySelectorAll('.is-flight')) g.remove();
+
+    // what was on screen goes up and out of focus, as a copy laid over the
+    // thread, so the thread itself is empty at once and ready for a question
+    if (inner.childElementCount && !reduced()) {
+      const r = thread.getBoundingClientRect();
+      const leaving = thread.cloneNode(true);
+      leaving.removeAttribute('role');
+      leaving.setAttribute('aria-hidden', 'true');
+      Object.assign(leaving.style, {
+        position: 'fixed', left: r.left + 'px', top: r.top + 'px',
+        width: r.width + 'px', height: r.height + 'px', margin: '0',
+        pointerEvents: 'none', zIndex: '1',
+      });
       document.body.append(leaving);
-      leaving.animate([{ opacity: 1 }, { opacity: 0, translate: `0 ${-14 * u()}px`, filter: 'blur(4px)' }],
-        { duration: 260, easing: EASE.exit, fill: 'forwards' }).finished.then(() => leaving.remove(), () => leaving.remove());
+      leaving.scrollTop = thread.scrollTop;
+      leaving.animate([{ opacity: 1 }, { opacity: 0, translate: `0 ${-16 * u()}px`, filter: 'blur(4px)' }],
+        { duration: 280, easing: EASE.exit, fill: 'forwards' })
+        .finished.then(() => leaving.remove(), () => leaving.remove());
     }
-    answer.classList.remove('is-error', 'is-thinking', 'is-long');
-    answer.textContent = '';
-    answerBox.scrollTop = 0;
+    inner.textContent = '';
+    following = true;
+    thread.scrollTop = 0;
+    paintEdges();
+    paintLive();
     prompt.focusIfDesk();
   }
-  clearBtn.addEventListener('click', clear);
 
   // ---- coming back to a conversation ----
-  // A reload restores the last exchange in place, still, with no flight.
+  // A reload restores the whole thread in place, still, scrolled to its foot.
+  for (const turn of turns) {
+    const t = buildTurn(turn.q, turn.photo);
+    linkify(t.body, turn.a);
+    inner.append(t.turn);
+  }
+  paintLive();
   if (turns.length) {
-    const last = turns.at(-1);
-    bubbleText.textContent = last.q;
-    if (last.photo) { bubbleThumb.src = last.photo; bubbleThumb.hidden = false; }
-    linkify(answer, last.a);
-    setAsking(true, { instant: true });
+    toFoot();
+    document.fonts?.ready.then(() => { if (following) toFoot(); });
   }
 
   return {
     submit,
     clear,
-    // Leaving Home finishes any answer at once and gives the name back to the
-    // header, which every page shares; coming back puts the question up again.
+    // Leaving Home finishes any answer at once and gives the menu back;
+    // coming back puts the clear button up again, and the thread where it was.
     setVisible(on) {
       if (onHome === on) return;
       onHome = on;
       hurry = !on;
-      const live = turns.length > 0 || busy || failed;
-      if (!live) return;
-      setAsking(on);
+      if (!on) lastScroll = thread.scrollTop;
+      paintLive();
+      if (on) {
+        requestAnimationFrame(() => {
+          thread.scrollTop = following ? thread.scrollHeight : lastScroll;
+          paintEdges();
+        });
+      }
     },
     get busy() { return busy; },
-    get asking() { return asking; },
+    get live() { return live; },
   };
 }

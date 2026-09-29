@@ -26,12 +26,12 @@ export function playEntrance({ caret } = {}) {
   }
 
   const k = u();
-  // the name, or, when a conversation was open before a reload, the question
-  // standing in its place
-  const ask = document.querySelector('.ask.is-on');
-  const lines = ask ? [ask] : document.querySelectorAll('.name-line');
-  const tiles = [...document.querySelectorAll('.menu-button')];
+  const lines = document.querySelectorAll('.name-line');
+  // the menu square, or, when a conversation was open before a reload, the
+  // clear square standing in its place
+  const tiles = [document.querySelector('.menu[data-chat]') ? document.querySelector('.menu-clear') : document.querySelector('.menu-button')];
   const status = document.querySelector('.status');
+  const thread = document.querySelector('.thread');
   const running = [];
 
   lines.forEach((el, i) => {
@@ -46,13 +46,21 @@ export function playEntrance({ caret } = {}) {
       { opacity: 0, scale: 0.6 },
       { opacity: 1, scale: 1 },
     ], { ...SPRING.pop, delay: 120 + i * 60, fill: 'backwards' }));
-    for (const stroke of tile.querySelectorAll('.menu-icon > *')) {
+    for (const stroke of tile.querySelectorAll('svg line')) {
       running.push(stroke.animate(
         [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }],
         { duration: 520, easing: EASE.draw, delay: 220 + i * 60, fill: 'backwards' },
       ));
     }
   });
+
+  // a conversation restored by a reload rises with the frame
+  if (thread.querySelector('.turn')) {
+    running.push(animate(thread, [
+      { opacity: 0, translate: `0 ${14 * k}px` },
+      { opacity: 1, translate: '0 0' },
+    ], { duration: 760, easing: EASE.rise, delay: 180, fill: 'backwards' }));
+  }
 
   running.push(animate(status, [
     { opacity: 0, translate: `0 ${14 * k}px` },

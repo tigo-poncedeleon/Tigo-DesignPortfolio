@@ -30,7 +30,6 @@ export function createComposer(form, { prompt, onSend }) {
   const options = [...form.querySelectorAll('.mood-menu [data-mood]')];
   const mic = form.querySelector('.composer-mic');
   const send = form.querySelector('.composer-send');
-  const placeholder = form.querySelector('.prompt-placeholder');
 
   let photo = null; // { data: base64 JPEG, thumb: small data URL }
 
@@ -69,10 +68,11 @@ export function createComposer(form, { prompt, onSend }) {
     canvas.height = Math.round(bitmap.height * scale);
     canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     const url = canvas.toDataURL('image/jpeg', 0.85);
-    // and a small copy for the bubble, so a reload can show it without
-    // keeping the whole photo in the session
+    // and a small copy for the thread, so a reload can show it without
+    // keeping the whole photo in the session: 360px on its longest side,
+    // enough for the 168px print to stay sharp on a Retina screen
     const small = document.createElement('canvas');
-    const s = Math.min(1, 160 / Math.max(canvas.width, canvas.height));
+    const s = Math.min(1, 360 / Math.max(canvas.width, canvas.height));
     small.width = Math.round(canvas.width * s);
     small.height = Math.round(canvas.height * s);
     small.getContext('2d').drawImage(canvas, 0, 0, small.width, small.height);
@@ -84,7 +84,6 @@ export function createComposer(form, { prompt, onSend }) {
     thumb.hidden = !p;
     if (p) thumbImg.src = p.url || p.thumb;
     else thumbImg.removeAttribute('src');
-    placeholder.textContent = p ? 'Ask about this photo' : 'Ask me anything';
     paintSend();
   }
 
@@ -201,7 +200,6 @@ export function createComposer(form, { prompt, onSend }) {
         listening = null;
         mic.setAttribute('aria-pressed', 'false');
         mic.setAttribute('aria-label', 'Ask out loud');
-        placeholder.textContent = photo ? 'Ask about this photo' : 'Ask me anything';
         prompt.focus();
       };
       rec.onend = done;
@@ -209,7 +207,6 @@ export function createComposer(form, { prompt, onSend }) {
       listening = rec;
       mic.setAttribute('aria-pressed', 'true');
       mic.setAttribute('aria-label', 'Stop listening');
-      placeholder.textContent = 'Listening…';
       try { rec.start(); } catch { done(); }
     });
   }

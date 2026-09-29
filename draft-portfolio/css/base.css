@@ -64,26 +64,15 @@ img, svg, canvas { display: block; }
   display: flex;
   justify-content: space-between;
   /* The menu square is centred on the name's two 43px lines by its own top
-     margin (css/nav.css), not by centring the row, because the name's place
-     is sometimes a question bubble of one or two lines instead, and the
-     square must not move when it changes. */
+     margin (css/nav.css), not by centring the row, so it holds its place
+     whatever the left side of the row is doing. */
   align-items: flex-start;
   gap: calc(24 * var(--u));
   position: relative;
   z-index: 3;
 }
 
-/* The name and the asked question share one cell and trade places. The
-   cell stops short of where the open menu reaches (a pill, the gap, the
-   square: 406px, and 24 of air), so a long question never sits under it. */
-.masthead-left {
-  display: grid;
-  min-width: 0;
-  max-width: calc(100% - 430 * var(--u));
-}
-.masthead-left > * { grid-area: 1 / 1; }
-
-.name { display: block; white-space: nowrap; justify-self: start; }
+.name { display: block; white-space: nowrap; }
 .name-line { display: block; }
 
 .band {
@@ -110,7 +99,6 @@ img, svg, canvas { display: block; }
 
 @media (max-width: 760px) {
   .masthead { gap: 12px; }
-  .masthead-left { max-width: calc(100% - 64px); }
   .band { margin-top: 24px; }
 }
 
@@ -118,7 +106,7 @@ img, svg, canvas { display: block; }
    animations running, the pieces it animates are held invisible, so the
    finished page never flashes up first. If script never gets there, this
    failsafe lets them show after 1.4s anyway. ---- */
-html.js:not(.entered) :is(.name-line, .ask, .menu-button, .status) {
+html.js:not(.entered) :is(.name-line, .menu-button, .status) {
   opacity: 0;
   animation: entrance-failsafe 0s linear 1.4s forwards;
 }

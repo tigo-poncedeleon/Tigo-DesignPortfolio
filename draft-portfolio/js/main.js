@@ -39,7 +39,9 @@ for (const v of document.querySelectorAll('.band > [data-view]')) views[v.datase
 const lines = {};
 for (const l of document.querySelectorAll('.status > [data-status]')) lines[l.dataset.status] = l;
 
-const nav = initNav(document.querySelector('.menu'));
+// While a conversation is up on Home, the menu square gives its place to a
+// clear button (the chat says when, below).
+const nav = initNav(document.querySelector('.menu'), { onClear: () => chat.clear() });
 
 // ---- Home: the composer and the conversation ----
 // The field (prompt.js) owns the text and the caret; the composer
@@ -53,11 +55,10 @@ const prompt = createPrompt(promptForm, {
 const chat = createChat({
   prompt,
   promptForm,
-  name: document.querySelector('.name'),
-  ask: document.querySelector('.ask'),
-  answerBox: document.querySelector('.answer'),
+  thread: document.querySelector('.thread'),
   announcer: document.getElementById('announcer'),
   onFail: (sent) => composer.restore(sent),
+  onLive: (on) => nav.setChat(on),
 });
 const composer = createComposer(promptForm, {
   prompt,
@@ -65,10 +66,10 @@ const composer = createComposer(promptForm, {
 });
 
 // A click on Home's empty canvas is a click on the prompt: the whole page is
-// the invitation. Not on the answer's own text, though, which is there to be
-// read and selected.
+// the invitation. Not on the conversation's bubbles, though, which are there
+// to be read and selected.
 views.home.addEventListener('click', (e) => {
-  if (e.target.closest('.answer-text')) return;
+  if (e.target.closest('.bubble, .turn-photo')) return;
   if (!getSelection().isCollapsed) return;
   prompt.focus();
 });

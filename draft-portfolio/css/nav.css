@@ -17,6 +17,11 @@
 
    The column is laid over the page, not in its flow, so opening the menu
    never moves anything else.
+
+   While a conversation is going on Home, the square gives its place to a
+   clear button (js/nav.js sets data-chat): the answers' grey, with an × in
+   it. The menu shrinks away and the clear square pops up where it stood, its
+   two strokes drawing in; clearing runs it the other way.
    ========================================================================== */
 
 .menu {
@@ -41,10 +46,14 @@
   background: var(--yellow);
   color: var(--mark);
   -webkit-tap-highlight-color: transparent;
+  /* coming back after a conversation it pops up, a beat after the clear
+     square has started to go */
   transition:
     translate var(--t-out) var(--spring-out),
     background-color 0.2s ease,
-    scale var(--t-pop) var(--spring-pop);
+    scale var(--t-pop) var(--spring-pop) 0.06s,
+    opacity 0.2s ease 0.06s,
+    visibility 0s;
 }
 .menu[data-open] .menu-button {
   translate: var(--menu-shift) 0;
@@ -56,7 +65,10 @@
 @media (hover: hover) {
   .menu-button:hover { background: color-mix(in oklab, var(--yellow), var(--mark) 6%); }
 }
-.menu-button:active { scale: 0.94; transition-duration: var(--t-out), 0.2s, 90ms; }
+.menu-button:active {
+  scale: 0.94;
+  transition: translate var(--t-out) var(--spring-out), background-color 0.2s ease, scale 90ms var(--spring-pop);
+}
 
 .menu-icon {
   width: var(--icon);
@@ -70,7 +82,63 @@
 }
 /* the lines draw themselves in on a first visit (js/entrance.js): each
    carries pathLength="1", so one dash of length 1 is the whole line */
-.menu-icon line { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.menu-icon line, .menu-clear-icon line { stroke-dasharray: 1; stroke-dashoffset: 0; }
+
+/* ---- the clear square, in the menu's place during a conversation ---- */
+.menu-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--menu-size);
+  height: var(--menu-size);
+  display: grid;
+  place-items: center;
+  border-radius: var(--menu-r);
+  background: var(--pill);
+  color: var(--mark);
+  -webkit-tap-highlight-color: transparent;
+  /* shut: small and gone, until a conversation calls it up */
+  visibility: hidden;
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.16s ease,
+    scale var(--t-out) var(--spring-out),
+    background-color 0.2s ease,
+    visibility 0s linear var(--t-out);
+}
+.menu-clear-icon { width: var(--icon); height: var(--icon); }
+@media (hover: hover) {
+  .menu-clear:hover { background: color-mix(in oklab, var(--pill), var(--mark) 7%); }
+}
+
+/* the swap: the square shrinks away, and the clear square pops up where it
+   stood, a beat behind */
+.menu[data-chat] .menu-button {
+  visibility: hidden;
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    translate var(--t-out) var(--spring-out),
+    background-color 0.2s ease,
+    scale var(--t-out) var(--spring-out),
+    opacity 0.16s ease,
+    visibility 0s linear var(--t-out);
+}
+.menu[data-chat] .menu-clear {
+  visibility: visible;
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity 0.2s ease 0.06s,
+    scale var(--t-pop) var(--spring-pop) 0.06s,
+    background-color 0.2s ease,
+    visibility 0s;
+}
+.menu[data-chat] .menu-clear:active {
+  scale: 0.94;
+  transition: opacity 0.2s ease, scale 90ms var(--spring-pop), background-color 0.2s ease, visibility 0s;
+}
 
 /* ---- the pages ---- */
 .menu-list {
@@ -155,6 +223,15 @@
     transition: opacity 0.15s ease, background-color 0.2s ease;
   }
   .menu-button:active, .menu-item:active { scale: 1; }
+  /* the swap is a crossfade */
+  .menu-clear, .menu[data-chat] .menu-button {
+    scale: 1;
+    transition: opacity 0.15s ease, background-color 0.2s ease, visibility 0s linear 0.15s;
+  }
+  .menu[data-chat] .menu-clear, .menu[data-chat] .menu-clear:active {
+    scale: 1;
+    transition: opacity 0.15s ease, background-color 0.2s ease, visibility 0s;
+  }
 }
 
 /* On a phone the square stays put and the pills drop down beneath it. */
