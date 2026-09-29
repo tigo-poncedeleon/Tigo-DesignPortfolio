@@ -19,6 +19,7 @@
 // turns it around.
 
 import { createPrompt } from './prompt.js';
+import { createComposer } from './composer.js';
 import { createChat } from './chat.js';
 import { initNav } from './nav.js';
 import { startRouter, VIEWS } from './router.js';
@@ -40,9 +41,15 @@ for (const l of document.querySelectorAll('.status > [data-status]')) lines[l.da
 
 const nav = initNav(document.querySelector('.menu'));
 
-// ---- Home: the prompt and the conversation ----
+// ---- Home: the composer and the conversation ----
+// The field (prompt.js) owns the text and the caret; the composer
+// (composer.js) owns everything around it and decides what a send is; the
+// chat (chat.js) sends it and plays the answer.
 const promptForm = document.querySelector('.prompt');
-const prompt = createPrompt(promptForm, { onSubmit: (text) => chat.submit(text) });
+const prompt = createPrompt(promptForm, {
+  onSubmit: () => composer.submit(),
+  onChange: () => composer?.paintSend(),
+});
 const chat = createChat({
   prompt,
   promptForm,
@@ -50,6 +57,11 @@ const chat = createChat({
   ask: document.querySelector('.ask'),
   answerBox: document.querySelector('.answer'),
   announcer: document.getElementById('announcer'),
+  onFail: (sent) => composer.restore(sent),
+});
+const composer = createComposer(promptForm, {
+  prompt,
+  onSend: (message) => chat.submit(message),
 });
 
 // A click on Home's empty canvas is a click on the prompt: the whole page is

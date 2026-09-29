@@ -38,7 +38,11 @@ goes black. Use a 1280×832 window, where one Figma pixel is one CSS pixel.
   `https://tigo-design-portfolio.vercel.app/api/chat`: the same Claude Haiku,
   with the same system prompt. The proxy answers any origin; its CORS comment
   expects a draft on localhost to call it directly. Each question is one
-  model call on the live key, as a visitor's would be.
+  model call on the live key, as a visitor's would be. The composer's mood
+  (friendly, whimsical or suspicious) is the proxy's own `persona` field. A
+  photo goes up as an image block, shrunk to 1200px, which Claude can see.
+  The microphone uses the browser's own speech recognition; in Chrome that
+  sends the audio to Google, and Safari transcribes on the Mac.
 - **The games** keep their best scores in this browser's `localStorage`
   (`draft.best.*`). They never call the live `/api/scores`, because a post
   from here would change the live site's records.
@@ -51,8 +55,10 @@ goes black. Use a 1280×832 window, where one Figma pixel is one CSS pixel.
 - `css/tokens.css` holds every number, in Figma pixels (`--u`), plus the
   springs the motion runs on.
 - `js/main.js` boots the page and runs page changes.
-- `js/prompt.js` draws the block caret.
+- `js/prompt.js` is the composer's field and its block caret.
+- `js/composer.js` is the rest of the pill: photo, mood, microphone, send.
 - `js/chat.js` holds the conversation.
+- `js/nav.js` is the yellow menu.
 - `js/play/` holds the engine, the three games, and the stage.
 
 ## Adding a photo

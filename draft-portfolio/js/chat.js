@@ -30,14 +30,15 @@ const TIMEOUT = 20000;
 const cadence = (words) => Math.min(30, Math.max(12, 3500 / words));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export function createChat({ prompt, promptForm, name, ask, answerBox, announcer }) {
+export function createChat({ prompt, promptForm, name, ask, answerBox, announcer, onFail }) {
   const bubble = ask.querySelector('.ask-bubble');
   const bubbleText = ask.querySelector('.ask-text');
+  const bubbleThumb = ask.querySelector('.ask-thumb');
   const clearBtn = ask.querySelector('.ask-clear');
   const answer = answerBox.querySelector('.answer-text');
-  const promptLabel = promptForm.querySelector('.prompt-label');
+  const placeholder = promptForm.querySelector('.prompt-placeholder');
 
-  let turns = load();   // completed pairs only: [{ q, a }]
+  let turns = load();   // completed pairs only: [{ q, a, photo }] (photo: a small thumbnail, or null)
   let epoch = 0;        // bumped by "clear"; a reply from an older epoch is dropped
   let busy = false;
   let controller = null;
@@ -63,20 +64,27 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
   // messages at most, and always starting on a question. (The live client
   // takes the last twenty messages, which from the eleventh question on
   // starts the window on an answer.)
-  async function request(text) {
+  // A photo goes only with the question it was sent with, as an image block
+  // ahead of the words; earlier ones are remembered in words, so a follow-up
+  // still knows there was one without sending it again.
+  async function request(text, photo, mood) {
     controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT);
     try {
+      const said = (t) => (t.photo ? (t.q ? t.q + ' (with a photo)' : '(sent a photo)') : t.q);
       const messages = turns.slice(-9).flatMap((t) => [
-        { role: 'user', content: t.q },
+        { role: 'user', content: said(t) },
         { role: 'assistant', content: t.a },
       ]);
-      messages.push({ role: 'user', content: text });
+      const content = [];
+      if (photo) content.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: photo.data } });
+      if (text) content.push({ type: 'text', text });
+      messages.push({ role: 'user', content: photo ? content : text });
       // Content-Type is the only header the proxy's preflight allows.
       const res = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages, persona: 'friendly' }),
+        body: JSON.stringify({ messages, persona: mood || 'friendly' }),
         signal: controller.signal,
       });
       if (!res.ok) throw new Error('proxy answered ' + res.status);
@@ -199,9 +207,16 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
   }, { passive: true });
 
   // ---- sending ----
-  async function submit(text) {
-    if (busy) return; // one question at a time; what you typed waits in the prompt
+  // One question at a time: while an answer is on its way, submit says no
+  // (returns false) and what you typed waits in the composer.
+  function submit({ text = '', photo = null, mood = 'friendly' } = {}) {
+    if (busy) return false;
     busy = true;
+    send(text, photo, mood);
+    return true;
+  }
+
+  async function send(text, photo, mood) {
     hurry = false;
     failed = false;
     const mine = epoch;
@@ -209,10 +224,8 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     const motion = !reduced();
     const k = u();
 
-    // FIRST: where the typed question and the caret are now, in the prompt
-    const form = promptForm.getBoundingClientRect();
-    const indent = parseFloat(getComputedStyle(promptForm.querySelector('.prompt-input')).textIndent) || 0;
-    const from = { left: form.left + indent, top: form.top };
+    // FIRST: where the typed question and the caret are now, in the composer
+    const from = prompt.textRect();
     const fromCaret = prompt.caretRect();
     const oldWidth = asking ? bubble.getBoundingClientRect().width : 0;
     const hadAnswer = answer.textContent.trim().length > 0;
@@ -233,8 +246,11 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     answer.textContent = '';
     answerBox.scrollTop = 0;
 
-    // the question goes up into the name's place
+    // the question goes up into the name's place, with its photo if it has one
     bubbleText.textContent = text;
+    bubbleThumb.hidden = !photo;
+    if (photo) bubbleThumb.src = photo.thumb;
+    else bubbleThumb.removeAttribute('src');
     const wasAsking = asking;
     setAsking(true);
     const thinking = caretBlock('is-thinking');
@@ -258,6 +274,7 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
       // everything, since it crosses the whole page.
       const to = bubbleText.getBoundingClientRect();
       const ghost = bubbleText.cloneNode(true);
+      if (!text) ghost.style.display = 'none';
       Object.assign(ghost.style, {
         position: 'fixed', left: to.left + 'px', top: to.top + 'px', width: to.width + 'px',
         margin: '0', zIndex: '5', pointerEvents: 'none', color: getComputedStyle(bubbleText).color,
@@ -272,11 +289,11 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
       ], { ...SPRING.settle, fill: 'backwards' })
         .finished.finally(() => { ghost.remove(); bubbleText.style.visibility = ''; });
 
-      // A fresh label rises into the emptied prompt, a beat behind.
-      animate(promptLabel, [
-        { opacity: 0, translate: `0 ${12 * k}px` },
+      // The emptied field's placeholder comes back, a beat behind.
+      animate(placeholder, [
+        { opacity: 0, translate: `0 ${8 * k}px` },
         { opacity: 1, translate: '0 0' },
-      ], { duration: 520, easing: EASE.rise, delay: 120, fill: 'backwards' });
+      ], { duration: 520, easing: EASE.rise, delay: 160, fill: 'backwards' });
 
       // And the caret goes up too, to wait at the head of the answer.
       const at = thinking.getBoundingClientRect();
@@ -288,10 +305,10 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
 
     let reply;
     try {
-      reply = await request(text);
+      reply = await request(text, photo, mood);
     } catch {
       if (!still()) return;
-      showError(text);
+      showError(text, photo);
       return;
     }
     if (!still()) return;
@@ -299,7 +316,7 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     await reveal(reply, still);
     if (!still()) return;
 
-    turns.push({ q: text, a: reply });
+    turns.push({ q: text, a: reply, photo: photo ? photo.thumb : null });
     save();
     announcer.textContent = '';
     announcer.textContent = reply;
@@ -308,15 +325,17 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
     busy = false;
   }
 
-  function showError(text) {
+  function showError(text, photo) {
     answer.classList.remove('is-thinking');
     answer.classList.add('is-error');
     answer.textContent = 'couldn’t reach the assistant — press enter to try again, or clear';
     failed = true;
     busy = false;
     prompt.setWaiting(false);
-    // the question goes back into the prompt, so Enter sends it again
-    prompt.value = text;
+    // the question (and its photo) go back into the composer, so Enter sends
+    // them again
+    if (onFail) onFail({ text, photo });
+    else prompt.value = text;
   }
 
   // ---- the answer, arriving ----
@@ -438,6 +457,7 @@ export function createChat({ prompt, promptForm, name, ask, answerBox, announcer
   if (turns.length) {
     const last = turns.at(-1);
     bubbleText.textContent = last.q;
+    if (last.photo) { bubbleThumb.src = last.photo; bubbleThumb.hidden = false; }
     linkify(answer, last.a);
     setAsking(true, { instant: true });
   }

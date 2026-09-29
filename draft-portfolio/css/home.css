@@ -1,19 +1,32 @@
 /* ==========================================================================
-   home.css — the bottom line, the block caret, and the conversation.
+   home.css — the composer, the block caret, and the conversation.
 
-   THE BOTTOM LINE is the frame's third anchor, and it is on every page: on
-   Home it is the prompt, and elsewhere it is one line saying what the page
-   is. They share a cell in the status row, so a page change crossfades one
-   line into the next without anything moving.
+   THE BOTTOM of the page is the frame's third anchor, and it is on every
+   page: on Home it is the composer, and elsewhere it is one line saying
+   what the page is. They share a cell in the status row, so a page change
+   crossfades one into the next without anything moving. The row is always
+   the composer's height, and the lines sit on its foot, so the band above
+   never changes size between pages.
 
-   THE PROMPT is a real <textarea>. It draws its own text, so clicking to
+   THE COMPOSER is a white pill across the page's full measure, from the
+   name's axis to the menu's right edge, the height of the menu square. It
+   lifts off the paper on two soft shadows (a tight one for the edge, a wide
+   one for the air under it), like the Messenger reference, and takes a
+   deeper shadow when it has focus. Left to right: add a photo, the field,
+   the chat's mood, the microphone, and send, which fills with ink the moment
+   there is something to send.
+
+   THE FIELD is a real <textarea>. It draws its own text, so clicking to
    place the cursor, dragging a selection, an IME's underline, paste and the
-   iOS loupe all behave natively. The only thing drawn by hand is the caret.
-   Its first line is indented past the label, the textarea-caret-position way,
-   so a long question wraps under the label like a shell line.
+   iOS loupe all behave natively. The only thing drawn by hand is the caret:
+   the frame's block, still blinking, just ahead of the grey "Ask me anything".
    ========================================================================== */
 
-.status { display: grid; align-items: end; }
+.status {
+  display: grid;
+  align-items: end;
+  min-height: var(--pill-h);
+}
 .status > *,
 .status-home > * { grid-area: 1 / 1; min-width: 0; }
 .status-home { display: grid; align-items: end; }
@@ -25,26 +38,222 @@
   text-overflow: ellipsis;
 }
 
-/* ---- the prompt ---- */
-.prompt {
+/* ---- the pill ---- */
+.composer {
   position: relative;
-  /* The caret is blended by `difference` so it can sit over a letter like a
-     terminal's block. Blending needs a backdrop. Without an opaque one, any
-     opacity animation on an ancestor makes an isolation group over nothing,
-     and the caret flashes pale grey. So the prompt is its own group, on the
-     page colour. */
-  isolation: isolate;
-  background: var(--bg);
+  display: flex;
+  align-items: flex-end;
+  gap: calc(4 * var(--u));
+  min-height: var(--pill-h);
+  padding: var(--pill-pad);
+  border-radius: calc(var(--pill-h) / 2);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(30 30 30 / 0.04),
+    0 1px 2px rgb(30 30 30 / 0.05),
+    0 calc(10 * var(--u)) calc(32 * var(--u)) rgb(30 30 30 / 0.07);
+  transition: box-shadow 0.3s ease;
+}
+.composer:focus-within {
+  box-shadow:
+    0 0 0 1px rgb(30 30 30 / 0.06),
+    0 1px 2px rgb(30 30 30 / 0.06),
+    0 calc(14 * var(--u)) calc(40 * var(--u)) rgb(30 30 30 / 0.1);
+}
+/* a photo dragged over it */
+.composer.is-dropping { box-shadow: 0 0 0 2px var(--bubble), 0 calc(14 * var(--u)) calc(40 * var(--u)) rgb(30 30 30 / 0.1); }
 
+/* round icon buttons: attach, microphone */
+.composer-btn {
+  flex: none;
+  width: var(--pill-btn);
+  height: var(--pill-btn);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink);
+  transition: background-color 0.2s ease, color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+}
+.composer-btn svg { width: var(--pill-icon); height: var(--pill-icon); }
+.composer-btn[hidden] { display: none; }
+@media (hover: hover) {
+  .composer-btn:hover { background: rgb(30 30 30 / 0.05); color: var(--mark); }
+}
+.composer-btn:active { scale: 0.9; transition-duration: 0.2s, 0.2s, 90ms; }
+
+/* listening: the microphone turns pink and a ring breathes out of it */
+.composer-mic { position: relative; }
+.composer-mic[aria-pressed='true'] { background: var(--pink); color: var(--mark); }
+.composer-mic[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 var(--pink);
+  animation: mic-listen 1.4s ease-out infinite;
+}
+@keyframes mic-listen {
+  from { box-shadow: 0 0 0 0 color-mix(in oklab, var(--pink), transparent 0%); }
+  to { box-shadow: 0 0 0 calc(14 * var(--u)) color-mix(in oklab, var(--pink), transparent 100%); }
 }
 
-.prompt-label {
+/* send: pale until there is something to send, then ink, with a pop */
+.composer-send {
+  flex: none;
+  width: var(--pill-btn);
+  height: var(--pill-btn);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--pill);
+  color: var(--ink-4);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    scale var(--t-pop) var(--spring-pop);
+}
+.composer-send svg { width: var(--pill-icon); height: var(--pill-icon); }
+.composer-send:not(:disabled) { background: var(--mark); color: #fff; cursor: pointer; }
+.composer-send:disabled { cursor: default; }
+.composer-send:not(:disabled):active { scale: 0.9; transition-duration: 0.25s, 0.25s, 90ms; }
+
+/* the photo about to be sent */
+.composer-thumb {
+  position: relative;
+  flex: none;
+  width: var(--pill-btn);
+  height: var(--pill-btn);
+  margin-left: calc(4 * var(--u));
+}
+.composer-thumb[hidden] { display: none; }
+.composer-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(14 * var(--u));
+  box-shadow: 0 0 0 1px rgb(30 30 30 / 0.06);
+}
+.composer-thumb-remove {
   position: absolute;
-  left: 0;
-  top: 0;
-  white-space: nowrap;
+  top: calc(-6 * var(--u));
+  right: calc(-6 * var(--u));
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+  min-width: 18px;
+  min-height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--mark);
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+}
+.composer-thumb-remove svg { width: 62%; height: 62%; }
+
+/* ---- the mood: the same three the live chat offers ---- */
+.composer-mood { position: relative; flex: none; align-self: center; }
+.composer-chip {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  height: calc(var(--pill-btn) - 8 * var(--u));
+  padding: 0 calc(12 * var(--u)) 0 calc(18 * var(--u));
+  border-radius: 999px;
+  font-size: var(--pill-small);
+  color: var(--ink-3);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.composer-chip svg {
+  width: calc(var(--pill-icon) * 0.8);
+  height: calc(var(--pill-icon) * 0.8);
+  transition: rotate var(--t-snap) var(--spring-snap);
+}
+.composer-chip[aria-expanded='true'] svg:not(.composer-chip-face) { rotate: 180deg; }
+/* the face stands in for the word on a phone, where the field needs the room */
+.composer-chip-face { display: none; }
+@media (hover: hover) {
+  .composer-chip:hover { background: rgb(30 30 30 / 0.05); color: var(--ink); }
+}
+.composer-chip[aria-expanded='true'] { background: rgb(30 30 30 / 0.05); color: var(--ink); }
+
+/* It opens upward, out of the chip, since the composer sits at the foot of
+   the page: a small white card on the same two shadows. */
+.mood-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 16 * var(--u));
+  width: max-content;
+  min-width: calc(330 * var(--u));
+  padding: calc(8 * var(--u));
+  border-radius: calc(24 * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(30 30 30 / 0.05),
+    0 calc(16 * var(--u)) calc(44 * var(--u)) rgb(30 30 30 / 0.12);
+  transform-origin: bottom right;
+  visibility: hidden;
+  opacity: 0;
+  scale: 0.96;
+  translate: 0 calc(8 * var(--u));
+  transition:
+    opacity 0.16s ease,
+    scale 0.2s ease,
+    translate 0.2s ease,
+    visibility 0s linear 0.2s;
+  z-index: 5;
+}
+.composer-mood.is-open .mood-menu {
+  visibility: visible;
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.2s ease,
+    scale var(--t-pop) var(--spring-pop),
+    translate var(--t-settle) var(--spring-settle),
+    visibility 0s;
+}
+.mood-menu button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: calc(24 * var(--u));
+  width: 100%;
+  padding: calc(12 * var(--u)) calc(16 * var(--u)) calc(12 * var(--u)) calc(20 * var(--u));
+  border-radius: calc(16 * var(--u));
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+@media (hover: hover) {
+  .mood-menu button:hover { background: rgb(30 30 30 / 0.04); }
+}
+.mood-menu button:focus-visible { outline-offset: -2px; }
+.mood-name { grid-column: 1; font-size: var(--pill-small); color: var(--mark); line-height: 1.2; }
+.mood-note { grid-column: 1; font-size: calc(var(--pill-small) * 0.72); color: var(--ink-3); line-height: 1.3; }
+.mood-check {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: calc(var(--pill-icon) * 0.8);
+  height: calc(var(--pill-icon) * 0.8);
+  color: var(--mark);
+  opacity: 0;
+}
+.mood-menu [aria-checked='true'] .mood-check { opacity: 1; }
+
+/* ---- the field ---- */
+.prompt-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  /* centres one line of 36px type in the 56px row of buttons, and when a
+     long question wraps the field grows upward past them */
+  margin: 0 calc(8 * var(--u)) calc((var(--pill-btn) - var(--lh) * 1em) / 2);
   cursor: text;
-  z-index: 1;
+  /* The caret is blended by `difference` so it can sit over a letter like a
+     terminal's block. Blending needs a backdrop, so the field is its own
+     group on the pill's white. */
+  isolation: isolate;
+  background: #fff;
 }
 
 .prompt-input {
@@ -57,7 +266,6 @@
   background: transparent;
   color: var(--ink);
   line-height: var(--lh);
-  text-indent: var(--label-w);
   white-space: pre-wrap;
   overflow-wrap: break-word;
   resize: none;
@@ -68,12 +276,27 @@
   appearance: none;
 }
 /* the native selection is the only highlight; the block hides while there is one */
-.prompt-input::selection { background: var(--blue); color: var(--mark); }
+.prompt-input::selection { background: var(--bubble); color: var(--mark); }
+
+/* The placeholder stands just past the caret, so the block blinks in front
+   of the words rather than over their first letter. */
+.prompt-placeholder {
+  position: absolute;
+  left: calc(var(--caret-w) + 0.14em);
+  top: 0;
+  color: #a4a3a3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - var(--caret-w) - 0.14em);
+  pointer-events: none;
+}
+.prompt.has-text .prompt-placeholder { visibility: hidden; }
 
 /* A twin of the textarea, laid out the same way and never seen. It holds the
    text up to the cursor, then a span with the rest, and the span's offset is
-   where the caret goes. Same width, same indent, same wrapping, so the two
-   break lines in the same places. */
+   where the caret goes. Same width, same wrapping, so the two break lines in
+   the same places. */
 .prompt-mirror {
   position: absolute;
   left: 0;
@@ -81,24 +304,22 @@
   width: 100%;
   visibility: hidden;
   pointer-events: none;
-  text-indent: var(--label-w);
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
 
-/* ---- the caret. 9 × 26 in the frame, 260 in and 12 down, as fractions of
-   the type. #b6b7b7 under `difference` comes out as exactly #444343 over the
-   page (250 − 182 = 68, 250 − 183 = 67), and over a letter it inverts the
-   letter to #727474 — the block cursor of a terminal, not a slab over the
-   text. ---- */
+/* ---- the caret. The frame's block, 0.25em × 0.72em, 0.33em down its line.
+   #bbbcbc under `difference` comes out as #444343 over the pill's white
+   (255 − 187 = 68, 255 − 188 = 67), and over a letter it inverts the letter
+   — the block cursor of a terminal, not a slab over the text. ---- */
 .prompt-caret {
   position: absolute;
   left: 0;
   top: 0;
   width: var(--caret-w);
   height: var(--caret-h);
-  translate: var(--caret-x, var(--label-w)) calc(var(--caret-y, 0px) + var(--caret-top));
-  background: #b6b7b7;
+  translate: var(--caret-x, 0px) calc(var(--caret-y, 0px) + var(--caret-top));
+  background: #bbbcbc;
   mix-blend-mode: difference;
   pointer-events: none;
   z-index: 2;
@@ -155,12 +376,25 @@
 .ask-bubble {
   flex: 0 1 auto;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
   padding: calc(12.5 * var(--u)) calc(26 * var(--u));
   border-radius: calc(34 * var(--u));
   background: var(--bubble);
   color: var(--bubble-ink);
   transform-origin: left center;
 }
+/* a photo sent with the question rides in the bubble ahead of it */
+.ask-thumb {
+  flex: none;
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
+  margin-left: calc(-12 * var(--u));
+  border-radius: calc(12 * var(--u));
+  object-fit: cover;
+}
+.ask-thumb[hidden] { display: none; }
 /* two lines at most; a longer question is still whole for a screen reader */
 .ask-text {
   display: -webkit-box;
@@ -283,6 +517,10 @@
 }
 
 @media (max-width: 760px) {
+  .composer-chip { padding: 0 6px 0 10px; }
+  .composer-chip-word { display: none; }
+  .composer-chip-face { display: block; width: var(--pill-icon); height: var(--pill-icon); }
+  .mood-menu { min-width: 0; width: min(260px, calc(100vw - 40px)); }
   .ask { margin-top: 0; }
   .ask-bubble { padding: 10px 18px; }
   .ask-clear { padding-right: 14px; }

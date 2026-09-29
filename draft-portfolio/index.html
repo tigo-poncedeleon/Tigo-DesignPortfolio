@@ -32,7 +32,7 @@
           <span class="name-line">Design + CS @ UChicago</span>
         </a>
         <div class="ask" inert>
-          <p class="ask-bubble"><span class="sr-only">You asked: </span><span class="ask-text"></span></p>
+          <p class="ask-bubble"><img class="ask-thumb" alt="the photo you sent" hidden /><span class="sr-only">You asked: </span><span class="ask-text"></span></p>
           <button type="button" class="ask-clear" aria-label="Clear the conversation">
             <svg class="ask-clear-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
             <span class="ask-clear-word">clear</span>
@@ -192,13 +192,59 @@
     <!-- The frame's third anchor: one line at the bottom-left, on every page. -->
     <footer class="status">
       <div class="status-home" data-status="home">
-        <form class="prompt" autocomplete="off">
-          <label class="prompt-label" for="ask">Ask me anything:</label>
-          <textarea id="ask" class="prompt-input" rows="1" maxlength="300" enterkeyhint="send"
-                    spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
-                    aria-describedby="ask-hint"></textarea>
-          <span class="prompt-caret" aria-hidden="true"></span>
-          <div class="prompt-mirror" aria-hidden="true"></div>
+        <!-- The composer: a white pill across the page's full measure, from
+             the name's axis to the menu's edge. Left to right: add a photo,
+             the field (the frame's block caret still blinks in it), the
+             chat's mood, the microphone, send. Icons are Lucide's (ISC). -->
+        <form class="composer prompt" autocomplete="off" aria-label="Ask me anything">
+          <button type="button" class="composer-btn composer-attach" aria-label="Add a photo">
+            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+          </button>
+          <input type="file" class="composer-file" accept="image/*" tabindex="-1" aria-hidden="true" hidden />
+          <div class="composer-thumb" hidden>
+            <img alt="The photo you are sending" />
+            <button type="button" class="composer-thumb-remove" aria-label="Remove the photo">
+              <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <div class="prompt-field">
+            <textarea id="ask" class="prompt-input" rows="1" maxlength="300" enterkeyhint="send"
+                      spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+                      aria-label="Ask me anything" aria-describedby="ask-hint"></textarea>
+            <span class="prompt-placeholder" aria-hidden="true">Ask me anything</span>
+            <span class="prompt-caret" aria-hidden="true"></span>
+            <div class="prompt-mirror" aria-hidden="true"></div>
+          </div>
+
+          <div class="composer-mood">
+            <button type="button" class="composer-chip" aria-haspopup="menu" aria-expanded="false" aria-controls="mood-menu">
+              <svg class="composer-chip-face" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><path d="M9 9h.01" /><path d="M15 9h.01" /></svg>
+              <span class="composer-chip-word">friendly</span>
+              <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+            <div class="mood-menu" id="mood-menu" role="menu" aria-label="How the chat answers">
+              <button type="button" role="menuitemradio" aria-checked="true" data-mood="friendly">
+                <span class="mood-name">friendly</span><span class="mood-note">warm &amp; to the point</span>
+                <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+              </button>
+              <button type="button" role="menuitemradio" aria-checked="false" data-mood="whimsical">
+                <span class="mood-name">whimsical</span><span class="mood-note">answers with a wink</span>
+                <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+              </button>
+              <button type="button" role="menuitemradio" aria-checked="false" data-mood="suspicious">
+                <span class="mood-name">suspicious</span><span class="mood-note">trusts no question</span>
+                <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="composer-btn composer-mic" aria-label="Ask out loud" aria-pressed="false" hidden>
+            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><rect x="9" y="2" width="6" height="13" rx="3" /></svg>
+          </button>
+          <button type="submit" class="composer-send" aria-label="Send" disabled>
+            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
+          </button>
           <span class="sr-only" id="ask-hint">Press Enter to send.</span>
         </form>
       </div>

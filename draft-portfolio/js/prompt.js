@@ -1,4 +1,4 @@
-// prompt.js — "ask me anything: ▌".
+// prompt.js — the composer's field, and its block caret.
 //
 // The text is a real <textarea>, so everything a text field does it still
 // does natively: click to place, drag to select, IME composition, paste, the
@@ -7,11 +7,15 @@
 // transparent. The block is positioned from a hidden mirror of the textarea:
 // the text up to the cursor, then a span holding the rest. The span lands
 // where the next character would, because the mirror wraps exactly as the
-// textarea does (same width, same indent, same white-space rules).
+// textarea does (same width, same white-space rules).
+//
+// The buttons around the field (photo, mood, microphone, send) are
+// composer.js; this file only owns the text and the caret, and tells the
+// composer whenever the text changes.
 
 const FINE_POINTER = matchMedia('(hover: hover) and (pointer: fine)');
 
-export function createPrompt(form, { onSubmit } = {}) {
+export function createPrompt(form, { onSubmit, onChange } = {}) {
   const input = form.querySelector('.prompt-input');
   const caret = form.querySelector('.prompt-caret');
   const mirror = form.querySelector('.prompt-mirror');
@@ -57,6 +61,7 @@ export function createPrompt(form, { onSubmit } = {}) {
 
     caret.classList.toggle('is-hidden', start !== end || composing);
     form.classList.toggle('has-text', value.length > 0);
+    onChange?.(value);
   }
 
   function schedule() {
@@ -112,29 +117,10 @@ export function createPrompt(form, { onSubmit } = {}) {
   new ResizeObserver(schedule).observe(form);
   document.fonts?.ready.then(schedule);
 
-  // ---- how far in the typing starts ----
-  // In the frame the caret sits 260px from the text's start: the label,
-  // 252px, then 8px of air (0.22em). The label is measured rather than
-  // assumed, because the system face changes cut with size. Below 20pt it is
-  // SF Pro Text, which is wider, and a fixed indent in em lets "anything:"
-  // run into the caret on a phone. Measured, it is the label's own width plus
-  // the frame's 0.22em, at any size. It is written on the root, where the
-  // caret's resting place reads it too.
-  const label = form.querySelector('.prompt-label');
-  function indent() {
-    const size = parseFloat(getComputedStyle(label).fontSize);
-    const width = label.offsetWidth;
-    if (!size || !width) return;
-    document.documentElement.style.setProperty('--label-w', (width + 0.2222 * size).toFixed(2) + 'px');
-    schedule();
-  }
-  new ResizeObserver(indent).observe(label);
-  document.fonts?.ready.then(indent);
-
+  // Enter hands over to the composer, which knows whether there is a photo
+  // too, and so whether an empty field still has something to send.
   function submit() {
-    const text = input.value.trim();
-    if (!text || !onSubmit) return;
-    onSubmit(text);
+    onSubmit?.(input.value.trim());
   }
 
   // ---- type anywhere on Home ----
