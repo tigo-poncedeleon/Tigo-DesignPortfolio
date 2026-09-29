@@ -9,7 +9,9 @@
   <title>Tigo Ponce de León</title>
   <meta name="theme-color" content="#fafafa" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <script>document.documentElement.classList.add('js');</script>
+  <script>
+    document.documentElement.classList.add('js');
+  </script>
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/nav.css" />
@@ -192,10 +194,12 @@
     <!-- The frame's third anchor: one line at the bottom-left, on every page. -->
     <footer class="status">
       <div class="status-home" data-status="home">
-        <!-- The composer: a white pill across the page's full measure, from
-             the name's axis to the menu's edge. Left to right: add a photo,
-             the field (the frame's block caret still blinks in it), the
-             chat's mood, the microphone, send. Icons are Lucide's (ISC). -->
+        <!-- The composer. At rest it is only the frame's prompt, the block
+             caret blinking in front of "Ask me anything"; once there is
+             something in it, or a pointer over it, a white pill opens around
+             the words and the tools slide in at its right end: add a photo,
+             the chat's mood, the microphone, send (css/home.css). Icons are
+             Lucide's (ISC). -->
         <form class="composer prompt" autocomplete="off" aria-label="Ask me anything">
           <button type="button" class="composer-btn composer-attach" aria-label="Add a photo">
             <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>

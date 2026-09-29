@@ -34,6 +34,13 @@ export function createComposer(form, { prompt, onSend }) {
 
   let photo = null; // { data: base64 JPEG, thumb: small data URL }
 
+  // Where nothing can hover, the pill cannot wait to be pointed at: it
+  // stays open (css/home.css).
+  const touch = matchMedia('(hover: none)');
+  const paintTouch = () => form.classList.toggle('is-touch', touch.matches);
+  touch.addEventListener('change', paintTouch);
+  paintTouch();
+
   // ---- send: lit when there is text or a photo ----
   function paintSend() {
     const ready = prompt.value.trim().length > 0 || !!photo;

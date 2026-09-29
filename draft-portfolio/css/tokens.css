@@ -102,14 +102,13 @@
   --item-gap: calc(13 * var(--u));
   --menu-shift: calc(-326 * var(--u));
 
-  /* The composer pill: the menu square's 80px height, 12px of padding
-     around a row of 56px round buttons, 30px icons, and the mood chip's
-     smaller type. */
-  --pill-h: calc(80 * var(--u));
-  --pill-pad: calc(12 * var(--u));
-  --pill-btn: calc(56 * var(--u));
-  --pill-icon: calc(30 * var(--u));
-  --pill-small: calc(26 * var(--u));
+  /* The composer (css/home.css): 64px tall when it opens, 44px round tools
+     with 24px icons, and the mood chip's smaller type. The words inside keep
+     the frame's 36px. */
+  --pill-h: calc(64 * var(--u));
+  --pill-btn: calc(44 * var(--u));
+  --pill-icon: calc(24 * var(--u));
+  --pill-small: calc(22 * var(--u));
 
   /* The caret, as fractions of the type size so it scales with it: the
      frame's 9 × 26 block, 12px below the top of its line, which puts its
@@ -205,10 +204,9 @@
     --item-r: 15px;
     --item-gap: 8px;
     --menu-shift: 0px;
-    --pill-h: 56px;
-    --pill-pad: 6px;
-    --pill-btn: 44px;
-    --pill-icon: 22px;
+    --pill-h: 52px;
+    --pill-btn: 40px;
+    --pill-icon: 20px;
     --pill-small: 16px;
   }
 }

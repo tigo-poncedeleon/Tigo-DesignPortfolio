@@ -8,13 +8,22 @@
    the composer's height, and the lines sit on its foot, so the band above
    never changes size between pages.
 
-   THE COMPOSER is a white pill across the page's full measure, from the
-   name's axis to the menu's right edge, the height of the menu square. It
-   lifts off the paper on two soft shadows (a tight one for the edge, a wide
-   one for the air under it), like the Messenger reference, and takes a
-   deeper shadow when it has focus. Left to right: add a photo, the field,
-   the chat's mood, the microphone, and send, which fills with ink the moment
-   there is something to send.
+   THE COMPOSER blooms. At rest it is the frame itself: "Ask me anything"
+   in the frame's 36px on the left axis, with the block caret blinking in
+   front of it, and nothing else. The moment there is something in it (a
+   word, a photo), or a pointer over it, or keyboard focus on one of its
+   tools, a white pill opens around the words on two soft shadows, and the
+   tools slide in at its right end one after another: add a photo, the chat's
+   mood, the microphone, send. The words never move when it opens, because
+   the pill's padding is always there, pulled back out to the axis by a
+   negative margin at rest. On a touch screen, where nothing hovers, the pill
+   simply stays open.
+
+   This replaced a pill that was always there, full width and 80px tall with
+   36px type in it. It worked, and it was the heaviest thing on the page.
+   Four leaner ways were built side by side (a line with a hairline under it,
+   an outlined pill, a compact Messenger-sized one, and this), and this is
+   the one Tigo kept.
 
    THE FIELD is a real <textarea>. It draws its own text, so clicking to
    place the cursor, dragging a selection, an IME's underline, paste and the
@@ -42,26 +51,71 @@
 .composer {
   position: relative;
   display: flex;
-  align-items: flex-end;
-  gap: calc(4 * var(--u));
+  align-items: center;
+  gap: calc(2 * var(--u));
   min-height: var(--pill-h);
-  padding: var(--pill-pad);
+  /* the pill's padding is there all along, so nothing shifts when it opens;
+     at rest it is pulled back out to the axis with a negative margin */
+  padding: calc(10 * var(--u)) calc(10 * var(--u)) calc(10 * var(--u)) calc(28 * var(--u));
+  margin: 0 calc(-10 * var(--u)) calc(-10 * var(--u)) calc(-28 * var(--u));
   border-radius: calc(var(--pill-h) / 2);
-  background: #fff;
+  background: rgb(255 255 255 / 0);
   box-shadow:
-    0 0 0 1px rgb(30 30 30 / 0.04),
-    0 1px 2px rgb(30 30 30 / 0.05),
-    0 calc(10 * var(--u)) calc(32 * var(--u)) rgb(30 30 30 / 0.07);
-  transition: box-shadow 0.3s ease;
+    0 0 0 1px rgb(30 30 30 / 0),
+    0 calc(10 * var(--u)) calc(32 * var(--u)) rgb(30 30 30 / 0);
+  transition: background-color 0.35s ease, box-shadow 0.45s ease;
 }
-.composer:focus-within {
+
+/* The words first, on the axis; every tool trails at the right end. */
+.prompt-field { order: 0; }
+.composer-thumb { order: 1; }
+.composer-attach { order: 2; --n: 0; }
+.composer-mood { order: 3; --n: 1; }
+.composer-mic { order: 4; --n: 2; }
+.composer-send { order: 5; --n: 3; }
+
+/* At rest the tools are there (a Tab still reaches them, and focusing one
+   opens the pill) but unseen, a little to the left of where they land. */
+.composer :is(.composer-btn, .composer-mood, .composer-send) {
+  opacity: 0;
+  translate: calc(-8 * var(--u)) 0;
+  transition:
+    opacity 0.2s ease,
+    translate var(--t-out) var(--spring-out),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    scale var(--t-pop) var(--spring-pop);
+}
+
+/* Open: something typed or attached, a photo dragged over, a pointer on it,
+   a tool focused from the keyboard, the mood card up, or a touch screen. */
+.composer:is(.has-text, .has-image, .is-dropping, .is-touch, :hover,
+             :has(:focus-visible:not(.prompt-input)), :has(.composer-mood.is-open)) {
+  background: rgb(255 255 255 / 1);
   box-shadow:
-    0 0 0 1px rgb(30 30 30 / 0.06),
-    0 1px 2px rgb(30 30 30 / 0.06),
-    0 calc(14 * var(--u)) calc(40 * var(--u)) rgb(30 30 30 / 0.1);
+    0 0 0 1px rgb(30 30 30 / 0.05),
+    0 calc(10 * var(--u)) calc(32 * var(--u)) rgb(30 30 30 / 0.07);
+
+  & .prompt-field { background: #fff; }
+  & .prompt-caret { background: #bbbcbc; }
+  & :is(.composer-btn, .composer-mood, .composer-send) {
+    opacity: 1;
+    translate: 0 0;
+    /* in one after another, left to right, on the settling spring */
+    transition:
+      opacity 0.3s ease calc(60ms + var(--n) * 35ms),
+      translate var(--t-settle) var(--spring-settle) calc(60ms + var(--n) * 35ms),
+      background-color 0.2s ease,
+      color 0.2s ease,
+      scale var(--t-pop) var(--spring-pop);
+  }
 }
 /* a photo dragged over it */
-.composer.is-dropping { box-shadow: 0 0 0 2px var(--bubble), 0 calc(14 * var(--u)) calc(40 * var(--u)) rgb(30 30 30 / 0.1); }
+.composer.is-dropping {
+  box-shadow:
+    0 0 0 2px var(--bubble),
+    0 calc(10 * var(--u)) calc(32 * var(--u)) rgb(30 30 30 / 0.07);
+}
 
 /* round icon buttons: attach, microphone */
 .composer-btn {
@@ -71,8 +125,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: var(--ink);
-  transition: background-color 0.2s ease, color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+  color: var(--ink-3);
 }
 .composer-btn svg { width: var(--pill-icon); height: var(--pill-icon); }
 .composer-btn[hidden] { display: none; }
@@ -105,15 +158,18 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--pill);
+  background: transparent;
   color: var(--ink-4);
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease,
-    scale var(--t-pop) var(--spring-pop);
 }
 .composer-send svg { width: var(--pill-icon); height: var(--pill-icon); }
-.composer-send:not(:disabled) { background: var(--mark); color: #fff; cursor: pointer; }
+.composer-send:not(:disabled) {
+  width: calc(40 * var(--u));
+  height: calc(40 * var(--u));
+  margin: 0 calc(2 * var(--u));
+  background: var(--mark);
+  color: #fff;
+  cursor: pointer;
+}
 .composer-send:disabled { cursor: default; }
 .composer-send:not(:disabled):active { scale: 0.9; transition-duration: 0.25s, 0.25s, 90ms; }
 
@@ -245,15 +301,16 @@
   position: relative;
   flex: 1;
   min-width: 0;
-  /* centres one line of 36px type in the 56px row of buttons, and when a
-     long question wraps the field grows upward past them */
-  margin: 0 calc(8 * var(--u)) calc((var(--pill-btn) - var(--lh) * 1em) / 2);
+  font-size: var(--pill-fs, var(--fs));
+  margin: 0 calc(16 * var(--u)) 0 0;
   cursor: text;
   /* The caret is blended by `difference` so it can sit over a letter like a
      terminal's block. Blending needs a backdrop, so the field is its own
-     group on the pill's white. */
+     group, on the paper at rest and on the pill's white once it opens (and
+     fading between them with the pill, so no hard white box shows first). */
   isolation: isolate;
-  background: #fff;
+  background: var(--bg);
+  transition: background-color 0.35s ease;
 }
 
 .prompt-input {
@@ -309,9 +366,10 @@
 }
 
 /* ---- the caret. The frame's block, 0.25em × 0.72em, 0.33em down its line.
-   #bbbcbc under `difference` comes out as #444343 over the pill's white
-   (255 − 187 = 68, 255 − 188 = 67), and over a letter it inverts the letter
-   — the block cursor of a terminal, not a slab over the text. ---- */
+   Under `difference`, #b6b7b7 comes out as exactly #444343 over the paper
+   (250 − 182 = 68), and #bbbcbc does the same over the open pill's white
+   (255 − 187 = 68); over a letter it inverts the letter — the block cursor
+   of a terminal, not a slab over the text. ---- */
 .prompt-caret {
   position: absolute;
   left: 0;
@@ -319,7 +377,7 @@
   width: var(--caret-w);
   height: var(--caret-h);
   translate: var(--caret-x, 0px) calc(var(--caret-y, 0px) + var(--caret-top));
-  background: #bbbcbc;
+  background: #b6b7b7;
   mix-blend-mode: difference;
   pointer-events: none;
   z-index: 2;
@@ -517,6 +575,8 @@
 }
 
 @media (max-width: 760px) {
+  /* a phone's 20px gutter has no room for the pill to reach 28px past it */
+  .composer { padding: 6px 6px 6px 14px; margin: 0 -6px -6px -14px; }
   .composer-chip { padding: 0 6px 0 10px; }
   .composer-chip-word { display: none; }
   .composer-chip-face { display: block; width: var(--pill-icon); height: var(--pill-icon); }
