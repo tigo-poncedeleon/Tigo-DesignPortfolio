@@ -1,15 +1,16 @@
 // main.js — boots the draft and runs every page change.
 //
 // A page change is three things moving at once, on the same clock:
-//   the tile   opens into its pill (CSS: nav.css), or folds back for Home;
+//   the menu   folds its pills away and slides its square home (nav.css),
+//              with the new page's pill marked;
 //   the band   the old page drifts out against the direction of travel and
 //              fades (180ms, an ease-in: it is leaving, so it accelerates
 //              away), while the new one arrives from the other side on the
 //              settling spring, its text rising into place a line at a time;
 //   the line   the bottom-left line crossfades to the new page's words.
 //
-// "Direction" is the dock's order, home → work → play → about: going right
-// along the tiles, pages come in from the right; going left, from the left.
+// "Direction" is the menu's order, home → work → play → about: going down
+// the list, pages come in from the right; going up, from the left.
 //
 // Every change starts from what is on screen, not from where the last one was
 // meant to end. settle() pins whatever is mid-flight where it is, and the
@@ -37,7 +38,7 @@ for (const v of document.querySelectorAll('.band > [data-view]')) views[v.datase
 const lines = {};
 for (const l of document.querySelectorAll('.status > [data-status]')) lines[l.dataset.status] = l;
 
-const nav = initNav(document.querySelector('.tiles'));
+const nav = initNav(document.querySelector('.menu'));
 
 // ---- Home: the prompt and the conversation ----
 const promptForm = document.querySelector('.prompt');
@@ -111,13 +112,8 @@ function show(next, prev, { initial }) {
   current = next;
   document.title = TITLES[next.view];
 
-  // The deep-linked pill opens after the tiles have popped in, not during.
-  if (initial && next.view !== 'home' && !reduced()) {
-    nav.setCurrent('home');
-    setTimeout(() => { if (current === next) nav.setCurrent(next.view); }, 560);
-  } else {
-    nav.setCurrent(next.view);
-  }
+  nav.setCurrent(next.view);
+  nav.close();
 
   // the same page, a different state of it (a game opening or closing)
   if (prev && prev.view === next.view) {

@@ -1,114 +1,164 @@
 /* ==========================================================================
-   nav.css — the four tiles, and the one thing they do: the tile for the page
-   you are on opens into a pill with its word in it.
+   nav.css — the menu: one yellow square, and the four pages it opens onto.
 
-   HOW IT OPENS. The tile is a flex row — padding, the 48px icon box, then a
-   label slot that is 0 wide when the tile is shut. Opening the tile animates
-   that slot's WIDTH to the measured width of its word (js/nav.js writes it
-   into --w, in em, so it follows the fluid type). The row is anchored at its
-   right edge, so the pill can only grow leftward: the icon travels left and
-   every tile to its left slides over with it, all on the one layout change.
+   Shut, it is the square alone at the top right, three lines in it, centred
+   on the name's two lines. Opened, three things happen on one clock:
+     - the square slides left by a pill's width and a 28px gap, on the
+       settling spring, so it lands with the 3% the spring is tuned for;
+     - its three lines turn upright (a quarter turn), which is the only
+       "close" sign it needs;
+     - the pages fan down beside it. The four pills start stacked behind the
+       first, each one pill-height higher than where it rests, and drop into
+       place 50ms apart, so the column unfolds like a deck rather than
+       appearing. Each is its page's pastel, with the icon at the left and the
+       word in the middle, as in the mockups.
+   Shutting runs it backwards on the critically damped curve, bottom pill
+   first: nothing is landing, so nothing overshoots.
 
-   It is a plain px width on purpose. The well-known alternative, animating a
-   grid track from 0fr to 1fr, was sampled on this very spring and it lands
-   badly: the track follows the curve up to 1fr and then clamps, so the 3%
-   overshoot the spring is tuned for is cut off, and the tile stops dead at
-   280ms of 560ms while still moving at about 85px/s. A real width goes 2.4px
-   past and settles, which is the landing the live site's rail was tuned for.
-
-   THE WORD is right-aligned inside the slot, so it does not move at all. It
-   stands where it will end up, and the icon slides away from it — which is,
-   literally, the icon moving over to make room.
+   The column is laid over the page, not in its flow, so opening the menu
+   never moves anything else.
    ========================================================================== */
 
-.tiles {
-  display: flex;
-  gap: var(--tile-gap);
+.menu {
+  position: relative;
   flex: none;
+  width: var(--menu-size);
+  height: var(--menu-size);
+  /* centred on the name's 86px: (86 - 80) / 2 */
+  margin-top: calc(3 * var(--u));
+  z-index: 4;
 }
 
-.tile {
-  --tile-bg: var(--mint);
-  display: flex;
-  align-items: center;
-  height: var(--tile-h);
-  padding: 0 var(--tile-pad);
-  border-radius: var(--tile-r);
-  background: var(--tile-bg);
+.menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--menu-size);
+  height: var(--menu-size);
+  display: grid;
+  place-items: center;
+  border-radius: var(--menu-r);
+  background: var(--yellow);
   color: var(--mark);
   -webkit-tap-highlight-color: transparent;
   transition:
+    translate var(--t-out) var(--spring-out),
     background-color 0.2s ease,
     scale var(--t-pop) var(--spring-pop);
 }
+.menu[data-open] .menu-button {
+  translate: var(--menu-shift) 0;
+  transition:
+    translate var(--t-settle) var(--spring-settle),
+    background-color 0.2s ease,
+    scale var(--t-pop) var(--spring-pop);
+}
+@media (hover: hover) {
+  .menu-button:hover { background: color-mix(in oklab, var(--yellow), var(--mark) 6%); }
+}
+.menu-button:active { scale: 0.94; transition-duration: var(--t-out), 0.2s, 90ms; }
 
-.tile-icon {
-  flex: none;
+.menu-icon {
   width: var(--icon);
   height: var(--icon);
   overflow: visible;
+  transition: rotate var(--t-out) var(--spring-out);
 }
+.menu[data-open] .menu-icon {
+  rotate: 90deg;
+  transition: rotate var(--t-settle) var(--spring-settle);
+}
+/* the lines draw themselves in on a first visit (js/entrance.js): each
+   carries pathLength="1", so one dash of length 1 is the whole line */
+.menu-icon line { stroke-dasharray: 1; stroke-dashoffset: 0; }
 
-/* The slot. Shut, it is nothing; open, it is the word plus its padding. It
-   shuts on the critically damped curve — leaving has nothing to land on — and
-   opens on the settling one. */
-.tile-label {
-  display: flex;
-  justify-content: flex-end;
-  width: 0;
-  overflow: clip;
-  white-space: nowrap;
-  transition: width var(--t-out) var(--spring-out);
+/* ---- the pages ---- */
+.menu-list {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--item-w);
+  display: grid;
+  gap: var(--item-gap);
+  list-style: none;
+  /* hidden only once the last pill has gone back behind the first */
+  visibility: hidden;
+  transition: visibility 0s linear 0.5s;
 }
-.tile[data-open] .tile-label {
-  width: var(--w, auto);
-  transition: width var(--t-settle) var(--spring-settle);
+.menu[data-open] .menu-list {
+  visibility: visible;
+  transition-delay: 0s;
 }
+/* earlier pills lie on top, so the later ones come out from under them */
+.menu-list > li { position: relative; z-index: calc(4 - var(--i)); }
 
-.tile-word {
-  display: block;
-  padding: 0 var(--pill-end) 0 var(--pill-gap);
+.menu-item {
+  --item-bg: var(--blue);
+  display: grid;
+  /* icon | word | a space as wide as the icon, so the word is centred on the
+     pill itself and not on what the icon leaves */
+  grid-template-columns: var(--icon) 1fr var(--icon);
+  align-items: center;
+  height: var(--item-h);
+  padding: 0 var(--tile-pad);
+  border-radius: var(--item-r);
+  background: var(--item-bg);
   color: var(--mark);
+  -webkit-tap-highlight-color: transparent;
+
+  /* shut: stacked behind the first pill, and gone */
   opacity: 0;
-  translate: -0.2em 0;
-  filter: blur(3px);
-  /* leaving, the word goes at once, so a quick switch never shows two words */
-  transition: opacity 0.12s ease, translate 0.12s ease, filter 0.12s ease;
+  translate: 0 calc(var(--i) * -1 * (var(--item-h) + var(--item-gap)));
+  scale: 0.96;
+  transition:
+    opacity 0.2s ease calc((3 - var(--i)) * 30ms),
+    translate var(--t-out) var(--spring-out) calc((3 - var(--i)) * 30ms),
+    scale var(--t-out) var(--spring-out) calc((3 - var(--i)) * 30ms),
+    background-color 0.2s ease;
 }
-.tile[data-open] .tile-word {
+.menu[data-open] .menu-item {
   opacity: 1;
   translate: 0 0;
-  filter: none;
-  /* and arriving, it trails the slot by 60ms, so the icon has begun to move
-     before the word resolves behind it */
+  scale: 1;
   transition:
-    opacity 0.28s ease 0.06s,
-    translate var(--t-settle) var(--spring-settle) 0.06s,
-    filter 0.28s ease 0.06s;
+    opacity 0.26s ease calc(60ms + var(--i) * 50ms),
+    translate var(--t-settle) var(--spring-settle) calc(60ms + var(--i) * 50ms),
+    scale var(--t-settle) var(--spring-settle) calc(60ms + var(--i) * 50ms),
+    background-color 0.2s ease;
 }
-
 @media (hover: hover) {
-  .tile:hover { background: color-mix(in oklab, var(--tile-bg), var(--mark) 6%); }
+  .menu-item:hover { background: color-mix(in oklab, var(--item-bg), var(--mark) 6%); }
 }
-.tile:active {
-  scale: 0.94;
-  transition: background-color 0.2s ease, scale 90ms ease;
-}
+.menu-item:active { scale: 0.97; }
 
-/* ---- the icons draw themselves in on a first visit (js/entrance.js). Each
-   stroke carries pathLength="1", so one dash of length 1 is the whole line,
-   and moving the dash from 1 to 0 draws it. ---- */
-.tile-icon :is(path, line, circle, rect) {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
+.menu-item-icon { width: var(--icon); height: var(--icon); }
+.menu-item-word { justify-self: center; white-space: nowrap; }
+
+/* the page you are on: a small ink dot where the pill's right-hand space is */
+.menu-item::after {
+  content: '';
+  justify-self: center;
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  border-radius: 50%;
+  background: var(--mark);
+  opacity: 0;
 }
+.menu-item[aria-current='page']::after { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .tile, .tile-label, .tile[data-open] .tile-label,
-  .tile-word, .tile[data-open] .tile-word {
-    transition-duration: 0s;
-    transition-delay: 0s;
+  .menu-button, .menu[data-open] .menu-button,
+  .menu-icon, .menu[data-open] .menu-icon { transition-duration: 0s; }
+  .menu-item, .menu[data-open] .menu-item {
+    translate: 0 0;
+    scale: 1;
+    transition: opacity 0.15s ease, background-color 0.2s ease;
   }
-  .tile-word { filter: none; translate: 0 0; }
-  .tile:active { scale: 1; }
+  .menu-button:active, .menu-item:active { scale: 1; }
+}
+
+/* On a phone the square stays put and the pills drop down beneath it. */
+@media (max-width: 760px) {
+  .menu { margin-top: 0; }
+  .menu-list { top: calc(var(--menu-size) + var(--item-gap)); }
 }

@@ -63,22 +63,23 @@ img, svg, canvas { display: block; }
 .masthead {
   display: flex;
   justify-content: space-between;
-  /* The 68px tiles sit on the name's two 43px lines, nine pixels under its
-     top and nine over its foot (y 58 in the frame). That is set here as a
-     9px top margin rather than by centring, because the name's place is
-     sometimes a question bubble of one or two lines instead, and the tiles
-     must not move when it changes. */
+  /* The menu square is centred on the name's two 43px lines by its own top
+     margin (css/nav.css), not by centring the row, because the name's place
+     is sometimes a question bubble of one or two lines instead, and the
+     square must not move when it changes. */
   align-items: flex-start;
   gap: calc(24 * var(--u));
   position: relative;
   z-index: 3;
 }
-.tiles { margin-top: calc(9 * var(--u)); }
 
-/* The name and the asked question share one cell and trade places. */
+/* The name and the asked question share one cell and trade places. The
+   cell stops short of where the open menu reaches (a pill, the gap, the
+   square: 406px, and 24 of air), so a long question never sits under it. */
 .masthead-left {
   display: grid;
   min-width: 0;
+  max-width: calc(100% - 430 * var(--u));
 }
 .masthead-left > * { grid-area: 1 / 1; }
 
@@ -108,12 +109,8 @@ img, svg, canvas { display: block; }
 }
 
 @media (max-width: 760px) {
-  .masthead {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  .tiles { margin-top: 0; }
+  .masthead { gap: 12px; }
+  .masthead-left { max-width: calc(100% - 64px); }
   .band { margin-top: 24px; }
 }
 
@@ -121,7 +118,7 @@ img, svg, canvas { display: block; }
    animations running, the pieces it animates are held invisible, so the
    finished page never flashes up first. If script never gets there, this
    failsafe lets them show after 1.4s anyway. ---- */
-html.js:not(.entered) :is(.name-line, .ask, .tile, .status) {
+html.js:not(.entered) :is(.name-line, .ask, .menu-button, .status) {
   opacity: 0;
   animation: entrance-failsafe 0s linear 1.4s forwards;
 }

@@ -51,11 +51,15 @@
   --bubble-ink: #111112;
   --pill: #e9eaeb;
 
-  /* The four tiles, left to right, and the page each one stands for. */
-  --mint: #c9ffe2;    /* home */
-  --yellow: #fffec9;  /* work */
-  --pink: #ffc9c9;    /* play */
-  --blue: #c9f0ff;    /* about */
+  /* The pastels. The menu square is the yellow; its pills are home blue,
+     work pink, play lavender and about green, as in Tigo's menu mockups
+     (the mint is the Figma frame's first tile, kept for the Snake court). */
+  --yellow: #fffec9;    /* the menu */
+  --blue: #c9f0ff;      /* home */
+  --pink: #ffc9c9;      /* work */
+  --lavender: #cdcbfd;  /* play */
+  --green: #c9fecb;     /* about */
+  --mint: #c9ffe2;
 
   /* ---- type. One size, like the frame: everything is 36 Figma px. SF Pro
      comes from the system (-apple-system), as on the live site; naming it
@@ -82,11 +86,21 @@
   --tile-w: calc(70 * var(--u));
   --tile-h: calc(68 * var(--u));
   --tile-r: calc(20 * var(--u));
-  --tile-gap: calc(34 / 3 * var(--u)); /* 11, 12, 11 in the frame */
   --tile-pad: calc(11 * var(--u));     /* (70 - 48) / 2 */
   --icon: calc(48 * var(--u));
-  --pill-gap: calc(6 * var(--u));      /* icon box to word, when a tile opens */
-  --pill-end: calc(10 * var(--u));     /* word to the pill's end */
+  --pill-gap: calc(6 * var(--u));      /* icon box to word, in a pill */
+
+  /* The menu, measured off Tigo's two mockups (drawn at 1.5625× the frame):
+     an 80px square, and pills 298 × 68 with 13px between them. The square is
+     centred on the name's two lines, like the tiles before it, and when the
+     menu opens it slides left by a pill and a 28px gap. */
+  --menu-size: calc(80 * var(--u));
+  --menu-r: calc(22 * var(--u));
+  --item-w: calc(298 * var(--u));
+  --item-h: calc(68 * var(--u));
+  --item-r: calc(20 * var(--u));
+  --item-gap: calc(13 * var(--u));
+  --menu-shift: calc(-326 * var(--u));
 
   /* The caret, as fractions of the type size so it scales with it: 9 × 26 in
      the frame, 260px after the text starts (7.22em) and 12px below the top of
@@ -156,10 +170,11 @@
   }
 }
 
-/* ---- the narrow layout. Below 760px the frame's proportions stop working
-   (four 70px tiles and a 36px name do not share a 390px row), so the header
-   stacks: tiles on top, the name under them. The type leaves --u and is sized
-   in px/vw, so it still answers to the browser's zoom. ---- */
+/* ---- the narrow layout. Below 760px the frame's proportions stop working,
+   so everything steps down to phone sizes and the type leaves --u for
+   px/vw, which still answers to the browser's zoom. The menu square stays
+   where it is on a phone; there is no room beside it, so its pills drop
+   down under it instead (css/nav.css). ---- */
 @media (max-width: 760px) {
   :root {
     --u: 1px;
@@ -172,10 +187,15 @@
     --tile-w: 50px;
     --tile-h: 48px;
     --tile-r: 14px;
-    --tile-gap: 8px;
     --tile-pad: 8px;
     --icon: 34px;
     --pill-gap: 4px;
-    --pill-end: 8px;
+    --menu-size: 52px;
+    --menu-r: 15px;
+    --item-w: min(240px, calc(100vw - 40px));
+    --item-h: 52px;
+    --item-r: 15px;
+    --item-gap: 8px;
+    --menu-shift: 0px;
   }
 }

@@ -1,40 +1,66 @@
-// nav.js — the four tiles: which one is current, and how wide its word is.
+// nav.js — the menu: the yellow square and the four pages it opens onto.
 //
-// A tile opens by animating its label slot's width (css/nav.css says why it
-// is a width and not a grid track), and a width needs a number. Each word is
-// measured once, in em of the tile's own type, so the number keeps holding
-// as the fluid type scales: the words scale with the type, and so does the
-// width. It is measured again when the fonts settle, in case the system face
-// arrived after the first measurement.
+// Opening and shutting is one attribute, data-open, and css/nav.css does all
+// the moving, so a quick second click just turns the transitions around
+// wherever they are. This file only decides WHEN:
+//   the square toggles it;
+//   picking a page shuts it (the page change is the thing to watch then);
+//   Esc shuts it, and hands focus back to the square;
+//   a press anywhere outside it shuts it;
+//   any route change shuts it (main.js), so Back never leaves it hanging.
+// Opened from the keyboard, focus goes to the current page's pill; opened
+// with a pointer, focus stays on the square.
 
-export function initNav(nav) {
-  const tiles = [...nav.querySelectorAll('.tile')];
+export function initNav(menu) {
+  const button = menu.querySelector('.menu-button');
+  const list = menu.querySelector('.menu-list');
+  const items = [...menu.querySelectorAll('.menu-item')];
+  let isOpen = false;
 
-  // offsetWidth, the layout width, and not getBoundingClientRect: the first
-  // measurement happens while the entrance still holds the tiles at scale
-  // .6, and a rect would have sized every pill to 60% of its word.
-  function measure() {
-    for (const tile of tiles) {
-      const word = tile.querySelector('.tile-word');
-      const size = parseFloat(getComputedStyle(tile).fontSize);
-      if (!size) continue;
-      const width = word.offsetWidth / size;
-      tile.style.setProperty('--w', width.toFixed(4) + 'em');
+  function open({ focus = false } = {}) {
+    if (isOpen) return;
+    isOpen = true;
+    menu.setAttribute('data-open', '');
+    button.setAttribute('aria-expanded', 'true');
+    list.inert = false;
+    if (focus) {
+      const here = items.find((i) => i.getAttribute('aria-current') === 'page') || items[0];
+      here.focus({ preventScroll: true });
     }
   }
-  measure();
-  document.fonts?.ready.then(measure);
+
+  function close({ focus = false } = {}) {
+    if (!isOpen) return;
+    isOpen = false;
+    menu.removeAttribute('data-open');
+    button.setAttribute('aria-expanded', 'false');
+    list.inert = true;
+    if (focus) button.focus({ preventScroll: true });
+  }
+
+  // e.detail is 0 when a click came from the keyboard (Enter or Space)
+  button.addEventListener('click', (e) => (isOpen ? close() : open({ focus: e.detail === 0 })));
+  for (const item of items) item.addEventListener('click', () => close());
+
+  // Capture on the window, and first in line (this is registered at boot,
+  // before Play's own key handling), so Esc shuts the menu before it can
+  // also close a game underneath it.
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !isOpen) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    close({ focus: true });
+  }, true);
+  document.addEventListener('pointerdown', (e) => {
+    if (isOpen && !menu.contains(e.target)) close();
+  });
 
   function setCurrent(view) {
-    for (const tile of tiles) {
-      const on = tile.dataset.route === view;
-      if (on) tile.setAttribute('aria-current', 'page');
-      else tile.removeAttribute('aria-current');
-      // Home is current on Home, but its tile never opens: the frame shows
-      // Home with all four tiles shut, and that is what Home looks like.
-      tile.toggleAttribute('data-open', on && view !== 'home');
+    for (const item of items) {
+      if (item.dataset.route === view) item.setAttribute('aria-current', 'page');
+      else item.removeAttribute('aria-current');
     }
   }
 
-  return { tiles, setCurrent, measure };
+  return { setCurrent, open, close, get isOpen() { return isOpen; } };
 }

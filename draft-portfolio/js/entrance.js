@@ -2,8 +2,8 @@
 // second.
 //
 //   0ms     the name, line by line, rising and sharpening
-//   120ms   the tiles pop in, left to right, 60ms apart, while each glyph
-//           draws itself (every stroke carries pathLength="1")
+//   120ms   the menu square pops in, while its three lines draw themselves
+//           (every stroke carries pathLength="1")
 //   300ms   the bottom line rises
 //   700ms   the caret appears and starts to blink
 //
@@ -30,7 +30,7 @@ export function playEntrance({ caret } = {}) {
   // standing in its place
   const ask = document.querySelector('.ask.is-on');
   const lines = ask ? [ask] : document.querySelectorAll('.name-line');
-  const tiles = [...document.querySelectorAll('.tile')];
+  const tiles = [...document.querySelectorAll('.menu-button')];
   const status = document.querySelector('.status');
   const running = [];
 
@@ -46,7 +46,7 @@ export function playEntrance({ caret } = {}) {
       { opacity: 0, scale: 0.6 },
       { opacity: 1, scale: 1 },
     ], { ...SPRING.pop, delay: 120 + i * 60, fill: 'backwards' }));
-    for (const stroke of tile.querySelectorAll('.tile-icon > *')) {
+    for (const stroke of tile.querySelectorAll('.menu-icon > *')) {
       running.push(stroke.animate(
         [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }],
         { duration: 520, easing: EASE.draw, delay: 220 + i * 60, fill: 'backwards' },
