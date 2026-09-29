@@ -28,6 +28,9 @@
   list-style: none;
 }
 
+/* The page's entrance (the rise, with its blur) runs on this link and not on
+   the icon inside it. The icon's `filter` is its shadow, and an animated blur
+   there would replace the shadow until the rise was over, then snap it back. */
 .app {
   display: block;
   border-radius: 22.5%;

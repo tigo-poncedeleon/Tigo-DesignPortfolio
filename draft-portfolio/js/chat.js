@@ -268,9 +268,9 @@ export function createChat({ thread, prompt, promptForm, clearBtn, announcer }) 
     failed = turn;
     busy = false;
     prompt.setWaiting(false);
-    // the question goes back into the prompt, so Enter sends it again
+    // the question goes back into the prompt, so Enter sends it again; and
+    // "clear" stays, so the failed line can be dismissed without a retry
     prompt.value = text;
-    if (!turns.length && inner.children.length === 1) clearBtn.hidden = true;
   }
 
   // ---- the answer, arriving ----

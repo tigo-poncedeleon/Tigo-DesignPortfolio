@@ -85,16 +85,24 @@
   inset: 0;
   pointer-events: none;
 }
-/* The 3, 2, 1, in the middle of the court at twice the size. Everything
-   else a game has to say goes on the bottom line (js/play/play.js). */
+/* The 3, 2, 1, at twice the size, a third of the way down the court rather
+   than in its middle: the snake starts dead centre, and so does Pong's ball.
+   Everything else a game has to say goes on the bottom line
+   (js/play/play.js). */
 .hud-center {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 34%;
   translate: -50% -50%;
   font-size: 2em;
   font-variant-numeric: tabular-nums;
   color: var(--mark);
+  /* a halo in the court's own colour, so a numeral over the snake (which
+     starts dead centre too) still reads as a numeral */
+  text-shadow:
+    0 0 calc(6 * var(--u)) var(--card-bg),
+    0 0 calc(12 * var(--u)) var(--card-bg),
+    0 0 calc(20 * var(--u)) var(--card-bg);
 }
 
 .stage-close {

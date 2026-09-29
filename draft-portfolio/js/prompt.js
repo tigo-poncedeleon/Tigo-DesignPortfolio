@@ -112,6 +112,25 @@ export function createPrompt(form, { onSubmit } = {}) {
   new ResizeObserver(schedule).observe(form);
   document.fonts?.ready.then(schedule);
 
+  // ---- how far in the typing starts ----
+  // In the frame the caret sits 260px from the text's start: the label,
+  // 252px, then 8px of air (0.22em). The label is measured rather than
+  // assumed, because the system face changes cut with size. Below 20pt it is
+  // SF Pro Text, which is wider, and a fixed indent in em lets "anything:"
+  // run into the caret on a phone. Measured, it is the label's own width plus
+  // the frame's 0.22em, at any size. It is written on the root, so the
+  // conversation's echoed questions indent by exactly the same amount.
+  const label = form.querySelector('.prompt-label');
+  function indent() {
+    const size = parseFloat(getComputedStyle(label).fontSize);
+    const width = label.offsetWidth;
+    if (!size || !width) return;
+    document.documentElement.style.setProperty('--label-w', (width + 0.2222 * size).toFixed(2) + 'px');
+    schedule();
+  }
+  new ResizeObserver(indent).observe(label);
+  document.fonts?.ready.then(indent);
+
   function submit() {
     const text = input.value.trim();
     if (!text || !onSubmit) return;

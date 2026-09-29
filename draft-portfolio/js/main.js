@@ -141,7 +141,12 @@ function show(next, prev, { initial }) {
 
   hooks[next.view]?.enter?.(next, prev, { initial });
 
-  if (initial) return;
+  if (initial) {
+    // Arriving straight at a page: its content rises once the frame has
+    // assembled around it, rather than standing there first.
+    if (next.view !== 'home') rise(views[next.view].querySelectorAll('[data-rise]'), { delay: 380, stagger: 50 });
+    return;
+  }
   if (next.view === 'home') {
     prompt.focusIfDesk();
   } else if (byKeyboard) {

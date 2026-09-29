@@ -19,7 +19,7 @@
   padding-bottom: calc(40 * var(--u));
 }
 
-.about-text { max-width: 20em; }
+.about-text { max-width: 20em; text-wrap: pretty; }
 .about-text p + p { margin-top: 0.45em; }
 
 .portrait {

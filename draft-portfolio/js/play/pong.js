@@ -191,7 +191,10 @@ export default class Pong extends Game {
     c.fillStyle = INK;
     capsule(c, INSET, this.left.y, PW, PH);
     capsule(c, w - INSET - PW, this.right.y, PW, PH);
+    // The ball sits out the 3, 2, 1: it rests dead centre, exactly where the
+    // numerals stand, and appears for the serve.
     const b = this.ball;
-    if (this.state !== 'ended' || (b.x > -BALL && b.x < w)) disc(c, b.x + BALL / 2, b.y + BALL / 2, BALL / 2);
+    const inPlay = this.state !== 'countdown' && (this.state !== 'ended' || (b.x > -BALL && b.x < w));
+    if (inPlay) disc(c, b.x + BALL / 2, b.y + BALL / 2, BALL / 2);
   }
 }

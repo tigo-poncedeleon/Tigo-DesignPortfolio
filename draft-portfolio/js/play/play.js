@@ -28,26 +28,27 @@ import { SPRING, EASE, animate, settle, reduced, onReducedChange, u, clearInline
 const GAMES = { pong: Pong, snake: Snake, flappy: Flappy };
 
 // What the bottom line says, per game and per state. The line is the page's
-// one voice, so the games speak through it too: how to play before you start,
-// the score while you play, the verdict when it is over. The stage itself
-// holds only the court (and the 3, 2, 1).
+// one voice, so the games speak through it too: how to play before you start
+// (and until there is a score worth showing), the score while you play, the
+// verdict when it is over. The stage itself holds only the court and the
+// 3, 2, 1.
 const COPY = {
   pong: {
     title: 'pong',
     ready: 'pong: space to serve, then ↑ ↓ or drag',
-    playing: (g) => 'pong: rally ' + g.score,
+    playing: (g) => (g.score ? 'pong: rally ' + g.score : 'pong: ↑ ↓ or drag to move'),
     over: (g) => 'pong: ' + (g.result?.won ? 'you won' : 'the computer won') + ', rally ' + g.score,
   },
   snake: {
     title: 'snake',
     ready: 'snake: space to start, arrow keys to steer',
-    playing: (g) => 'snake: ' + g.score,
+    playing: (g) => (g.score ? 'snake: ' + g.score : 'snake: arrow keys to steer'),
     over: (g) => 'snake: game over at ' + g.score,
   },
   flappy: {
     title: 'flappy bird',
     ready: 'flappy bird: space or click to flap',
-    playing: (g) => 'flappy bird: ' + g.score,
+    playing: (g) => (g.score ? 'flappy bird: ' + g.score : 'flappy bird: space or click to flap'),
     over: (g) => 'flappy bird: ' + g.score,
   },
 };
@@ -118,7 +119,7 @@ export function initPlay(view, { router, lines }) {
     const copy = COPY[open?.id || game.constructor.id];
     const s = game.state;
     let line = copy.ready;
-    if (s === 'countdown') line = copy.ready;
+    if (s === 'countdown') line = copy.playing(game);
     else if (s === 'playing') line = copy.playing(game);
     else if (s === 'paused') line = copy.title + ': paused, space to go on';
     else if (s === 'ended') {
