@@ -23,15 +23,28 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class NoStore(http.server.SimpleHTTPRequestHandler):
+    # Keep-alive: the page is one document and a dozen ES modules, fetched in
+    # a burst. On HTTP/1.0 every one of them is a fresh connection.
+    protocol_version = "HTTP/1.1"
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
 
+class Server(http.server.ThreadingHTTPServer):
+    # The stock listen queue holds five waiting connections. A reload asks
+    # for more than that at once, and the overflow was refused outright
+    # (ERR_CONNECTION_RESET on a module), which leaves the page without its
+    # script. A deeper queue lets them wait their turn instead.
+    request_queue_size = 128
+    daemon_threads = True
+
+
 def main():
     port = int(os.environ.get("PORT") or (sys.argv[1] if len(sys.argv) > 1 else 8793))
     handler = functools.partial(NoStore, directory=ROOT)
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
+    server = Server(("127.0.0.1", port), handler)
     print(f"draft-portfolio on http://localhost:{port}  (this Mac only; Ctrl-C stops it)", flush=True)
     try:
         server.serve_forever()
