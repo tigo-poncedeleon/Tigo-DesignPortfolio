@@ -63,16 +63,26 @@ img, svg, canvas { display: block; }
 .masthead {
   display: flex;
   justify-content: space-between;
-  /* centring the 68px tiles on the name's two 43px lines is what puts them
-     at y 58 in the frame — nine pixels under the name's top, nine over its
-     foot — so the alignment is structural, not a number */
-  align-items: center;
+  /* The 68px tiles sit on the name's two 43px lines, nine pixels under its
+     top and nine over its foot (y 58 in the frame). That is set here as a
+     9px top margin rather than by centring, because the name's place is
+     sometimes a question bubble of one or two lines instead, and the tiles
+     must not move when it changes. */
+  align-items: flex-start;
   gap: calc(24 * var(--u));
   position: relative;
   z-index: 3;
 }
+.tiles { margin-top: calc(9 * var(--u)); }
 
-.name { display: block; white-space: nowrap; }
+/* The name and the asked question share one cell and trade places. */
+.masthead-left {
+  display: grid;
+  min-width: 0;
+}
+.masthead-left > * { grid-area: 1 / 1; }
+
+.name { display: block; white-space: nowrap; justify-self: start; }
 .name-line { display: block; }
 
 .band {
@@ -103,6 +113,7 @@ img, svg, canvas { display: block; }
     align-items: flex-start;
     gap: 16px;
   }
+  .tiles { margin-top: 0; }
   .band { margin-top: 24px; }
 }
 
@@ -110,7 +121,7 @@ img, svg, canvas { display: block; }
    animations running, the pieces it animates are held invisible, so the
    finished page never flashes up first. If script never gets there, this
    failsafe lets them show after 1.4s anyway. ---- */
-html.js:not(.entered) :is(.name-line, .tile, .status) {
+html.js:not(.entered) :is(.name-line, .ask, .tile, .status) {
   opacity: 0;
   animation: entrance-failsafe 0s linear 1.4s forwards;
 }

@@ -43,18 +43,19 @@ const nav = initNav(document.querySelector('.tiles'));
 const promptForm = document.querySelector('.prompt');
 const prompt = createPrompt(promptForm, { onSubmit: (text) => chat.submit(text) });
 const chat = createChat({
-  thread: document.querySelector('.thread'),
   prompt,
   promptForm,
-  clearBtn: document.querySelector('.prompt-clear'),
+  name: document.querySelector('.name'),
+  ask: document.querySelector('.ask'),
+  answerBox: document.querySelector('.answer'),
   announcer: document.getElementById('announcer'),
 });
 
 // A click on Home's empty canvas is a click on the prompt: the whole page is
-// the invitation. Not on the conversation's own text, though, which is there
-// to be read and selected.
+// the invitation. Not on the answer's own text, though, which is there to be
+// read and selected.
 views.home.addEventListener('click', (e) => {
-  if (e.target.closest('.turn')) return;
+  if (e.target.closest('.answer-text')) return;
   if (!getSelection().isCollapsed) return;
   prompt.focus();
 });

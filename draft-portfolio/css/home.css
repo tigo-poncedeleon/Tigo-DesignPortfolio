@@ -35,9 +35,7 @@
      page colour. */
   isolation: isolate;
   background: var(--bg);
-  /* the width the thread uses too, so an echoed question wraps exactly as it
-     did when it was typed; the gap on the right is where "clear" sits */
-  margin-right: calc(150 * var(--u));
+
 }
 
 .prompt-label {
@@ -137,105 +135,106 @@
   .prompt-input { caret-color: auto; }
 }
 
-/* ---- "clear", once there is something to clear. It shares the status
-   row's cell and stands at its far end, on the tiles' right edge, in the
-   room the prompt leaves. ---- */
-.prompt-clear {
-  justify-self: end;
-  align-self: end;
-  color: var(--ink-2);
-  line-height: var(--lh);
-  padding: 0;
-  transition: color 0.2s ease;
+/* ---- the question, where the name was ----
+   Ask something and the question goes up into the name's place, in the light
+   blue bubble of the Messenger reference, and "clear" stands right beside it:
+   a pill the same height as the tiles, in the reply bubble's grey, with a
+   word on it and not just an ×, so it cannot be missed. The bubble is
+   exactly a tile's height at one line, so the question sits on the tiles'
+   line (58 to 126 in the frame). */
+.ask {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(12 * var(--u));
+  min-width: 0;
+  margin-top: calc(9 * var(--u));
+  visibility: hidden;
 }
-.prompt-clear[hidden] { display: none; }
-@media (hover: hover) {
-  .prompt-clear:hover { color: var(--ink); }
+.ask.is-on { visibility: visible; }
+
+.ask-bubble {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: calc(12.5 * var(--u)) calc(26 * var(--u));
+  border-radius: calc(34 * var(--u));
+  background: var(--bubble);
+  color: var(--bubble-ink);
+  transform-origin: left center;
+}
+/* two lines at most; a longer question is still whole for a screen reader */
+.ask-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
-/* ---- the conversation ----
-   It lives in the band, bottom-anchored over the prompt, and reads like a
-   shell's history: each question comes back as the whole line it was,
-   "ask me anything: …", with the label faded right back and the question in
-   grey, then the answer in ink under it. The newest line always sits just
-   above the prompt, and older ones scroll away under a fade at the top. */
+.ask-clear {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: var(--tile-h);
+  padding: 0 calc(22 * var(--u)) 0 var(--tile-pad);
+  border-radius: calc(34 * var(--u));
+  background: var(--pill);
+  color: var(--mark);
+  transform-origin: left center;
+  transition:
+    background-color 0.2s ease,
+    scale var(--t-pop) var(--spring-pop);
+}
+.ask-clear-icon { width: var(--icon); height: var(--icon); flex: none; }
+.ask-clear-word { padding-left: var(--pill-gap); }
+@media (hover: hover) {
+  .ask-clear:hover { background: color-mix(in oklab, var(--pill), var(--mark) 7%); }
+}
+.ask-clear:active { scale: 0.94; transition-duration: 0.2s, 90ms; }
+
+/* ---- the answer, under it ----
+   It writes itself from the top of the band down, on the left axis, in ink.
+   A long one scrolls inside the band, fading out at its foot. */
 .view-home { display: grid; }
 
-.thread {
+.answer {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;
-  margin-right: calc(150 * var(--u));
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(48 * var(--u)));
-  mask-image: linear-gradient(to bottom, transparent 0, #000 calc(48 * var(--u)));
+  padding-bottom: calc(48 * var(--u));
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48 * var(--u)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 48 * var(--u)), transparent);
 }
-.thread::-webkit-scrollbar { display: none; }
+.answer::-webkit-scrollbar { display: none; }
 
-.thread-inner {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding-bottom: calc(26 * var(--u));
-}
-
-.turn { position: relative; }
-.turn + .turn { margin-top: calc(34 * var(--u)); }
-
-.turn-q {
-  position: relative;
-  text-indent: var(--label-w);
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  color: var(--ink-2);
-}
-.turn-q-label {
-  position: absolute;
-  left: 0;
-  top: 0;
-  text-indent: 0;
-  white-space: nowrap;
-  color: var(--ink-4);
-}
-
-.turn-a {
+.answer-text {
   position: relative;
   max-width: 24em;
-  margin-top: calc(6 * var(--u));
   white-space: pre-line;
   overflow-wrap: break-word;
   color: var(--ink);
 }
-.turn-a a {
+.answer-text:empty { display: none; }
+.answer-text.is-thinking { display: block; min-height: calc(var(--lh) * 1em); }
+.answer-text.is-error { color: var(--ink-2); }
+.answer-text a {
   text-decoration: underline;
-  text-decoration-color: var(--blue);
+  text-decoration-color: var(--bubble);
   text-decoration-thickness: 0.18em;
   text-underline-offset: 0.12em;
   text-decoration-skip-ink: none;
 }
 @media (hover: hover) {
-  .turn-a a:hover { text-decoration-color: color-mix(in oklab, var(--blue), var(--mark) 25%); }
-}
-.turn-a.is-error { color: var(--ink-2); }
-
-@media (prefers-reduced-motion: reduce) {
-  /* a blinking caret is motion too (WCAG 2.2.2): under reduced motion it
-     stands still, solid */
-  .prompt-caret { animation: none; opacity: 1; }
-  .prompt-caret.is-gliding { transition: none; }
-}
-
-@media (max-width: 760px) {
-  .prompt, .thread { margin-right: calc(3.2em); }
+  .answer-text a:hover { text-decoration-color: color-mix(in oklab, var(--bubble), var(--mark) 25%); }
 }
 
 /* ---- the one caret, while it is up in the conversation ----
    The same 9 × 26 block as the prompt's, in plain ink (there is no letter
-   under it to invert). It waits at the head of the answer line breathing,
-   not blinking — a blink asks you for something; this is the other side
+   under it to invert). It waits at the head of the answer breathing, not
+   blinking — a blink asks you for something; this is the other side
    thinking. Then it rides the end of the answer as the words arrive. */
-.turn-caret {
+.answer-caret {
   position: absolute;
   left: 0;
   top: var(--caret-top);
@@ -244,22 +243,12 @@
   background: var(--ink);
   pointer-events: none;
 }
-.turn-caret.is-thinking { animation: caret-breathe 0.9s ease-in-out infinite alternate; }
-.turn-caret.is-riding { transition: translate 70ms linear; margin-left: calc(3 * var(--u)); }
-.turn-caret.is-flying { top: 0; }
+.answer-caret.is-thinking { animation: caret-breathe 0.9s ease-in-out infinite alternate; }
+.answer-caret.is-riding { transition: translate 70ms linear; margin-left: calc(3 * var(--u)); }
+.answer-caret.is-flying { top: 0; margin: 0; }
 @keyframes caret-breathe {
   from { opacity: 1; }
   to { opacity: 0.25; }
-}
-
-.turn-a.is-thinking { min-height: calc(var(--lh) * 1em); }
-
-/* The answer grows a line at a time: its height is set by chat.js to the
-   lines revealed so far, and it springs from one to the next. */
-.turn-a.is-growing {
-  overflow: clip;
-  overflow-clip-margin: calc(8 * var(--u));
-  transition: height var(--t-settle) var(--spring-settle);
 }
 
 /* Each word arrives: from nothing, a hair low and out of focus, into place.
@@ -271,7 +260,7 @@
    came out 1.8px too wide and broke early — and the whole answer re-wrapped
    the moment it was flattened back to text. As inline boxes the words break
    exactly where the finished text does. */
-.turn-a .w {
+.answer-text .w {
   position: relative;
   top: 0.12em;
   opacity: 0;
@@ -281,10 +270,20 @@
     top 0.52s var(--ease-rise),
     filter 0.52s var(--ease-rise);
 }
-.turn-a .w.on { opacity: 1; top: 0; filter: blur(0); }
-.turn-a.is-long .w { filter: none; }
+.answer-text .w.on { opacity: 1; top: 0; filter: blur(0); }
+.answer-text.is-long .w { filter: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .turn-caret.is-thinking { animation: none; opacity: 0.6; }
-  .turn-a.is-growing { transition: none; }
+  /* a blinking caret is motion too (WCAG 2.2.2): under reduced motion it
+     stands still, solid */
+  .prompt-caret { animation: none; opacity: 1; }
+  .prompt-caret.is-gliding { transition: none; }
+  .answer-caret.is-thinking { animation: none; opacity: 0.6; }
+  .ask-clear:active { scale: 1; }
+}
+
+@media (max-width: 760px) {
+  .ask { margin-top: 0; }
+  .ask-bubble { padding: 10px 18px; }
+  .ask-clear { padding-right: 14px; }
 }

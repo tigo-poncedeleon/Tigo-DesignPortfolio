@@ -26,7 +26,10 @@ export function playEntrance({ caret } = {}) {
   }
 
   const k = u();
-  const lines = document.querySelectorAll('.name-line');
+  // the name, or, when a conversation was open before a reload, the question
+  // standing in its place
+  const ask = document.querySelector('.ask.is-on');
+  const lines = ask ? [ask] : document.querySelectorAll('.name-line');
   const tiles = [...document.querySelectorAll('.tile')];
   const status = document.querySelector('.status');
   const running = [];

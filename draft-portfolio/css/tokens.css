@@ -31,10 +31,10 @@
      #fafafa. Text is the frame's #444343; the glyphs in the tiles are the
      design system's icon ink, #1e1e1e, a shade darker, and the draft keeps
      that distinction: --ink is for words, --mark is for drawn things (icons,
-     the pieces in the games). The three lighter inks are for the chat's
-     history, graded by what they are allowed to carry:
-       --ink-2  8a8989  3.3:1  only at 24px and up (the echoed question)
-       --ink-3  6f6e6e  4.9:1  any size (small print, "clear")
+     the pieces in the games). The three lighter inks are graded by what
+     they are allowed to carry:
+       --ink-2  8a8989  3.3:1  only at 24px and up (an answer that failed)
+       --ink-3  6f6e6e  4.9:1  any size (small print)
        --ink-4  b6b5b5         decoration only, always aria-hidden
      ---- */
   --bg: #fafafa;
@@ -43,6 +43,13 @@
   --ink-3: #6f6e6e;
   --ink-4: #b6b5b5;
   --mark: #1e1e1e;
+
+  /* The asked question's bubble and the clear button beside it, taken from
+     the Messenger reference: the sender's light blue, its near-black text,
+     and the reply bubble's grey for "clear". */
+  --bubble: #d0e4fd;
+  --bubble-ink: #111112;
+  --pill: #e9eaeb;
 
   /* The four tiles, left to right, and the page each one stands for. */
   --mint: #c9ffe2;    /* home */
