@@ -223,20 +223,23 @@
 
           <div class="composer-mood">
             <button type="button" class="composer-chip" aria-haspopup="menu" aria-expanded="false" aria-controls="mood-menu">
-              <svg class="composer-chip-face" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><path d="M9 9h.01" /><path d="M15 9h.01" /></svg>
+              <span class="mood-dot" aria-hidden="true"></span>
               <span class="composer-chip-word">friendly</span>
-              <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+              <svg class="composer-chip-caret" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
             </button>
             <div class="mood-menu" id="mood-menu" role="menu" aria-label="How the chat answers">
               <button type="button" role="menuitemradio" aria-checked="true" data-mood="friendly">
+                <span class="mood-dot" aria-hidden="true"></span>
                 <span class="mood-name">friendly</span><span class="mood-note">warm &amp; to the point</span>
                 <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
               </button>
               <button type="button" role="menuitemradio" aria-checked="false" data-mood="whimsical">
+                <span class="mood-dot" aria-hidden="true"></span>
                 <span class="mood-name">whimsical</span><span class="mood-note">answers with a wink</span>
                 <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
               </button>
               <button type="button" role="menuitemradio" aria-checked="false" data-mood="suspicious">
+                <span class="mood-dot" aria-hidden="true"></span>
                 <span class="mood-name">suspicious</span><span class="mood-note">trusts no question</span>
                 <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
               </button>

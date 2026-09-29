@@ -103,19 +103,21 @@
   --menu-shift: calc(-326 * var(--u));
 
   /* The composer (css/home.css): 64px tall when it opens, 44px round tools
-     with 24px icons, and the mood chip's smaller type. The words inside keep
-     the frame's 36px. */
+     with icons drawn at 32 (a 2px stroke), a 38px ink disc for send, and the
+     mood chip's smaller type. The words inside keep the frame's 36px. */
   --pill-h: calc(64 * var(--u));
   --pill-btn: calc(44 * var(--u));
-  --pill-icon: calc(24 * var(--u));
+  --pill-icon: calc(32 * var(--u));
   --pill-small: calc(22 * var(--u));
+  --send-disc: calc(38 * var(--u));
 
-  /* The caret, as fractions of the type size so it scales with it: the
-     frame's 9 × 26 block, 12px below the top of its line, which puts its
-     foot 3.7px under the baseline. */
+  /* The caret: the frame's 9px block, as tall as a capital, from the cap
+     line to the baseline. js/prompt.js measures both off the type and writes
+     them here in px; these em values (SF's cap height, and the baseline where
+     the engine puts it in a 43px line) only hold the place until it has. */
   --caret-w: 0.25em;
-  --caret-h: 0.7222em;
-  --caret-top: 0.3333em;
+  --caret-h: 0.7046em;
+  --caret-top: 0.2676em;
 
   /* ---- motion. The two springs the live site's rail runs on, taken over
      verbatim (live-portfolio/css/styles.css:163-180), because they are
@@ -206,7 +208,8 @@
     --menu-shift: 0px;
     --pill-h: 52px;
     --pill-btn: 40px;
-    --pill-icon: 20px;
+    --pill-icon: 26px;
     --pill-small: 16px;
+    --send-disc: 32px;
   }
 }

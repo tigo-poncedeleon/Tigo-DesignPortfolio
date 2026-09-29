@@ -132,6 +132,7 @@ export function createComposer(form, { prompt, onSend }) {
 
   function paintMood() {
     chipWord.textContent = currentMood;
+    chip.dataset.mood = currentMood; // the chip's dot takes the mood's pastel
     chip.setAttribute('aria-label', 'Mood: ' + currentMood);
     for (const o of options) o.setAttribute('aria-checked', String(o.dataset.mood === currentMood));
   }

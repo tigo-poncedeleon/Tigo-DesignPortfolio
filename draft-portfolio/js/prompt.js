@@ -117,6 +117,37 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   new ResizeObserver(schedule).observe(form);
   document.fonts?.ready.then(schedule);
 
+  // ---- the block's height, from the type itself ----
+  // The block spans exactly what a capital letter spans: from the cap line
+  // down to the baseline, so it stands beside "Ask" like one more letter.
+  // Both are measured rather than written as em. The cap height is the
+  // font's own (0.7046em for SF), but where the baseline lands inside a 43px
+  // line is the engine's business: Chrome puts it on a whole pixel, 35 of 43
+  // at 36px, not the 34.3 the font's metrics would say. The block used to be
+  // 0.72em hung 0.33em down, which started 2.4px under the capitals and ran
+  // 3px past the baseline. The numbers are written on the root, where the
+  // answer's caret (the same block, riding the same type) reads them too.
+  const field = form.querySelector('.prompt-field');
+  function measureType() {
+    const size = parseFloat(getComputedStyle(field).fontSize);
+    if (!size) return;
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;pointer-events:none';
+    probe.innerHTML = 'H<span style="display:inline-block;width:0;height:0"></span>';
+    field.append(probe);
+    const baseline = probe.lastChild.getBoundingClientRect().top - probe.getBoundingClientRect().top;
+    probe.remove();
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = `${getComputedStyle(field).fontWeight} ${size}px ${getComputedStyle(field).fontFamily}`;
+    const cap = ctx.measureText('H').actualBoundingBoxAscent || size * 0.7046;
+    const root = document.documentElement.style;
+    root.setProperty('--caret-top', (baseline - cap).toFixed(2) + 'px');
+    root.setProperty('--caret-h', cap.toFixed(2) + 'px');
+    schedule();
+  }
+  new ResizeObserver(measureType).observe(field);
+  document.fonts?.ready.then(measureType);
+
   // Enter hands over to the composer, which knows whether there is a photo
   // too, and so whether an empty field still has something to send.
   function submit() {
