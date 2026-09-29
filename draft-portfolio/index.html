@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- A draft, kept on one Mac. It is not deployed (see README.md), and if it
+       ever were served somewhere by accident it asks not to be indexed. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Tigo Ponce de León</title>
+  <meta name="theme-color" content="#fafafa" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/nav.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/work.css" />
+  <link rel="stylesheet" href="css/about.css" />
+  <link rel="stylesheet" href="css/play.css" />
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div class="frame">
+
+    <header class="masthead">
+      <a class="name" href="#" data-enter="name">
+        <span class="name-line">Tigo Ponce de León</span>
+        <span class="name-line">Design + CS @ UChicago</span>
+      </a>
+
+      <!-- The four tiles. The glyphs are Lucide's (ISC licence,
+           lucide.dev): house, briefcase, gamepad-2 and user-round, the
+           same Feather family as the Simple Design System icons in the
+           Figma frame. They are drawn in a 28-unit box around the usual
+           24, at a 2.333 stroke, which at 48px is exactly the frame's
+           render: 4px strokes, and a compass ring of radius 17.13. -->
+      <nav class="tiles" aria-label="Pages">
+        <a class="tile" href="#" data-route="home" style="--tile-bg: var(--mint)" data-enter="tile">
+          <svg class="tile-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path pathLength="1" d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+            <path pathLength="1" d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          </svg>
+          <span class="tile-label"><span class="tile-word">home</span></span>
+        </a>
+        <a class="tile" href="#work" data-route="work" style="--tile-bg: var(--yellow)" data-enter="tile">
+          <svg class="tile-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path pathLength="1" d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+            <rect pathLength="1" width="20" height="14" x="2" y="6" rx="2" />
+          </svg>
+          <span class="tile-label"><span class="tile-word">work</span></span>
+        </a>
+        <a class="tile" href="#play" data-route="play" style="--tile-bg: var(--pink)" data-enter="tile">
+          <svg class="tile-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line pathLength="1" x1="6" x2="10" y1="11" y2="11" />
+            <line pathLength="1" x1="8" x2="8" y1="9" y2="13" />
+            <line pathLength="1" x1="15" x2="15.01" y1="12" y2="12" />
+            <line pathLength="1" x1="18" x2="18.01" y1="10" y2="10" />
+            <path pathLength="1" d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
+          </svg>
+          <span class="tile-label"><span class="tile-word">play</span></span>
+        </a>
+        <a class="tile" href="#about" data-route="about" style="--tile-bg: var(--blue)" data-enter="tile">
+          <svg class="tile-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.333" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle pathLength="1" cx="12" cy="8" r="5" />
+            <path pathLength="1" d="M20 21a8 8 0 0 0-16 0" />
+          </svg>
+          <span class="tile-label"><span class="tile-word">about</span></span>
+        </a>
+      </nav>
+    </header>
+
+    <main class="band">
+
+      <!-- HOME: the band is empty in the frame, and stays empty until you ask
+           something. Then it holds the conversation, newest line lowest. -->
+      <section class="view view-home" data-view="home" aria-labelledby="home-title">
+        <h1 class="sr-only" id="home-title" tabindex="-1">Tigo Ponce de León</h1>
+        <div class="thread" role="log" aria-live="off" aria-label="Conversation">
+          <div class="thread-inner"></div>
+        </div>
+      </section>
+
+      <!-- WORK: the app icons and nothing else. The line at the bottom says
+           which is which as you point at them. -->
+      <section class="view view-work" data-view="work" aria-labelledby="work-title" hidden>
+        <h1 class="sr-only" id="work-title" tabindex="-1">Work</h1>
+        <ul class="apps" role="list">
+          <li>
+            <a class="app" data-app="vicino" href="https://tigoponcedeleon.com/vicino.html" target="_blank" rel="noopener">
+              <span class="app-icon" data-rise><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <span class="sr-only">Vicino AI — UX engineer intern, 2026 (opens the case study in a new tab)</span>
+            </a>
+          </li>
+          <li>
+            <a class="app" data-app="pantrypal" href="https://tigoponcedeleon.com/pantrypal.html" target="_blank" rel="noopener">
+              <span class="app-icon" data-rise><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <span class="sr-only">PantryPal — product designer, 2025–26, on the App Store (opens the case study in a new tab)</span>
+            </a>
+          </li>
+          <li>
+            <a class="app" data-app="nextlevel" href="https://tigoponcedeleon.com/nextlevel.html" target="_blank" rel="noopener">
+              <span class="app-icon" data-rise><img src="assets/work/icon-nextlevel.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <span class="sr-only">Next Level Drone Cleaning — founding visual designer, 2025 (opens the case study in a new tab)</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- PLAY: three courts, each one playing itself until you pick it up. -->
+      <section class="view view-play" data-view="play" aria-labelledby="play-title" hidden>
+        <h1 class="sr-only" id="play-title" tabindex="-1">Play</h1>
+        <ul class="games" role="list">
+          <li><a class="game-card" data-game="pong" href="#play/pong" style="--card-bg: var(--pink)" data-rise>
+            <canvas class="game-demo" aria-hidden="true"></canvas>
+            <span class="sr-only">Pong — Atari, 1972</span>
+          </a></li>
+          <li><a class="game-card" data-game="snake" href="#play/snake" style="--card-bg: var(--mint)" data-rise>
+            <canvas class="game-demo" aria-hidden="true"></canvas>
+            <span class="sr-only">Snake — Nokia, 1997</span>
+          </a></li>
+          <li><a class="game-card" data-game="flappy" href="#play/flappy" style="--card-bg: var(--blue)" data-rise>
+            <canvas class="game-demo" aria-hidden="true"></canvas>
+            <span class="sr-only">Flappy Bird — dotGears, 2013</span>
+          </a></li>
+        </ul>
+
+        <!-- The stage: a card, grown to fill the band, with a real game in it. -->
+        <div class="stage" role="group" aria-roledescription="game" tabindex="-1" hidden>
+          <canvas class="stage-canvas"></canvas>
+          <div class="hud" aria-hidden="true">
+            <p class="hud-center"></p>
+          </div>
+          <button type="button" class="stage-close" aria-label="Close the game">
+            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.333" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+          <p class="sr-only stage-live" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- ABOUT: three sentences and a photo, for now a placeholder. Put a
+           picture at assets/me.jpg and it takes the placeholder's place. -->
+      <section class="view view-about" data-view="about" aria-labelledby="about-title" hidden>
+        <h1 class="sr-only" id="about-title" tabindex="-1">About</h1>
+        <div class="about-text">
+          <p data-rise>I’m a product design engineer from Portland, Oregon, studying Media Arts &amp; Design and Computer Science at UChicago.</p>
+          <p data-rise>I believe software should be useful and pleasurable.</p>
+          <p data-rise>Right now I’m a UX engineer intern at Vicino AI.</p>
+        </div>
+        <figure class="portrait" data-rise>
+          <svg class="portrait-glyph" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="5" />
+            <path d="M20 21a8 8 0 0 0-16 0" />
+          </svg>
+          <img class="portrait-photo" src="assets/me.jpg" alt="Tigo Ponce de León" loading="lazy" decoding="async" onerror="this.remove()" />
+        </figure>
+      </section>
+
+    </main>
+
+    <!-- The frame's third anchor: one line at the bottom-left, on every page. -->
+    <footer class="status">
+      <div class="status-home" data-status="home">
+        <form class="prompt" autocomplete="off">
+          <label class="prompt-label" for="ask">ask me anything:</label>
+          <textarea id="ask" class="prompt-input" rows="1" maxlength="300" enterkeyhint="send"
+                    spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+                    aria-describedby="ask-hint"></textarea>
+          <span class="prompt-caret" aria-hidden="true"></span>
+          <div class="prompt-mirror" aria-hidden="true"></div>
+          <span class="sr-only" id="ask-hint">Press Enter to send.</span>
+        </form>
+        <button type="button" class="prompt-clear" hidden>clear</button>
+      </div>
+
+      <p class="status-line status-work" data-status="work" hidden>
+        <span class="sl sl-default">selected work: vicino ai, pantrypal, next level</span>
+        <span class="sl sl-vicino" aria-hidden="true">vicino ai: ux engineer intern, 2026</span>
+        <span class="sl sl-pantrypal" aria-hidden="true">pantrypal: product designer, 2025–26, on the app store</span>
+        <span class="sl sl-nextlevel" aria-hidden="true">next level: founding visual designer, 2025</span>
+      </p>
+      <p class="status-line status-play" data-status="play" hidden>
+        <span class="sl sl-default">play: three arcade classics, rebuilt by hand</span>
+        <span class="sl sl-pong" aria-hidden="true">pong: atari, 1972<span class="sl-best" data-best="pong"></span></span>
+        <span class="sl sl-snake" aria-hidden="true">snake: nokia, 1997<span class="sl-best" data-best="snake"></span></span>
+        <span class="sl sl-flappy" aria-hidden="true">flappy bird: dotgears, 2013<span class="sl-best" data-best="flappy"></span></span>
+        <span class="sl sl-controls" aria-hidden="true"></span>
+      </p>
+      <p class="status-line status-about" data-status="about" hidden>
+        <a href="mailto:tigoponcedeleon@gmail.com">email</a><span class="sep" aria-hidden="true"> · </span><a href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener">linkedin</a><span class="sep" aria-hidden="true"> · </span><a href="https://github.com/tigo-poncedeleon" target="_blank" rel="noopener">github</a><span class="sep" aria-hidden="true"> · </span><a href="https://tigoponcedeleon.com/PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">résumé</a>
+      </p>
+    </footer>
+
+    <p class="sr-only" id="announcer" aria-live="polite"></p>
+  </div>
+</body>
+</html>

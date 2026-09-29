@@ -1,0 +1,144 @@
+/* ==========================================================================
+   play.css — three courts, and the stage one of them becomes.
+
+   Each card IS its court: the pastel is the playing surface, and the game on
+   it is drawn in the icons' ink, so a card reads as a big tile with a moving
+   picture on it. Pong is on Play's own pink; Snake takes Home's mint and
+   Flappy Bird the sky of About's blue, so the three are told apart at a
+   glance. (That the colours are borrowed is a choice to revisit.)
+   ========================================================================== */
+
+.view-play {
+  display: grid;
+  align-content: center;
+  padding-bottom: calc(40 * var(--u));
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(32 * var(--u));
+  list-style: none;
+}
+
+.game-card {
+  --card-bg: var(--pink);
+  position: relative;
+  display: block;
+  height: calc(260 * var(--u));
+  border-radius: calc(28 * var(--u));
+  background: var(--card-bg);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.04);
+  transition:
+    translate var(--t-pop) var(--spring-pop),
+    scale var(--t-pop) var(--spring-pop),
+    opacity 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.game-card canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@media (hover: hover) {
+  .game-card:hover {
+    translate: 0 calc(-4 * var(--u));
+    box-shadow:
+      inset 0 0 0 1px rgb(30 30 30 / 0.04),
+      0 calc(14 * var(--u)) calc(30 * var(--u)) rgb(30 30 30 / 0.08);
+  }
+}
+.game-card:active { scale: 0.98; transition-duration: 90ms; }
+.games:has(.game-card:is(:hover, :focus-visible)) .game-card:not(:hover, :focus-visible) { opacity: 0.6; }
+
+/* ---- the stage: a card grown to fill the band ---- */
+.stage {
+  --card-bg: var(--pink);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* air between the stage and the bottom line, which now carries the game */
+  height: calc(100% - 24 * var(--u));
+  border-radius: calc(36 * var(--u));
+  background: var(--card-bg);
+  overflow: hidden;
+  z-index: 3;
+  box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.04);
+}
+.stage[hidden] { display: none; }
+.stage:focus { outline: none; }
+
+.stage-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  touch-action: none;
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* The 3, 2, 1, in the middle of the court at twice the size. Everything
+   else a game has to say goes on the bottom line (js/play/play.js). */
+.hud-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  font-size: 2em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mark);
+}
+
+.stage-close {
+  position: absolute;
+  top: calc(16 * var(--u));
+  right: calc(16 * var(--u));
+  width: calc(56 * var(--u));
+  height: calc(56 * var(--u));
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--mark);
+  transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+}
+.stage-close svg { width: calc(32 * var(--u)); height: calc(32 * var(--u)); }
+@media (hover: hover) {
+  .stage-close:hover { background: color-mix(in oklab, var(--card-bg), var(--mark) 7%); }
+}
+.stage-close:active { scale: 0.92; }
+
+/* ---- the bottom line on Play: a game's credit on hover, its controls while
+   it is open ---- */
+html:has(.game-card[data-game='pong']:is(:hover, :focus-visible)) .sl-pong,
+html:has(.game-card[data-game='snake']:is(:hover, :focus-visible)) .sl-snake,
+html:has(.game-card[data-game='flappy']:is(:hover, :focus-visible)) .sl-flappy,
+.status-play[data-open] .sl-controls {
+  opacity: 1;
+  filter: none;
+  translate: 0 0;
+}
+html:has(.game-card:is(:hover, :focus-visible)) .status-play .sl-default,
+.status-play[data-open] .sl:not(.sl-controls) {
+  opacity: 0;
+  filter: blur(3px);
+  translate: 0 calc(-8 * var(--u));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card, .stage-close { transition-property: opacity, box-shadow, background-color; }
+  .game-card:hover { translate: 0 0; }
+}
+
+@media (max-width: 760px) {
+  .games { grid-template-columns: 1fr; gap: 16px; }
+  .game-card { height: 180px; }
+  .view-play { align-content: start; overflow-y: auto; }
+}

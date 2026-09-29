@@ -14,6 +14,13 @@
       "runtimeArgs": ["-c", "python3 -m http.server ${PORT:-8792} --directory old-portfolio"],
       "port": 8792,
       "autoPort": true
+    },
+    {
+      "name": "draft-portfolio",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "python3 draft-portfolio/tools/serve.py ${PORT:-8793}"],
+      "port": 8793,
+      "autoPort": true
     }
   ]
 }

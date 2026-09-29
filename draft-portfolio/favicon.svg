@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- the four tiles, 2×2, each with a faint ink hairline so the paler ones
+       still read on a light tab bar -->
+  <g stroke="#1e1e1e" stroke-opacity=".16" stroke-width="1">
+    <rect x="1.5" y="1.5" width="13" height="13" rx="4" fill="#c9ffe2" />
+    <rect x="17.5" y="1.5" width="13" height="13" rx="4" fill="#fffec9" />
+    <rect x="1.5" y="17.5" width="13" height="13" rx="4" fill="#ffc9c9" />
+    <rect x="17.5" y="17.5" width="13" height="13" rx="4" fill="#c9f0ff" />
+  </g>
+</svg>

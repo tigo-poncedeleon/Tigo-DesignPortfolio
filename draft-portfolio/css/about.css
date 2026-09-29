@@ -1,0 +1,71 @@
+/* ==========================================================================
+   about.css — three sentences and a photograph.
+
+   The words sit on the left axis at the one size the whole frame uses, and
+   the photo stands at the right, its right edge on the tile row's right edge,
+   its top level with the first line. Until there is a photo, the placeholder
+   is About's own blue with the about glyph in it, so it reads as a space kept
+   for something rather than a grey box that forgot to load. A picture saved
+   as assets/me.jpg covers it: the <img> removes itself if the file is not
+   there.
+   ========================================================================== */
+
+.view-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: calc(64 * var(--u));
+  align-items: start;
+  align-content: center;
+  padding-bottom: calc(40 * var(--u));
+}
+
+.about-text { max-width: 20em; }
+.about-text p + p { margin-top: 0.45em; }
+
+.portrait {
+  position: relative;
+  width: calc(296 * var(--u));
+  aspect-ratio: 4 / 5;
+  border-radius: calc(28 * var(--u));
+  overflow: hidden;
+  background: var(--blue);
+  display: grid;
+  place-items: center;
+  /* a hairline, so the pale blue holds its edge on the pale page */
+  box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.05);
+}
+.portrait-glyph {
+  width: 30%;
+  color: color-mix(in oklab, var(--blue), var(--mark) 22%);
+}
+.portrait-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- the bottom line on About: where to find him ---- */
+.status-about a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.18em;
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: none;
+  transition: text-decoration-color 0.2s ease;
+}
+@media (hover: hover) {
+  .status-about a:hover { text-decoration-color: var(--blue); }
+}
+.status-about .sep { color: var(--ink-4); }
+
+@media (max-width: 760px) {
+  .view-about {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+    align-content: start;
+    overflow-y: auto;
+  }
+  .portrait { width: min(60vw, 240px); grid-row: 1; }
+}

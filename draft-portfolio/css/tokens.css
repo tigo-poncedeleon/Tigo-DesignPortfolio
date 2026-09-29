@@ -1,0 +1,174 @@
+/* ==========================================================================
+   tokens.css — every number the draft is built from, in one place.
+
+   The draft is drawn from ONE Figma frame, "AI-Opening-Screen" (1280×832),
+   and everything on the page is measured in that frame's pixels. --u is one
+   of them. At a 1280-wide window it is exactly 1px, so the page can be laid
+   over the Figma render and checked to the pixel (?overlay, tools/overlay.js).
+   Elsewhere it scales, clamped to between 0.75 and 1.25 of the frame.
+
+   It is the SMALLER of the width scale and a height scale taken against 700,
+   not 832. 1280×832 is a screen, not a viewport: on a 13" laptop the browser's
+   own chrome takes over a hundred pixels, so the window you actually look at
+   is about 1280×700. Scaling by 832 would shrink the type to 30px exactly
+   where the design is meant to be seen. Against 700, that window is the frame
+   at 1:1, and a genuinely short window still gets everything onto the glass.
+   ========================================================================== */
+
+/* Registered as a length, so it computes to plain px once, at the root, and
+   script can read it back resolved (js/motion.js u()) instead of getting the
+   clamp() expression as text. */
+@property --u {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 1px;
+}
+
+:root {
+  --u: clamp(0.75px, min(100vw / 1280, 100svh / 700), 1.25px);
+
+  /* ---- colour. The frame paints rgba(240,240,240,.3) over white, which is
+     #fafafa. Text is the frame's #444343; the glyphs in the tiles are the
+     design system's icon ink, #1e1e1e, a shade darker, and the draft keeps
+     that distinction: --ink is for words, --mark is for drawn things (icons,
+     the pieces in the games). The three lighter inks are for the chat's
+     history, graded by what they are allowed to carry:
+       --ink-2  8a8989  3.3:1  only at 24px and up (the echoed question)
+       --ink-3  6f6e6e  4.9:1  any size (small print, "clear")
+       --ink-4  b6b5b5         decoration only, always aria-hidden
+     ---- */
+  --bg: #fafafa;
+  --ink: #444343;
+  --ink-2: #8a8989;
+  --ink-3: #6f6e6e;
+  --ink-4: #b6b5b5;
+  --mark: #1e1e1e;
+
+  /* The four tiles, left to right, and the page each one stands for. */
+  --mint: #c9ffe2;    /* home */
+  --yellow: #fffec9;  /* work */
+  --pink: #ffc9c9;    /* play */
+  --blue: #c9f0ff;    /* about */
+
+  /* ---- type. One size, like the frame: everything is 36 Figma px. SF Pro
+     comes from the system (-apple-system), as on the live site; naming it
+     directly finds nothing on a Mac, because the system face is not
+     installed as "SF Pro". Line height is pinned to the frame's 43/36 rather
+     than left as `normal`, which each engine resolves from the font's own
+     metrics and not always the same way.
+
+     The tracking is measured, not guessed. The browser's SF at 36px sets
+     "Design + CS @ UChicago" 2.3% wider than Figma does, the same 2.3% on
+     every line, and -0.012em takes exactly that back out. ---- */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --fs: calc(36 * var(--u));
+  --lh: 1.1944;
+  --track: -0.012em;
+
+  /* ---- the frame's measurements, in frame pixels ---- */
+  --gutter-l: calc(74 * var(--u));     /* the name, the prompt, everything on the left axis */
+  --gutter-r: calc(102 * var(--u));    /* the tile row's right edge sits at 1178 */
+  --top: calc(49 * var(--u));          /* the name block's first line */
+  --bottom: calc(75 * var(--u));       /* under the prompt's line box */
+  --band-top: calc(168 * var(--u));    /* where page content may begin */
+
+  --tile-w: calc(70 * var(--u));
+  --tile-h: calc(68 * var(--u));
+  --tile-r: calc(20 * var(--u));
+  --tile-gap: calc(34 / 3 * var(--u)); /* 11, 12, 11 in the frame */
+  --tile-pad: calc(11 * var(--u));     /* (70 - 48) / 2 */
+  --icon: calc(48 * var(--u));
+  --pill-gap: calc(6 * var(--u));      /* icon box to word, when a tile opens */
+  --pill-end: calc(10 * var(--u));     /* word to the pill's end */
+
+  /* The caret, as fractions of the type size so it scales with it: 9 × 26 in
+     the frame, 260px after the text starts (7.22em) and 12px below the top of
+     its line, which puts its foot 3.7px under the baseline. */
+  --label-w: 7.2222em;
+  --caret-w: 0.25em;
+  --caret-h: 0.7222em;
+  --caret-top: 0.3333em;
+
+  /* ---- motion. The two springs the live site's rail runs on, taken over
+     verbatim (live-portfolio/css/styles.css:163-180), because they are
+     already tuned to read as weight rather than wobble:
+       settle  ζ=0.745, 3% over, peak at 0.35s, 0.56s: things ARRIVING
+       out     ζ=1, critically damped, 0.44s: things LEAVING. Nothing is
+               landing, so there is nothing to rebound off.
+     And two more from the same equation (a step response, sampled every
+     14ms so the piecewise line has no corner the eye can find):
+       pop     ζ=0.55, 12.6% over: small solid things appearing, and presses
+       snap    ζ=0.82, 1% over, 0.38s: small UI answering a hand
+     js/motion.js reads these same properties, so the WAAPI choreography and
+     the CSS transitions share one set of curves. ---- */
+  --spring-settle: linear(0, 0.0166, 0.0602, 0.1228, 0.1977, 0.2795, 0.3638,
+                          0.4474, 0.5278, 0.6032, 0.6725, 0.735, 0.7905,
+                          0.8388, 0.8802, 0.9152, 0.9442, 0.9678, 0.9866,
+                          1.0011, 1.012, 1.0198, 1.0251, 1.0282, 1.0297,
+                          1.0299, 1.0291, 1.0275, 1.0255, 1.0232, 1.0207,
+                          1.0181, 1.0157, 1.0133, 1.0111, 1.0091, 1.0073,
+                          1.0057, 1.0044, 1.0032, 1);
+  --t-settle: 560ms;
+  --spring-out: linear(0, 0.033, 0.1101, 0.2077, 0.311, 0.4114, 0.504,
+                       0.5867, 0.6586, 0.7202, 0.7721, 0.8154, 0.8512,
+                       0.8805, 0.9044, 0.9238, 0.9394, 0.9519, 0.962,
+                       0.97, 0.9764, 0.9814, 0.9854, 0.9886, 0.991,
+                       0.993, 0.9945, 0.9957, 0.9967, 0.9974, 0.998,
+                       0.9984, 1);
+  --t-out: 440ms;
+  --spring-pop: linear(0, 0.0262, 0.0951, 0.1935, 0.3095, 0.4333, 0.5569,
+                       0.674, 0.7804, 0.8732, 0.9508, 1.013, 1.0601, 1.0933,
+                       1.1141, 1.1244, 1.126, 1.121, 1.111, 1.0978, 1.0828,
+                       1.0671, 1.0516, 1.0372, 1.0242, 1.013, 1.0038, 0.9965,
+                       0.991, 0.9873, 0.9851, 0.9841, 0.9842, 0.985, 0.9864,
+                       0.9882, 0.9901, 0.9921, 0.994, 0.9958, 1);
+  --t-pop: 560ms;
+  --spring-snap: linear(0, 0.0404, 0.1363, 0.2585, 0.3873, 0.5105, 0.6211,
+                        0.716, 0.7943, 0.8567, 0.905, 0.9411, 0.9672, 0.9854,
+                        0.9974, 1.0049, 1.009, 1.0108, 1.0111, 1.0104, 1.0092,
+                        1.0078, 1.0064, 1.0051, 1.0039, 1.0029, 1.0021, 1);
+  --t-snap: 380ms;
+
+  /* The plain curves, for fades and exits: a fade has no mass to spring. */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-draw: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-exit: 180ms;
+  --t-blink: 1.06s;   /* the live caret's period, and the Mac's */
+}
+
+/* A browser too old for linear() gets the live site's nearest cubics: a mild
+   back-ease for arrivals and a soft ease-out for leaving. Neither lands the way
+   a sampled spring does, but neither is jerky, and that is what matters. */
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring-settle: cubic-bezier(0.34, 1.2, 0.5, 1);
+    --spring-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --spring-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --spring-snap: cubic-bezier(0.34, 1.2, 0.5, 1);
+  }
+}
+
+/* ---- the narrow layout. Below 760px the frame's proportions stop working
+   (four 70px tiles and a 36px name do not share a 390px row), so the header
+   stacks: tiles on top, the name under them. The type leaves --u and is sized
+   in px/vw, so it still answers to the browser's zoom. ---- */
+@media (max-width: 760px) {
+  :root {
+    --u: 1px;
+    --fs: clamp(20px, 5.4vw, 28px);
+    --gutter-l: 20px;
+    --gutter-r: 20px;
+    --top: 20px;
+    --bottom: 28px;
+    --band-top: 0px;
+    --tile-w: 50px;
+    --tile-h: 48px;
+    --tile-r: 14px;
+    --tile-gap: 8px;
+    --tile-pad: 8px;
+    --icon: 34px;
+    --pill-gap: 4px;
+    --pill-end: 8px;
+  }
+}

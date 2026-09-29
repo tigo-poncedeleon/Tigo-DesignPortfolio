@@ -1,0 +1,290 @@
+/* ==========================================================================
+   home.css — the bottom line, the block caret, and the conversation.
+
+   THE BOTTOM LINE is the frame's third anchor, and it is on every page: on
+   Home it is the prompt, and elsewhere it is one line saying what the page
+   is. They share a cell in the status row, so a page change crossfades one
+   line into the next without anything moving.
+
+   THE PROMPT is a real <textarea>. It draws its own text, so clicking to
+   place the cursor, dragging a selection, an IME's underline, paste and the
+   iOS loupe all behave natively. The only thing drawn by hand is the caret.
+   Its first line is indented past the label, the textarea-caret-position way,
+   so a long question wraps under the label like a shell line.
+   ========================================================================== */
+
+.status { display: grid; align-items: end; }
+.status > *,
+.status-home > * { grid-area: 1 / 1; min-width: 0; }
+.status-home { display: grid; align-items: end; }
+.status > [hidden], .status-home > [hidden] { display: none; }
+
+.status-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- the prompt ---- */
+.prompt {
+  position: relative;
+  /* The caret is blended by `difference` so it can sit over a letter like a
+     terminal's block. Blending needs a backdrop. Without an opaque one, any
+     opacity animation on an ancestor makes an isolation group over nothing,
+     and the caret flashes pale grey. So the prompt is its own group, on the
+     page colour. */
+  isolation: isolate;
+  background: var(--bg);
+  /* the width the thread uses too, so an echoed question wraps exactly as it
+     did when it was typed; the gap on the right is where "clear" sits */
+  margin-right: calc(150 * var(--u));
+}
+
+.prompt-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  cursor: text;
+  z-index: 1;
+}
+
+.prompt-input {
+  display: block;
+  width: 100%;
+  height: calc(var(--lh) * 1em);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  line-height: var(--lh);
+  text-indent: var(--label-w);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  resize: none;
+  overflow: hidden;
+  caret-color: transparent;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* the native selection is the only highlight; the block hides while there is one */
+.prompt-input::selection { background: var(--blue); color: var(--mark); }
+
+/* A twin of the textarea, laid out the same way and never seen. It holds the
+   text up to the cursor, then a span with the rest, and the span's offset is
+   where the caret goes. Same width, same indent, same wrapping, so the two
+   break lines in the same places. */
+.prompt-mirror {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  visibility: hidden;
+  pointer-events: none;
+  text-indent: var(--label-w);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* ---- the caret. 9 × 26 in the frame, 260 in and 12 down, as fractions of
+   the type. #b6b7b7 under `difference` comes out as exactly #444343 over the
+   page (250 − 182 = 68, 250 − 183 = 67), and over a letter it inverts the
+   letter to #727474 — the block cursor of a terminal, not a slab over the
+   text. ---- */
+.prompt-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--caret-w);
+  height: var(--caret-h);
+  translate: var(--caret-x, var(--label-w)) calc(var(--caret-y, 0px) + var(--caret-top));
+  background: #b6b7b7;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 2;
+  animation: caret-blink var(--t-blink) linear infinite;
+}
+.prompt-caret.is-gliding { transition: translate 90ms var(--ease-rise); }
+
+/* The live caret's rhythm: 1.06s, lit for the first half. Its edges are
+   softened to about 60ms rather than cut with steps(1). At this size a hard
+   cut reads as a flicker; a 60ms fade still reads as a blink. */
+@keyframes caret-blink {
+  0%, 47% { opacity: 1; }
+  53%, 94% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Real terminals hold the cursor solid while you type. prompt.js sets this
+   on every keystroke and takes it off 530ms after the last one, and taking it
+   off restarts the blink from lit. */
+.prompt-caret.is-typing { animation: none; opacity: 1; }
+.prompt-caret.is-hidden { visibility: hidden; }
+
+/* While a reply is on its way the caret is not here: it has gone up into the
+   conversation with the question (chat.js). The prompt still takes typing,
+   and the moment there is something in it the caret is back where it is
+   needed. .is-away covers its flight home, when it is on its way down. */
+.prompt.is-waiting:not(.has-text) .prompt-caret,
+.prompt-caret.is-away { visibility: hidden; }
+
+/* A Windows high-contrast theme repaints everything in its own colours, and a
+   blended block would vanish. There the native caret comes back. */
+@media (forced-colors: active) {
+  .prompt-caret { display: none; }
+  .prompt-input { caret-color: auto; }
+}
+
+/* ---- "clear", once there is something to clear. It shares the status
+   row's cell and stands at its far end, on the tiles' right edge, in the
+   room the prompt leaves. ---- */
+.prompt-clear {
+  justify-self: end;
+  align-self: end;
+  color: var(--ink-2);
+  line-height: var(--lh);
+  padding: 0;
+  transition: color 0.2s ease;
+}
+.prompt-clear[hidden] { display: none; }
+@media (hover: hover) {
+  .prompt-clear:hover { color: var(--ink); }
+}
+
+/* ---- the conversation ----
+   It lives in the band, bottom-anchored over the prompt, and reads like a
+   shell's history: each question comes back as the whole line it was,
+   "ask me anything: …", with the label faded right back and the question in
+   grey, then the answer in ink under it. The newest line always sits just
+   above the prompt, and older ones scroll away under a fade at the top. */
+.view-home { display: grid; }
+
+.thread {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  margin-right: calc(150 * var(--u));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(48 * var(--u)));
+  mask-image: linear-gradient(to bottom, transparent 0, #000 calc(48 * var(--u)));
+}
+.thread::-webkit-scrollbar { display: none; }
+
+.thread-inner {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: calc(26 * var(--u));
+}
+
+.turn { position: relative; }
+.turn + .turn { margin-top: calc(34 * var(--u)); }
+
+.turn-q {
+  position: relative;
+  text-indent: var(--label-w);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: var(--ink-2);
+}
+.turn-q-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-indent: 0;
+  white-space: nowrap;
+  color: var(--ink-4);
+}
+
+.turn-a {
+  position: relative;
+  max-width: 24em;
+  margin-top: calc(6 * var(--u));
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  color: var(--ink);
+}
+.turn-a a {
+  text-decoration: underline;
+  text-decoration-color: var(--blue);
+  text-decoration-thickness: 0.18em;
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: none;
+}
+@media (hover: hover) {
+  .turn-a a:hover { text-decoration-color: color-mix(in oklab, var(--blue), var(--mark) 25%); }
+}
+.turn-a.is-error { color: var(--ink-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* a blinking caret is motion too (WCAG 2.2.2): under reduced motion it
+     stands still, solid */
+  .prompt-caret { animation: none; opacity: 1; }
+  .prompt-caret.is-gliding { transition: none; }
+}
+
+@media (max-width: 760px) {
+  .prompt, .thread { margin-right: calc(3.2em); }
+}
+
+/* ---- the one caret, while it is up in the conversation ----
+   The same 9 × 26 block as the prompt's, in plain ink (there is no letter
+   under it to invert). It waits at the head of the answer line breathing,
+   not blinking — a blink asks you for something; this is the other side
+   thinking. Then it rides the end of the answer as the words arrive. */
+.turn-caret {
+  position: absolute;
+  left: 0;
+  top: var(--caret-top);
+  width: var(--caret-w);
+  height: var(--caret-h);
+  background: var(--ink);
+  pointer-events: none;
+}
+.turn-caret.is-thinking { animation: caret-breathe 0.9s ease-in-out infinite alternate; }
+.turn-caret.is-riding { transition: translate 70ms linear; margin-left: calc(3 * var(--u)); }
+.turn-caret.is-flying { top: 0; }
+@keyframes caret-breathe {
+  from { opacity: 1; }
+  to { opacity: 0.25; }
+}
+
+.turn-a.is-thinking { min-height: calc(var(--lh) * 1em); }
+
+/* The answer grows a line at a time: its height is set by chat.js to the
+   lines revealed so far, and it springs from one to the next. */
+.turn-a.is-growing {
+  overflow: clip;
+  overflow-clip-margin: calc(8 * var(--u));
+  transition: height var(--t-settle) var(--spring-settle);
+}
+
+/* Each word arrives: from nothing, a hair low and out of focus, into place.
+
+   The words stay plain INLINE boxes, lifted by relative `top` rather than
+   translate. Inline-block would have let translate work, and was tried: an
+   inline-block measures a word by its full advance where running text does
+   not, so a word that exactly fills a line ("Bellevue," ending at 864 of 864)
+   came out 1.8px too wide and broke early — and the whole answer re-wrapped
+   the moment it was flattened back to text. As inline boxes the words break
+   exactly where the finished text does. */
+.turn-a .w {
+  position: relative;
+  top: 0.12em;
+  opacity: 0;
+  filter: blur(6px);
+  transition:
+    opacity 0.52s var(--ease-rise),
+    top 0.52s var(--ease-rise),
+    filter 0.52s var(--ease-rise);
+}
+.turn-a .w.on { opacity: 1; top: 0; filter: blur(0); }
+.turn-a.is-long .w { filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .turn-caret.is-thinking { animation: none; opacity: 0.6; }
+  .turn-a.is-growing { transition: none; }
+}

@@ -1,0 +1,117 @@
+/* ==========================================================================
+   base.css — the page itself: the reset, the one type setting, links, focus,
+   and the frame's three anchors (name top-left, tiles top-right, one line
+   bottom-left) laid out as a grid that fills the window.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  letter-spacing: var(--track);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* the frame never scrolls. Anything taller than the window scrolls inside
+     its own band, so the three anchors never leave the glass. */
+  height: 100%;
+  overflow: hidden;
+}
+body { height: 100%; overflow: hidden; }
+
+::selection { background: var(--blue); color: var(--mark); }
+
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; letter-spacing: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+img, svg, canvas { display: block; }
+
+/* One ring for everything a keyboard can land on: the icon ink, 2px, stood
+   3px off, following each control's own corners. Pointer clicks never show
+   it (:focus-visible). */
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--mark); outline-offset: 3px; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- the frame ----
+   Three rows: the masthead, the band where each page puts its content, and
+   the status row holding the one line at the bottom-left. The band takes
+   what is left, so the masthead sits at 49 and the status line's box ends 75
+   above the bottom of the window, exactly as in the frame. */
+.frame {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  height: 100svh;
+  padding: var(--top) var(--gutter-r) var(--bottom) var(--gutter-l);
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  /* centring the 68px tiles on the name's two 43px lines is what puts them
+     at y 58 in the frame — nine pixels under the name's top, nine over its
+     foot — so the alignment is structural, not a number */
+  align-items: center;
+  gap: calc(24 * var(--u));
+  position: relative;
+  z-index: 3;
+}
+
+.name { display: block; white-space: nowrap; }
+.name-line { display: block; }
+
+.band {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  margin-top: calc(var(--band-top) - var(--top) - 86 * var(--u));
+}
+/* Each page is a view stacked in the band's one cell, so a page leaving and
+   the next arriving can overlap while they cross. */
+.view {
+  grid-area: 1 / 1;
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+}
+.view[hidden] { display: none; }
+
+.status {
+  position: relative;
+  z-index: 2;
+  min-height: calc(var(--lh) * 1em);
+}
+
+@media (max-width: 760px) {
+  .masthead {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .band { margin-top: 24px; }
+}
+
+/* ---- the first load (js/entrance.js). Until the entrance has its
+   animations running, the pieces it animates are held invisible, so the
+   finished page never flashes up first. If script never gets there, this
+   failsafe lets them show after 1.4s anyway. ---- */
+html.js:not(.entered) :is(.name-line, .tile, .status) {
+  opacity: 0;
+  animation: entrance-failsafe 0s linear 1.4s forwards;
+}
+@keyframes entrance-failsafe { to { opacity: 1; } }
