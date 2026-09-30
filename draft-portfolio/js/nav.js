@@ -19,7 +19,7 @@
 
 import { reduced } from './motion.js';
 
-export function initNav(menu, { onClear } = {}) {
+export function initNav(menu, { onClear, clearOf } = {}) {
   const button = menu.querySelector('.menu-button');
   const clearButton = menu.querySelector('.menu-clear');
   const list = menu.querySelector('.menu-list');
@@ -27,8 +27,44 @@ export function initNav(menu, { onClear } = {}) {
   let isOpen = false;
   let chat = false;
 
+  // The row lies beside the square, on the name's line, wherever it clears
+  // the name (clearOf) by at least one of its own gaps (at 1280 wide it
+  // clears it by 22, and a gap is 10); in a window too narrow for
+  // that, it lies under the square (data-below, css/nav.css). The row is as
+  // wide either way, so the choice is made from where it would begin beside.
+  //
+  // Shut, each pill waits under the square, its right end on the square's
+  // right edge and its middle on the square's middle. The pills are as wide
+  // as their words, so how far back that is for each is measured here, from
+  // where each one rests in the row, and kept up to date as the row changes
+  // size. The square is read off the menu's own box, which it fills: the
+  // square itself pops and presses (its scale), and a box read mid-pop would
+  // be short.
+  const slots = [...list.children];
+  function measure() {
+    const square = menu.getBoundingClientRect();
+    if (clearOf) {
+      const gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+      const start = square.left - gap - list.getBoundingClientRect().width;
+      const end = clearOf.getBoundingClientRect().right;
+      menu.toggleAttribute('data-below', start - end < gap);
+    }
+    const middle = square.top + square.height / 2;
+    for (const li of slots) {
+      const box = li.getBoundingClientRect();
+      li.style.setProperty('--from', `${square.right - box.right}px`);
+      li.style.setProperty('--from-y', `${middle - (box.top + box.height / 2)}px`);
+    }
+  }
+  new ResizeObserver(measure).observe(list);
+  document.fonts?.ready.then(measure);
+  // the window can narrow without the row changing size (below 960 wide the
+  // frame's unit stops shrinking), and an open row has to answer to it
+  addEventListener('resize', () => { if (isOpen) measure(); });
+
   function open({ focus = false } = {}) {
     if (isOpen) return;
+    measure();
     isOpen = true;
     menu.setAttribute('data-open', '');
     button.setAttribute('aria-expanded', 'true');

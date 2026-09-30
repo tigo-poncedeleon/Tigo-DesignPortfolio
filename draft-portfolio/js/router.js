@@ -1,13 +1,19 @@
-// router.js — the draft's four pages (and an open game) live in the hash:
+// router.js — which of the page's four screens you are on (and an open
+// game) lives in the hash:
 //
 //   #  (nothing)        home
 //   #work  #play  #about
 //   #play/pong  #play/snake  #play/flappy   a game, open on its stage
 //
 // Hash routes, because the draft is served by a plain static server that
-// knows nothing of paths, and a reload of /work there would be a 404. Every
-// change is a real history entry, so Back and Forward walk the pages, and Back
-// from a game closes it.
+// knows nothing of paths, and a reload of /work there would be a 404.
+//
+// Two things write it. Scrolling the page notes the screen you have come to
+// (note(), below): the address changes, but with no history entry and no
+// hashchange, so a reload or a shared link comes back to that screen, Back
+// is not a trail of every screen scrolled past, and the page is not sent
+// scrolling after itself. A change of the hash itself (a game opened or
+// closed, an address typed in) is a real one: Back from a game closes it.
 
 export const VIEWS = ['home', 'work', 'play', 'about'];
 export const GAMES = ['pong', 'snake', 'flappy'];
@@ -25,7 +31,11 @@ export const routeKey = (r) => r.view + (r.game ? '/' + r.game : '');
 export const href = (r) => (r.view === 'home' ? '#' : '#' + routeKey(r));
 
 export function startRouter(onRoute) {
-  history.scrollRestoration = 'manual';
+  // Back, Forward and a reload go back to where you were on the page, as any
+  // page's do. Said outright rather than left to the default: the setting
+  // outlives a reload, and the draft used to turn it off, when each page was
+  // the whole window and there was nothing to restore.
+  history.scrollRestoration = 'auto';
   let current = null;
 
   function handle(event) {
@@ -53,6 +63,14 @@ export function startRouter(onRoute) {
       const target = href(route);
       if (replace) location.replace(target);
       else location.hash = target;
+    },
+    // the page has been scrolled to another screen: say so in the address,
+    // quietly. A game open on the same screen keeps its hash.
+    note(route) {
+      if (current && route.view === current.view) return;
+      current = route;
+      const target = route.view === 'home' ? location.pathname + location.search : href(route);
+      history.replaceState(null, '', target);
     },
   };
 }

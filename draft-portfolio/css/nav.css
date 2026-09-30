@@ -2,27 +2,49 @@
    nav.css — the menu: one yellow square, and the four pages it opens onto.
 
    Shut, it is the square alone at the top right, three lines in it, centred
-   on the name's two lines. Opened, three things happen on one clock:
-     - the square slides left by a pill's width and a 28px gap, on the
-       settling spring, so it lands with the 3% the spring is tuned for;
-     - its three lines turn upright (a quarter turn), which is the only
-       "close" sign it needs;
-     - the pages fan down beside it. The four pills start stacked behind the
-       first, each one pill-height higher than where it rests, and drop into
-       place 50ms apart, so the column unfolds like a deck rather than
-       appearing. Each is its page's pastel, with the icon at the left and the
-       word in the middle, as in the mockups.
-   Shutting runs it backwards on the critically damped curve, bottom pill
-   first: nothing is landing, so nothing overshoots.
+   on the name's two lines. Opened, it deals the pages out sideways, in a
+   row to its left, along the masthead:
+     - the square stays where it is, and its three lines turn upright (a
+       quarter turn), which is the only "close" sign it needs;
+     - the four pills start stacked under the square, their right ends on
+       its right edge, and slide out left into a row, the nearest first and
+       each one after 45ms, the farther ones passing under the nearer as
+       they go, so the row unrolls like a hand of cards being dealt rather
+       than appearing. Each is its page's pastel, with its icon and its
+       word in it, at the page's one size.
+   Shutting slides them all back under the square on the critically damped
+   curve, the farthest setting off first so they arrive together: nothing
+   is landing, so nothing overshoots. (The pages used to fan down in a
+   column beside the square as it slid out of their way, and the column
+   hung over whatever the page had under it, so the page had to be veiled.
+   A row along the masthead stays in the masthead's own room.)
 
-   The column is laid over the page, not in its flow, so opening the menu
-   never moves anything else.
+   The row is laid over the page, not in its flow, so opening the menu
+   never moves anything else, and it passes clear of the name: the page's
+   gutters were drawn out to 44 for it, and the pills are close-set, 10
+   apart. (In the frame's gutters the full pills reached back into the
+   name, which had to step aside whenever the menu opened; for a while the
+   pills went without icons, then with everything a size down, then in a
+   row under the square. Tigo wanted them full, and on the name's line.)
+   Where the window is too narrow even so, js/nav.js sets data-below and the
+   row lies under the square instead, right-aligned to it. On a phone it
+   goes back to the square's line, and whatever stands on the masthead's
+   left side is wiped away to make room for it (the end of this file).
 
    While a conversation is going on Home, the square gives its place to a
-   clear button (js/nav.js sets data-chat): the answers' grey, with an × in
-   it. The menu shrinks away and the clear square pops up where it stood, its
-   two strokes drawing in; clearing runs it the other way.
+   clear button (js/nav.js sets data-chat): a soft red, with a red × in it.
+   The menu shrinks away and the clear square pops up where it stood, its
+   two strokes drawing in; clearing runs it the other way. Pointed at, the
+   × takes the same quarter turn the menu's lines take when it opens.
    ========================================================================== */
+
+/* how far the phone's wipe has run across the masthead's left side, from 0
+   (all there) to 1 (gone); registered as a number so it can be eased */
+@property --wipe {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
 
 .menu {
   position: relative;
@@ -38,13 +60,16 @@
   position: absolute;
   top: 0;
   right: 0;
+  /* above the pills, which come out from under it */
+  z-index: 2;
   width: var(--menu-size);
   height: var(--menu-size);
   display: grid;
   place-items: center;
   border-radius: var(--menu-r);
   background: var(--yellow);
-  color: var(--mark);
+  /* its three lines in the pills' own ink, so the row reads as one */
+  color: var(--pastel-ink);
   -webkit-tap-highlight-color: transparent;
   /* coming back after a conversation it pops up, a beat after the clear
      square has started to go */
@@ -55,13 +80,7 @@
     opacity 0.2s ease 0.06s,
     visibility 0s;
 }
-.menu[data-open] .menu-button {
-  translate: var(--menu-shift) 0;
-  transition:
-    translate var(--t-settle) var(--spring-settle),
-    background-color 0.2s ease,
-    scale var(--t-pop) var(--spring-pop);
-}
+
 @media (hover: hover) {
   .menu-button:hover { background: color-mix(in oklab, var(--yellow), var(--mark) 6%); }
 }
@@ -94,8 +113,8 @@
   display: grid;
   place-items: center;
   border-radius: var(--menu-r);
-  background: var(--pill);
-  color: var(--mark);
+  background: var(--clear);
+  color: var(--clear-ink);
   -webkit-tap-highlight-color: transparent;
   /* shut: small and gone, until a conversation calls it up */
   visibility: hidden;
@@ -107,10 +126,17 @@
     background-color 0.2s ease,
     visibility 0s linear var(--t-out);
 }
-.menu-clear-icon { width: var(--icon); height: var(--icon); }
-@media (hover: hover) {
-  .menu-clear:hover { background: color-mix(in oklab, var(--pill), var(--mark) 7%); }
+.menu-clear-icon {
+  width: var(--icon);
+  height: var(--icon);
+  transition: rotate var(--t-snap) var(--spring-snap);
 }
+@media (hover: hover) {
+  .menu-clear:hover { background: var(--clear-hover); }
+  .menu-clear:hover .menu-clear-icon { rotate: 90deg; }
+}
+/* the keyboard's ring, in the ×'s own red rather than the page's ink */
+.menu-clear:focus-visible { outline-color: var(--clear-ink); }
 
 /* the swap: the square shrinks away, and the clear square pops up where it
    stood, a beat behind */
@@ -140,16 +166,24 @@
   transition: opacity 0.2s ease, scale 90ms var(--spring-pop), background-color 0.2s ease, visibility 0s;
 }
 
-/* ---- the pages ---- */
+/* ---- the pages ----
+   A row to the left of the square, the pills' middles level with its
+   middle. js/nav.js measures how far each pill is from the square, across
+   (--from) and, when the row lies under it, up (--from-y), since the pills
+   are as wide as their words and CSS cannot add up the ones between; shut,
+   each pill sits that far back, under the square. */
+.menu {
+  --row-gap: calc(10 * var(--u));
+}
 .menu-list {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: var(--item-w);
-  display: grid;
-  gap: var(--item-gap);
+  top: calc((var(--menu-size) - var(--item-h)) / 2);
+  right: calc(var(--menu-size) + var(--row-gap));
+  z-index: 1;
+  display: flex;
+  gap: var(--row-gap);
   list-style: none;
-  /* hidden only once the last pill has gone back behind the first */
+  /* hidden only once the last pill has gone back under the square */
   visibility: hidden;
   transition: visibility 0s linear 0.5s;
 }
@@ -157,62 +191,74 @@
   visibility: visible;
   transition-delay: 0s;
 }
-/* earlier pills lie on top, so the later ones come out from under them */
-.menu-list > li { position: relative; z-index: calc(4 - var(--i)); }
+/* too narrow for the row beside the square: under it */
+.menu[data-below] .menu-list {
+  top: calc(var(--menu-size) + var(--row-gap));
+  right: 0;
+}
+
+/* the nearer a pill is to the square, the higher it lies, so the farther
+   ones come out from under the nearer */
+.menu-list > li { position: relative; z-index: calc(1 + var(--i)); }
 
 .menu-item {
   --item-bg: var(--blue);
-  display: grid;
-  /* icon | word | a space as wide as the icon, so the word is centred on the
-     pill itself and not on what the icon leaves */
-  grid-template-columns: var(--icon) 1fr var(--icon);
+  display: flex;
   align-items: center;
+  gap: calc(8 * var(--u));
   height: var(--item-h);
-  padding: 0 var(--tile-pad);
+  /* the icon's side has only the tile's own inset: an icon's box already
+     carries air around its strokes, which a word's end does not */
+  padding: 0 calc(20 * var(--u)) 0 var(--tile-pad);
   border-radius: var(--item-r);
   background: var(--item-bg);
-  color: var(--mark);
+  color: var(--pastel-ink);
+  white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 
-  /* shut: stacked behind the first pill, and gone */
+  /* shut: slid back under the square, and gone. Shutting, the farthest
+     sets off first, so the four arrive under it together. */
   opacity: 0;
-  translate: 0 calc(var(--i) * -1 * (var(--item-h) + var(--item-gap)));
+  translate: var(--from, 0px) var(--from-y, 0px);
   scale: 0.96;
   transition:
-    opacity 0.2s ease calc((3 - var(--i)) * 30ms),
-    translate var(--t-out) var(--spring-out) calc((3 - var(--i)) * 30ms),
-    scale var(--t-out) var(--spring-out) calc((3 - var(--i)) * 30ms),
+    opacity 0.2s ease calc(var(--i) * 30ms + 60ms),
+    translate var(--t-out) var(--spring-out) calc(var(--i) * 30ms),
+    scale var(--t-out) var(--spring-out) calc(var(--i) * 30ms),
     background-color 0.2s ease;
 }
+/* open: dealt out, the nearest first */
 .menu[data-open] .menu-item {
   opacity: 1;
   translate: 0 0;
   scale: 1;
   transition:
-    opacity 0.26s ease calc(60ms + var(--i) * 50ms),
-    translate var(--t-settle) var(--spring-settle) calc(60ms + var(--i) * 50ms),
-    scale var(--t-settle) var(--spring-settle) calc(60ms + var(--i) * 50ms),
+    opacity 0.24s ease calc(40ms + (3 - var(--i)) * 45ms),
+    translate var(--t-settle) var(--spring-settle) calc(40ms + (3 - var(--i)) * 45ms),
+    scale var(--t-settle) var(--spring-settle) calc(40ms + (3 - var(--i)) * 45ms),
     background-color 0.2s ease;
 }
+
 @media (hover: hover) {
   .menu-item:hover { background: color-mix(in oklab, var(--item-bg), var(--mark) 6%); }
 }
 .menu-item:active { scale: 0.97; }
 
-.menu-item-icon { width: var(--icon); height: var(--icon); }
-.menu-item-word { justify-self: center; white-space: nowrap; }
+/* two units under the tiles' 48, which no eye tells apart, for the room */
+.menu-item-icon { flex: none; width: calc(46 * var(--u)); height: calc(46 * var(--u)); }
+.menu-item-word { white-space: nowrap; }
 
-/* the page you are on: a small ink dot where the pill's right-hand space is */
+/* the screen you are on: a small ink dot after its word */
 .menu-item::after {
   content: '';
-  justify-self: center;
+  display: none;
+  flex: none;
   width: calc(9 * var(--u));
   height: calc(9 * var(--u));
   border-radius: 50%;
-  background: var(--mark);
-  opacity: 0;
+  background: currentColor;
 }
-.menu-item[aria-current='page']::after { opacity: 1; }
+.menu-item[aria-current='page']::after { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   .menu-button, .menu[data-open] .menu-button,
@@ -223,6 +269,7 @@
     transition: opacity 0.15s ease, background-color 0.2s ease;
   }
   .menu-button:active, .menu-item:active { scale: 1; }
+  .menu-clear-icon, .menu-clear:hover .menu-clear-icon { rotate: 0deg; }
   /* the swap is a crossfade */
   .menu-clear, .menu[data-chat] .menu-button {
     scale: 1;
@@ -234,8 +281,132 @@
   }
 }
 
-/* On a phone the square stays put and the pills drop down beneath it. */
+/* ---- on a phone ----
+   The row lies where it does on a wider window: on the square's line, to
+   its left, dealt out from under it. There is no room there beside the
+   name or a screen's title, so the masthead's left side is wiped away to
+   make that room, and drawn back in once the row has gone.
+
+   Even with the whole line to themselves the four pills cannot carry their
+   icon beside their word as they do on a wider window: side by side they
+   want some 330px, and a 375px phone has 275 to the left of the square. So
+   here the pills are the icons alone, and the four share the line equally,
+   as tall as the square, the square closing the row. The words are still
+   there for a screen reader, only not drawn. (For a while they came down
+   under the square, from one gutter to the other, a tab bar that hung over
+   whatever the screen had under the masthead; Tigo wanted the wider
+   window's row. After that each icon sat over its word, at 13px; Tigo
+   wanted the icons alone.) */
 @media (max-width: 760px) {
-  .menu { margin-top: 0; }
-  .menu-list { top: calc(var(--menu-size) + var(--item-gap)); }
+  /* 10 of the square's 80 on a wider window; 6 of its 52 here */
+  .menu { margin-top: 0; --row-gap: 6px; }
+  .menu-list,
+  .menu[data-below] .menu-list {
+    top: calc((var(--menu-size) - var(--item-h)) / 2);
+    right: calc(var(--menu-size) + var(--row-gap));
+    width: calc(100vw - var(--gutter-l) - var(--gutter-r) - var(--menu-size) - var(--row-gap));
+  }
+  .menu-list > li { flex: 1; min-width: 0; }
+  .menu-item {
+    position: relative;
+    justify-content: center;
+    padding: 0;
+  }
+  /* with no word under it the icon has the pill to itself: a little under
+     the square's own 34, as on a wider window */
+  .menu-item-icon { width: 30px; height: 30px; }
+  /* the word, taken out of sight but left for a screen reader to name the
+     link by (the page's .sr-only, css/base.css) */
+  .menu-item-word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  /* the page you are on: the dot sits in the pill's top right corner, clear
+     of the icon, so the four pills' icons stay level */
+  .menu-item::after {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 5px;
+    height: 5px;
+    margin: 0;
+  }
+
+  /* The wipe. The masthead's left side (the name, a screen's title in its
+     pill, or a case study's back button and title) is masked by a gradient
+     from clear to solid with a soft edge 44 wide, and --wipe carries that
+     edge across it. It runs right to left as the pills are dealt out, the
+     way they travel, a step ahead of the farthest so no word is ever seen
+     through the gaps between them; the words drift a few pixels after the
+     edge, as though the row were sweeping them off the line. Shutting, it
+     runs back left to right behind the pills as they tuck in under the
+     square, and the words ease home on the settling spring. The edge leans
+     a little (255deg, not 270), so on the name's two lines the top one
+     goes a moment before the one under it, and comes back a moment
+     sooner: a sweep, not a shutter.
+
+     The mask stays on at rest, fully solid, so nothing changes hands
+     mid-wipe; --wipe is registered (the top of this file) so it can be
+     eased at all. A browser without that registration steps from one end
+     to the other, which is still a clean cut. */
+  .masthead > :not(.menu) {
+    --edge: 44px;
+    --wipe-to: calc(var(--wipe) * (100% + var(--edge)));
+    -webkit-mask-image: linear-gradient(255deg, transparent calc(var(--wipe-to) - var(--edge)), #000 var(--wipe-to));
+    mask-image: linear-gradient(255deg, transparent calc(var(--wipe-to) - var(--edge)), #000 var(--wipe-to));
+    /* back in: fast at first, so the words are there as soon as the pills
+       have cleared them, then easing the last of the edge off their ends */
+    transition:
+      --wipe 620ms var(--ease-rise) 40ms,
+      translate var(--t-settle) var(--spring-settle) 40ms;
+  }
+  /* Away: the pills do not travel at one speed. The nearest sets off first
+     and has least to go; the farthest sets off last, 175ms in, and has the
+     whole line to cross, so the row's leading edge creeps, runs, and then
+     settles. An eased curve either lagged it early or left the words gone
+     long before the pills came. So the wipe's curve is that edge itself,
+     read off the row at 375 wide and set some 30px ahead of it. */
+  .masthead:has(.menu[data-open]) > :not(.menu) {
+    --wipe: 1;
+    translate: -10px 0;
+    transition:
+      --wipe 520ms linear(0, 0.12 11.5%, 0.24 23.1%, 0.3 30.8%, 0.38 38.5%, 0.47 46.2%,
+                          0.585 53.8%, 0.71 61.5%, 0.83 69.2%, 0.91 76.9%, 0.955 84.6%,
+                          0.98 92.3%, 1),
+      translate var(--t-out) var(--spring-out) 60ms;
+  }
+  .masthead:has(.menu[data-open]) > :not(.menu),
+  .masthead:has(.menu[data-open]) > :not(.menu) * { pointer-events: none; }
+
+  /* A mask cuts off whatever is painted outside the box it is on, and the
+     index's headline has two things that reach out of its box: a screen's
+     title pill, which hangs out past the axis (css/base.css), and its words
+     as they change, which rise into place from below through a blur
+     (js/main.js, js/entrance.js). So its box is let out 28 all round and
+     taken back in by as much again, which holds all of that without moving
+     anything. The room it adds lets the pointer through. (A case study's
+     back button and title sit inside their own box, and need none.) */
+  .headline {
+    margin: -28px;
+    padding: 28px;
+    pointer-events: none;
+  }
+  .headline > * { pointer-events: auto; }
+}
+
+/* under reduced motion the pills only fade (above), and so do the words
+   they make room for: out as the pills come in, back as they go */
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .masthead > :not(.menu),
+  .masthead:has(.menu[data-open]) > :not(.menu) {
+    -webkit-mask-image: none;
+    mask-image: none;
+    translate: none;
+    transition: opacity 0.15s ease;
+  }
+  .masthead:has(.menu[data-open]) > :not(.menu) { opacity: 0; }
 }

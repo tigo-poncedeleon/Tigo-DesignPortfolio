@@ -1,7 +1,8 @@
 /* ==========================================================================
    base.css — the page itself: the reset, the one type setting, links, focus,
-   and the frame's three anchors (name top-left, tiles top-right, one line
-   bottom-left) laid out as a grid that fills the window.
+   the masthead fixed at the top of the window, and the four screens that
+   scroll under it, each laid out as the frame: its content in the band, and
+   its one line at the bottom-left.
    ========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,14 +20,29 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* the frame never scrolls. Anything taller than the window scrolls inside
-     its own band, so the three anchors never leave the glass. */
-  height: 100%;
-  overflow: hidden;
-}
-body { height: 100%; overflow: hidden; }
+  /* The page scrolls, four screens of it, one under another, each the
+     height of the window, and it scrolls the browser's own way: no snapping
+     onto a screen, no script moving it. The menu's pills and the name are
+     plain links to each screen (index.html), so going to one is the
+     browser's own jump, eased here, and Back and a reload do what they
+     always do. (Each page used to be the whole window, swapped for the next
+     one in place; for a while after that the page settled onto a screen
+     when you stopped near one, which took the scroll out of your hands.)
 
-::selection { background: var(--blue); color: var(--mark); }
+     Its scrollbar is hidden, as the conversation's is: the headline already
+     says where you are. Where the system draws scrollbars in the page's
+     width (a Mac with a mouse, or set to always show them), one took 15
+     pixels off the right, so the square stood 44 from the bar and not the
+     window's edge, and the menu's row no longer fitted on the name's line. */
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+::selection { background: var(--blue); color: var(--pastel-ink); }
 
 a { color: inherit; text-decoration: none; }
 button, input, textarea { font: inherit; letter-spacing: inherit; color: inherit; }
@@ -37,7 +53,7 @@ img, svg, canvas { display: block; }
    3px off, following each control's own corners. Pointer clicks never show
    it (:focus-visible). */
 :focus { outline: none; }
-:focus-visible { outline: 2px solid var(--mark); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 
 .sr-only {
   position: absolute !important;
@@ -47,20 +63,19 @@ img, svg, canvas { display: block; }
   white-space: nowrap;
 }
 
-/* ---- the frame ----
-   Three rows: the masthead, the band where each page puts its content, and
-   the status row holding the one line at the bottom-left. The band takes
-   what is left, so the masthead sits at 49 and the status line's box ends 75
-   above the bottom of the window, exactly as in the frame. */
-.frame {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  height: 100%;
-  height: 100svh;
-  padding: var(--top) var(--gutter-r) var(--bottom) var(--gutter-l);
-}
+/* ---- the masthead ----
+   Fixed at the top of the window, over every screen: the headline on the
+   left and the menu square on the right, 20 from the top.
+   The row itself lets the pointer through, to the conversation that reaches
+   up under its empty left side on Home; only what is drawn in it takes a
+   click. */
+.frame { position: relative; }
 
 .masthead {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   /* The menu square is centred on the name's two 43px lines by its own top
@@ -68,28 +83,157 @@ img, svg, canvas { display: block; }
      whatever the left side of the row is doing. */
   align-items: flex-start;
   gap: calc(24 * var(--u));
-  position: relative;
+  padding: var(--top) var(--gutter-r) 0 var(--gutter-l);
   z-index: 3;
+  pointer-events: none;
+}
+.masthead > * { pointer-events: auto; }
+
+/* Nothing is laid across the masthead: what scrolls up under it passes
+   behind the headline's pill and the menu square and is otherwise left in
+   plain sight. (A fade ran across the whole top of the window instead, the
+   paper for the top half of the strip thinning to nothing where each
+   screen's band began, with a blur at the very top; Tigo tried the pill in
+   its place.) */
+
+/* ---- the headline ----
+   Where the name was, the name of the screen you are on: the name itself
+   on Home, and "Work", "Play" or "About" as the page scrolls past each.
+   All four stand in one cell; the current one is shown, and js/main.js
+   crossfades between them, the leaving one lifting away as the arriving one
+   rises in, both through a small blur, in the direction you are scrolling.
+   The cell is the name's two lines tall, so nothing beside it moves. */
+.headline {
+  display: grid;
+  min-width: 0;
+}
+.headline > * { grid-area: 1 / 1; white-space: nowrap; }
+/* the words lie over the title's pill, which comes first in the cell */
+.headline > [data-for] { position: relative; }
+/* A screen's title stands in a white capsule drawn in close around its one
+   word, round at both ends, and level with the menu square's middle as
+   the menu's row of pills is, so with the menu open the title stands on
+   the same line, the one pill without a colour. It is flat, as everything
+   here is: no edge, no shadow. What scrolls up under the masthead passes
+   behind it.
+
+   Its left end is on the left axis, the line the screen's work begins on:
+   the tiles' outer edge on Work and Play, the words on About. (Its word
+   stood in from that end by the tiles' own padding, over the tiles' words,
+   in a pill as tall as the menu's; Tigo wanted it to fit its word more
+   closely.)
+
+   The pill is one for all three titles, not one each: it takes the width
+   of whichever is showing (js/main.js measures them), so going from one
+   screen to the next it stretches or draws in to the next word on the
+   popping spring, overshooting a hair and settling, while the words trade
+   places inside it. On Home it steps back out of sight, and swells back in
+   when you leave.
+
+   (The title stood bare in the middle of the name's two lines, which left
+   it low; then it was a white pill hung out past the axis on a hairline;
+   then plain white; then glass, first Apple's Liquid Glass in full, the
+   menu's square and pills tinted glass with it, then a quieter frost, none
+   of which spoke the page's own flat language; then each screen's own
+   pastel from the menu; then the answers' grey, before Tigo went back to
+   the white.) */
+.headline-title {
+  align-self: start;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  height: var(--title-h);
+  margin-top: calc(3 * var(--u) + (var(--menu-size) - var(--title-h)) / 2);
+  padding: 0 var(--title-pad);
+  color: var(--ink);
+}
+.headline > .headline-pill {
+  align-self: start;
+  justify-self: start;
+  width: var(--pill-w, 0px);
+  height: var(--title-h);
+  margin-top: calc(3 * var(--u) + (var(--menu-size) - var(--title-h)) / 2);
+  border-radius: var(--title-r);
+  background: var(--surface);
+  visibility: visible;
+  pointer-events: none;
+  transition:
+    width var(--t-pop) var(--spring-pop),
+    background-color 0.35s ease,
+    opacity 0.3s ease,
+    scale var(--t-settle) var(--spring-settle),
+    visibility 0s;
+}
+/* on Home the name stands bare, and the pill steps back out of sight */
+.frame[data-section='home'] .headline > .headline-pill {
+  visibility: hidden;
+  opacity: 0;
+  scale: 0.94;
+  transition:
+    width var(--t-pop) var(--spring-pop),
+    background-color 0.35s ease,
+    opacity 0.2s ease,
+    scale var(--t-out) var(--spring-out),
+    visibility 0s linear 0.3s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .headline > .headline-pill,
+  .frame[data-section='home'] .headline > .headline-pill {
+    scale: 1;
+    transition: background-color 0.2s ease, opacity 0.2s ease, visibility 0s linear 0.2s;
+  }
+}
+.name { display: block; }
+.name-line { display: block; }
+/* the second line, what he does, a step quieter than the name, as in the
+   Home frame */
+.name-line + .name-line { color: var(--ink-2); }
+
+.headline > * { visibility: hidden; transition: visibility 0s linear 0.3s; }
+.frame[data-section='home'] .headline > [data-for='home'],
+.frame[data-section='work'] .headline > [data-for='work'],
+.frame[data-section='play'] .headline > [data-for='play'],
+.frame[data-section='about'] .headline > [data-for='about'] {
+  visibility: visible;
+  transition: opacity 0.22s ease;
 }
 
-.name { display: block; white-space: nowrap; }
-.name-line { display: block; }
+/* While a conversation is up on Home, the name steps out of its way: it
+   fades (js/main.js), and is gone until the conversation is cleared or you
+   scroll away from Home. It keeps its place in the cell, unseen, so
+   nothing moves. */
+.frame[data-chat] .headline > [data-for='home'] {
+  visibility: hidden;
+  transition: visibility 0s linear 0.2s;
+}
 
-.band {
+/* ---- the screens ----
+   Each is the height of the window and laid out as the frame always was:
+   room at the top for the masthead, the band taking what is left, and the
+   status row holding the one line at the bottom-left, whose box ends 59
+   above the screen's foot. (The frame has 75 there; see css/tokens.css for
+   why it came down.) */
+.screen {
   position: relative;
   display: grid;
-  min-height: 0;
-  margin-top: calc(var(--band-top) - var(--top) - 86 * var(--u));
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100vh;
+  height: 100svh;
+  padding: var(--screen-top) var(--gutter-r) var(--bottom) var(--gutter-l);
 }
-/* Each page is a view stacked in the band's one cell, so a page leaving and
-   the next arriving can overlap while they cross. */
+/* The other screens' bands begin sooner than Home's: their title is one
+   line, in a pill no taller than the square, so the band starts 24 under
+   the square's foot, where Home's leaves the name its two lines of room. */
+@media (min-width: 761px) {
+  .screen:not(.screen-home) {
+    --screen-top: calc(var(--top) + 3 * var(--u) + var(--menu-size) + 24 * var(--u));
+  }
+}
 .view {
-  grid-area: 1 / 1;
   position: relative;
   min-height: 0;
   min-width: 0;
 }
-.view[hidden] { display: none; }
 
 .status {
   position: relative;
@@ -99,14 +243,43 @@ img, svg, canvas { display: block; }
 
 @media (max-width: 760px) {
   .masthead { gap: 12px; }
-  .band { margin-top: 24px; }
+  /* The square has no top margin on a phone, so the pill is centred on it
+     by its height alone. The tiles there hang out past the axis by the
+     chat's amount, so the pill does too, and its word is on the axis, over
+     theirs. */
+  .headline-title,
+  .headline > .headline-pill {
+    margin: calc((var(--menu-size) - var(--title-h)) / 2) 0 0 calc(-1 * var(--hang));
+  }
+  .headline-title { padding: 0 var(--hang); }
+  /* on a phone a screen grows with what it holds, except Home, which is
+     the window, the conversation over the composer */
+  .screen:not(.screen-home) { height: auto; min-height: 100svh; }
 }
+
+/* A change of colours spreads from where it was pressed (js/theme.js):
+   the new page is laid over the old whole, and uncovered in a growing
+   circle, so the plain crossfade the browser would run is turned off. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* and for the moment the colours change, nothing eases its own colour, or
+   the reveal would catch it half-way from the old paper to the new */
+html.recolouring *,
+html.recolouring *::before,
+html.recolouring *::after { transition: none !important; }
+
+/* Each screen's pieces are held unseen until they first come into view, and
+   then rise in (js/main.js). Only once script has said it will do that. */
+html.rises [data-rise]:not(.is-risen) { opacity: 0; }
 
 /* ---- the first load (js/entrance.js). Until the entrance has its
    animations running, the pieces it animates are held invisible, so the
    finished page never flashes up first. If script never gets there, this
    failsafe lets them show after 1.4s anyway. ---- */
-html.js:not(.entered) :is(.name-line, .menu-button, .status) {
+html.js:not(.entered) :is(.name-line, .headline-title, .headline-pill, .menu-button, .status) {
   opacity: 0;
   animation: entrance-failsafe 0s linear 1.4s forwards;
 }

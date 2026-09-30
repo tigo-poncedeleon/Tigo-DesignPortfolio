@@ -1,59 +1,128 @@
 /* ==========================================================================
-   work.css — the app icons, and nothing else.
+   work.css — the three case studies, as three tiles side by side.
 
-   Three icons on the left axis, the same axis as the name and the prompt,
-   in the middle of the band. No names under them and no captions: the line
-   at the bottom says what each one is as you point at it (the :has() rules
-   at the end). So the page itself is only the picture.
+   Each tile is one surface in the app's own colour, lit from its top-left
+   corner, where the words are, and deepening to the colour itself at its
+   foot, where the work is. On it, top to bottom: the app's icon, and at the
+   other end of that row a pill to the product itself; the name; the role
+   and when; and then the work, coming up out of the tile's foot and running
+   off its edges, as if the tile were a window onto a bigger picture:
+     Vicino    Canvas, the node editor, on a finished board: the prompt,
+               the two images it made, and the video and 3D model after
+               them (the case study's working replica, with its minimap
+               folded away; the Pulse home stood here before)
+     PantryPal the shipped app on two iPhones, signing up and then the
+               dinner it opens on, the second a step lower
+     Next Level its website, as it is live, with the site's drone parked
+               in the empty air beside the headline
+   The two screens are photographed the same way, so they sit as a pair:
+   at a desktop 1100 by 875, the shape of what a tile shows, and at twice
+   that in pixels, so they stay sharp on a Retina screen at the largest
+   the page draws them. The phones are the app's own simulator captures
+   (1179 wide, a real iPhone's pixels) seated in the iPhone 16 Pro frame
+   the App Store screenshots use (PantryPal/concepts/appstore-lab).
+   (Before, the website stood in a drawn browser, three dots and an
+   address bar over a 1000px screenshot shown wider than itself, and the
+   phones were the prototype's 480px mockups.)
+   The whole tile opens the case study; pointed at, it lifts a little and
+   the work comes up to meet you. (Before this the work sat on a smaller
+   panel inside each tile, and a line at the foot of the page named them
+   again.)
 
-   Each icon is drawn at 128px, which is exactly twice its 256px source, so it
-   stays sharp on a Retina screen. The outline is a superellipse
-   (assets/squircle.svg), the continuous corner of an app icon rather than a
-   plain rounded square. The shadow sits on a wrapper, not on the icon,
-   because a mask would clip a box-shadow. A drop-shadow filter follows the
-   masked alpha instead.
+   The tiles stand between the page's axes, their edges on the lines the
+   name and the square stand on. (They used to hang out past both axes by
+   their own padding, like the chat's bubbles and the composer, so the
+   icons stood on the axis instead; once the gutters were drawn out to 44
+   for the menu's row, that left them 16 from the window's edge. On a phone
+   they still hang, by the chat's own amount.)
+
+   THEY ALWAYS FIT. The band is a size container. A tile is a third of the
+   row, and as tall as the band lets it be, up to a portrait's proportions,
+   so the three are always on the page together, whole; the work in each is
+   sized by the tile's width, so it sits the same way in every size of
+   window, and what runs past the foot is simply cut by it.
    ========================================================================== */
 
 .view-work {
+  container-type: size;
   display: grid;
-  align-content: center;
-  /* sit a touch above centre, where the eye puts the middle of a page */
-  padding-bottom: calc(40 * var(--u));
+  /* at the band's top, just under the masthead: the room a tall window
+     has to spare goes below the work, not above it */
+  align-content: start;
 }
 
-.apps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(48 * var(--u));
+.cases {
+  --gap: calc(24 * var(--u));
+  --pad: calc(28 * var(--u));
+  --out: 0px;   /* how far past the axes the tiles hang */
+  --card-w: calc((100cqw + 2 * var(--out) - 2 * var(--gap)) / 3);
+  --card-h: min(100cqh, var(--card-w) * 1.36);
+  display: grid;
+  grid-template-columns: repeat(3, var(--card-w));
+  gap: var(--gap);
+  margin: 0 calc(-1 * var(--out));
   list-style: none;
 }
 
-/* The page's entrance (the rise, with its blur) runs on this link and not on
-   the icon inside it. The icon's `filter` is its shadow, and an animated blur
-   there would replace the shadow until the rise was over, then snap it back. */
-.app {
-  display: block;
-  border-radius: 22.5%;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.3s ease;
-}
-.app:focus-visible { outline-offset: 6px; }
+/* Each tile's colour is one of the page's pastels (the #c9 floor every tile
+   and pill here is drawn from) turned toward the app's own: Vicino's teal
+   accent, PantryPal's tomato-and-peach, Next Level's blue. The deep colour
+   beside it is the same hue far darker, for the small words and the
+   shadows, so neither is ever a grey laid on a colour. */
+.case[data-case='vicino'] { --tint: #c9eff1; --deep: #1c6f78; }
+.case[data-case='pantrypal'] { --tint: #ffd9c9; --deep: #a9492a; }
+.case[data-case='nextlevel'] { --tint: #c9e3fd; --deep: #245f9e; }
 
-.app-icon {
-  display: block;
-  width: min(128px, calc(128 * var(--u)));
+.case {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: var(--card-h);
+  padding: var(--pad) var(--pad) 0;
+  border-radius: calc(32 * var(--u));
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(130% 75% at 0% 0%, color-mix(in oklab, var(--tint), #fff 70%), transparent 72%),
+    linear-gradient(to bottom, color-mix(in oklab, var(--tint), #fff 38%), var(--tint) 62%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent);
+  transition:
+    translate var(--t-settle) var(--spring-settle),
+    box-shadow 0.45s ease;
+}
+
+/* The case study is the whole tile: its link is laid over all of it, and
+   only the pill to the product sits above that. */
+.case-open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.case-open:focus-visible { outline: none; }
+.case:has(.case-open:focus-visible) { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+/* ---- the head: icon and pill, name, role and when ---- */
+.case-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
+}
+/* The icon is the app's own, in the superellipse an app icon has
+   (assets/squircle.svg). The mask is on the picture and the shadow on the
+   box around it, because a mask would cut its own shadow off. */
+.case-icon {
+  flex: none;
+  width: calc(60 * var(--u));
   aspect-ratio: 1;
   filter:
     drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))
-    drop-shadow(0 calc(10 * var(--u)) calc(22 * var(--u)) rgb(0 0 0 / 0.09));
-  transition:
-    translate var(--t-pop) var(--spring-pop),
-    scale var(--t-pop) var(--spring-pop),
-    filter 0.4s ease;
+    drop-shadow(0 calc(6 * var(--u)) calc(12 * var(--u)) color-mix(in oklab, var(--deep) 22%, transparent));
 }
-
-.app-icon img {
-  display: block;
+.case-icon img {
   width: 100%;
   height: 100%;
   -webkit-mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
@@ -61,64 +130,207 @@
 }
 /* PantryPal's artwork carries a faint rounded rim of its own, left over from
    its original export; scaled up a hair inside the mask, it falls outside it. */
-.app[data-app='pantrypal'] img { scale: 1.07; }
+.case[data-case='pantrypal'] .case-icon img { scale: 1.07; }
 
-@media (hover: hover) {
-  .app:hover .app-icon {
-    translate: 0 calc(-4 * var(--u));
-    scale: 1.035;
-    filter:
-      drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))
-      drop-shadow(0 calc(16 * var(--u)) calc(28 * var(--u)) rgb(0 0 0 / 0.12));
-  }
-}
-.app:active .app-icon { scale: 0.96; transition-duration: 90ms; }
-
-/* Pointing at one quiets the others. */
-.apps:has(.app:is(:hover, :focus-visible)) .app:not(:hover, :focus-visible) { opacity: 0.55; }
-
-/* ---- the bottom line, answering the pointer ----
-   Every line the Work page can say is already in the status row, stacked in
-   one cell. The default shows until an icon is pointed at or focused, and
-   then that icon's line takes its place: out goes up, in comes up from
-   below, both through a small blur. */
-.status-work, .status-play { display: grid; }
-.status-line > .sl {
-  grid-area: 1 / 1;
+.case-name {
+  margin-top: calc(22 * var(--u));
+  font-size: var(--fs);
+  font-weight: inherit;
+  line-height: var(--lh);
+  color: var(--pastel-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition:
-    opacity 0.22s ease,
-    filter 0.22s ease,
-    translate var(--t-snap) var(--spring-snap);
 }
-.status-line > .sl:not(.sl-default) {
-  opacity: 0;
-  filter: blur(3px);
-  translate: 0 calc(8 * var(--u));
+.case-meta {
+  display: grid;
+  margin-top: calc(4 * var(--u));
+  font-size: var(--pill-small);
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: color-mix(in oklab, var(--deep) 55%, var(--ink));
+}
+.case-meta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.case-meta span + span { color: color-mix(in oklab, var(--deep) 45%, var(--ink-3)); }
+
+/* The pill: where the product lives. Frosted white on the tile's colour,
+   the composer chip's size and type, with an arrow that says it leaves the
+   page and leans out further when pointed at. */
+.case-link {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  height: calc(40 * var(--u));
+  padding: 0 calc(12 * var(--u)) 0 calc(16 * var(--u));
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.7),
+    0 1px 2px color-mix(in oklab, var(--deep) 12%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: var(--pill-small);
+  letter-spacing: 0;
+  color: var(--pastel-ink);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+}
+.case-link svg {
+  width: calc(var(--pill-icon) * 0.62);
+  height: calc(var(--pill-icon) * 0.62);
+  transition: translate var(--t-snap) var(--spring-snap);
+}
+.case-link:active { scale: 0.96; transition-duration: 90ms; }
+
+/* ---- the work, coming up out of the foot ----
+   The media box is the tile's full width and the rest of its height; every
+   picture in it is placed and sized by that width, and runs off the tile's
+   foot (and, for the two screens, its right edge). */
+.case-media {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  /* the pictures are the tile's, not links of their own: a press on one
+     goes through to the case study laid over the tile. (The front phone
+     stands on z-index 1, level with that link and after it, so it used to
+     catch the press, and a click on PantryPal's phones did nothing.) */
+  pointer-events: none;
+  margin: calc(22 * var(--u)) calc(-1 * var(--pad)) 0;
+}
+.shot {
+  position: absolute;
+  display: block;
+  height: auto;
+  transition: translate 0.7s var(--ease-rise);
+}
+/* A screen is a plain window: the picture itself, its corners rounded and
+   lifted on a shadow of the tile's colour, with no browser drawn round it,
+   so Canvas and the website read as one kind of thing. Both were taken in
+   the tile's own shape, so the window runs only 24 past the tile's edge.
+   (At 140% of the tile, as the Pulse home and the old website were drawn,
+   Canvas's video and 3D model fell off the right and the graph ended in
+   mid-air.) */
+.shot-window {
+  left: var(--pad);
+  top: calc(6 * var(--u));
+  width: calc(100% - var(--pad) + 24 * var(--u));
+  overflow: hidden;
+  border-radius: calc(14 * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
+    0 calc(2 * var(--u)) calc(4 * var(--u)) color-mix(in oklab, var(--deep) 8%, transparent),
+    0 calc(28 * var(--u)) calc(56 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent);
+}
+.shot-phone {
+  left: 9%;
+  top: 0;
+  width: 42%;
+  z-index: 1;
+  filter:
+    drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) color-mix(in oklab, var(--deep) 14%, transparent))
+    drop-shadow(0 calc(20 * var(--u)) calc(26 * var(--u)) color-mix(in oklab, var(--deep) 30%, transparent));
+}
+.shot-phone-2 {
+  left: 49%;
+  top: calc(40 * var(--u));
+  z-index: 0;
+  transition-delay: 60ms;
 }
 
-html:has(.app[data-app='vicino']:is(:hover, :focus-visible)) .sl-vicino,
-html:has(.app[data-app='pantrypal']:is(:hover, :focus-visible)) .sl-pantrypal,
-html:has(.app[data-app='nextlevel']:is(:hover, :focus-visible)) .sl-nextlevel {
-  opacity: 1;
-  filter: none;
-  translate: 0 0;
-}
-html:has(.app:is(:hover, :focus-visible)) .status-work .sl-default {
-  opacity: 0;
-  filter: blur(3px);
-  translate: 0 calc(-8 * var(--u));
+/* Pointed at, the tile lifts a little onto a shadow of its own colour, and
+   the work comes up to meet you, the second phone a beat behind the first. */
+@media (hover: hover) {
+  .case:hover {
+    translate: 0 calc(-4 * var(--u));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent),
+      0 calc(26 * var(--u)) calc(48 * var(--u)) calc(-22 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
+  }
+  .case:hover .shot { translate: 0 calc(-10 * var(--u)); }
+  .case-link:hover { background: #fff; }
+  .case-link:hover svg { translate: calc(1.5 * var(--u)) calc(-1.5 * var(--u)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-icon, .status-line > .sl { transition-property: opacity, filter; }
-  .app:hover .app-icon { translate: 0 0; scale: 1; }
-  .status-line > .sl { translate: 0 0 !important; filter: none !important; }
+  .case, .shot, .case-link, .case-link svg { transition-property: opacity, filter, background-color, box-shadow; }
+  .case:hover, .case:hover .shot { translate: 0 0; }
+  .case-link:hover svg { translate: 0 0; }
 }
 
+/* In a narrow window the three stack, one under another, and the Work
+   screen grows to hold them. Below 880 a third of the row is too narrow for
+   "Next Level" beside its pill, so this starts before the phone's own
+   layout does. A stacked tile keeps a tile's width, not the window's, so
+   the work in it is drawn the size it is meant to be. */
+@media (max-width: 880px) {
+  .screen-work { height: auto; min-height: 100svh; }
+  .view-work {
+    container-type: normal;
+    align-content: start;
+  }
+  .cases {
+    grid-template-columns: minmax(0, 460px);
+    padding-bottom: var(--gap);
+  }
+  .case { height: auto; aspect-ratio: 4 / 5; }
+}
 @media (max-width: 760px) {
-  .apps { gap: 24px; }
-  .app-icon { width: 96px; }
+  .cases { --gap: 16px; --pad: var(--hang); --out: var(--pad); }
+  .case { border-radius: 26px; }
+}
+
+/* ---- into a case study, and back ----
+   A tile opens its case study in this tab (vicino.html, pantrypal.html,
+   nextlevel.html), and where the browser can carry a view across pages
+   the tile itself grows into the case study's opening tile, which is the
+   same tile grown to the window (css/case.css), while the rest of the page
+   crossfades under it; coming back, it shrinks home. Each tile's name is
+   its case's, and the case page gives its opening tile the same one.
+   The page's own view transition, the colours spreading from a press
+   (js/theme.js, css/base.css), turns the root's crossfade off; this one is
+   told apart by its type, "case", so the two never meet. (The opt-in
+   itself is in index.html's head: see the note there.) */
+.case[data-case='vicino'] { view-transition-name: case-vicino; }
+.case[data-case='pantrypal'] { view-transition-name: case-pantrypal; }
+.case[data-case='nextlevel'] { view-transition-name: case-nextlevel; }
+html:active-view-transition-type(case)::view-transition-group(*) {
+  animation-duration: var(--t-settle);
+  animation-timing-function: var(--spring-settle);
+}
+html:active-view-transition-type(case)::view-transition-old(root) { animation: case-fade-out 0.24s ease both; }
+html:active-view-transition-type(case)::view-transition-new(root) { animation: case-fade-in 0.32s ease both; }
+@keyframes case-fade-out { to { opacity: 0; } }
+@keyframes case-fade-in { from { opacity: 0; } }
+
+/* The tile's two pictures, the Work tile's and the case study's opening
+   tile's, are not stretched to the tile as it grows (the browser's own way,
+   which blew the small tile's words up to three times their size): each
+   stays at its own size, pinned at the top left, where the icon and the
+   name are on both, and the growing tile clips them, so it reads as the
+   tile opening out onto the case study. The small one lets go quickly. */
+html:active-view-transition-type(case)::view-transition-image-pair(case-vicino),
+html:active-view-transition-type(case)::view-transition-image-pair(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-image-pair(case-nextlevel) {
+  overflow: clip;
+  border-radius: calc(36 * var(--u));
+}
+html:active-view-transition-type(case)::view-transition-old(case-vicino),
+html:active-view-transition-type(case)::view-transition-old(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-old(case-nextlevel),
+html:active-view-transition-type(case)::view-transition-new(case-vicino),
+html:active-view-transition-type(case)::view-transition-new(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-new(case-nextlevel) {
+  inset: 0 auto auto 0;
+  width: auto;
+  height: auto;
+  object-fit: none;
+}
+html:active-view-transition-type(case)::view-transition-old(case-vicino),
+html:active-view-transition-type(case)::view-transition-old(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
+  animation-duration: 0.18s;
 }

@@ -1,10 +1,12 @@
 // composer.js — everything in the pill around the field.
 //
-//   +           add a photo. Also by pasting one into the field, or dropping
-//               one onto the pill. It is shrunk to 1200px on its longest side
-//               and sent as a JPEG, the live client's recipe (live-portfolio/
-//               js/ai-chat.js:305-316): the proxy passes it straight to
-//               Claude, which can see it.
+//   (photo)     no button: a photo comes in by pasting it into the field
+//               or dropping it onto the pill, and waits beside the words. It
+//               is shrunk to 1200px on its longest side and sent as a JPEG,
+//               the live client's recipe (live-portfolio/js/ai-chat.js:
+//               305-316): the proxy passes it straight to Claude, which can
+//               see it. (A + at the head of the tools opened the file
+//               picker; Tigo took it out, and the row is the lighter for it.)
 //   friendly ⌄  the chat's mood: friendly, whimsical or suspicious, the three
 //               the live proxy knows (live-portfolio/api/chat.js:55-68). The
 //               choice is kept in this browser.
@@ -19,8 +21,6 @@ const MOOD_KEY = 'draft.mood';
 const MAX_SIDE = 1200;
 
 export function createComposer(form, { prompt, onSend }) {
-  const attach = form.querySelector('.composer-attach');
-  const file = form.querySelector('.composer-file');
   const thumb = form.querySelector('.composer-thumb');
   const thumbImg = thumb.querySelector('img');
   const thumbRemove = thumb.querySelector('.composer-thumb-remove');
@@ -96,11 +96,6 @@ export function createComposer(form, { prompt, onSend }) {
     prompt.focus();
   }
 
-  attach.addEventListener('click', () => file.click());
-  file.addEventListener('change', () => {
-    take(file.files?.[0]);
-    file.value = '';
-  });
   thumbRemove.addEventListener('click', () => { setPhoto(null); prompt.focus(); });
   prompt.input.addEventListener('paste', (e) => {
     const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith('image/'));

@@ -14,11 +14,13 @@
 // One point per game, as on the live site; the record is the RALLY, the hits
 // by both paddles in that point.
 //
-// The court is 1092 × 376 on the stage, the live court's shape. In a card it
-// is near-square (560 × 420), which keeps both paddles in view, and the demo
-// rally's speeds scale with the width.
+// On the stage the court is 840 × 420, the one all three games share, and
+// the ball's speeds and the computer's scale with its width against the live
+// court's 1092, so a ball takes as long to cross it as it did there. In a
+// card it is 560 × 420, the tile's 4:3 screen, and the demo rally is a little
+// calmer again. The walls are the well's own edges: nothing draws a court.
 
-import { Game, INK, STRUCTURE, roundRect, capsule, disc, clamp } from './engine.js';
+import { Game, INK, STRUCTURE, capsule, disc, clamp, lift, unlift } from './engine.js';
 
 const PW = 21;
 const PH = 81;
@@ -36,13 +38,14 @@ const AIM = 22;
 
 export default class Pong extends Game {
   static id = 'pong';
-  static field = { w: 1092, h: 376 };
+  static field = { w: 840, h: 420 };
   static demoField = { w: 560, h: 420 };
 
   reset() {
     const { h } = this.f;
-    // the demo is the live one's calmer two-computer rally, scaled to its court
-    this.k = this.isDemo ? (this.f.w / 1092) * 0.8 : 1;
+    // the live game's speeds, scaled to this court; the demo is its calmer
+    // two-computer rally
+    this.k = (this.f.w / 1092) * (this.isDemo ? 0.8 : 1);
     this.left = { y: (h - PH) / 2, v: 0, aim: 0 };   // the computer
     this.right = { y: (h - PH) / 2, v: 0, aim: 0 };  // you (or, in the demo, the other computer)
     this.ball = { x: (this.f.w - BALL) / 2, y: (h - BALL) / 2, vx: 0, vy: 0 };
@@ -50,6 +53,7 @@ export default class Pong extends Game {
     this.up = false;
     this.down = false;
     this.grab = null;
+    this.hold = null;
     this.wait = this.isDemo ? 0.5 : 0;
     this.winner = null;
   }
@@ -162,25 +166,31 @@ export default class Pong extends Game {
     return false;
   }
 
+  // A mouse takes hold of the paddle where it points. A finger moves it by
+  // as far as it moves, from wherever the drag begins: on a phone the court
+  // is small, and a finger laid on it would hide the ball, so the whole
+  // stage is the paddle's handle.
   pointer(e) {
     if (e.type === 'pointerdown') {
       if (this.state === 'idle' || this.state === 'ended') { this.start(); return; }
       if (this.state === 'paused') { this.resume(); }
     }
-    if (e.type === 'pointerup' || e.type === 'pointercancel') { this.grab = null; return; }
-    if (e.buttons || e.pointerType !== 'mouse' || e.type === 'pointerdown') {
-      this.grab = this.s.toField(e.clientX, e.clientY).y;
+    if (e.type === 'pointerup' || e.type === 'pointercancel') { this.grab = null; this.hold = null; return; }
+    const y = this.s.toField(e.clientX, e.clientY).y;
+    if (e.pointerType === 'mouse') {
+      if (e.buttons || e.type === 'pointerdown') this.grab = y;
+      return;
     }
+    if (e.type === 'pointerdown' || !this.hold) this.hold = { from: y, paddle: this.right.y };
+    this.grab = this.hold.paddle + PH / 2 + (y - this.hold.from);
   }
 
   draw(c) {
     const { w, h } = this.f;
     const px = this.s.px;
-    // the court: an outline in the structure ink, the ball's walls
+    // the net, in the structure ink; the walls are the well's edges
     c.strokeStyle = STRUCTURE;
     c.lineWidth = 2 * px;
-    roundRect(c, -14, -14, w + 28, h + 28, 24);
-    c.stroke();
     c.setLineDash([10, 14]);
     c.beginPath();
     c.moveTo(w / 2, 8);
@@ -189,6 +199,7 @@ export default class Pong extends Game {
     c.setLineDash([]);
 
     c.fillStyle = INK;
+    lift(c, this.s);
     capsule(c, INSET, this.left.y, PW, PH);
     capsule(c, w - INSET - PW, this.right.y, PW, PH);
     // The ball sits out the 3, 2, 1: it rests dead centre, exactly where the
@@ -196,5 +207,6 @@ export default class Pong extends Game {
     const b = this.ball;
     const inPlay = this.state !== 'countdown' && (this.state !== 'ended' || (b.x > -BALL && b.x < w));
     if (inPlay) disc(c, b.x + BALL / 2, b.y + BALL / 2, BALL / 2);
+    unlift(c);
   }
 }

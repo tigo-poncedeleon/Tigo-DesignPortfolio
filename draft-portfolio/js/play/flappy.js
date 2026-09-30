@@ -11,11 +11,15 @@
 // No countdown here, unlike Pong and Snake: the first flap is the start.
 // Waiting through "3, 2, 1" and then having to flap anyway is two starts.
 //
-// The pipes are outlined pillars, the dock's pen on the sky, clipped by the
-// playfield so they arrive through its edge. The bird is an ink disc with an
-// eye, tilted by how fast it is climbing or falling.
+// The sky is the shared court, 840 × 420, wider than the live one's 597 ×
+// 538, so four pairs of pipes are in view at once and the next few can be
+// read ahead. In a card it is the tile's 4:3.
+//
+// The pipes are outlined pillars, the dock's pen on the sky, running off the
+// field's top and foot, so they arrive through the well's edge. The bird is
+// an ink disc with an eye, tilted by how fast it is climbing or falling.
 
-import { Game, INK, STRUCTURE, roundRect, disc, clamp } from './engine.js';
+import { Game, INK, roundRect, disc, clamp, lift, unlift } from './engine.js';
 
 const BIRD = 21;
 const GRAVITY = 1500;
@@ -29,7 +33,7 @@ const MARGIN = 42;
 export default class Flappy extends Game {
   static id = 'flappy';
   static countdown = false;
-  static field = { w: 597, h: 538 };
+  static field = { w: 840, h: 420 };
   static demoField = { w: 560, h: 420 };
 
   reset() {
@@ -140,16 +144,12 @@ export default class Flappy extends Game {
   draw(c) {
     const { w, h } = this.f;
     const px = this.s.px;
-    const r = 22;
 
-    c.strokeStyle = STRUCTURE;
-    c.lineWidth = 2 * px;
-    roundRect(c, 0, 0, w, h, r);
-    c.stroke();
-
-    // everything that moves stays inside the playfield
+    // everything that moves stays inside the playfield (whose edge is the
+    // well's, rounded by it)
     c.save();
-    roundRect(c, 0, 0, w, h, r);
+    c.beginPath();
+    c.rect(0, 0, w, h);
     c.clip();
 
     c.strokeStyle = INK;
@@ -169,7 +169,9 @@ export default class Flappy extends Game {
     c.translate(this.x + BIRD / 2, this.y + BIRD / 2);
     c.rotate(this.state === 'idle' ? 0 : tilt);
     c.fillStyle = INK;
+    lift(c, this.s);
     disc(c, 0, 0, BIRD / 2 + 1);
+    unlift(c);
     c.fillStyle = this.s.court;
     disc(c, BIRD * 0.2, -BIRD * 0.16, BIRD * 0.11);
     c.restore();

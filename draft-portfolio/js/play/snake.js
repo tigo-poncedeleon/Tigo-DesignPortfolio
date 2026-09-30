@@ -1,17 +1,23 @@
 // play/snake.js — Nokia, 1997, in ink on mint.
 //
 // The rules are the live game's (live-portfolio/js/snake.js:9-13, 165-232):
-//   a 20 × 20 grid of 21px cells; a step every 110ms, 3ms quicker per food,
-//   never quicker than 65ms; four long at the centre, heading right
+//   a step every 110ms, 3ms quicker per food, never quicker than 65ms; four
+//   long at the centre, heading right
 //   a turn straight back into yourself is ignored
 //   walls end it, and so does your own body, except the cell your tail is
 //     just leaving (unless you eat on that step, when the tail stays)
 //   the score is how long you are, less the four you started with
-// One change: turns queue two deep. The live board takes one turn per step
+// The board is the shared court's shape rather than the live one's square:
+// 29 × 14 cells (406, where the live board had 400), with half a cell of
+// margin all round, so the field is 840 × 420, and the snake never runs
+// into the well's rounded corners. In a card it is 15 × 11, the tile's 4:3.
+//
+// Two changes. Turns queue two deep. The live board takes one turn per step
 // and drops a second one pressed in the same step, so a quick
 // down-then-left to double back around a corner loses the left. Here the
 // second waits its turn. Each queued turn is checked against the one before
-// it, not against where the snake is facing now.
+// it, not against where the snake is facing now. And an arrow starts a game
+// as well as Space does, heading that way once the count is done.
 //
 // Drawn as ONE stroke through the cells' centres, round-jointed, the same
 // pen as the dock's icons, and it GLIDES: the head is drawn part-way to its
@@ -19,9 +25,9 @@
 // the current step. The picture runs one step behind the rules, which is the
 // price of never jumping a whole cell at a time.
 
-import { Game, INK, FAINT, STRUCTURE, roundRect, disc } from './engine.js';
+import { Game, INK, FAINT, disc, lift, unlift } from './engine.js';
 
-const CELL = 21;
+const CELL = 28;
 const START = 110;
 const FASTER = 3;
 const FLOOR = 65;
@@ -34,12 +40,13 @@ const DIRS = {
 
 export default class Snake extends Game {
   static id = 'snake';
-  static field = { w: 20 * CELL, h: 20 * CELL };
+  // the board, and half a cell round it
+  static field = { w: 30 * CELL, h: 15 * CELL };
   static demoField = { w: 16 * CELL, h: 12 * CELL };
 
   reset() {
-    this.cols = Math.round(this.f.w / CELL);
-    this.rows = Math.round(this.f.h / CELL);
+    this.cols = Math.round(this.f.w / CELL) - 1;
+    this.rows = Math.round(this.f.h / CELL) - 1;
     const cx = Math.floor(this.cols / 2);
     const cy = Math.floor(this.rows / 2);
     this.body = [0, 1, 2, 3].map((i) => ({ x: cx - i, y: cy }));
@@ -138,7 +145,11 @@ export default class Snake extends Game {
     const k = e.key.toLowerCase();
     if (DIRS[k]) {
       if (down) {
-        if (this.state === 'idle' || this.state === 'ended') return true;
+        if (this.state === 'idle' || this.state === 'ended') {
+          if (e.repeat) return true;
+          this.start();
+          if (this.state !== 'countdown') return true;
+        }
         this.turn(...DIRS[k]);
       }
       return true;
@@ -166,24 +177,21 @@ export default class Snake extends Game {
   }
 
   draw(c) {
-    const { w, h } = this.f;
     const px = this.s.px;
     const moving = this.state === 'playing' || this.state === 'demo';
     const p = moving ? Math.min(1, this.acc / this.stepMs) : 1;
-    const at = (cell) => [cell.x * CELL + CELL / 2, cell.y * CELL + CELL / 2];
+    // a cell's centre: half a cell of margin, and half a cell in
+    const at = (cell) => [cell.x * CELL + CELL, cell.y * CELL + CELL];
     const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
 
-    // the board: its edge, and a faint dot at every cell
-    c.strokeStyle = STRUCTURE;
-    c.lineWidth = 2 * px;
-    roundRect(c, -12, -12, w + 24, h + 24, 22);
-    c.stroke();
+    // the board: a faint dot at every cell (its edge is the well's)
     c.fillStyle = FAINT;
     for (let y = 0; y < this.rows; y++) {
-      for (let x = 0; x < this.cols; x++) disc(c, x * CELL + CELL / 2, y * CELL + CELL / 2, 1.3 * px);
+      for (let x = 0; x < this.cols; x++) disc(c, x * CELL + CELL, y * CELL + CELL, 1.3 * px);
     }
 
     // the food, breathing
+    lift(c, this.s);
     if (this.food) {
       const [fx, fy] = at(this.food);
       c.fillStyle = INK;
@@ -204,6 +212,7 @@ export default class Snake extends Game {
     c.moveTo(pts[0][0], pts[0][1]);
     for (let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]);
     c.stroke();
+    unlift(c);
 
     // an eye, a little ahead and to its left, looking where it is going
     const [hx, hy] = pts[0];

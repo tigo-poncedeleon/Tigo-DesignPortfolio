@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- the menu square: the yellow, a faint ink hairline so it holds on a
-       light tab bar, and its three lines -->
-  <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="#fffec9" stroke="#1e1e1e" stroke-opacity=".16" />
-  <g stroke="#1e1e1e" stroke-width="2.2" stroke-linecap="round">
-    <path d="M9 11h14M9 16h14M9 21h14" />
-  </g>
+  <!-- a disc of the page's ink, the name's #444343. On a dark tab bar it
+       takes night's ink instead, so it doesn't sink into the dark. -->
+  <style>
+    circle { fill: #444343; }
+    @media (prefers-color-scheme: dark) { circle { fill: #e4e4e6; } }
+  </style>
+  <circle cx="16" cy="16" r="15" />
 </svg>

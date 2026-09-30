@@ -1,0 +1,1734 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- A scratch page for choosing a direction for About. It is meant to be
+       deleted, with the rest of explorations/, once one is picked. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>About, eight ways — explorations</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <!-- The draft's own colours and springs. Only those: every length inside
+       a frame is drawn in that frame's --u, set below, not the page's. -->
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <style>
+    /* ======================================================================
+       The document around the frames (the same as explorations/work.html)
+       ====================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      background: #efefef;
+      color: var(--ink);
+      font-family: var(--font);
+      letter-spacing: -0.012em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      scroll-behavior: smooth;
+      scroll-padding-top: 84px;
+    }
+    body { font-size: 17px; line-height: 1.5; }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; }
+    img { -webkit-user-drag: none; user-select: none; }
+    button, input, textarea { font: inherit; color: inherit; letter-spacing: inherit; background: none; border: 0; }
+    button { cursor: pointer; }
+    ::selection { background: var(--blue); color: var(--mark); }
+    :focus { outline: none; }
+    :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+    .i { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .doc { width: min(1320px, 100% - 64px); margin: 0 auto; }
+
+    .doc-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 40px 72px;
+      align-items: end;
+      padding: 104px 0 56px;
+    }
+    .kicker { display: flex; align-items: center; gap: 10px; font-size: 14px; letter-spacing: 0; color: var(--ink-3); }
+    .kicker .sq { width: 12px; height: 12px; border-radius: 4px; background: var(--green); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.05); }
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(44px, 5.4vw, 72px);
+      line-height: 1.02;
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      color: var(--mark);
+    }
+    .lede { margin-top: 22px; max-width: 36em; font-size: 19px; line-height: 1.5; color: var(--ink-3); }
+
+    .facts {
+      padding: 22px 22px 12px;
+      border-radius: 26px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 18px 40px -26px rgb(0 0 0 / 0.18);
+    }
+    .facts-title { font-size: 13px; letter-spacing: 0; color: var(--ink-3); }
+    .facts ol { list-style: none; margin-top: 10px; }
+    .fact { display: grid; grid-template-columns: 22px 40px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 11px 0; }
+    .fact + .fact { border-top: 1px solid rgb(30 30 30 / 0.07); }
+    .fact-no { font-size: 13px; letter-spacing: 0; color: var(--ink-4); font-variant-numeric: tabular-nums; }
+    .fact .g { --g: 40px; }
+    .fact-name { display: block; font-size: 16px; color: var(--mark); line-height: 1.3; }
+    .fact-role { display: block; font-size: 14px; letter-spacing: 0; color: var(--ink-3); line-height: 1.35; }
+    .fact-when {
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--c);
+      color: var(--mark);
+      font-size: 13px;
+      letter-spacing: 0;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .doc-nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: 12px 0;
+      background: color-mix(in srgb, #efefef 80%, transparent);
+      -webkit-backdrop-filter: blur(18px) saturate(1.5);
+      backdrop-filter: blur(18px) saturate(1.5);
+    }
+    .doc-nav ol { display: flex; gap: 4px; list-style: none; overflow-x: auto; scrollbar-width: none; }
+    .doc-nav ol::-webkit-scrollbar { display: none; }
+    .doc-nav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 15px 0 7px;
+      border-radius: 999px;
+      font-size: 15px;
+      letter-spacing: 0;
+      white-space: nowrap;
+      color: var(--ink-3);
+      transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .doc-nav a span {
+      display: grid;
+      place-items: center;
+      min-width: 28px;
+      height: 26px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: rgb(30 30 30 / 0.06);
+      font-size: 12.5px;
+      font-variant-numeric: tabular-nums;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .doc-nav a:hover { background: rgb(255 255 255 / 0.7); color: var(--mark); }
+    .doc-nav a[aria-current] { background: #fff; color: var(--mark); box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); }
+    .doc-nav a[aria-current] span { background: var(--mark); color: #fff; }
+
+    .ex { padding: 80px 0 8px; }
+    .ex-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 28px 72px;
+      align-items: end;
+      margin-bottom: 30px;
+    }
+    .ex-num { display: flex; align-items: center; gap: 10px; font-size: 14px; letter-spacing: 0; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .tag {
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: var(--yellow);
+      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.05);
+      color: var(--mark);
+      font-size: 13px;
+    }
+    .tag-quiet { background: #fff; }
+    .ex h2 { margin-top: 10px; font-size: 44px; line-height: 1.08; font-weight: 500; letter-spacing: -0.03em; color: var(--mark); }
+    .ex-lede { margin-top: 14px; max-width: 32em; font-size: 18px; line-height: 1.5; color: var(--ink-3); }
+    .ex-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .ex-notes > div { padding: 16px 18px 18px; border-radius: 18px; background: rgb(255 255 255 / 0.72); }
+    .ex-notes dt { font-size: 13px; letter-spacing: 0; color: var(--ink-3); }
+    .ex-notes dd { margin-top: 6px; font-size: 15px; line-height: 1.45; letter-spacing: -0.005em; color: var(--ink); }
+
+    .board {
+      container-type: inline-size;
+      overflow: hidden;
+      border-radius: 22px;
+      background: var(--bg);
+      box-shadow:
+        0 0 0 1px rgb(0 0 0 / 0.05),
+        0 2px 4px rgb(0 0 0 / 0.03),
+        0 36px 80px -36px rgb(0 0 0 / 0.26);
+    }
+    .board-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 40px;
+      margin-top: 14px;
+      padding: 0 4px;
+      font-size: 14px;
+      letter-spacing: 0;
+      color: var(--ink-3);
+    }
+    .board-foot .hint { display: flex; align-items: center; gap: 8px; }
+    .board-foot .hint::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-4); }
+
+    .doc-end { padding: 120px 0 160px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px 72px; align-items: start; }
+    .doc-end h2 { font-size: 44px; line-height: 1.08; font-weight: 500; letter-spacing: -0.03em; color: var(--mark); }
+    .doc-end p { font-size: 18px; line-height: 1.55; color: var(--ink-3); }
+    .doc-end p + p { margin-top: 14px; }
+    .doc-end code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.86em; letter-spacing: 0; padding: 2px 6px; border-radius: 6px; background: #fff; color: var(--mark); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 46px;
+      padding: 0 20px 0 16px;
+      border-radius: 999px;
+      background: var(--mark);
+      color: #fff;
+      font-size: 15px;
+      letter-spacing: 0;
+      white-space: nowrap;
+      box-shadow: 0 18px 40px -16px rgb(0 0 0 / 0.45);
+      translate: -50% 18px;
+      scale: 0.94;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, translate var(--t-out) var(--spring-out), scale var(--t-out) var(--spring-out);
+    }
+    .toast .i { width: 17px; height: 17px; opacity: 0.7; }
+    .toast.is-on {
+      opacity: 1;
+      translate: -50% 0;
+      scale: 1;
+      transition: opacity 0.16s ease, translate var(--t-pop) var(--spring-pop), scale var(--t-pop) var(--spring-pop);
+    }
+
+    @media (max-width: 980px) {
+      .doc-head, .ex-head, .doc-end { grid-template-columns: minmax(0, 1fr); }
+      .ex-notes { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .doc { width: calc(100% - 32px); }
+      .board { border-radius: 14px; }
+    }
+
+    /* A glyph in a squircle: a pastel box with one of the draft's Lucide
+       icons in the icons' ink. It stands in for an app icon where there is
+       no app (school, a city, a bike). */
+    .g {
+      --g: calc(60 * var(--u));
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: var(--g);
+      height: var(--g);
+      background: var(--c, var(--pill));
+      color: var(--mark);
+      -webkit-mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
+      mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
+    }
+    .g .i { width: 54%; height: 54%; stroke-width: 1.75; }
+
+    /* ======================================================================
+       A frame: the About screen at the draft's real proportions
+
+       Each frame is 1280 by 760 of its own units, the draft's Figma pixels
+       on a 13" laptop's window, and --u is one of them: the frame's width
+       over 1280. Everything inside is drawn as the draft draws it and only
+       scales as a whole. The band is where a screen's content goes: 44 in
+       from each side, 143 down (under the masthead) and 59 up from the foot,
+       the bottom line standing in its last 43.
+       ====================================================================== */
+    .screen {
+      --u: calc(100cqw / 1280);
+      position: relative;
+      aspect-ratio: 1280 / 760;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: calc(36 * var(--u));
+      line-height: 1.1944;
+      letter-spacing: -0.012em;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .m-title {
+      position: absolute;
+      top: calc(51 * var(--u));
+      left: calc(44 * var(--u));
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      height: calc(56 * var(--u));
+      padding: 0 calc(20 * var(--u));
+      border-radius: calc(28 * var(--u));
+      background: var(--surface);
+    }
+    .m-menu {
+      position: absolute;
+      top: calc(39 * var(--u));
+      right: calc(44 * var(--u));
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      width: calc(80 * var(--u));
+      height: calc(80 * var(--u));
+      border-radius: calc(22 * var(--u));
+      background: var(--yellow);
+      color: var(--mark);
+    }
+    .m-menu svg { width: calc(48 * var(--u)); height: calc(48 * var(--u)); overflow: visible; }
+    .band {
+      position: absolute;
+      left: calc(44 * var(--u));
+      right: calc(44 * var(--u));
+      top: calc(143 * var(--u));
+      bottom: calc(59 * var(--u));
+    }
+    /* the screen's one line at the bottom-left */
+    .line { position: absolute; left: 0; bottom: 0; white-space: nowrap; }
+    .links a {
+      text-decoration: underline;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 0.18em;
+      text-underline-offset: 0.12em;
+      text-decoration-skip-ink: none;
+      transition: text-decoration-color 0.2s ease;
+    }
+    .links a:hover { text-decoration-color: var(--green); }
+    .links .sep { color: var(--ink-4); }
+
+    /* a tile, lit from its top-left corner, as Work's and Play's are */
+    .lit {
+      background:
+        radial-gradient(130% 75% at 0% 0%, color-mix(in oklab, var(--tint), #fff 70%), transparent 72%),
+        linear-gradient(to bottom, color-mix(in oklab, var(--tint), #fff 38%), var(--tint) 62%);
+      box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent);
+    }
+    .meta {
+      display: grid;
+      font-size: calc(22 * var(--u));
+      line-height: 1.3;
+      letter-spacing: 0;
+      color: color-mix(in oklab, var(--deep) 55%, var(--ink));
+      white-space: nowrap;
+    }
+    .meta > span + span { color: color-mix(in oklab, var(--deep) 45%, var(--ink-3)); }
+    /* frosted white on a colour or a photo, like Work's link pills */
+    .frost {
+      background: rgb(255 255 255 / 0.62);
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 0.7),
+        0 1px 2px rgb(0 0 0 / 0.08);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      color: var(--pastel-ink);
+    }
+    .pill-s {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(6 * var(--u));
+      height: calc(40 * var(--u));
+      padding: 0 calc(16 * var(--u));
+      border-radius: 999px;
+      font-size: calc(22 * var(--u));
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+    .pill-s .i { width: calc(20 * var(--u)); height: calc(20 * var(--u)); }
+    /* the key phrases in the page's ink, the rest a step quieter */
+    .two { color: var(--ink-2); }
+    .two b { font-weight: inherit; color: var(--ink); }
+    b { font-weight: inherit; }
+
+    /* the app's own icon, in the line of text, in its squircle */
+    .vi {
+      display: inline-block;
+      width: 0.86em;
+      height: 0.86em;
+      margin: 0 0.18em 0 0.04em;
+      vertical-align: -0.12em;
+      -webkit-mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
+      mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
+    }
+    .vi img { width: 100%; height: 100%; }
+
+    @keyframes wave {
+      0%, 100% { rotate: 0deg; }
+      12% { rotate: 16deg; }
+      26% { rotate: -9deg; }
+      40% { rotate: 14deg; }
+      54% { rotate: -5deg; }
+      68% { rotate: 8deg; }
+      82% { rotate: 0deg; }
+    }
+    @keyframes wave-again {
+      0%, 100% { rotate: 0deg; }
+      12% { rotate: 16deg; }
+      26% { rotate: -9deg; }
+      40% { rotate: 14deg; }
+      54% { rotate: -5deg; }
+      68% { rotate: 8deg; }
+      82% { rotate: 0deg; }
+    }
+
+    /* ======================================================================
+       00 · The draft today
+       ====================================================================== */
+    .v-today {
+      display: grid;
+      grid-template-columns: calc(381.33 * var(--u)) minmax(0, 1fr);
+      column-gap: calc(24 * var(--u));
+    }
+    .td-tile {
+      --tint: var(--green);
+      --deep: #2b7a3d;
+      display: flex;
+      flex-direction: column;
+      gap: calc(20 * var(--u));
+      height: calc(518.6 * var(--u));
+      padding: calc(28 * var(--u));
+      border-radius: calc(32 * var(--u));
+    }
+    .hello { display: flex; align-items: center; gap: calc(8 * var(--u)); color: var(--pastel-ink); }
+    .hello .i {
+      width: 0.94em;
+      height: 0.94em;
+      stroke-width: 1.75;
+      color: color-mix(in oklab, var(--deep) 45%, var(--pastel-ink));
+      transform-origin: 70% 85%;
+    }
+    .screen.is-seen .hello .i { animation: wave 1.4s var(--ease-draw) 0.5s both; }
+    .td-tile:hover .hello .i { animation: wave-again 1.4s var(--ease-draw) both; }
+    .well {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      border-radius: calc(20 * var(--u));
+      overflow: hidden;
+    }
+    .well img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+    .well::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 0 1px color-mix(in oklab, var(--deep) 12%, transparent),
+        inset 0 calc(2 * var(--u)) calc(6 * var(--u)) color-mix(in oklab, var(--deep) 10%, transparent);
+    }
+    .td-body { display: flex; flex-direction: column; justify-content: space-between; height: calc(518.6 * var(--u)); }
+    .td-text { max-width: 20em; margin-top: -0.25em; }
+    .td-text p + p { margin-top: 0.5em; }
+    .td-pills { display: flex; gap: calc(10 * var(--u)); list-style: none; }
+    .td-pills a {
+      display: flex;
+      align-items: center;
+      height: calc(56 * var(--u));
+      padding: 0 calc(20 * var(--u));
+      border-radius: calc(28 * var(--u));
+      background: var(--surface);
+      transition: background-color 0.2s ease;
+    }
+    .td-pills a:hover { background: var(--green); color: var(--pastel-ink); }
+
+    /* ======================================================================
+       01 · In conversation
+       The thread is Home's: questions in the blue on the right, answers in
+       the grey on the left with their words on the axis, a photo as a small
+       print. It reaches up behind the masthead and fades there, as Home's
+       does, and the newest turn pushes the rest up.
+       ====================================================================== */
+    .c-thread {
+      position: absolute;
+      left: calc(-24 * var(--u));
+      right: calc(108 * var(--u));
+      top: calc(-143 * var(--u));
+      bottom: calc(76 * var(--u));
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent calc(40 * var(--u)), #000 calc(190 * var(--u)));
+      mask-image: linear-gradient(to bottom, transparent calc(40 * var(--u)), #000 calc(190 * var(--u)));
+    }
+    .c-inner {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: calc(12 * var(--u));
+      padding-left: calc(24 * var(--u));
+    }
+    .bub {
+      max-width: calc(24em + 48 * var(--u));
+      margin-left: calc(-24 * var(--u));
+      padding: calc(12.5 * var(--u)) calc(24 * var(--u));
+      border-radius: calc((1.1944em + 25 * var(--u)) / 2);
+      background: var(--pill);
+      color: var(--bubble-ink);
+      transform-origin: 0 100%;
+    }
+    .bub-q {
+      align-self: flex-end;
+      max-width: min(78%, calc(18em + 48 * var(--u)));
+      margin: calc(24 * var(--u)) 0 0;
+      background: var(--bubble);
+      transform-origin: 100% 100%;
+    }
+    .bub-q:first-child { margin-top: 0; }
+    .c-photo {
+      width: calc(190 * var(--u));
+      height: calc(190 * var(--u));
+      margin-left: calc(-24 * var(--u));
+      border-radius: calc(22 * var(--u));
+      object-fit: cover;
+      object-position: 50% 20%;
+      box-shadow: 0 0 0 1px rgb(30 30 30 / 0.06);
+      transform-origin: 0 100%;
+    }
+    .bub-dots { display: flex; gap: 0.2em; height: 1.1944em; align-items: center; padding: 0 0.3em; }
+    .bub-dots i { width: 0.24em; height: 0.24em; border-radius: 50%; background: var(--ink-2); opacity: 0.35; animation: dot 1.2s ease-in-out infinite; }
+    .bub-dots i:nth-child(2) { animation-delay: 0.16s; }
+    .bub-dots i:nth-child(3) { animation-delay: 0.32s; }
+    @keyframes dot { 0%, 60%, 100% { opacity: 0.35; } 30% { opacity: 1; } }
+    .bub-links { display: flex; flex-wrap: wrap; gap: calc(8 * var(--u)); margin-top: calc(10 * var(--u)); }
+    .bub-links a { background: #fff; color: var(--ink); transition: background-color 0.2s ease; }
+    .bub-links a:hover { background: var(--green); }
+
+    .c-ask { display: flex; align-items: center; gap: calc(8 * var(--u)); }
+    .c-ask-label { margin-right: calc(6 * var(--u)); font-size: calc(22 * var(--u)); letter-spacing: 0; color: var(--ink-3); }
+    .c-chip {
+      background: var(--surface);
+      box-shadow: inset 0 0 0 1px rgb(var(--line) / 0.08);
+      color: var(--ink);
+      transition: background-color 0.2s ease, opacity 0.2s ease, scale var(--t-pop) var(--spring-pop);
+    }
+    .c-chip:hover { background: var(--bubble); box-shadow: none; }
+    .c-chip:active { scale: 0.96; }
+    .c-chip:disabled { opacity: 0.35; pointer-events: none; }
+    .c-chip.is-asked { display: none; }
+    .c-again { color: var(--ink-3); box-shadow: none; background: transparent; }
+
+    /* ======================================================================
+       02 · With pictures
+       One paragraph at the frame's size, with small pastel tiles set into
+       the words where emoji would go, each with a glyph from the draft's
+       icon set, and the photo as one of them.
+       ====================================================================== */
+    .tk-text { max-width: 30.5em; }
+    .tk-text p + p { margin-top: 0.42em; }
+    .tk {
+      --c: var(--pill);
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      width: 1.24em;
+      height: 0.9em;
+      margin: 0 0.04em 0 0.1em;
+      vertical-align: -0.16em;
+      border-radius: 0.28em;
+      background: var(--c);
+      color: var(--mark);
+      box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.05);
+      transition: scale var(--t-pop) var(--spring-pop), rotate var(--t-pop) var(--spring-pop);
+    }
+    .tk > .i { width: 0.58em; height: 0.58em; stroke-width: 2; }
+    .tk:hover { scale: 1.14; rotate: -6deg; z-index: 4; }
+    .screen:not(.is-seen) .tk { scale: 0; }
+    .screen.is-seen .tk { animation: tk-in var(--t-pop) var(--spring-pop) both; animation-delay: calc(var(--n, 0) * 90ms + 250ms); }
+    @keyframes tk-in { from { scale: 0; rotate: -20deg; } to { scale: 1; rotate: 0deg; } }
+    .tk-photo { width: 1.3em; overflow: visible; background: none; box-shadow: none; }
+    .tk-photo > img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; border-radius: inherit; box-shadow: 0 0 0 1px rgb(30 30 30 / 0.06); }
+    .tk-app { width: 0.9em; background: none; box-shadow: none; border-radius: 0; }
+    .tk-app > img { width: 100%; height: 100%; -webkit-mask: url(../assets/squircle.svg) center / 100% 100% no-repeat; mask: url(../assets/squircle.svg) center / 100% 100% no-repeat; }
+    /* what a tile shows when it is pointed at: the photo, big, or a note */
+    .peek {
+      position: absolute;
+      top: calc(100% + 14 * var(--u));
+      left: 50%;
+      z-index: 6;
+      translate: -50% 0;
+      scale: 0.3;
+      opacity: 0;
+      transform-origin: 50% 0;
+      pointer-events: none;
+      transition: scale var(--t-out) var(--spring-out), opacity 0.16s ease;
+    }
+    .tk:hover .peek { scale: 1; opacity: 1; rotate: 6deg; transition: scale var(--t-pop) var(--spring-pop), opacity 0.12s ease; }
+    .peek-photo { width: calc(250 * var(--u)); border-radius: calc(26 * var(--u)); overflow: hidden; box-shadow: 0 calc(30 * var(--u)) calc(60 * var(--u)) calc(-20 * var(--u)) rgb(0 0 0 / 0.35), 0 0 0 1px rgb(0 0 0 / 0.05); }
+    .peek-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 15%; }
+    .peek-note {
+      padding: calc(10 * var(--u)) calc(16 * var(--u));
+      border-radius: calc(16 * var(--u));
+      background: var(--surface);
+      box-shadow: 0 calc(14 * var(--u)) calc(30 * var(--u)) calc(-12 * var(--u)) rgb(0 0 0 / 0.25), 0 0 0 1px rgb(0 0 0 / 0.04);
+      font-size: calc(22 * var(--u));
+      letter-spacing: 0;
+      line-height: 1.3;
+      white-space: nowrap;
+      color: var(--ink);
+    }
+    .peek-note span { display: block; color: var(--ink-3); }
+
+    /* ======================================================================
+       03 · Three tiles
+       ====================================================================== */
+    .tl-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: calc(24 * var(--u));
+      height: calc(472 * var(--u));
+    }
+    .tl {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: calc(28 * var(--u)) calc(28 * var(--u)) 0;
+      border-radius: calc(32 * var(--u));
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .tl-head { display: flex; align-items: center; justify-content: space-between; gap: calc(12 * var(--u)); }
+    .tl .g { --c: var(--deep); color: #fff; filter: drop-shadow(0 calc(6 * var(--u)) calc(12 * var(--u)) color-mix(in oklab, var(--deep) 22%, transparent)); }
+    .tl-name { margin-top: calc(22 * var(--u)); color: var(--pastel-ink); white-space: nowrap; }
+    .tl-meta { margin-top: calc(4 * var(--u)); }
+    .tl-foot { position: relative; flex: 1; margin: calc(22 * var(--u)) calc(-28 * var(--u)) 0; }
+    /* you: the photo, the whole tile */
+    .tl-me { padding: 0; box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.05); }
+    .tl-me > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; transition: scale 0.9s var(--ease-rise); }
+    .tl-me:hover > img { scale: 1.03; }
+    .tl-me .pill-s { position: absolute; top: calc(22 * var(--u)); left: calc(22 * var(--u)); }
+    .tl-reach { position: absolute; left: calc(22 * var(--u)); bottom: calc(22 * var(--u)); display: flex; gap: calc(8 * var(--u)); }
+    .tl-reach a {
+      display: grid;
+      place-items: center;
+      width: calc(52 * var(--u));
+      height: calc(52 * var(--u));
+      border-radius: 50%;
+      transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+    }
+    .tl-reach a .i { width: calc(24 * var(--u)); height: calc(24 * var(--u)); stroke-width: 1.75; }
+    .tl-reach a:hover { background: #fff; scale: 1.08; }
+    /* school: a calendar leaf, coming up out of the foot */
+    .leaf {
+      position: absolute;
+      left: calc(28 * var(--u));
+      top: calc(8 * var(--u));
+      width: calc(210 * var(--u));
+      overflow: hidden;
+      border-radius: calc(18 * var(--u));
+      background: #fff;
+      text-align: center;
+      box-shadow:
+        0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
+        0 calc(28 * var(--u)) calc(56 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent);
+      transition: translate 0.7s var(--ease-rise);
+    }
+    .leaf > span { display: block; }
+    .leaf-back .leaf-num { visibility: hidden; }
+    .leaf-back { left: calc(56 * var(--u)); top: calc(-6 * var(--u)); rotate: 5deg; opacity: 0.7; z-index: -1; }
+    .leaf-top { padding: calc(10 * var(--u)) 0; background: var(--deep); color: #fff; font-size: calc(18 * var(--u)); letter-spacing: 0.16em; text-transform: uppercase; }
+    .leaf-num { padding: calc(14 * var(--u)) 0 calc(4 * var(--u)); font-size: calc(84 * var(--u)); line-height: 1; letter-spacing: -0.04em; color: var(--pastel-ink); }
+    .leaf-cap { padding-bottom: calc(80 * var(--u)); font-size: calc(18 * var(--u)); letter-spacing: 0; color: var(--ink-3); }
+    .tl:hover .leaf:not(.leaf-back) { translate: 0 calc(-12 * var(--u)); }
+    /* off the clock: three round stickers, which spread when pointed at */
+    .stk {
+      position: absolute;
+      top: calc(12 * var(--u));
+      display: grid;
+      place-items: center;
+      width: calc(128 * var(--u));
+      height: calc(128 * var(--u));
+      border-radius: 50%;
+      background: #fff;
+      color: var(--deep);
+      box-shadow:
+        0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
+        0 calc(20 * var(--u)) calc(36 * var(--u)) calc(-16 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
+      transition: translate var(--t-settle) var(--spring-settle), rotate var(--t-settle) var(--spring-settle);
+    }
+    .stk .i { width: 46%; height: 46%; stroke-width: 1.6; }
+    .stk:nth-child(1) { left: calc(24 * var(--u)); rotate: -8deg; }
+    .stk:nth-child(2) { left: calc(126 * var(--u)); top: calc(56 * var(--u)); z-index: 1; background: var(--yellow); }
+    .stk:nth-child(3) { left: calc(228 * var(--u)); rotate: 7deg; background: var(--mint); }
+    .tl:hover .stk:nth-child(1) { translate: calc(-10 * var(--u)) calc(-14 * var(--u)); rotate: -16deg; }
+    .tl:hover .stk:nth-child(2) { translate: 0 calc(-26 * var(--u)); }
+    .tl:hover .stk:nth-child(3) { translate: calc(10 * var(--u)) calc(-14 * var(--u)); rotate: 15deg; }
+
+    /* ======================================================================
+       04 · The badge
+       ====================================================================== */
+    .bd-text { max-width: 18.6em; }
+    .bd-text p + p { margin-top: 0.5em; }
+    .bd-rig {
+      --a: 0;
+      position: absolute;
+      left: calc(850 * var(--u));
+      top: calc(-143 * var(--u));
+      width: calc(300 * var(--u));
+      transform-origin: 50% 0;
+      rotate: calc(var(--a) * 1deg);
+      perspective: calc(1600 * var(--u));
+      touch-action: none;
+    }
+    .bd-strap {
+      display: block;
+      width: calc(34 * var(--u));
+      height: calc(196 * var(--u));
+      margin: 0 auto;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 calc(5 * var(--u)), rgb(255 255 255 / 0.18) calc(5 * var(--u)) calc(6 * var(--u))),
+        linear-gradient(90deg, color-mix(in oklab, var(--lavender), #4a43b0 22%), var(--lavender) 22% 78%, color-mix(in oklab, var(--lavender), #4a43b0 22%));
+    }
+    .bd-clip {
+      position: relative;
+      display: block;
+      width: calc(46 * var(--u));
+      height: calc(30 * var(--u));
+      margin: calc(-4 * var(--u)) auto 0;
+      border-radius: calc(8 * var(--u)) calc(8 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u));
+      background: linear-gradient(#f4f4f6, #b9bac2);
+      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12), 0 calc(2 * var(--u)) calc(4 * var(--u)) rgb(0 0 0 / 0.15);
+    }
+    .bd-clip::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: calc(-16 * var(--u));
+      width: calc(14 * var(--u));
+      height: calc(24 * var(--u));
+      translate: -50% 0;
+      border-radius: calc(7 * var(--u));
+      border: calc(3 * var(--u)) solid #b3b4bc;
+    }
+    .bd-card {
+      position: relative;
+      height: calc(438 * var(--u));
+      margin-top: calc(6 * var(--u));
+      transform-style: preserve-3d;
+      transition: transform 0.9s var(--spring-settle);
+      cursor: grab;
+    }
+    .bd-card:active { cursor: grabbing; }
+    .bd-card.is-flipped { transform: rotateY(180deg); }
+    .bd-face {
+      --tint: var(--green);
+      --deep: #2b7a3d;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: calc(22 * var(--u));
+      border-radius: calc(26 * var(--u));
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      box-shadow:
+        inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent),
+        0 calc(34 * var(--u)) calc(56 * var(--u)) calc(-26 * var(--u)) rgb(0 0 0 / 0.35);
+    }
+    .bd-back { transform: rotateY(180deg); background: #fff; }
+    .bd-slot {
+      flex: none;
+      width: calc(64 * var(--u));
+      height: calc(12 * var(--u));
+      margin: 0 auto calc(16 * var(--u));
+      border-radius: calc(6 * var(--u));
+      background: color-mix(in oklab, var(--deep) 16%, transparent);
+      box-shadow: inset 0 calc(2 * var(--u)) calc(3 * var(--u)) rgb(0 0 0 / 0.14);
+    }
+    .bd-photo { flex: none; height: calc(214 * var(--u)); border-radius: calc(16 * var(--u)); overflow: hidden; box-shadow: 0 0 0 1px color-mix(in oklab, var(--deep) 12%, transparent); }
+    .bd-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; pointer-events: none; }
+    .bd-name { margin-top: calc(16 * var(--u)); font-size: calc(28 * var(--u)); line-height: 1.15; color: var(--pastel-ink); }
+    .bd-role { margin-top: calc(2 * var(--u)); font-size: calc(19 * var(--u)); letter-spacing: 0; color: color-mix(in oklab, var(--deep) 55%, var(--ink)); }
+    .bd-tags { display: flex; gap: calc(6 * var(--u)); margin-top: auto; }
+    .bd-tags span { height: calc(32 * var(--u)); padding: 0 calc(12 * var(--u)); font-size: calc(17 * var(--u)); }
+    .bd-found { font-size: calc(17 * var(--u)); letter-spacing: 0; color: var(--ink-3); }
+    .bd-back .bd-name { margin-top: calc(2 * var(--u)); }
+    .bd-reach { list-style: none; margin-top: calc(14 * var(--u)); }
+    .bd-reach li + li { border-top: 1px solid rgb(30 30 30 / 0.07); }
+    .bd-reach a {
+      display: flex;
+      align-items: center;
+      gap: calc(12 * var(--u));
+      height: calc(50 * var(--u));
+      font-size: calc(24 * var(--u));
+      letter-spacing: 0;
+      color: var(--ink);
+      transition: color 0.2s ease, translate var(--t-snap) var(--spring-snap);
+    }
+    .bd-reach a .i { width: calc(24 * var(--u)); height: calc(24 * var(--u)); stroke-width: 1.75; color: var(--ink-3); }
+    .bd-reach a:hover { translate: calc(4 * var(--u)) 0; }
+    .bd-code {
+      margin-top: auto;
+      height: calc(36 * var(--u));
+      border-radius: calc(4 * var(--u));
+      background: repeating-linear-gradient(90deg,
+        var(--mark) 0 calc(2 * var(--u)), transparent calc(2 * var(--u)) calc(5 * var(--u)),
+        var(--mark) calc(5 * var(--u)) calc(9 * var(--u)), transparent calc(9 * var(--u)) calc(11 * var(--u)),
+        var(--mark) calc(11 * var(--u)) calc(12 * var(--u)), transparent calc(12 * var(--u)) calc(16 * var(--u)));
+      opacity: 0.8;
+    }
+
+    /* ======================================================================
+       05 · So far
+       ====================================================================== */
+    .tm-text { max-width: 26em; margin-top: -0.25em; }
+    .tm-text p + p { margin-top: 0.4em; }
+    .tm-chart {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(216 * var(--u));
+      height: calc(266 * var(--u));
+    }
+    .tm-future {
+      position: absolute;
+      top: calc(-10 * var(--u));
+      right: 0;
+      bottom: calc(36 * var(--u));
+      border-radius: calc(14 * var(--u));
+      background: repeating-linear-gradient(-45deg, rgb(var(--line) / 0.035) 0 calc(6 * var(--u)), transparent calc(6 * var(--u)) calc(14 * var(--u)));
+    }
+    .tm-item { position: absolute; }
+    .tm-label {
+      display: flex;
+      align-items: center;
+      gap: calc(10 * var(--u));
+      height: calc(40 * var(--u));
+      white-space: nowrap;
+      opacity: 0;
+      translate: 0 calc(8 * var(--u));
+      transition: opacity 0.4s ease, translate 0.7s var(--ease-rise);
+      transition-delay: calc(var(--n) * 120ms + 350ms);
+    }
+    .tm-label > * { flex: none; }
+    .tm-label .vi { width: calc(32 * var(--u)); height: calc(32 * var(--u)); margin: 0; vertical-align: 0; }
+    .tm-label .g { --g: calc(32 * var(--u)); --c: var(--tint); }
+    .tm-name { font-size: calc(24 * var(--u)); letter-spacing: 0; color: var(--ink); }
+    .tm-when { font-size: calc(19 * var(--u)); letter-spacing: 0; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+    .tm-bar {
+      position: relative;
+      display: block;
+      height: calc(14 * var(--u));
+      margin-top: calc(8 * var(--u));
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--tint), var(--deep) 26%);
+      transform-origin: 0 50%;
+      scale: 0 1;
+      transition: scale 1s var(--ease-rise), height 0.3s ease;
+      transition-delay: calc(var(--n) * 120ms + 250ms);
+    }
+    .tm-item:hover .tm-bar { height: calc(18 * var(--u)); }
+    .tm-live::after {
+      content: '';
+      position: absolute;
+      right: calc(-3 * var(--u));
+      top: 50%;
+      width: calc(20 * var(--u));
+      height: calc(20 * var(--u));
+      translate: 0 -50%;
+      border-radius: 50%;
+      background: var(--deep);
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--deep) 40%, transparent);
+      animation: live 2s ease-out infinite;
+    }
+    @keyframes live { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--deep) 40%, transparent); } 80%, 100% { box-shadow: 0 0 0 calc(14 * var(--u)) transparent; } }
+    .screen.is-seen .tm-bar { scale: 1 1; }
+    .screen.is-seen .tm-label { opacity: 1; translate: 0 0; }
+    .tm-mark {
+      position: absolute;
+      top: calc(-10 * var(--u));
+      bottom: calc(36 * var(--u));
+      width: 0;
+      border-left: calc(2 * var(--u)) dashed var(--c);
+    }
+    .tm-mark .pill-s {
+      position: absolute;
+      bottom: calc(-46 * var(--u));
+      translate: -50% 0;
+      height: calc(34 * var(--u));
+      padding: 0 calc(12 * var(--u));
+      font-size: calc(18 * var(--u));
+      background: var(--yellow);
+      color: var(--mark);
+    }
+    .tm-grad .pill-s { top: calc(88 * var(--u)); bottom: auto; right: calc(10 * var(--u)); translate: 0 0; height: calc(44 * var(--u)); padding: 0 calc(16 * var(--u)) 0 calc(10 * var(--u)); font-size: calc(21 * var(--u)); background: var(--lavender); }
+    .tm-grad .pill-s .i { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+    .tm-grad .pill-s span { color: color-mix(in oklab, #4a43b0 60%, var(--ink-3)); }
+    .tm-axis {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(36 * var(--u));
+      border-top: 1px solid rgb(var(--line) / 0.12);
+    }
+    .tm-tick { position: absolute; top: calc(-3 * var(--u)); width: calc(5 * var(--u)); height: calc(5 * var(--u)); translate: -50% 0; border-radius: 50%; background: rgb(var(--line) / 0.18); }
+    .tm-year { position: absolute; top: calc(8 * var(--u)); font-size: calc(19 * var(--u)); letter-spacing: 0; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+    /* ======================================================================
+       06 · Pinned up
+       ====================================================================== */
+    .pins { position: absolute; left: 0; right: 0; top: 0; bottom: calc(70 * var(--u)); }
+    .pin {
+      --x: 0;
+      --y: 0;
+      --r: 0;
+      position: absolute;
+      left: 0;
+      top: 0;
+      translate: calc(var(--x) * var(--u)) calc(var(--y) * var(--u));
+      rotate: calc(var(--r) * 1deg);
+      border-radius: calc(22 * var(--u));
+      box-shadow:
+        0 0 0 1px rgb(30 30 30 / 0.05),
+        0 calc(2 * var(--u)) calc(4 * var(--u)) rgb(0 0 0 / 0.04),
+        0 calc(18 * var(--u)) calc(34 * var(--u)) calc(-20 * var(--u)) rgb(0 0 0 / 0.28);
+      cursor: grab;
+      touch-action: none;
+      transition:
+        translate var(--t-settle) var(--spring-settle) calc(var(--i, 0) * 28ms),
+        rotate var(--t-settle) var(--spring-settle) calc(var(--i, 0) * 28ms),
+        scale var(--t-pop) var(--spring-pop),
+        box-shadow 0.3s ease;
+    }
+    .pin.is-held {
+      rotate: 0deg;
+      scale: 1.04;
+      cursor: grabbing;
+      box-shadow:
+        0 0 0 1px rgb(30 30 30 / 0.05),
+        0 calc(40 * var(--u)) calc(60 * var(--u)) calc(-24 * var(--u)) rgb(0 0 0 / 0.35);
+      transition: rotate var(--t-snap) var(--spring-snap), scale var(--t-pop) var(--spring-pop), box-shadow 0.3s ease;
+    }
+    .pin-photo { width: calc(250 * var(--u)); padding: calc(12 * var(--u)) calc(12 * var(--u)) 0; background: #fff; }
+    .pin-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; object-position: 50% 20%; border-radius: calc(12 * var(--u)); pointer-events: none; }
+    .pin-photo figcaption { padding: calc(12 * var(--u)) calc(4 * var(--u)) calc(14 * var(--u)); font-size: calc(21 * var(--u)); letter-spacing: 0; color: var(--ink-3); }
+    .pin-note {
+      width: calc(232 * var(--u));
+      height: calc(232 * var(--u));
+      padding: calc(24 * var(--u));
+      border-radius: calc(8 * var(--u));
+      background: var(--yellow);
+      font-size: calc(30 * var(--u));
+      line-height: 1.2;
+      color: var(--pastel-ink);
+    }
+    .pin-card {
+      --tint: var(--pill);
+      --deep: #444343;
+      display: flex;
+      flex-direction: column;
+      width: calc(280 * var(--u));
+      padding: calc(22 * var(--u));
+    }
+    .pin-card .g { --g: calc(52 * var(--u)); --c: var(--deep); color: #fff; }
+    .pin-card .vi { width: calc(52 * var(--u)); height: calc(52 * var(--u)); margin: 0; }
+    .pin-card b { margin-top: calc(16 * var(--u)); font-size: calc(30 * var(--u)); line-height: 1.15; color: var(--pastel-ink); }
+    .pin-card > span:not(.g):not(.vi) { font-size: calc(20 * var(--u)); letter-spacing: 0; line-height: 1.3; color: color-mix(in oklab, var(--deep) 55%, var(--ink)); }
+    .pin-card .pill-s { align-self: flex-start; margin-top: calc(14 * var(--u)); height: calc(34 * var(--u)); padding: 0 calc(12 * var(--u)); font-size: calc(18 * var(--u)); }
+    .pin-round {
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: calc(8 * var(--u));
+      width: calc(190 * var(--u));
+      height: calc(190 * var(--u));
+      padding: calc(20 * var(--u));
+      border-radius: 50%;
+      text-align: center;
+      font-size: calc(19 * var(--u));
+      letter-spacing: 0;
+      line-height: 1.25;
+      color: var(--pastel-ink);
+    }
+    .pin-round .i { width: calc(56 * var(--u)); height: calc(56 * var(--u)); stroke-width: 1.5; color: var(--deep, var(--mark)); }
+    .pin-reach .p-links { display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)); margin-top: calc(12 * var(--u)); }
+    .pin-reach .p-links a { height: calc(36 * var(--u)); padding: 0 calc(12 * var(--u)); font-size: calc(19 * var(--u)); background: rgb(255 255 255 / 0.7); transition: background-color 0.2s ease; }
+    .pin-reach .p-links a:hover { background: #fff; }
+    .b-line { display: flex; align-items: center; gap: calc(14 * var(--u)); }
+    .b-tidy { background: var(--surface); box-shadow: inset 0 0 0 1px rgb(var(--line) / 0.08); height: calc(48 * var(--u)); padding: 0 calc(18 * var(--u)) 0 calc(14 * var(--u)); transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop); }
+    .b-tidy:hover { background: var(--yellow); box-shadow: none; }
+    .b-tidy:active { scale: 0.96; }
+    .b-hint { font-size: calc(22 * var(--u)); letter-spacing: 0; color: var(--ink-3); }
+
+    /* ======================================================================
+       07 · Write back
+       ====================================================================== */
+    .lt-text { max-width: 16.6em; margin-top: -0.25em; }
+    .lt-text p + p { margin-top: 0.5em; }
+    .lt-text .quiet { color: var(--ink-2); }
+    .letter {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: calc(76 * var(--u));
+      display: flex;
+      flex-direction: column;
+      width: calc(520 * var(--u));
+      padding: calc(10 * var(--u)) calc(28 * var(--u)) calc(24 * var(--u));
+      border-radius: calc(32 * var(--u));
+      background: var(--surface);
+      box-shadow: inset 0 0 0 1px rgb(var(--line) / 0.07);
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .lt-row {
+      display: flex;
+      align-items: center;
+      gap: calc(14 * var(--u));
+      min-height: calc(68 * var(--u));
+      border-bottom: 1px solid rgb(var(--line) / 0.08);
+      font-size: calc(22 * var(--u));
+      letter-spacing: 0;
+    }
+    .lt-row > label, .lt-row > .lt-k { width: calc(46 * var(--u)); color: var(--ink-3); }
+    .lt-to {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(10 * var(--u));
+      height: calc(44 * var(--u));
+      padding: 0 calc(16 * var(--u)) 0 calc(5 * var(--u));
+      border-radius: 999px;
+      background: var(--pill);
+      color: var(--ink);
+      transition: background-color 0.2s ease;
+    }
+    .lt-to:hover { background: var(--green); }
+    .lt-to img { width: calc(34 * var(--u)); height: calc(34 * var(--u)); border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+    .lt-from { flex: 1; min-width: 0; height: calc(44 * var(--u)); }
+    .lt-from::placeholder, .lt-body::placeholder { color: var(--ink-4); opacity: 1; }
+    .lt-body {
+      flex: 1;
+      width: 100%;
+      margin-top: calc(18 * var(--u));
+      resize: none;
+      font-size: calc(36 * var(--u));
+      line-height: 1.1944;
+      caret-color: var(--fg);
+    }
+    .lt-foot { display: flex; align-items: center; justify-content: space-between; gap: calc(12 * var(--u)); }
+    .lt-note { font-size: calc(20 * var(--u)); letter-spacing: 0; color: var(--ink-3); }
+    .lt-send {
+      display: grid;
+      place-items: center;
+      width: calc(48 * var(--u));
+      height: calc(48 * var(--u));
+      border-radius: 50%;
+      background: var(--fg);
+      color: var(--bg);
+      transition: opacity 0.2s ease, scale var(--t-pop) var(--spring-pop);
+    }
+    .lt-send .i { width: calc(26 * var(--u)); height: calc(26 * var(--u)); stroke-width: 2.25; }
+    .lt-send:disabled { opacity: 0.18; cursor: default; }
+    .lt-send:not(:disabled):active { scale: 0.92; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen *, .screen *::before, .screen *::after { animation: none !important; transition-duration: 0.01s !important; }
+      .screen .tk, .screen .tm-bar { scale: 1 !important; }
+      .screen .tm-label { opacity: 1 !important; translate: 0 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- The draft's glyphs, all Lucide's (ISC licence, lucide.dev), drawn in
+       the same 28-unit box around the usual 24 the draft uses; the ball is
+       drawn here, since Lucide has none. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-arrow" viewBox="-2 -2 28 28"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></symbol>
+    <symbol id="i-up" viewBox="-2 -2 28 28"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></symbol>
+    <symbol id="i-hand" viewBox="-2 -2 28 28"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" /><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></symbol>
+    <symbol id="i-pin" viewBox="-2 -2 28 28"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></symbol>
+    <symbol id="i-cap" viewBox="-2 -2 28 28"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></symbol>
+    <symbol id="i-pen" viewBox="-2 -2 28 28"><path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z" /><path d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18" /><path d="m2.3 2.3 7.286 7.286" /><circle cx="11" cy="11" r="2" /></symbol>
+    <symbol id="i-code" viewBox="-2 -2 28 28"><path d="m16 18 6-6-6-6" /><path d="m8 6-6 6 6 6" /></symbol>
+    <symbol id="i-sparkles" viewBox="-2 -2 28 28"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /></symbol>
+    <symbol id="i-bike" viewBox="-2 -2 28 28"><circle cx="18.5" cy="17.5" r="3.5" /><circle cx="5.5" cy="17.5" r="3.5" /><circle cx="15" cy="5" r="1" /><path d="M12 17.5V14l-3-3 4-3 2 3h2" /></symbol>
+    <symbol id="i-ball" viewBox="-2 -2 28 28"><circle cx="12" cy="12" r="10" /><path d="m12 7.2 4.6 3.3-1.8 5.4H9.2l-1.8-5.4z" /><path d="M12 7.2V2.2M16.6 10.5l4.8-1.6M14.8 15.9l2.9 4.1M9.2 15.9l-2.9 4.1M7.4 10.5 2.6 8.9" /></symbol>
+    <symbol id="i-users" viewBox="-2 -2 28 28"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+    <symbol id="i-mail" viewBox="-2 -2 28 28"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></symbol>
+    <symbol id="i-linkedin" viewBox="-2 -2 28 28"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></symbol>
+    <symbol id="i-github" viewBox="-2 -2 28 28"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></symbol>
+    <symbol id="i-file" viewBox="-2 -2 28 28"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></symbol>
+    <symbol id="i-grid" viewBox="-2 -2 28 28"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></symbol>
+    <symbol id="i-again" viewBox="-2 -2 28 28"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></symbol>
+  </svg>
+
+  <div class="doc">
+    <header class="doc-head">
+      <div>
+        <p class="kicker"><span class="sq"></span>Draft portfolio · About</p>
+        <h1>Eight ways to say who you are</h1>
+        <p class="lede">Each frame is the About screen at the draft’s real size, under its own masthead, with the same facts said a different way: as a chat, a sentence with pictures in it, three tiles, a badge, a timeline, a pinboard and a letter. Point at things, and drag the badge and the cards. The first frame is the draft as it stands, for comparison.</p>
+      </div>
+      <div class="facts">
+        <p class="facts-title">Said in every option</p>
+        <ol>
+          <li class="fact">
+            <span class="fact-no">01</span>
+            <span class="g" style="--c: var(--pink)"><svg class="i"><use href="#i-pin" /></svg></span>
+            <span><span class="fact-name">From Portland, Oregon</span><span class="fact-role">Product design engineer</span></span>
+            <span></span>
+          </li>
+          <li class="fact">
+            <span class="fact-no">02</span>
+            <span class="g" style="--c: var(--lavender)"><svg class="i"><use href="#i-cap" /></svg></span>
+            <span><span class="fact-name">UChicago</span><span class="fact-role">Media Arts &amp; Design and Computer Science</span></span>
+            <span class="fact-when" style="--c: var(--lavender)">Graduating May 2027</span>
+          </li>
+          <li class="fact">
+            <span class="fact-no">03</span>
+            <span class="g" style="--c: var(--yellow)"><svg class="i"><use href="#i-sparkles" /></svg></span>
+            <span><span class="fact-name">Useful and pleasurable</span><span class="fact-role">What software should be</span></span>
+            <span></span>
+          </li>
+          <li class="fact">
+            <span class="fact-no">04</span>
+            <span class="g" style="--c: #c9eff1; padding: 0"><img src="../assets/work/icon-vicino.webp" alt="" style="width:100%;height:100%" /></span>
+            <span><span class="fact-name">Most recently, Vicino AI</span><span class="fact-role">UX Engineer Intern, now finished</span></span>
+            <span class="fact-when" style="--c: #c9eff1">Jun – Aug 2026</span>
+          </li>
+          <li class="fact">
+            <span class="fact-no">05</span>
+            <span class="g" style="--c: var(--blue)"><svg class="i"><use href="#i-bike" /></svg></span>
+            <span><span class="fact-name">Off the clock</span><span class="fact-role">Lake Michigan by bike, Real Madrid, friends</span></span>
+            <span class="fact-when" style="--c: #eee">from the live bio</span>
+          </li>
+        </ol>
+      </div>
+    </header>
+  </div>
+
+  <nav class="doc-nav" aria-label="Explorations">
+    <ol class="doc">
+      <li><a href="#today"><span>00</span>Today</a></li>
+      <li><a href="#chat"><span>01</span>In conversation</a></li>
+      <li><a href="#pictures"><span>02</span>With pictures</a></li>
+      <li><a href="#tiles"><span>03</span>Three tiles</a></li>
+      <li><a href="#badge"><span>04</span>The badge</a></li>
+      <li><a href="#sofar"><span>05</span>So far</a></li>
+      <li><a href="#pinned"><span>06</span>Pinned up</a></li>
+      <li><a href="#letter"><span>07</span>Write back</a></li>
+    </ol>
+  </nav>
+
+  <main class="doc">
+
+    <!-- 00 ================================================================ -->
+    <section class="ex" id="today">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">00 <span class="tag tag-quiet">The draft today</span></p>
+          <h2>A tile and a letter</h2>
+          <p class="ex-lede">The draft as it stands: a green “Hello” tile with the photo sunk into it, the sentences beside it in two inks, and white pills to reach you.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>Only the facts: Vicino is in the past tense, and May 2027 is in.</dd></div>
+          <div><dt>Why it’s here</dt><dd>So every option below can be read against it.</dd></div>
+          <div><dt>Watch for</dt><dd>You said you don’t love it. It’s a baseline, not a candidate.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-today">
+        <figure class="td-tile lit">
+          <span class="hello">Hello<svg class="i"><use href="#i-hand" /></svg></span>
+          <span class="meta" style="margin-top: calc(-20 * var(--u))">nice to meet you</span>
+          <span class="well"><img src="../assets/me.jpg" alt="" /></span>
+        </figure>
+        <div class="td-body">
+          <div class="td-text two">
+            <p>I’m a <b>product design engineer</b> from <b>Portland, Oregon</b>, studying <b>Media Arts &amp; Design</b> and <b>Computer Science</b> at <b>UChicago</b>, graduating in <b>May 2027</b>.</p>
+            <p>I believe software should be <b>useful and pleasurable</b>.</p>
+            <p>Most recently I was a <b>UX engineer intern</b> at <span class="vi"><img src="../assets/work/icon-vicino.webp" alt="" /></span><b>Vicino AI</b>.</p>
+          </div>
+          <ul class="td-pills">
+            <li><a href="#" data-say="Opens an email to Tigo">email</a></li>
+            <li><a href="#" data-say="Opens LinkedIn">linkedin</a></li>
+            <li><a href="#" data-say="Opens GitHub">github</a></li>
+            <li><a href="#" data-say="Opens the résumé">résumé</a></li>
+          </ul>
+        </div>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Point at the tile: the hand waves.</span></div>
+    </section>
+
+    <!-- 01 ================================================================ -->
+    <section class="ex" id="chat">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">01</p>
+          <h2>In conversation</h2>
+          <p class="ex-lede">About told as a chat, in Home’s own bubbles. It plays by itself when it comes into view: two questions, the photo, two answers. The chips at the foot ask the rest.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>No page of prose at all. The site opens as a conversation, and About carries it on.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>The most “you” of the eight: it has your voice, and it shows the chat before anyone types into it.</dd></div>
+          <div><dt>Watch for</dt><dd>It is scripted, not the live model. The chips could hand a question to Home’s real composer.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-chat">
+        <div class="c-thread"><div class="c-inner"></div></div>
+        <div class="line c-ask">
+          <span class="c-ask-label">ask</span>
+          <button type="button" class="pill-s c-chip" data-q="believe">what do you believe?</button>
+          <button type="button" class="pill-s c-chip" data-q="work">where have you worked?</button>
+          <button type="button" class="pill-s c-chip" data-q="fun">and for fun?</button>
+          <button type="button" class="pill-s c-chip" data-q="reach">how do I reach you?</button>
+          <button type="button" class="pill-s c-chip c-again" data-q="again"><svg class="i"><use href="#i-again" /></svg>start over</button>
+        </div>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Scroll it into view to watch it play, then ask with the chips.</span></div>
+    </section>
+
+    <!-- 02 ================================================================ -->
+    <section class="ex" id="pictures">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">02</p>
+          <h2>A sentence with pictures</h2>
+          <p class="ex-lede">One paragraph at the frame’s one size, with small pastel tiles set into the words where emoji would go. The photo is one of them, and it opens when you point at it.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>All words, and still full of colour: the menu’s pastels come back, one per idea.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>Reads in one breath. It keeps the frame’s single size and needs no layout at all.</dd></div>
+          <div><dt>Watch for</dt><dd>The photo is small until pointed at, so on a phone it needs a tap. More tiles than this gets busy.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-tokens">
+        <div class="tk-text">
+          <p>Hi, I’m Tigo<span class="tk tk-photo" style="--n:0"><img src="../assets/me.jpg" alt="" /><span class="peek peek-photo"><img src="../assets/me.jpg" alt="" /></span></span>, a product design engineer from Portland, Oregon<span class="tk" style="--c: var(--pink); --n:1"><svg class="i"><use href="#i-pin" /></svg></span>. I study Media Arts &amp; Design<span class="tk" style="--c: var(--lavender); --n:2"><svg class="i"><use href="#i-pen" /></svg></span> and Computer Science<span class="tk" style="--c: var(--blue); --n:3"><svg class="i"><use href="#i-code" /></svg></span> at UChicago<span class="tk" style="--c: #ffd5dc; --n:4"><svg class="i"><use href="#i-cap" /></svg><span class="peek peek-note">Class of 2027<span>graduating in May</span></span></span>, and graduate in May 2027.</p>
+          <p>I believe software should be useful and pleasurable<span class="tk" style="--c: var(--yellow); --n:5"><svg class="i"><use href="#i-sparkles" /></svg></span>. Most recently I was a UX engineer intern at Vicino AI<span class="tk tk-app" style="--n:6"><img src="../assets/work/icon-vicino.webp" alt="" /><span class="peek peek-note">UX Engineer Intern<span>Jun – Aug 2026</span></span></span>.</p>
+          <p>Off the clock: bike rides along Lake Michigan<span class="tk" style="--c: var(--mint); --n:7"><svg class="i"><use href="#i-bike" /></svg></span>, Real Madrid<span class="tk" style="--c: #fff; --n:8"><svg class="i"><use href="#i-ball" /></svg></span> and friends<span class="tk" style="--c: #ffe3c4; --n:9"><svg class="i"><use href="#i-users" /></svg></span>.</p>
+        </div>
+        <p class="line links"><a href="#" data-say="Opens an email to Tigo">email</a><span class="sep"> · </span><a href="#" data-say="Opens LinkedIn">linkedin</a><span class="sep"> · </span><a href="#" data-say="Opens GitHub">github</a><span class="sep"> · </span><a href="#" data-say="Opens the résumé">résumé</a></p>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Point at the photo after “Tigo”, and at UChicago’s and Vicino’s tiles.</span></div>
+    </section>
+
+    <!-- 03 ================================================================ -->
+    <section class="ex" id="tiles">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">03</p>
+          <h2>Three tiles</h2>
+          <p class="ex-lede">About in the same three columns as Work and Play: you, school, and off the clock. Each is a lit tile with something coming up out of its foot, and the belief is the screen’s bottom line, the way Play has one.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>The photo fills a whole tile, with the ways to reach you frosted onto it.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>The page keeps one rhythm from Work to About, and every fact becomes an object.</dd></div>
+          <div><dt>Watch for</dt><dd>Less of your voice: the sentences give way to labels. The calendar counts down live.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-tiles">
+        <div class="tl-row">
+          <div class="tl tl-me">
+            <img src="../assets/me.jpg" alt="" />
+            <span class="pill-s frost">Tigo Ponce de León</span>
+            <span class="tl-reach">
+              <a href="#" class="frost" data-say="Opens an email to Tigo" aria-label="email"><svg class="i"><use href="#i-mail" /></svg></a>
+              <a href="#" class="frost" data-say="Opens LinkedIn" aria-label="LinkedIn"><svg class="i"><use href="#i-linkedin" /></svg></a>
+              <a href="#" class="frost" data-say="Opens GitHub" aria-label="GitHub"><svg class="i"><use href="#i-github" /></svg></a>
+              <a href="#" class="frost" data-say="Opens the résumé" aria-label="résumé"><svg class="i"><use href="#i-file" /></svg></a>
+            </span>
+          </div>
+          <div class="tl lit" style="--tint: #ffd5dc; --deep: #8b1e2f">
+            <span class="tl-head"><span class="g"><svg class="i"><use href="#i-cap" /></svg></span><span class="pill-s frost">Class of 2027</span></span>
+            <span class="tl-name">UChicago</span>
+            <span class="meta tl-meta"><span>Media Arts &amp; Design</span><span>Computer Science</span></span>
+            <span class="tl-foot">
+              <span class="leaf leaf-back"><span class="leaf-top">Apr</span><span class="leaf-num">2027</span><span class="leaf-cap">&nbsp;</span></span>
+              <span class="leaf"><span class="leaf-top">May</span><span class="leaf-num">2027</span><span class="leaf-cap" data-countdown>graduation</span></span>
+            </span>
+          </div>
+          <div class="tl lit" style="--tint: var(--blue); --deep: #1f6d96">
+            <span class="tl-head"><span class="g"><svg class="i"><use href="#i-bike" /></svg></span></span>
+            <span class="tl-name">Off the clock</span>
+            <span class="meta tl-meta"><span>Bike rides along Lake Michigan</span><span>Real Madrid matches, and friends</span></span>
+            <span class="tl-foot">
+              <span class="stk"><svg class="i"><use href="#i-bike" /></svg></span>
+              <span class="stk"><svg class="i"><use href="#i-ball" /></svg></span>
+              <span class="stk"><svg class="i"><use href="#i-users" /></svg></span>
+            </span>
+          </div>
+        </div>
+        <p class="line">about: software should be useful and pleasurable</p>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Point at the tiles: the calendar lifts, the stickers spread, the photo leans in.</span></div>
+    </section>
+
+    <!-- 04 ================================================================ -->
+    <section class="ex" id="badge">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">04</p>
+          <h2>The badge</h2>
+          <p class="ex-lede">The sentences on the left, and on the right a name badge on a lanyard, hanging from the top of the window. Drag it and it swings on a spring; click it and it turns over. The back says how to reach you.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>A physical object with a front and a back: who you are, then how to find you.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>Playful the way Play is, and the springs the site runs on finally get something to hold.</dd></div>
+          <div><dt>Watch for</dt><dd>A gimmick if pushed further. The photo is smaller than in the tile options.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-badge">
+        <div class="bd-text">
+          <p>I’m a product design engineer from Portland, Oregon, studying Media Arts &amp; Design and Computer Science at UChicago.</p>
+          <p>I believe software should be useful and pleasurable.</p>
+          <p>Most recently I was a UX engineer intern at Vicino AI.</p>
+        </div>
+        <div class="bd-rig">
+          <span class="bd-strap"></span>
+          <span class="bd-clip"></span>
+          <div class="bd-card" role="button" tabindex="0" aria-label="Turn the badge over">
+            <div class="bd-face bd-front lit">
+              <span class="bd-slot"></span>
+              <span class="bd-photo"><img src="../assets/me.jpg" alt="" /></span>
+              <span class="bd-name">Tigo Ponce de León</span>
+              <span class="bd-role">Product design engineer</span>
+              <span class="bd-tags"><span class="pill-s frost">UChicago ’27</span><span class="pill-s frost">Portland, OR</span></span>
+            </div>
+            <div class="bd-face bd-back">
+              <span class="bd-slot" style="background: rgb(30 30 30 / 0.08)"></span>
+              <span class="bd-found">If found, please return to</span>
+              <span class="bd-name">Tigo Ponce de León</span>
+              <ul class="bd-reach">
+                <li><a href="#" data-say="Opens an email to Tigo"><svg class="i"><use href="#i-mail" /></svg>email</a></li>
+                <li><a href="#" data-say="Opens LinkedIn"><svg class="i"><use href="#i-linkedin" /></svg>linkedin</a></li>
+                <li><a href="#" data-say="Opens GitHub"><svg class="i"><use href="#i-github" /></svg>github</a></li>
+                <li><a href="#" data-say="Opens the résumé"><svg class="i"><use href="#i-file" /></svg>résumé</a></li>
+              </ul>
+              <span class="bd-code" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Drag the badge sideways and let go. Click it to turn it over.</span></div>
+    </section>
+
+    <!-- 05 ================================================================ -->
+    <section class="ex" id="sofar">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">05</p>
+          <h2>So far</h2>
+          <p class="ex-lede">Two sentences, and under them the last two years on one line: each role a bar in its app’s colour with its icon, today marked where it falls, and graduation ahead in May 2027.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>Time as the picture. It shows momentum, and that you are about to be free for what’s next.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>It uses the real icons and colours from Work, so the two screens talk to each other.</dd></div>
+          <div><dt>Watch for</dt><dd>It overlaps Work, and it needs a new bar each time something starts or ends.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-sofar">
+        <div class="tm-text">
+          <p>I’m a product design engineer from Portland, Oregon, studying Media Arts &amp; Design and Computer Science at UChicago.</p>
+          <p>I believe software should be useful and pleasurable.</p>
+        </div>
+        <div class="tm-chart"></div>
+        <p class="line links"><a href="#" data-say="Opens an email to Tigo">email</a><span class="sep"> · </span><a href="#" data-say="Opens LinkedIn">linkedin</a><span class="sep"> · </span><a href="#" data-say="Opens GitHub">github</a><span class="sep"> · </span><a href="#" data-say="Opens the résumé">résumé</a></p>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">The “today” line is today’s real date. PantryPal runs up to it.</span></div>
+    </section>
+
+    <!-- 06 ================================================================ -->
+    <section class="ex" id="pinned">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">06</p>
+          <h2>Pinned up</h2>
+          <p class="ex-lede">Everything about you on cards, left on the screen like a pinboard: the photo, a note, school, the internship, where you’re from, what you do for fun, how to reach you. Pick any of them up. “Tidy up” squares them away.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>No reading order at all: people browse it, and move it around.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>The most personal and the most playful, and it sits well beside Play.</dd></div>
+          <div><dt>Watch for</dt><dd>The tilted cards break the site’s straight lines. On a phone it would become a stack.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-board">
+        <div class="pins">
+          <figure class="pin pin-photo" style="--x:22;--y:4;--r:-5;--i:0" data-tidy="0,0">
+            <img src="../assets/me.jpg" alt="" />
+            <figcaption>Portland → Chicago</figcaption>
+          </figure>
+          <div class="pin pin-note" style="--x:318;--y:30;--r:4;--i:1" data-tidy="300,20">Software should be useful and pleasurable.</div>
+          <div class="pin pin-card lit" style="--tint:#ffd5dc;--deep:#8b1e2f;--x:586;--y:0;--r:-3;--i:2" data-tidy="582,0">
+            <span class="g"><svg class="i"><use href="#i-cap" /></svg></span>
+            <b>UChicago</b>
+            <span>Media Arts &amp; Design and Computer Science</span>
+            <span class="pill-s frost">Class of 2027</span>
+          </div>
+          <div class="pin pin-card lit" style="--tint:#c9eff1;--deep:#1c6f78;--x:890;--y:30;--r:3.5;--i:3" data-tidy="912,0">
+            <span class="vi"><img src="../assets/work/icon-vicino.webp" alt="" /></span>
+            <b>Vicino AI</b>
+            <span>Most recently, UX Engineer Intern</span>
+            <span class="pill-s frost">Jun – Aug 2026</span>
+          </div>
+          <div class="pin pin-card lit" style="--tint:var(--pink);--deep:#a33c3c;--x:352;--y:296;--r:-2.5;--i:4" data-tidy="0,304">
+            <span class="g"><svg class="i"><use href="#i-pin" /></svg></span>
+            <b>Portland, Oregon</b>
+            <span>where I’m from</span>
+          </div>
+          <div class="pin pin-round" style="background:var(--blue);--deep:#1f6d96;--x:660;--y:236;--r:6;--i:5" data-tidy="357,296">
+            <svg class="i"><use href="#i-bike" /></svg>bike rides along Lake Michigan
+          </div>
+          <div class="pin pin-round" style="background:#fff;--x:900;--y:272;--r:-8;--i:6" data-tidy="624,296">
+            <svg class="i"><use href="#i-ball" /></svg>Real Madrid matches
+          </div>
+          <div class="pin pin-card pin-reach lit" style="--tint:var(--green);--deep:#2b7a3d;--x:30;--y:318;--r:2;--i:7;width:calc(300 * var(--u))" data-tidy="892,300">
+            <b style="margin-top:0; font-size: calc(26 * var(--u))">say hi</b>
+            <span class="p-links">
+              <a href="#" class="pill-s" data-say="Opens an email to Tigo">email</a>
+              <a href="#" class="pill-s" data-say="Opens LinkedIn">linkedin</a>
+              <a href="#" class="pill-s" data-say="Opens GitHub">github</a>
+              <a href="#" class="pill-s" data-say="Opens the résumé">résumé</a>
+            </span>
+          </div>
+        </div>
+        <p class="line b-line">
+          <button type="button" class="pill-s b-tidy"><svg class="i"><use href="#i-grid" /></svg><span>tidy up</span></button>
+          <span class="b-hint">or pick anything up and move it</span>
+        </p>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Drag the cards. “Tidy up” lines them up; press it again to scatter them.</span></div>
+    </section>
+
+    <!-- 07 ================================================================ -->
+    <section class="ex" id="letter">
+      <div class="ex-head">
+        <div>
+          <p class="ex-num">07</p>
+          <h2>Write back</h2>
+          <p class="ex-lede">The sentences on the left, and on the right a letter already addressed to you, your photo on the address chip. Write in it and send: About ends in a conversation, the way Home begins in one.</p>
+        </div>
+        <dl class="ex-notes">
+          <div><dt>What’s new</dt><dd>The way to reach you is the biggest thing on the screen, and it works in place.</dd></div>
+          <div><dt>Why it’s nice</dt><dd>It brings back the live site’s letter, in the draft’s white and its composer’s send disc.</dd></div>
+          <div><dt>Watch for</dt><dd>It needs a sending service (the live site used FormSubmit). The photo is only an avatar here.</dd></div>
+        </dl>
+      </div>
+      <div class="board"><div class="screen"><div class="band v-letter">
+        <div class="lt-text">
+          <p>I’m a product design engineer from Portland, Oregon, studying Media Arts &amp; Design and Computer Science at UChicago, graduating in May 2027.</p>
+          <p>I believe software should be useful and pleasurable.</p>
+          <p class="quiet">Always happy to talk.</p>
+        </div>
+        <form class="letter" autocomplete="off">
+          <div class="lt-row"><span class="lt-k">to</span><button type="button" class="lt-to" data-say="Copied tigoponcedeleon@gmail.com"><img src="../assets/me.jpg" alt="" />tigoponcedeleon@gmail.com</button></div>
+          <div class="lt-row"><label for="lt-from">from</label><input class="lt-from" id="lt-from" type="email" placeholder="your email address" spellcheck="false" /></div>
+          <textarea class="lt-body" rows="4" placeholder="Hi Tigo," aria-label="Your message" spellcheck="false"></textarea>
+          <div class="lt-foot"><span class="lt-note">sends straight to my inbox</span><button type="submit" class="lt-send" aria-label="Send" disabled><svg class="i"><use href="#i-up" /></svg></button></div>
+        </form>
+        <p class="line links"><a href="#" data-say="Opens LinkedIn">linkedin</a><span class="sep"> · </span><a href="#" data-say="Opens GitHub">github</a><span class="sep"> · </span><a href="#" data-say="Opens the résumé">résumé</a></p>
+      </div></div></div>
+      <div class="board-foot"><span class="hint">Type a note: the send disc wakes up. Click the address to copy it.</span></div>
+    </section>
+
+    <section class="doc-end">
+      <h2>Pick a number</h2>
+      <div>
+        <p>Tell me which one you want, or a mix: 02’s sentence with 04’s badge beside it, say, or 01’s chat ending in 07’s letter. None of the links here leave the page. They just say where they’d go.</p>
+        <p>Whatever you choose goes into <code>css/about.css</code> and <code>index.html</code>. Then this page can be deleted with the rest of <code>explorations/</code>.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" role="status" aria-live="polite"><svg class="i"><use href="#i-arrow" /></svg><span></span></div>
+
+  <script>
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+    /* ---- every frame gets the draft's masthead: About, and the menu ---- */
+    const MAST = `
+      <p class="m-title" aria-hidden="true">About</p>
+      <span class="m-menu" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="1.5" x2="22.5" y1="4.5" y2="4.5" /><line x1="1.5" x2="22.5" y1="12" y2="12" /><line x1="1.5" x2="22.5" y1="19.5" y2="19.5" /></svg></span>`;
+    document.querySelectorAll('.screen').forEach((s) => s.insertAdjacentHTML('afterbegin', MAST));
+
+    /* ---- a frame is "seen" once most of it has been on screen ---- */
+    const onSeen = new Map();
+    const seer = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('is-seen');
+        seer.unobserve(en.target);
+        onSeen.get(en.target)?.();
+      });
+    }, { threshold: 0.55 });
+    document.querySelectorAll('.screen').forEach((s) => seer.observe(s));
+
+    /* ---- nothing in a frame leaves the page: it says where it would go ---- */
+    const toast = document.querySelector('.toast');
+    let toastT;
+    function say(text) {
+      toast.querySelector('span').textContent = text;
+      toast.classList.add('is-on');
+      clearTimeout(toastT);
+      toastT = setTimeout(() => toast.classList.remove('is-on'), 1700);
+    }
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.screen a')) e.preventDefault();
+      const el = e.target.closest('[data-say]');
+      if (!el) return;
+      e.preventDefault();
+      say(el.dataset.say);
+    });
+
+    /* ---- the nav follows the section you are in (as in work.html) ---- */
+    const navList = document.querySelector('.doc-nav ol');
+    const navLinks = [...navList.querySelectorAll('a')];
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        navLinks.forEach((a) => a.toggleAttribute('aria-current', a.hash === '#' + en.target.id));
+        const on = navLinks.find((a) => a.hash === '#' + en.target.id);
+        if (!on) return;
+        const r = on.getBoundingClientRect(), box = navList.getBoundingClientRect();
+        if (r.left < box.left) navList.scrollBy({ left: r.left - box.left - 16, behavior: 'smooth' });
+        else if (r.right > box.right) navList.scrollBy({ left: r.right - box.right + 16, behavior: 'smooth' });
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    document.querySelectorAll('.ex').forEach((s) => spy.observe(s));
+
+    const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+
+    /* ==== 01 · the conversation ====
+       Each question pops up on the right; the answer's bubble thinks for a
+       moment, three dots, before it says its piece. The thread moves up to
+       make room on the settling spring rather than jumping. */
+    const SCRIPT = {
+      open: [
+        ['q', 'so, who are you?'],
+        ['photo'],
+        ['a', 'I’m Tigo, a product design engineer from Portland, Oregon.'],
+        ['q', 'and these days?'],
+        ['a', 'I’m in my last year at UChicago, studying Media Arts & Design and Computer Science. I graduate in May 2027.'],
+      ],
+      believe: [['q', 'what do you believe?'], ['a', 'That software should be useful and pleasurable, and that every design decision should serve that.']],
+      work: [['q', 'where have you worked?'], ['a', 'Most recently I was a UX engineer intern at Vicino AI, from June to August 2026. Before that, PantryPal and Next Level.']],
+      fun: [['q', 'and for fun?'], ['a', 'Bike rides along Lake Michigan, Real Madrid matches, and friends.']],
+      reach: [['q', 'how do I reach you?'], ['links', 'Any of these:']],
+    };
+    document.querySelectorAll('.v-chat').forEach((band) => {
+      const inner = band.querySelector('.c-inner');
+      const chips = [...band.querySelectorAll('.c-chip')];
+      const screen = band.closest('.screen');
+      let run = 0;
+
+      // put something in the thread, moving what is there up by as much
+      function place(el, replacing) {
+        const h0 = inner.offsetHeight;
+        replacing ? replacing.replaceWith(el) : inner.append(el);
+        const dh = inner.offsetHeight - h0;
+        if (reduce) return;
+        if (dh) inner.animate([{ translate: `0 ${dh}px` }, { translate: '0 0' }], { duration: 560, easing: css('--spring-settle') });
+        if (!replacing) el.animate([{ opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1 }], { duration: 560, easing: css('--spring-pop') });
+      }
+      const bubble = (cls, html) => Object.assign(document.createElement('div'), { className: 'bub ' + cls, innerHTML: html });
+
+      async function play(steps, id) {
+        for (const [kind, text] of steps) {
+          if (id !== run) return;
+          if (kind === 'q') { place(bubble('bub-q', text)); await wait(650); continue; }
+          const think = bubble('bub-a', '<span class="bub-dots"><i></i><i></i><i></i></span>');
+          place(think);
+          await wait(kind === 'photo' ? 700 : 900);
+          if (id !== run) return;
+          if (kind === 'photo') {
+            const img = Object.assign(document.createElement('img'), { className: 'c-photo', src: '../assets/me.jpg', alt: '' });
+            place(img, think);
+          } else if (kind === 'links') {
+            place(bubble('bub-a', `${text}<span class="bub-links">${['email', 'linkedin', 'github', 'résumé'].map((w) => `<a href="#" class="pill-s" data-say="Opens ${w === 'email' ? 'an email to Tigo' : w === 'résumé' ? 'the résumé' : w === 'github' ? 'GitHub' : 'LinkedIn'}">${w}</a>`).join('')}</span>`), think);
+          } else {
+            place(bubble('bub-a', text), think);
+          }
+          await wait(500);
+        }
+      }
+      async function ask(key) {
+        chips.forEach((c) => (c.disabled = true));
+        const id = ++run;
+        await play(SCRIPT[key], id);
+        if (id === run) chips.forEach((c) => (c.disabled = false));
+      }
+      function start() {
+        run++;
+        inner.replaceChildren();
+        chips.forEach((c) => c.classList.remove('is-asked'));
+        ask('open');
+      }
+      chips.forEach((c) => c.addEventListener('click', () => {
+        if (c.dataset.q === 'again') return start();
+        c.classList.add('is-asked');
+        ask(c.dataset.q);
+      }));
+      onSeen.set(screen, start);
+    });
+
+    /* ==== 03 · the calendar counts the months to May 2027 ==== */
+    document.querySelectorAll('[data-countdown]').forEach((el) => {
+      const now = new Date();
+      const months = (2027 - now.getFullYear()) * 12 + (4 - now.getMonth());
+      el.textContent = months > 1 ? `${months} months to go` : months === 1 ? 'next month' : 'graduation';
+    });
+
+    /* ==== 04 · the badge ====
+       A pendulum about the top of the strap: pulled toward upright by a
+       spring and slowed by a little friction, so it swings a few times and
+       settles. Dragging sets the angle directly; letting go keeps the speed
+       the hand gave it. A click that did not drag turns the card over. */
+    document.querySelectorAll('.bd-rig').forEach((rig) => {
+      const card = rig.querySelector('.bd-card');
+      let a = 0, v = 0, held = false, x0 = 0, a0 = 0, moved = 0, lastX = 0, lastT = 0, raf = 0, prev = 0;
+      const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+      function tick(t) {
+        const dt = Math.min(0.032, (t - (prev || t)) / 1000) || 1 / 60;
+        prev = t;
+        if (!held) { v += (-60 * a - 3.2 * v) * dt; a += v * dt; }
+        rig.style.setProperty('--a', a.toFixed(3));
+        if (held || Math.abs(a) > 0.03 || Math.abs(v) > 0.03) raf = requestAnimationFrame(tick);
+        else { a = v = 0; rig.style.setProperty('--a', 0); raf = 0; prev = 0; }
+      }
+      const kick = () => { if (!raf && !reduce) raf = requestAnimationFrame(tick); };
+      const radius = () => rig.getBoundingClientRect().height * 0.8;
+      card.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('a')) return;
+        held = true; moved = 0; x0 = lastX = e.clientX; a0 = a; lastT = performance.now();
+        card.setPointerCapture(e.pointerId);
+        kick();
+      });
+      card.addEventListener('pointermove', (e) => {
+        if (!held) return;
+        const deg = 180 / Math.PI;
+        moved = Math.max(moved, Math.abs(e.clientX - x0));
+        a = clamp(a0 + ((e.clientX - x0) / radius()) * deg, -28, 28);
+        const now = performance.now();
+        v = clamp((((e.clientX - lastX) / radius()) * deg) / Math.max(8, now - lastT) * 1000, -260, 260);
+        lastX = e.clientX; lastT = now;
+      });
+      const release = (e) => {
+        if (!held) return;
+        held = false;
+        if (performance.now() - lastT > 80) v = 0;
+        if (moved < 5 && !e.target.closest('a')) card.classList.toggle('is-flipped');
+        kick();
+      };
+      card.addEventListener('pointerup', release);
+      card.addEventListener('pointercancel', release);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('is-flipped'); v += 40; kick(); }
+      });
+      // a small push the first time it is seen, so it reads as hanging
+      onSeen.set(rig.closest('.screen'), () => setTimeout(() => { v = 55; kick(); }, 250));
+    });
+
+    /* ==== 05 · the timeline ====
+       Months counted from June 2025; the line runs to August 2027 so
+       graduation has room to stand in. */
+    document.querySelectorAll('.tm-chart').forEach((chart) => {
+      const SPAN = 26;
+      const at = (y, m, d = 0) => (y - 2025) * 12 + m - 5 + d;
+      const now = new Date();
+      const today = Math.min(SPAN, Math.max(0, at(now.getFullYear(), now.getMonth(), (now.getDate() - 1) / 30)));
+      const pct = (i) => (i / SPAN) * 100 + '%';
+      const LANE = 78;
+      const ITEMS = [
+        { name: 'Next Level', when: 'Jul – Sep 2025', from: at(2025, 6), to: at(2025, 9), lane: 0, tint: '#c9e3fd', deep: '#245f9e', icon: 'nextlevel' },
+        { name: 'UX Research, UChicago', when: 'Nov – Dec 2025', from: at(2025, 10), to: at(2026, 0), lane: 1, tint: '#ffd5dc', deep: '#8b1e2f', glyph: 'cap' },
+        { name: 'PantryPal', when: 'Nov 2025 – now', from: at(2025, 10), to: today, lane: 2, tint: '#ffd9c9', deep: '#a9492a', icon: 'pantrypal', live: true },
+        { name: 'Vicino AI', when: 'Jun – Aug 2026', from: at(2026, 5), to: at(2026, 8), lane: 0, tint: '#c9eff1', deep: '#1c6f78', icon: 'vicino' },
+      ];
+      let html = `<span class="tm-future" style="left:${pct(today)}"></span>`;
+      ITEMS.forEach((it, n) => {
+        const mark = it.icon
+          ? `<span class="vi"><img src="../assets/work/icon-${it.icon}.webp" alt="" /></span>`
+          : `<span class="g"><svg class="i"><use href="#i-${it.glyph}" /></svg></span>`;
+        html += `<div class="tm-item" style="--n:${n};--tint:${it.tint};--deep:${it.deep};left:${pct(it.from)};width:${pct(it.to - it.from)};top:calc(${it.lane * LANE} * var(--u))">
+          <span class="tm-label">${mark}<span class="tm-name">${it.name}</span><span class="tm-when">${it.when}</span></span>
+          <span class="tm-bar${it.live ? ' tm-live' : ''}"></span>
+        </div>`;
+      });
+      html += `<span class="tm-mark" style="--c: #e9e27a; top: calc(${2 * LANE + 34} * var(--u)); left:${pct(today)}"><span class="pill-s">today</span></span>`;
+      html += `<span class="tm-mark tm-grad" style="--c: #b7b3f5; left:${pct(at(2027, 4, 0.5))}"><span class="pill-s"><svg class="i"><use href="#i-cap" /></svg>Graduation <span>May 2027</span></span></span>`;
+      html += `<span class="tm-axis">`;
+      for (let i = 0; i <= SPAN; i++) html += `<span class="tm-tick" style="left:${pct(i)}"></span>`;
+      html += `<span class="tm-year" style="left:0">2025</span><span class="tm-year" style="left:${pct(at(2026, 0))}">2026</span><span class="tm-year" style="left:${pct(at(2027, 0))}">2027</span></span>`;
+      chart.innerHTML = html;
+    });
+
+    /* ==== 06 · the pinboard ====
+       A card follows the hand while held, straightened and lifted, and
+       settles back to its own slight tilt where it is let go. "Tidy up"
+       sends them all to a grid on the settling spring, a beat apart. */
+    document.querySelectorAll('.v-board').forEach((band) => {
+      const pins = [...band.querySelectorAll('.pin')];
+      const btn = band.querySelector('.b-tidy');
+      let z = 10, tidy = false;
+      const home = pins.map((p) => ({ x: +p.style.getPropertyValue('--x'), y: +p.style.getPropertyValue('--y'), r: +p.style.getPropertyValue('--r') }));
+      const set = (p, x, y, r) => { p.style.setProperty('--x', x); p.style.setProperty('--y', y); if (r !== undefined) p.style.setProperty('--r', r); };
+
+      pins.forEach((p, i) => {
+        p.addEventListener('pointerdown', (e) => {
+          if (e.target.closest('a, button')) return;
+          e.preventDefault();
+          const perU = band.clientWidth / 1192;
+          const sx = e.clientX, sy = e.clientY;
+          const x0 = +p.style.getPropertyValue('--x'), y0 = +p.style.getPropertyValue('--y');
+          p.style.zIndex = ++z;
+          p.style.setProperty('--i', 0);
+          p.classList.add('is-held');
+          p.setPointerCapture(e.pointerId);
+          const move = (ev) => {
+            const w = p.offsetWidth / perU, h = p.offsetHeight / perU;
+            const x = Math.min(1192 - w * 0.4, Math.max(-w * 0.6, x0 + (ev.clientX - sx) / perU));
+            const y = Math.min(band.clientHeight / perU - h * 0.4, Math.max(-40, y0 + (ev.clientY - sy) / perU));
+            set(p, x.toFixed(1), y.toFixed(1));
+          };
+          const up = () => {
+            p.classList.remove('is-held');
+            p.removeEventListener('pointermove', move);
+            p.removeEventListener('pointerup', up);
+            p.removeEventListener('pointercancel', up);
+          };
+          p.addEventListener('pointermove', move);
+          p.addEventListener('pointerup', up);
+          p.addEventListener('pointercancel', up);
+        });
+      });
+
+      btn.addEventListener('click', () => {
+        tidy = !tidy;
+        pins.forEach((p, i) => {
+          p.style.setProperty('--i', i);
+          p.style.zIndex = '';
+          if (tidy) { const [x, y] = p.dataset.tidy.split(',').map(Number); set(p, x, y, 0); }
+          else set(p, home[i].x, home[i].y, home[i].r);
+        });
+        btn.querySelector('span').textContent = tidy ? 'scatter' : 'tidy up';
+      });
+    });
+
+    /* ==== 07 · the letter ==== */
+    document.querySelectorAll('.letter').forEach((form) => {
+      const body = form.querySelector('.lt-body');
+      const send = form.querySelector('.lt-send');
+      body.addEventListener('input', () => (send.disabled = !body.value.trim()));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        say('Would send your note straight to Tigo’s inbox');
+        body.value = '';
+        send.disabled = true;
+      });
+    });
+  </script>
+</body>
+</html>

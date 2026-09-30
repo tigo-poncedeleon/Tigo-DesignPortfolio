@@ -12,6 +12,17 @@
   <script>
     document.documentElement.classList.add('js');
   </script>
+  <!-- Carried across pages: a Work tile grows into its case study's opening
+       tile, and shrinks home again (css/work.css, css/case.css). The opt-in
+       is written here, in the page itself, not in those stylesheets: the
+       page's scripts read computed style as soon as they start (js/motion.js
+       u()), and a read that early can come before a linked stylesheet has
+       applied, which the browser takes as the page not having opted in, and
+       it drops the transition. -->
+  <style>
+    @view-transition { navigation: auto; types: case; }
+    @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+  </style>
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/nav.css" />
@@ -25,10 +36,19 @@
   <div class="frame">
 
     <header class="masthead">
-      <a class="name" href="#" data-enter="name">
-        <span class="name-line">Tigo Ponce de León</span>
-        <span class="name-line">Design + CS @ UChicago</span>
-      </a>
+      <!-- The headline: the name on Home, and the name of the section you are
+           on everywhere else, swapped as the page scrolls past each one
+           (js/main.js). It is fixed at the top with the menu. -->
+      <div class="headline">
+        <span class="headline-pill" aria-hidden="true"></span>
+        <a class="name" href="#" data-for="home" data-enter="name">
+          <span class="name-line">Tigo Ponce de León</span>
+          <span class="name-line">Design + CS @ UChicago</span>
+        </a>
+        <p class="headline-title" data-for="work" aria-hidden="true">Work</p>
+        <p class="headline-title" data-for="play" aria-hidden="true">Play</p>
+        <p class="headline-title" data-for="about" aria-hidden="true">About</p>
+      </div>
 
       <!-- The menu: one yellow square with three lines in it. Opened, it
            slides left, its lines turn upright, and the four pages fan down
@@ -47,8 +67,8 @@
           </svg>
         </button>
         <!-- While a conversation is going on Home, this takes the menu
-             square's place: the answers' grey, with an × in it. It clears
-             the conversation, and the menu comes back (js/nav.js). -->
+             square's place: a soft red, with a red × in it. It clears the
+             conversation, and the menu comes back (js/nav.js). -->
         <button type="button" class="menu-clear" aria-label="Clear the conversation" inert>
           <svg class="menu-clear-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <line pathLength="1" x1="5.5" x2="18.5" y1="5.5" y2="18.5" />
@@ -99,175 +119,560 @@
       </nav>
     </header>
 
-    <main class="band">
+    <!-- The site is one page, four screens down it: Home, Work, Play,
+         About, in the menu's order. Each screen is the height of the window
+         and holds what one page used to: its content in the band, and its
+         one line at the bottom-left (on Home, the composer). The masthead
+         stays put above them, its headline saying where you are
+         (js/main.js, css/base.css). -->
+    <main class="screens">
 
-      <!-- HOME: the band is empty in the frame, and stays empty until you ask
-           something. Then it holds the conversation: your questions in blue
-           bubbles, the answers in grey ones, down the left side. -->
-      <section class="view view-home" data-view="home" aria-labelledby="home-title">
+      <!-- HOME: the name and the prompt, until you ask something. Then the
+           band holds the conversation: your questions in blue bubbles on the
+           right, the answers in grey ones on the left. The name steps aside
+           for it (js/main.js). -->
+      <section class="screen screen-home" id="home" data-section="home" aria-labelledby="home-title">
         <h1 class="sr-only" id="home-title" tabindex="-1">Tigo Ponce de León</h1>
-        <div class="thread" role="log" aria-label="Conversation" aria-live="off">
-          <div class="thread-inner"></div>
-        </div>
-      </section>
-
-      <!-- WORK: the app icons and nothing else. The line at the bottom says
-           which is which as you point at them. -->
-      <section class="view view-work" data-view="work" aria-labelledby="work-title" hidden>
-        <h1 class="sr-only" id="work-title" tabindex="-1">Work</h1>
-        <ul class="apps" role="list">
-          <li>
-            <a class="app" data-app="vicino" data-rise href="https://tigoponcedeleon.com/vicino.html" target="_blank" rel="noopener">
-              <span class="app-icon"><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" decoding="async" /></span>
-              <span class="sr-only">Vicino AI — UX engineer intern, 2026 (opens the case study in a new tab)</span>
-            </a>
-          </li>
-          <li>
-            <a class="app" data-app="pantrypal" data-rise href="https://tigoponcedeleon.com/pantrypal.html" target="_blank" rel="noopener">
-              <span class="app-icon"><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" decoding="async" /></span>
-              <span class="sr-only">PantryPal — product designer, 2025–26, on the App Store (opens the case study in a new tab)</span>
-            </a>
-          </li>
-          <li>
-            <a class="app" data-app="nextlevel" data-rise href="https://tigoponcedeleon.com/nextlevel.html" target="_blank" rel="noopener">
-              <span class="app-icon"><img src="assets/work/icon-nextlevel.webp" width="256" height="256" alt="" decoding="async" /></span>
-              <span class="sr-only">Next Level Drone Cleaning — founding visual designer, 2025 (opens the case study in a new tab)</span>
-            </a>
-          </li>
-        </ul>
-      </section>
-
-      <!-- PLAY: three courts, each one playing itself until you pick it up. -->
-      <section class="view view-play" data-view="play" aria-labelledby="play-title" hidden>
-        <h1 class="sr-only" id="play-title" tabindex="-1">Play</h1>
-        <ul class="games" role="list">
-          <li><a class="game-card" data-game="pong" href="#play/pong" style="--card-bg: var(--lavender)" data-rise>
-            <canvas class="game-demo" aria-hidden="true"></canvas>
-            <span class="sr-only">Pong — Atari, 1972</span>
-          </a></li>
-          <li><a class="game-card" data-game="snake" href="#play/snake" style="--card-bg: var(--mint)" data-rise>
-            <canvas class="game-demo" aria-hidden="true"></canvas>
-            <span class="sr-only">Snake — Nokia, 1997</span>
-          </a></li>
-          <li><a class="game-card" data-game="flappy" href="#play/flappy" style="--card-bg: var(--blue)" data-rise>
-            <canvas class="game-demo" aria-hidden="true"></canvas>
-            <span class="sr-only">Flappy Bird — dotGears, 2013</span>
-          </a></li>
-        </ul>
-
-        <!-- The stage: a card, grown to fill the band, with a real game in it. -->
-        <div class="stage" role="group" aria-roledescription="game" tabindex="-1" hidden>
-          <canvas class="stage-canvas"></canvas>
-          <div class="hud" aria-hidden="true">
-            <p class="hud-center"></p>
+        <div class="view view-home">
+          <div class="thread" role="log" aria-label="Conversation" aria-live="off">
+            <div class="thread-inner"></div>
           </div>
-          <button type="button" class="stage-close" aria-label="Close the game">
-            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
-          </button>
-          <p class="sr-only stage-live" aria-live="polite"></p>
+        </div>
+        <footer class="status">
+          <div class="status-home" data-status="home">
+            <!-- The composer. At rest it is the block caret alone, blinking
+                 on the left axis; once there is something in it, or a pointer
+                 over it, a pill opens around it and the tools slide in at its
+                 right end: the chat's mood, the microphone, send
+                 (css/home.css). A photo still comes in by paste or by drop,
+                 and waits in the thumb. Icons are Lucide's (ISC). -->
+            <form class="composer prompt" autocomplete="off" aria-label="Ask me anything">
+              <div class="composer-thumb" hidden>
+                <img alt="The photo you are sending" />
+                <button type="button" class="composer-thumb-remove" aria-label="Remove the photo">
+                  <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+              </div>
+
+              <div class="prompt-field">
+                <textarea id="ask" class="prompt-input" rows="1" maxlength="300" enterkeyhint="send"
+                          spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+                          aria-label="Ask me anything" aria-describedby="ask-hint"
+                          data-greeting="Hey there, ask me anything!"></textarea>
+                <span class="prompt-caret" aria-hidden="true"></span>
+                <div class="prompt-mirror" aria-hidden="true"></div>
+              </div>
+
+              <div class="composer-mood">
+                <button type="button" class="composer-chip" aria-haspopup="menu" aria-expanded="false" aria-controls="mood-menu">
+                  <span class="mood-dot" aria-hidden="true"></span>
+                  <span class="composer-chip-word">friendly</span>
+                  <svg class="composer-chip-caret" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                </button>
+                <div class="mood-menu" id="mood-menu" role="menu" aria-label="How the chat answers">
+                  <button type="button" role="menuitemradio" aria-checked="true" data-mood="friendly">
+                    <span class="mood-dot" aria-hidden="true"></span>
+                    <span class="mood-name">friendly</span><span class="mood-note">warm &amp; to the point</span>
+                    <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  </button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-mood="whimsical">
+                    <span class="mood-dot" aria-hidden="true"></span>
+                    <span class="mood-name">whimsical</span><span class="mood-note">answers with a wink</span>
+                    <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  </button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-mood="suspicious">
+                    <span class="mood-dot" aria-hidden="true"></span>
+                    <span class="mood-name">suspicious</span><span class="mood-note">trusts no question</span>
+                    <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  </button>
+                </div>
+              </div>
+
+              <button type="button" class="composer-btn composer-mic" aria-label="Ask out loud" aria-pressed="false" hidden>
+                <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><rect x="9" y="2" width="6" height="13" rx="3" /></svg>
+              </button>
+              <button type="submit" class="composer-send" aria-label="Send" disabled>
+                <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
+              </button>
+              <span class="sr-only" id="ask-hint">Press Enter to send.</span>
+            </form>
+          </div>
+        </footer>
+      </section>
+
+      <!-- WORK: the three places, side by side, each one tile in the app's own
+           colour: its icon and a pill to the product at the top, its name,
+           the role and when, and the work itself coming up out of the
+           tile's foot. The whole tile opens the case study; the pill goes to
+           the product (css/work.css). There is no line at the bottom: the
+           tiles say it all. -->
+      <section class="screen screen-work" id="work" data-section="work" aria-labelledby="work-title">
+        <h2 class="sr-only" id="work-title" tabindex="-1">Work</h2>
+        <div class="view view-work">
+          <ul class="cases" role="list">
+          <li class="case" data-case="vicino" data-rise>
+            <a class="case-open" href="vicino.html">
+              <span class="sr-only">The Vicino AI case study</span>
+            </a>
+            <div class="case-head">
+              <span class="case-icon"><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <a class="case-link" href="https://vicino.ai/" target="_blank" rel="noopener">vicino.ai<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (Vicino AI, opens in a new tab)</span></a>
+            </div>
+            <h3 class="case-name">Vicino AI</h3>
+            <p class="case-meta"><span>UX Engineer Intern</span><span>Jun – Aug 2026</span></p>
+            <div class="case-media" aria-hidden="true">
+              <img class="shot shot-window" src="assets/work/vicino-canvas.webp" width="2200" height="1750" alt="" decoding="async" />
+            </div>
+          </li>
+          <li class="case" data-case="pantrypal" data-rise>
+            <a class="case-open" href="pantrypal.html">
+              <span class="sr-only">The PantryPal case study</span>
+            </a>
+            <div class="case-head">
+              <span class="case-icon"><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <a class="case-link" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028" target="_blank" rel="noopener">App Store<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (PantryPal on the App Store, opens in a new tab)</span></a>
+            </div>
+            <h3 class="case-name">PantryPal</h3>
+            <p class="case-meta"><span>Product Designer</span><span>Nov 2025 – Present</span></p>
+            <div class="case-media" aria-hidden="true">
+              <img class="shot shot-phone" src="assets/work/pantrypal-signup.webp" width="800" height="1636" alt="" decoding="async" />
+              <img class="shot shot-phone shot-phone-2" src="assets/work/pantrypal-home.webp" width="800" height="1636" alt="" decoding="async" />
+            </div>
+          </li>
+          <li class="case" data-case="nextlevel" data-rise>
+            <a class="case-open" href="nextlevel.html">
+              <span class="sr-only">The Next Level Drone Cleaning case study</span>
+            </a>
+            <div class="case-head">
+              <span class="case-icon"><img src="assets/work/icon-nextlevel.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <a class="case-link" href="https://www.nextleveldronecleaning.be/" target="_blank" rel="noopener">Website<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (nextleveldronecleaning.be, opens in a new tab)</span></a>
+            </div>
+            <h3 class="case-name">Next Level</h3>
+            <p class="case-meta"><span>Founding Designer</span><span>Jul – Sep 2025</span></p>
+            <div class="case-media" aria-hidden="true">
+              <img class="shot shot-window" src="assets/work/nextlevel-web.webp" width="2200" height="1750" alt="" decoding="async" />
+            </div>
+          </li>
+          </ul>
         </div>
       </section>
 
-      <!-- ABOUT: three sentences and a photo, for now a placeholder. Put a
-           picture at assets/me.jpg and it takes the placeholder's place. -->
-      <section class="view view-about" data-view="about" aria-labelledby="about-title" hidden>
-        <h1 class="sr-only" id="about-title" tabindex="-1">About</h1>
-        <div class="about-text">
-          <p data-rise>I’m a product design engineer from Portland, Oregon, studying Media Arts &amp; Design and Computer Science at UChicago.</p>
-          <p data-rise>I believe software should be useful and pleasurable.</p>
-          <p data-rise>Right now I’m a UX engineer intern at Vicino AI.</p>
+      <!-- PLAY: three games, each a tile with its name and whose it was, and
+           a screen with the game playing itself on it until you pick it up
+           (css/play.css). -->
+      <section class="screen screen-play" id="play" data-section="play" aria-labelledby="play-title">
+        <h2 class="sr-only" id="play-title" tabindex="-1">Play</h2>
+        <div class="view view-play">
+          <ul class="games" role="list">
+            <li><a class="game-card" data-game="pong" href="#play/pong" data-rise>
+              <span class="game-head">
+                <span class="game-title">
+                  <span class="game-name">Pong</span>
+                  <span class="game-meta">Atari, 1972</span>
+                </span>
+                <span class="game-play" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Play</span>
+              </span>
+              <span class="game-screen"><canvas class="game-demo" aria-hidden="true"></canvas></span>
+            </a></li>
+            <li><a class="game-card" data-game="snake" href="#play/snake" data-rise>
+              <span class="game-head">
+                <span class="game-title">
+                  <span class="game-name">Snake</span>
+                  <span class="game-meta">Nokia, 1997</span>
+                </span>
+                <span class="game-play" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Play</span>
+              </span>
+              <span class="game-screen"><canvas class="game-demo" aria-hidden="true"></canvas></span>
+            </a></li>
+            <li><a class="game-card" data-game="flappy" href="#play/flappy" data-rise>
+              <span class="game-head">
+                <span class="game-title">
+                  <span class="game-name">Flappy Bird</span>
+                  <span class="game-meta">dotGears, 2013</span>
+                </span>
+                <span class="game-play" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Play</span>
+              </span>
+              <span class="game-screen"><canvas class="game-demo" aria-hidden="true"></canvas></span>
+            </a></li>
+          </ul>
+
+          <!-- The stage: a tile grown into the court all three games are
+               played on. The same anatomy as the tile, made big: its name and
+               year at the top left, the score and a close button where the
+               Play pill was, and under them the court, the tile's screen
+               grown to 2:1. The court speaks only in its middle (3, 2, 1, and
+               how it ended) and at its foot (how to play), and says nothing
+               while you are playing (js/play/play.js). -->
+          <div class="stage" role="group" aria-roledescription="game" tabindex="-1" hidden>
+            <div class="stage-surface" aria-hidden="true"></div>
+            <div class="stage-head">
+              <span class="stage-title">
+                <span class="stage-name"></span>
+                <span class="stage-meta"></span>
+              </span>
+              <span class="stage-tools">
+                <span class="stage-score" aria-hidden="true">0</span>
+                <button type="button" class="stage-close" aria-label="Close the game">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7 7 17M7 7l10 10" /></svg>
+                </button>
+              </span>
+            </div>
+            <div class="stage-court">
+              <div class="court-well" aria-hidden="true"></div>
+              <div class="court-screen"><canvas class="stage-canvas" aria-hidden="true"></canvas></div>
+              <p class="court-call" aria-hidden="true"></p>
+              <p class="court-hint" aria-hidden="true"></p>
+            </div>
+            <p class="sr-only stage-live" aria-live="polite"></p>
+          </div>
         </div>
-        <figure class="portrait" data-rise>
-          <svg class="portrait-glyph" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="8" r="5" />
-            <path d="M20 21a8 8 0 0 0-16 0" />
-          </svg>
-          <img class="portrait-photo" src="assets/me.jpg" alt="Tigo Ponce de León" loading="lazy" decoding="async" onerror="this.remove()" />
-        </figure>
+      </section>
+
+      <!-- ABOUT: a sentence with pictures. One paragraph at the frame's one
+           size, the way Home speaks, with a small picture set into the words
+           after each thing they name, where an emoji would go: the photo,
+           Portland's flag, Figma's logo, a terminal, the UChicago shield, a
+           mortarboard, a switch, the two apps, a bike by the lake, Real
+           Madrid's crest, three friends. All of them sit in the superellipse
+           the app icons are cut to, lit and edged alike, and each does one
+           small thing when pointed at (css/about.css). The flag and
+           Figma's logo are drawn here; the shield and the crest are the
+           institutions' own marks, in assets/about/. At the bottom, where to
+           find him. -->
+      <section class="screen screen-about" id="about" data-section="about" aria-labelledby="about-title">
+        <h2 class="sr-only" id="about-title" tabindex="-1">About</h2>
+
+        <!-- What every picture shares: the app icon's outline (the same
+             superellipse as assets/squircle.svg), a clip cut to it, the light
+             from the top-left corner that the Work tiles have, and the
+             colours each scene is painted in. -->
+        <svg class="tk-defs" width="0" height="0" aria-hidden="true" focusable="false">
+          <defs>
+            <path id="tk-sq" d="M100.00 50.00 L99.99 61.64 L99.97 65.36 L99.94 68.06 L99.89 70.26 L99.83 72.14 L99.75 73.81 L99.66 75.31 L99.56 76.68 L99.44 77.94 L99.31 79.12 L99.17 80.22 L99.01 81.26 L98.83 82.24 L98.64 83.17 L98.44 84.05 L98.22 84.89 L97.99 85.69 L97.74 86.46 L97.48 87.19 L97.20 87.89 L96.91 88.57 L96.60 89.21 L96.28 89.83 L95.94 90.43 L95.58 91.00 L95.20 91.54 L94.81 92.07 L94.40 92.58 L93.97 93.06 L93.53 93.53 L93.06 93.97 L92.58 94.40 L92.07 94.81 L91.54 95.20 L91.00 95.58 L90.43 95.94 L89.83 96.28 L89.21 96.60 L88.57 96.91 L87.89 97.20 L87.19 97.48 L86.46 97.74 L85.69 97.99 L84.89 98.22 L84.05 98.44 L83.17 98.64 L82.24 98.83 L81.26 99.01 L80.22 99.17 L79.12 99.31 L77.94 99.44 L76.68 99.56 L75.31 99.66 L73.81 99.75 L72.14 99.83 L70.26 99.89 L68.06 99.94 L65.36 99.97 L61.64 99.99 L50.00 100.00 L38.36 99.99 L34.64 99.97 L31.94 99.94 L29.74 99.89 L27.86 99.83 L26.19 99.75 L24.69 99.66 L23.32 99.56 L22.06 99.44 L20.88 99.31 L19.78 99.17 L18.74 99.01 L17.76 98.83 L16.83 98.64 L15.95 98.44 L15.11 98.22 L14.31 97.99 L13.54 97.74 L12.81 97.48 L12.11 97.20 L11.43 96.91 L10.79 96.60 L10.17 96.28 L9.57 95.94 L9.00 95.58 L8.46 95.20 L7.93 94.81 L7.42 94.40 L6.94 93.97 L6.47 93.53 L6.03 93.06 L5.60 92.58 L5.19 92.07 L4.80 91.54 L4.42 91.00 L4.06 90.43 L3.72 89.83 L3.40 89.21 L3.09 88.57 L2.80 87.89 L2.52 87.19 L2.26 86.46 L2.01 85.69 L1.78 84.89 L1.56 84.05 L1.36 83.17 L1.17 82.24 L0.99 81.26 L0.83 80.22 L0.69 79.12 L0.56 77.94 L0.44 76.68 L0.34 75.31 L0.25 73.81 L0.17 72.14 L0.11 70.26 L0.06 68.06 L0.03 65.36 L0.01 61.64 L0.00 50.00 L0.01 38.36 L0.03 34.64 L0.06 31.94 L0.11 29.74 L0.17 27.86 L0.25 26.19 L0.34 24.69 L0.44 23.32 L0.56 22.06 L0.69 20.88 L0.83 19.78 L0.99 18.74 L1.17 17.76 L1.36 16.83 L1.56 15.95 L1.78 15.11 L2.01 14.31 L2.26 13.54 L2.52 12.81 L2.80 12.11 L3.09 11.43 L3.40 10.79 L3.72 10.17 L4.06 9.57 L4.42 9.00 L4.80 8.46 L5.19 7.93 L5.60 7.42 L6.03 6.94 L6.47 6.47 L6.94 6.03 L7.42 5.60 L7.93 5.19 L8.46 4.80 L9.00 4.42 L9.57 4.06 L10.17 3.72 L10.79 3.40 L11.43 3.09 L12.11 2.80 L12.81 2.52 L13.54 2.26 L14.31 2.01 L15.11 1.78 L15.95 1.56 L16.83 1.36 L17.76 1.17 L18.74 0.99 L19.78 0.83 L20.88 0.69 L22.06 0.56 L23.32 0.44 L24.69 0.34 L26.19 0.25 L27.86 0.17 L29.74 0.11 L31.94 0.06 L34.64 0.03 L38.36 0.01 L50.00 0.00 L61.64 0.01 L65.36 0.03 L68.06 0.06 L70.26 0.11 L72.14 0.17 L73.81 0.25 L75.31 0.34 L76.68 0.44 L77.94 0.56 L79.12 0.69 L80.22 0.83 L81.26 0.99 L82.24 1.17 L83.17 1.36 L84.05 1.56 L84.89 1.78 L85.69 2.01 L86.46 2.26 L87.19 2.52 L87.89 2.80 L88.57 3.09 L89.21 3.40 L89.83 3.72 L90.43 4.06 L91.00 4.42 L91.54 4.80 L92.07 5.19 L92.58 5.60 L93.06 6.03 L93.53 6.47 L93.97 6.94 L94.40 7.42 L94.81 7.93 L95.20 8.46 L95.58 9.00 L95.94 9.57 L96.28 10.17 L96.60 10.79 L96.91 11.43 L97.20 12.11 L97.48 12.81 L97.74 13.54 L97.99 14.31 L98.22 15.11 L98.44 15.95 L98.64 16.83 L98.83 17.76 L99.01 18.74 L99.17 19.78 L99.31 20.88 L99.44 22.06 L99.56 23.32 L99.66 24.69 L99.75 26.19 L99.83 27.86 L99.89 29.74 L99.94 31.94 L99.97 34.64 L99.99 38.36 Z" />
+            <clipPath id="tk-clip"><use href="#tk-sq" /></clipPath>
+            <clipPath id="tk-cvclip"><circle cx="39" cy="30" r="6" /></clipPath>
+            <radialGradient id="tk-shine" cx="0" cy="0" r="1">
+              <stop offset="0" stop-color="#fff" stop-opacity=".4" />
+              <stop offset=".62" stop-color="#fff" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="tk-g-term" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#343946" />
+              <stop offset="1" stop-color="#1f2229" />
+            </linearGradient>
+            <linearGradient id="tk-g-coral" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffcdb9" />
+              <stop offset="1" stop-color="#ff9f86" />
+            </linearGradient>
+            <linearGradient id="tk-g-linkedin" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#2a86dc" />
+              <stop offset="1" stop-color="#0a66c2" />
+            </linearGradient>
+            <linearGradient id="tk-g-github" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#3a4048" />
+              <stop offset="1" stop-color="#1b1f24" />
+            </linearGradient>
+            <linearGradient id="tk-g-goodreads" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f8f4ea" />
+              <stop offset="1" stop-color="#e8dfc8" />
+            </linearGradient>
+            <linearGradient id="tk-g-letterboxd" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#2c3440" />
+              <stop offset="1" stop-color="#14181c" />
+            </linearGradient>
+            <clipPath id="tk-lb-left"><circle cx="30" cy="50" r="12.5" /></clipPath>
+            <clipPath id="tk-lb-right"><circle cx="70" cy="50" r="12.5" /></clipPath>
+            <linearGradient id="tk-g-lav" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e8e6ff" />
+              <stop offset="1" stop-color="#c9c5fc" />
+            </linearGradient>
+            <linearGradient id="tk-g-cream" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fffdf9" />
+              <stop offset="1" stop-color="#f4ece3" />
+            </linearGradient>
+            <radialGradient id="tk-g-fire" cx=".5" cy="1" r=".75">
+              <stop offset="0" stop-color="#ffb24a" stop-opacity=".9" />
+              <stop offset=".5" stop-color="#ffcf73" stop-opacity=".45" />
+              <stop offset="1" stop-color="#ffe3a3" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="tk-g-sheen" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#fff" stop-opacity="0" />
+              <stop offset=".5" stop-color="#fff" stop-opacity=".6" />
+              <stop offset="1" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="tk-g-yellow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fffbd6" />
+              <stop offset="1" stop-color="#ffef9e" />
+            </linearGradient>
+            <linearGradient id="tk-g-mint" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e2fde9" />
+              <stop offset="1" stop-color="#bdf3cf" />
+            </linearGradient>
+            <linearGradient id="tk-g-sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f1faff" />
+              <stop offset="1" stop-color="#cdecfd" />
+            </linearGradient>
+            <linearGradient id="tk-g-lake" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#7fc6ec" />
+              <stop offset="1" stop-color="#a9dcf6" />
+            </linearGradient>
+            <linearGradient id="tk-g-white" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffffff" />
+              <stop offset="1" stop-color="#e9ecf5" />
+            </linearGradient>
+            <linearGradient id="tk-g-peach" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff0de" />
+              <stop offset="1" stop-color="#ffd8b0" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="view view-about">
+          <div class="about-text">
+            <p data-rise>Hi, I’m <span class="nw">Tigo<span class="tk tk-me" style="--n: 0" tabindex="0" role="img" aria-label="A photo of Tigo"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="#e3e3e3" />
+                  <image href="assets/me.jpg" x="-29" y="-11" width="144" height="144" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg><span class="tk-peek tk-peek-photo" aria-hidden="true"><img src="assets/me.jpg" alt="" loading="lazy" decoding="async" /></span></span>,</span>
+              a product design engineer from Portland, <span class="nw">Oregon<span class="tk tk-flag" style="--n: 1" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <g class="tk-cloth">
+                    <g transform="translate(50 50) scale(.31) translate(-265 -180)">
+                      <rect x="-60" y="-60" width="720" height="480" fill="#fff" />
+                      <path fill="#046a38" d="m350 215h250v145h-250zm-350 50h230v95h-230zm300-265h300v95h-300zm-300 0h180v145h-180z" />
+                      <path fill="none" stroke="#ffb81c" stroke-width="20" d="m200 0v165h-200m280-165v115h320m-600 130h250v115m350-165h-270v165" />
+                      <path fill="#418fde" d="m310 360v-175a40 40 0 0 0 -40 40v135zm-310-135h260a40 40 0 0 0 -40 -40h-220zm600-90h-330a40 40 0 0 0 40 40h290zm-380-135v175a40 40 0 0 0 40 -40v-135z" />
+                    </g>
+                  </g>
+                  <rect class="tk-sheen" x="-70" y="-10" width="46" height="120" fill="url(#tk-g-sheen)" transform="skewX(-18)" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>.</span>
+              I&nbsp;study Media Arts &amp; <span class="nw">Design<span class="tk tk-figma" style="--n: 2" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-white)" />
+                  <g transform="translate(28 17) scale(1.158)">
+                    <path class="tk-fig" style="--dx: -3px; --dy: -3px; --d: 0ms" d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E" />
+                    <path class="tk-fig" style="--dx: 3px; --dy: -3px; --d: 45ms" d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262" />
+                    <path class="tk-fig" style="--dx: -4px; --dy: 0px; --d: 90ms" d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF" />
+                    <path class="tk-fig" style="--dx: 4px; --dy: 0px; --d: 135ms" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE" />
+                    <path class="tk-fig" style="--dx: -3px; --dy: 3px; --d: 180ms" d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span></span>
+              and Computer <span class="nw">Science<span class="tk tk-term" style="--n: 3" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-term)" />
+                  <circle cx="23" cy="23" r="4.4" fill="#ffc9c9" />
+                  <circle cx="36" cy="23" r="4.4" fill="#fffec9" />
+                  <circle cx="49" cy="23" r="4.4" fill="#c9fecb" />
+                  <path class="tk-chev" d="M29 45 L42 57.5 L29 70" fill="none" stroke="#c9f0ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+                  <rect class="tk-caret" x="50" y="63.5" width="23" height="7" rx="2" fill="#c9f0ff" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span></span>
+              at&nbsp;<span class="nw">UChicago<span class="tk tk-shield" style="--n: 4" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-cream)" />
+                  <rect class="tk-fire" width="100" height="100" fill="url(#tk-g-fire)" />
+                  <image class="tk-emblem" href="assets/about/uchicago.svg" x="18.4" y="9" width="63.2" height="80" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>,</span>
+              and I graduate in May <span class="nw">2027<span class="tk tk-grad" style="--n: 5" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-yellow)" />
+                  <ellipse class="tk-cap-shadow" cx="50" cy="85" rx="24" ry="3.6" fill="#8a7414" fill-opacity=".2" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+                <g class="tk-cap">
+                  <path d="M30 50 V62 C30 69 40 73 50 73 C60 73 70 69 70 62 V50 L50 58 Z" fill="#3b3b49" />
+                  <path d="M50 27 L89 42.5 L50 58 L11 42.5 Z" fill="#2b2b37" />
+                  <path d="M50 42.5 L79 47 V65" fill="none" stroke="#f1b72f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M75.5 63 H82.5 L84.5 76 H73.5 Z" fill="#f1b72f" />
+                  <circle cx="50" cy="42.5" r="3.2" fill="#f1b72f" />
+                </g>
+              </svg></span>.</span></p>
+
+            <p data-rise>I believe software should be useful and <span class="nw">pleasurable<span class="tk tk-switch" style="--n: 6" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-mint)" />
+                  <rect class="tk-track" x="13" y="33" width="74" height="34" rx="17" fill="#34c26b" />
+                  <g class="tk-knob">
+                    <circle cx="70" cy="52.5" r="13.5" fill="#0d4a25" fill-opacity=".18" />
+                    <circle cx="70" cy="50" r="13.5" fill="#fff" />
+                  </g>
+                  <path class="tk-spark" d="M83 12 L85.2 19 L92 21.2 L85.2 23.4 L83 30.4 L80.8 23.4 L74 21.2 L80.8 19 Z" fill="#fff" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>.</span>
+              Most recently I&nbsp;was a UX engineer intern at <a class="about-app" href="vicino.html" style="--hue: #7fd0d6"><span class="nw">Vicino AI<span class="tk tk-vicino" style="--n: 7" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <image href="assets/work/icon-vicino.webp" width="100" height="100" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg><span class="tk-peek tk-peek-note">UX Engineer Intern<span>Jun – Aug 2026</span></span></span></span><span class="sr-only"> (the case study)</span></a>.
+              <a class="about-app" href="pantrypal.html" style="--hue: #ffb89c"><span class="nw">PantryPal<span class="tk tk-pantry" style="--n: 8" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <image href="assets/work/icon-pantrypal.webp" x="-3.5" y="-3.5" width="107" height="107" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg><span class="tk-peek tk-peek-note">Product Designer<span>Nov 2025 – Present</span></span></span></span><span class="sr-only"> (the case study)</span></a>,
+              the recipe app I&nbsp;designed, is out on the App Store.</p>
+
+            <p data-rise>Off the clock you’ll find me on bike rides along Lake <span class="nw">Michigan<span class="tk tk-lake" style="--n: 9" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-sky)" />
+                  <circle cx="80" cy="24" r="8" fill="#fff" fill-opacity=".9" />
+                  <rect y="50" width="100" height="32" fill="url(#tk-g-lake)" />
+                  <g class="tk-waves" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2" stroke-linecap="round">
+                    <path d="M-20 59 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" />
+                    <path d="M-15 68 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" stroke-opacity=".5" />
+                  </g>
+                  <path d="M-2 79 C30 76 70 77 102 79 V102 H-2 Z" fill="#f3e4c4" />
+                  <g class="tk-bike" fill="none" stroke="#1d5e85" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+                    <g class="tk-wheel"><circle cx="29" cy="66" r="12" /><path d="M29 55 V77 M18 66 H40" stroke-width="1.8" /></g>
+                    <g class="tk-wheel"><circle cx="71" cy="66" r="12" /><path d="M71 55 V77 M60 66 H82" stroke-width="1.8" /></g>
+                    <path d="M29 66 H48 L41 44 Z M41 44 H63 L48 66 M63 44 L71 66 M41 44 V39 M36 39 H46 M63 44 L61 37 H68" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>,</span>
+              watching Real <span class="nw">Madrid<span class="tk tk-crest" style="--n: 10" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-white)" />
+                  <image class="tk-emblem" href="assets/about/real-madrid.svg" x="20.2" y="9" width="59.6" height="80" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>,</span>
+              or out with <span class="nw">friends<span class="tk tk-friends" style="--n: 11" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-peach)" />
+                  <g class="tk-f1" fill="#94d0f2"><circle cx="27" cy="46" r="9" /><path d="M11 94 C11 71 18 61 27 61 C36 61 43 71 43 94 Z" /></g>
+                  <g class="tk-f3" fill="#98e0ae"><circle cx="73" cy="46" r="9" /><path d="M57 94 C57 71 64 61 73 61 C82 61 89 71 89 94 Z" /></g>
+                  <g class="tk-f2" fill="#b3acfa" stroke="#ffe3c6" stroke-width="4.5" paint-order="stroke"><circle cx="50" cy="42" r="10.5" /><path d="M31 98 C31 73 39 61 50 61 C61 61 69 73 69 98 Z" /></g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>.</span></p>
+          </div>
+        </div>
+        <!-- Where to find him: six icons in the same family as the
+             sentence's, a size up, and beside them the bottom line, which
+             says what the one pointed at does. Email copies the address;
+             the others open in a new tab (js/about.js). Glyphs: LinkedIn's
+             "in", GitHub's own mark, Goodreads' "g" and Letterboxd's three
+             dots; the envelope and the page are drawn here. -->
+        <footer class="status">
+          <div class="status-about" data-status="about">
+            <ul class="socials" role="list" aria-label="Find me">
+              <li><button type="button" class="soc soc-email" data-soc="email" data-copy="tigoponcedeleon@uchicago.edu" aria-label="Copy my email address, tigoponcedeleon@uchicago.edu"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-coral)" />
+                  <g class="soc-letter">
+                    <rect x="29" y="30" width="42" height="34" rx="3" fill="#fff" />
+                    <rect x="35" y="37" width="22" height="3.4" rx="1.7" fill="#f2a58f" />
+                    <rect x="35" y="44" width="30" height="3.4" rx="1.7" fill="#f7cfc2" />
+                    <rect x="35" y="51" width="26" height="3.4" rx="1.7" fill="#f7cfc2" />
+                  </g>
+                  <path d="M20 42 L50 60 L80 42 V70 A6 6 0 0 1 74 76 H26 A6 6 0 0 1 20 70 Z" fill="#fff" />
+                  <path d="M20 70 L42 55 M80 70 L58 55" fill="none" stroke="#f6c3b3" stroke-width="2.6" stroke-linecap="round" />
+                  <path d="M20 42 L50 60 L80 42" fill="none" stroke="#ee8a70" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></button><span class="soc-toast" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>copied</span></li>
+              <li><a class="soc soc-linkedin" data-soc="linkedin" href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener" aria-label="LinkedIn (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-linkedin)" />
+                  <g fill="#fff" transform="translate(-2 1)">
+                    <circle cx="31" cy="30" r="7" />
+                    <rect x="24.5" y="41" width="13" height="35" rx="1.5" />
+                    <path d="M43 41 H55.5 V46.5 C57.8 42.8 62 40 67.6 40 C75.6 40 79.5 45.2 79.5 54.8 V76 H67 V57.4 C67 52.8 65.3 50.4 61.7 50.4 C57.9 50.4 55.5 53.2 55.5 58 V76 H43 Z" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-github" data-soc="github" href="https://github.com/tigo-poncedeleon" target="_blank" rel="noopener" aria-label="GitHub (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-github)" />
+                  <path transform="translate(21.2 21.2) scale(3.6)" fill="#fff" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-resume" data-soc="resume" href="https://tigoponcedeleon.com/PoncedeLeon-Resume.pdf" target="_blank" rel="noopener" aria-label="My resume, a PDF (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-lav)" />
+                  <g class="soc-page">
+                    <path d="M31 19 H59 L71 31 V84 H31 Z" fill="#4a43b0" fill-opacity=".16" transform="translate(2 3)" />
+                    <path d="M29 17 H59 L71 29 V83 H29 Z" fill="#fff" />
+                    <path d="M59 17 V29 H71 Z" fill="#dedbfb" />
+                    <image href="assets/me.jpg" x="32.5" y="23.5" width="13" height="13" clip-path="url(#tk-cvclip)" />
+                    <rect x="48" y="26" width="13" height="3.4" rx="1.7" fill="#4a43b0" />
+                    <rect x="48" y="32" width="9" height="2.6" rx="1.3" fill="#b9b4f5" />
+                    <rect x="34" y="44" width="32" height="2.8" rx="1.4" fill="#d9d6fa" />
+                    <rect x="34" y="50" width="27" height="2.8" rx="1.4" fill="#d9d6fa" />
+                    <rect x="34" y="59" width="15" height="3.2" rx="1.6" fill="#8d86e8" />
+                    <rect x="34" y="65" width="32" height="2.8" rx="1.4" fill="#d9d6fa" />
+                    <rect x="34" y="71" width="24" height="2.8" rx="1.4" fill="#d9d6fa" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-goodreads" data-soc="goodreads" href="https://www.goodreads.com/user/show/98420895-tigo" target="_blank" rel="noopener" aria-label="Goodreads (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-goodreads)" />
+                  <text class="soc-g" x="50" y="63" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="74" fill="#3a2414">g</text>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-letterboxd" data-soc="letterboxd" href="https://letterboxd.com/tigomiamigo/" target="_blank" rel="noopener" aria-label="Letterboxd (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-letterboxd)" />
+                  <circle class="soc-dot" style="--d: 0ms" cx="30" cy="50" r="12.5" fill="#ff8000" />
+                  <circle class="soc-dot" style="--d: 140ms" cx="70" cy="50" r="12.5" fill="#40bcf4" />
+                  <g class="soc-dot" style="--d: 70ms">
+                    <circle cx="50" cy="50" r="12.5" fill="#00e054" />
+                    <circle cx="50" cy="50" r="12.5" fill="#5c7a14" clip-path="url(#tk-lb-left)" />
+                    <circle cx="50" cy="50" r="12.5" fill="#138a73" clip-path="url(#tk-lb-right)" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+            </ul>
+            <p class="soc-says" aria-hidden="true">
+              <span class="sl sl-rest">say hi</span>
+              <span class="sl" data-for="email">copy tigoponcedeleon@uchicago.edu</span>
+              <span class="sl" data-for="copied">tigoponcedeleon@uchicago.edu</span>
+              <span class="sl" data-for="linkedin">linkedin.com/in/tigoponcedeleon</span>
+              <span class="sl" data-for="github">github.com/tigo-poncedeleon</span>
+              <span class="sl" data-for="resume">my resume, as a PDF</span>
+              <span class="sl" data-for="goodreads">what I’m reading, on goodreads</span>
+              <span class="sl" data-for="letterboxd">what I’ve been watching, on letterboxd</span>
+            </p>
+          </div>
+        </footer>
       </section>
 
     </main>
-
-    <!-- The frame's third anchor: one line at the bottom-left, on every page. -->
-    <footer class="status">
-      <div class="status-home" data-status="home">
-        <!-- The composer. At rest it is only the block caret, blinking on
-             the left axis; once there is something in it, or a pointer over
-             it, a white pill opens around the words and the tools slide in at
-             its right end: add a photo, the chat's mood, the microphone, send
-             (css/home.css). Icons are Lucide's (ISC). -->
-        <form class="composer prompt" autocomplete="off" aria-label="Ask me anything">
-          <button type="button" class="composer-btn composer-attach" aria-label="Add a photo">
-            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
-          </button>
-          <input type="file" class="composer-file" accept="image/*" tabindex="-1" aria-hidden="true" hidden />
-          <div class="composer-thumb" hidden>
-            <img alt="The photo you are sending" />
-            <button type="button" class="composer-thumb-remove" aria-label="Remove the photo">
-              <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
-            </button>
-          </div>
-
-          <div class="prompt-field">
-            <textarea id="ask" class="prompt-input" rows="1" maxlength="300" enterkeyhint="send"
-                      spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
-                      aria-label="Ask me anything" aria-describedby="ask-hint"></textarea>
-            <span class="prompt-caret" aria-hidden="true"></span>
-            <div class="prompt-mirror" aria-hidden="true"></div>
-          </div>
-
-          <div class="composer-mood">
-            <button type="button" class="composer-chip" aria-haspopup="menu" aria-expanded="false" aria-controls="mood-menu">
-              <span class="mood-dot" aria-hidden="true"></span>
-              <span class="composer-chip-word">friendly</span>
-              <svg class="composer-chip-caret" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-            </button>
-            <div class="mood-menu" id="mood-menu" role="menu" aria-label="How the chat answers">
-              <button type="button" role="menuitemradio" aria-checked="true" data-mood="friendly">
-                <span class="mood-dot" aria-hidden="true"></span>
-                <span class="mood-name">friendly</span><span class="mood-note">warm &amp; to the point</span>
-                <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-              </button>
-              <button type="button" role="menuitemradio" aria-checked="false" data-mood="whimsical">
-                <span class="mood-dot" aria-hidden="true"></span>
-                <span class="mood-name">whimsical</span><span class="mood-note">answers with a wink</span>
-                <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-              </button>
-              <button type="button" role="menuitemradio" aria-checked="false" data-mood="suspicious">
-                <span class="mood-dot" aria-hidden="true"></span>
-                <span class="mood-name">suspicious</span><span class="mood-note">trusts no question</span>
-                <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-              </button>
-            </div>
-          </div>
-
-          <button type="button" class="composer-btn composer-mic" aria-label="Ask out loud" aria-pressed="false" hidden>
-            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><rect x="9" y="2" width="6" height="13" rx="3" /></svg>
-          </button>
-          <button type="submit" class="composer-send" aria-label="Send" disabled>
-            <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
-          </button>
-          <span class="sr-only" id="ask-hint">Press Enter to send.</span>
-        </form>
-      </div>
-
-      <p class="status-line status-work" data-status="work" hidden>
-        <span class="sl sl-default">selected work: vicino ai, pantrypal, next level</span>
-        <span class="sl sl-vicino" aria-hidden="true">vicino ai: ux engineer intern, 2026</span>
-        <span class="sl sl-pantrypal" aria-hidden="true">pantrypal: product designer, 2025–26, on the app store</span>
-        <span class="sl sl-nextlevel" aria-hidden="true">next level: founding visual designer, 2025</span>
-      </p>
-      <p class="status-line status-play" data-status="play" hidden>
-        <span class="sl sl-default">play: three arcade classics, rebuilt by hand</span>
-        <span class="sl sl-pong" aria-hidden="true">pong: atari, 1972<span class="sl-best" data-best="pong"></span></span>
-        <span class="sl sl-snake" aria-hidden="true">snake: nokia, 1997<span class="sl-best" data-best="snake"></span></span>
-        <span class="sl sl-flappy" aria-hidden="true">flappy bird: dotgears, 2013<span class="sl-best" data-best="flappy"></span></span>
-        <span class="sl sl-controls" aria-hidden="true"></span>
-      </p>
-      <p class="status-line status-about" data-status="about" hidden>
-        <a href="mailto:tigoponcedeleon@gmail.com">email</a><span class="sep" aria-hidden="true"> · </span><a href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener">linkedin</a><span class="sep" aria-hidden="true"> · </span><a href="https://github.com/tigo-poncedeleon" target="_blank" rel="noopener">github</a><span class="sep" aria-hidden="true"> · </span><a href="https://tigoponcedeleon.com/PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">résumé</a>
-      </p>
-    </footer>
 
     <p class="sr-only" id="announcer" aria-live="polite"></p>
   </div>

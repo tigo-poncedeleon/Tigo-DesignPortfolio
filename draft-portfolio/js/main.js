@@ -1,22 +1,22 @@
-// main.js — boots the draft and runs every page change.
+// main.js — boots the draft, and keeps track of where on the page you are.
 //
-// A page change is three things moving at once, on the same clock:
-//   the menu   folds its pills away and slides its square home (nav.css),
-//              with the new page's pill marked;
-//   the band   the old page drifts out against the direction of travel and
-//              fades (180ms, an ease-in: it is leaving, so it accelerates
-//              away), while the new one arrives from the other side on the
-//              settling spring, its text rising into place a line at a time;
-//   the line   the bottom-left line crossfades to the new page's words.
-//
-// "Direction" is the menu's order, home → work → play → about: going down
-// the list, pages come in from the right; going up, from the left.
-//
-// Every change starts from what is on screen, not from where the last one was
-// meant to end. settle() pins whatever is mid-flight where it is, and the
-// next animation leaves from there. Five clicks in a second is five changes of
-// mind, not five pages queued up, and Back in the middle of a crossfade just
-// turns it around.
+// The site is one page, four screens down it in the menu's order: Home,
+// Work, Play, About (index.html). You move between them by scrolling, or with
+// the menu, whose pills are plain links to each screen, so the browser does
+// the going (css/base.css). Nothing here ever moves the page. It only
+// watches: whichever screen holds the middle of the window is the one you
+// are on, and everything that depends on that follows it as you scroll:
+//   the headline  the name on Home, and "Work", "Play" or "About" elsewhere,
+//                 the old one lifting away as the new one rises in, in the
+//                 direction you are scrolling;
+//   the menu      its pill for the screen is marked;
+//   the address   the hash is the screen's (#work), noted as you go, so a
+//                 reload or a shared link comes back to it (js/router.js);
+//   the screens   Home's conversation and composer, and Play's games, know
+//                 whether they are the one in the window.
+// Each screen's pieces rise into place the first time they come into view.
+// (It was four pages, each the whole window, swapped in place with a
+// crossfade that ran in the menu's direction.)
 
 import { createPrompt } from './prompt.js';
 import { createComposer } from './composer.js';
@@ -24,7 +24,8 @@ import { createChat } from './chat.js';
 import { initNav } from './nav.js';
 import { startRouter, VIEWS } from './router.js';
 import { playEntrance } from './entrance.js';
-import { SPRING, EASE, animate, settle, rise, clearInline, reduced, u } from './motion.js';
+import { initAbout } from './about.js';
+import { SPRING, EASE, animate, rise, reduced, u } from './motion.js';
 
 const NAME = 'Tigo Ponce de León';
 const TITLES = {
@@ -34,14 +35,45 @@ const TITLES = {
   about: 'About — ' + NAME,
 };
 
+const screens = {};
 const views = {};
-for (const v of document.querySelectorAll('.band > [data-view]')) views[v.dataset.view] = v;
-const lines = {};
-for (const l of document.querySelectorAll('.status > [data-status]')) lines[l.dataset.status] = l;
+for (const el of document.querySelectorAll('.screen')) {
+  screens[el.dataset.section] = el;
+  views[el.dataset.section] = el.querySelector('.view');
+}
 
 // While a conversation is up on Home, the menu square gives its place to a
 // clear button (the chat says when, below).
-const nav = initNav(document.querySelector('.menu'), { onClear: () => chat.clear() });
+const nav = initNav(document.querySelector('.menu'), {
+  onClear: () => chat.clear(),
+  // the row of pages keeps off the name
+  clearOf: document.querySelector('.headline .name'),
+});
+
+// ---- while there is a conversation ----
+// The conversation takes the whole page. The frame says so with data-chat,
+// and three things answer it: the menu square gives its place to the clear
+// square (js/nav.js), the composer's pill stays open (css/home.css), and the
+// name steps out of the way. It simply fades, and fades back in once the
+// conversation is cleared, or when you scroll away from Home, where the
+// headline is the other screens' names anyway. (It lifted off and went out of focus, a line at a time; the chat
+// is kept plain now, and so is this.) Before the first paint (a
+// conversation restored by a reload) nothing moves: the name is simply not
+// there, and the entrance leaves it out (js/entrance.js).
+const frame = document.querySelector('.frame');
+const nameLines = [...document.querySelectorAll('.name-line')];
+function setChatting(on) {
+  if (frame.hasAttribute('data-chat') === on) return;
+  frame.toggleAttribute('data-chat', on);
+  nav.setChat(on);
+  if (on) prompt.hush();
+  if (!document.documentElement.classList.contains('entered')) return;
+  for (const line of nameLines) {
+    for (const a of line.getAnimations()) a.cancel();
+    animate(line, on ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 1 }],
+      { duration: on ? 200 : 300, easing: 'ease-out', delay: on ? 0 : 120, fill: on ? 'forwards' : 'backwards' });
+  }
+}
 
 // ---- Home: the composer and the conversation ----
 // The field (prompt.js) owns the text and the caret; the composer
@@ -54,11 +86,10 @@ const prompt = createPrompt(promptForm, {
 });
 const chat = createChat({
   prompt,
-  promptForm,
   thread: document.querySelector('.thread'),
   announcer: document.getElementById('announcer'),
   onFail: (sent) => composer.restore(sent),
-  onLive: (on) => nav.setChat(on),
+  onLive: setChatting,
 });
 const composer = createComposer(promptForm, {
   prompt,
@@ -74,114 +105,172 @@ views.home.addEventListener('click', (e) => {
   prompt.focus();
 });
 
-// Which hand is driving: keyboard navigation moves focus to the new page's
-// heading, a click leaves focus where it was.
-let byKeyboard = false;
-addEventListener('keydown', () => { byKeyboard = true; }, true);
-addEventListener('pointerdown', () => { byKeyboard = false; }, true);
-
-// ---- per-page hooks (Play fills this in when it loads) ----
+// ---- per-screen hooks (Play fills this in when it loads) ----
 const hooks = {};
-let current = null;
 
-// ---- leaving and arriving ----
-function leave(el, name, dir) {
-  el.inert = true;
-  settle(el);
+// ---- the headline ----
+const headline = {};
+for (const el of document.querySelectorAll('.headline > [data-for]')) headline[el.dataset.for] = el;
+
+// The pill behind a screen's title is one for all three, as wide as
+// whichever is showing, in that screen's pastel (css/base.css), so it
+// stretches or draws in to the next word as the screens change. On Home it
+// keeps the width of the last title it held, out of sight. Fitted without
+// its spring when the page opens or the window changes size, so only a
+// change of screen moves it.
+const pill = document.querySelector('.headline-pill');
+function fitPill(name, { still = false } = {}) {
+  const title = headline[name];
+  if (!pill || !title || name === 'home') return;
+  if (still) pill.style.transition = 'none';
+  pill.style.setProperty('--pill-w', `${title.offsetWidth}px`);
+  if (still) { void pill.offsetWidth; pill.style.transition = ''; }
+}
+const fitPillStill = () => fitPill(section && section !== 'home' ? section : 'work', { still: true });
+function swapHeadline(to, from, dir) {
   const k = u();
-  const a = animate(el, [{}, { opacity: 0, translate: `${-dir * 16 * k}px 0` }], {
-    duration: 180, easing: EASE.exit, fill: 'forwards',
-  });
-  a.finished.then(() => {
-    if (current?.view === name) return;
-    el.hidden = true;
-    a.cancel();
-    clearInline(el);
-  }, () => {});
+  const leaving = headline[from];
+  const arriving = headline[to];
+  for (const el of [leaving, arriving]) for (const a of el.getAnimations()) a.cancel();
+  animate(leaving, [
+    { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
+    { opacity: 0, translate: `0 ${-dir * 10 * k}px`, filter: 'blur(3px)' },
+  ], { duration: 200, easing: EASE.exit, fill: 'forwards' });
+  // Home's headline is the name, which a conversation keeps out of the way
+  if (to === 'home' && frame.hasAttribute('data-chat')) return;
+  animate(arriving, [
+    { opacity: 0, translate: `0 ${dir * 10 * k}px`, filter: 'blur(3px)' },
+    { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
+  ], { ...SPRING.settle, delay: 90, fill: 'backwards' });
 }
 
-function arrive(el, name, dir, { initial, stagger = true } = {}) {
-  const fresh = el.hidden;
-  settle(el);
-  el.hidden = false;
-  el.inert = false;
-  if (initial) { clearInline(el); return; }
-  if (fresh) {
-    el.style.opacity = '0';
-    if (!reduced()) el.style.translate = `${dir * 24 * u()}px 0`;
-  }
-  const a = animate(el, [{}, { opacity: 1, translate: '0 0' }], {
-    ...SPRING.settle, delay: fresh ? 90 : 0, fill: 'forwards',
-  });
-  a.finished.then(() => {
-    if (current?.view !== name) return;
-    a.cancel();
-    clearInline(el);
-  }, () => {});
-  if (fresh && stagger) rise(el.querySelectorAll('[data-rise]'), { delay: 90, stagger: 45 });
-}
-
-function show(next, prev, { initial }) {
-  current = next;
-  document.title = TITLES[next.view];
-
-  nav.setCurrent(next.view);
+// ---- where you are ----
+// The screen you are on is the one that holds the middle of the window.
+// Everything that depends on it is told here, once, as it changes.
+let section = null;
+function setSection(name, { initial = false } = {}) {
+  if (name === section) return;
+  const prev = section;
+  section = name;
+  // the frame first: the chat below hides the name for a conversation, and
+  // must find the headline already turned to the new screen
+  frame.dataset.section = name;
+  fitPill(name, { still: initial });
+  document.title = TITLES[name];
+  nav.setCurrent(name);
   nav.close();
-
-  // the same page, a different state of it (a game opening or closing)
-  if (prev && prev.view === next.view) {
-    hooks[next.view]?.update?.(next, prev);
-    return;
-  }
-
-  const dir = prev ? Math.sign(VIEWS.indexOf(next.view) - VIEWS.indexOf(prev.view)) : 0;
-  if (prev) hooks[prev.view]?.leave?.(next, prev);
-
-  prompt.setTypeAnywhere(next.view === 'home');
-  chat.setVisible(next.view === 'home');
-
-  for (const [name, el] of Object.entries(views)) {
-    if (name === next.view) arrive(el, name, dir, { initial });
-    else if (!el.hidden) leave(el, name, dir);
-  }
-  for (const [name, el] of Object.entries(lines)) {
-    if (name === next.view) arrive(el, name, 0, { initial, stagger: false });
-    else if (!el.hidden) leave(el, name, 0);
-  }
-
-  hooks[next.view]?.enter?.(next, prev, { initial });
-
-  if (initial) {
-    // Arriving straight at a page: its content rises once the frame has
-    // assembled around it, rather than standing there first.
-    if (next.view !== 'home') rise(views[next.view].querySelectorAll('[data-rise]'), { delay: 380, stagger: 50 });
-    return;
-  }
-  if (next.view === 'home') {
-    prompt.focusIfDesk();
-  } else if (byKeyboard) {
-    views[next.view].querySelector('h1')?.focus({ preventScroll: true });
-  }
+  prompt.setTypeAnywhere(name === 'home');
+  chat.setVisible(name === 'home');
+  // The first time Home is in view, the caret types its greeting out and
+  // takes it back (js/prompt.js): on a first load once the entrance has set
+  // it blinking (at 700ms) and it has blinked once; arriving later, a beat
+  // after the scroll lands. Not over a conversation, which has said hello
+  // already.
+  if (name === 'home' && !frame.hasAttribute('data-chat')) prompt.greet({ delay: initial ? 1250 : 500 });
+  if (prev) hooks[prev]?.leave?.();
+  hooks[name]?.enter?.(router.current?.view === name ? router.current : { view: name, game: null });
+  if (prev && !initial) swapHeadline(name, prev, Math.sign(VIEWS.indexOf(name) - VIEWS.indexOf(prev)));
+  router.note({ view: name, game: null });
 }
+
+function whereAmI() {
+  const middle = innerHeight / 2;
+  let name = VIEWS[0];
+  for (const v of VIEWS) if (screens[v].getBoundingClientRect().top <= middle) name = v;
+  return name;
+}
+// The page is scrolled at all: the composer's blinking caret goes quiet
+// (css/home.css), so nothing keeps asking for attention at the foot of Home
+// while you read on down.
+let spying = 0;
+function onScroll() {
+  spying = 0;
+  frame.toggleAttribute('data-scrolled', scrollY > 4);
+  setSection(whereAmI());
+}
+addEventListener('scroll', () => {
+  if (!spying) spying = requestAnimationFrame(onScroll);
+}, { passive: true });
+frame.toggleAttribute('data-scrolled', scrollY > 4);
+addEventListener('resize', () => { setSection(whereAmI()); fitPillStill(); });
+document.fonts?.ready.then(fitPillStill);
+
+// A change of the hash itself: a game opened or closed is Play's to handle.
+// A link to another screen (a pill, the name, an address typed in) needs
+// nothing from here: the browser has already gone there, and the page
+// watching itself, above, follows.
+function show(next, prev, { initial }) {
+  if (initial) return;
+  if (prev && prev.view === next.view) hooks[next.view]?.update?.(next, prev);
+}
+
+// ---- arriving ----
+// Each screen's pieces (everything marked data-rise) rise into place by the
+// page's one entrance the first time they come into view, a beat apart. They
+// are held unseen until then (css/base.css, under html.rises), so none is
+// caught standing there first; without script, nothing is held.
+document.documentElement.classList.add('rises');
+let booting = true;
+const riser = new IntersectionObserver((entries) => {
+  const now = entries.filter((e) => e.isIntersecting).map((e) => e.target);
+  if (!now.length) return;
+  for (const el of now) {
+    riser.unobserve(el);
+    el.classList.add('is-risen');
+  }
+  rise(now, { delay: booting ? 380 : 40, stagger: 50 });
+}, { threshold: 0.12 });
+for (const el of document.querySelectorAll('[data-rise]')) riser.observe(el);
 
 // ---- boot ----
+// The page opens where the address says (the browser takes a link to #work
+// to the Work screen itself, and a reload back to wherever you were), and
+// the first scroll the browser makes to get there puts everything else
+// right.
 const router = startRouter((next, prev, info) => show(next, prev, info));
+// A game's address (#play/pong) names no element on the page, so the browser
+// leaves a link to one at the top, on Home; take it to the Play screen, where
+// the game opens (js/play/play.js).
+if (router.current.game) screens[router.current.view].scrollIntoView({ block: 'start', behavior: 'instant' });
+fitPillStill();
+setSection(router.current.view, { initial: true });
+// Once the page has loaded and the browser has put it back where it was, the
+// window has the last word over the address: a reload restores the scroll,
+// and if that disagrees with the hash, what you can see is where you are.
+addEventListener('load', () => requestAnimationFrame(() => setSection(whereAmI())), { once: true });
 
-playEntrance({ caret: prompt.caret }).then(() => {
-  if (router.current.view === 'home') prompt.focusIfDesk();
+playEntrance({ caret: prompt.caret, section }).then(() => {
+  booting = false;
+  if (section === 'home') prompt.focusIfDesk();
 });
 
 // Play's engine is the heaviest thing here, and nothing needs it until the
-// Play page opens. It is fetched when the browser is idle, and wired in when
-// it arrives.
+// Play screen comes into view. It is fetched when the browser is next idle
+// (within two seconds, however busy it is), or the moment the Play screen
+// comes within a screen of the window, whichever is first, and wired in when
+// it arrives. (It waited for idle alone, which on a busy page can be never,
+// and left the courts blank for whoever scrolled down to them.)
+let playing = null;
 function loadPlay() {
-  return import('./play/play.js').then(({ initPlay }) => {
-    hooks.play = initPlay(views.play, { router, lines: lines.play });
-    if (router.current.view === 'play') hooks.play.enter(router.current, null, { initial: true });
-  }).catch((err) => console.warn('play did not load', err));
+  if (playing) return playing;
+  return (playing = import('./play/play.js').then(({ initPlay }) => {
+    hooks.play = initPlay(views.play, { router });
+    if (section === 'play') hooks.play.enter(router.current.view === 'play' ? router.current : { view: 'play', game: null }, null, { initial: true });
+  }).catch((err) => console.warn('play did not load', err)));
 }
 if (router.current.view === 'play') loadPlay();
-else (window.requestIdleCallback || ((f) => setTimeout(f, 1200)))(loadPlay);
+else {
+  if (window.requestIdleCallback) requestIdleCallback(loadPlay, { timeout: 2000 });
+  else setTimeout(loadPlay, 1200);
+  const near = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) { near.disconnect(); loadPlay(); }
+  }, { rootMargin: '100% 0px' });
+  near.observe(screens.play);
+}
+
+// About's foot: the icons that say where they go, and the email that copies
+// itself (js/about.js).
+initAbout(screens.about, { announcer: document.getElementById('announcer') });
 
 if (new URLSearchParams(location.search).has('overlay')) {
   import('../tools/overlay.js');

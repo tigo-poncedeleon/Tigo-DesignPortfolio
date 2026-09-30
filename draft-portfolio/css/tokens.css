@@ -28,11 +28,17 @@
   --u: clamp(0.75px, min(100vw / 1280, 100svh / 700), 1.25px);
 
   /* ---- colour. The frame paints rgba(240,240,240,.3) over white, which is
-     #fafafa. Text is the frame's #444343; the glyphs in the tiles are the
-     design system's icon ink, #1e1e1e, a shade darker, and the draft keeps
-     that distinction: --ink is for words, --mark is for drawn things (icons,
-     the pieces in the games). The three lighter inks are graded by what
-     they are allowed to carry:
+     #fafafa. Text is the frame's #444343, the name's own ink, everywhere:
+     on the paper, on the pastels, in the chat's bubbles. Nothing on the
+     page is set in black or near it. (Words on the pastels, the answers and
+     the questions were a near-black #1e1e1e and #111112 for a while; Tigo
+     wanted every word in the name's softer tone.) --ink is for words on the
+     page, and changes with the theme; --pastel-ink is the same #444343 for
+     words on the pastels, which stay pastel in every theme, so it never
+     changes; --mark, #1e1e1e, is the design system's icon ink, for drawn
+     things that stand alone (the pieces in the games, the send disc's
+     arrow). The three lighter inks are graded by what they are allowed to
+     carry:
        --ink-2  8a8989  3.3:1  only at 24px and up (an answer that failed)
        --ink-3  6f6e6e  4.9:1  any size (small print)
        --ink-4  b6b5b5         decoration only, always aria-hidden
@@ -43,14 +49,43 @@
   --ink-3: #6f6e6e;
   --ink-4: #b6b5b5;
   --mark: #1e1e1e;
+  --pastel-ink: #444343;
+
+  /* What the themes change (below), beside the paper and the inks:
+       --fg        the strongest ink ON THE PAGE: a focus ring, a tool under
+                   the pointer, the send disc. (--mark is the ink on the
+                   pastels, the pills and tiles and games, which stay pastel
+                   in every theme, so it never changes.)
+       --surface   what the composer's pill and its mood card are made of
+       --line      hairlines and quiet tints, as channels for rgb()
+       --caret-*   the block caret's colour. It is drawn by `difference`,
+                   so to come out as the ink it has to be the gap between
+                   the ink and whatever is under it: the paper at rest, the
+                   pill's surface once it opens (css/home.css). */
+  --fg: #1e1e1e;
+  --surface: #fff;
+  --line: 30 30 30;
+  --caret-rest: #b6b7b7;
+  --caret-open: #bbbcbc;
 
   /* The chat's bubbles, from the Messenger and Muse references: the
-     sender's light blue for your questions, the reply grey for the answers
-     (and for the clear square that stands in for the menu while they are
-     up), and the same near-black text in both. */
+     sender's light blue for your questions, the reply grey for the answers,
+     and the page's own ink in both. */
   --bubble: #d0e4fd;
-  --bubble-ink: #111112;
+  --bubble-ink: #444343;
   --pill: #e9eaeb;
+  /* the page's selection is a blue, which vanishes on the question's blue:
+     there it is the bubble's own blue taken two steps deeper */
+  --bubble-select: #a9cbf8;
+
+  /* The clear square that stands in for the menu while a conversation is
+     up: a soft red, the way iOS tints a destructive button, with its × in a
+     red deep enough to hold 4.2:1 on it (3.8:1 on the hover's deeper fill;
+     a drawn control needs 3). It was the answers' grey, which made it read
+     as one more bubble rather than the way out. */
+  --clear: #ffdedc;
+  --clear-hover: #ffd0cd;
+  --clear-ink: #c93434;
 
   /* The pastels. The menu square is the yellow; its pills are home blue,
      work pink, play lavender and about green, as in Tigo's menu mockups
@@ -78,11 +113,26 @@
   --track: -0.012em;
 
   /* ---- the frame's measurements, in frame pixels ---- */
-  --gutter-l: calc(74 * var(--u));     /* the name, the prompt, everything on the left axis */
-  --gutter-r: calc(102 * var(--u));    /* the tile row's right edge sits at 1178 */
-  --top: calc(49 * var(--u));          /* the name block's first line */
-  --bottom: calc(75 * var(--u));       /* under the prompt's line box */
-  --band-top: calc(168 * var(--u));    /* where page content may begin */
+  /* The frame has 74 on the left and 102 on the right, and the name 49 down.
+     The sides went out to 44, so the menu's pills, at their full size, fit
+     in one row on the name's line, between the name and the square
+     (css/nav.css), with 22 to spare before the name. The top came up to 36,
+     the name and the square together, a little nearer the window's top
+     than the sides are to its edges, and then up again to 20, to give the
+     screens under the masthead more of the window. */
+  --gutter-l: calc(44 * var(--u));     /* the name, the prompt, everything on the left axis */
+  --gutter-r: calc(44 * var(--u));     /* the square's right edge, and the tiles' */
+  --top: calc(20 * var(--u));          /* the name block's first line */
+  /* under the prompt's line box. The frame has 75; it came down 16 so the
+     open pill, which hangs 10 below its words, ends 49 above the window's
+     foot, as far from it as the name then stood from the top. Every page's
+     bottom line moves with it, so they still crossfade in place. */
+  --bottom: calc(59 * var(--u));
+  /* where page content may begin: 132 under the masthead's top, so it
+     rises with it */
+  --band-top: calc(var(--top) + 132 * var(--u));
+  /* where a screen's band begins, under the fixed masthead */
+  --screen-top: var(--band-top);
 
   --tile-w: calc(70 * var(--u));
   --tile-h: calc(68 * var(--u));
@@ -92,16 +142,20 @@
   --pill-gap: calc(6 * var(--u));      /* icon box to word, in a pill */
 
   /* The menu, measured off Tigo's two mockups (drawn at 1.5625× the frame):
-     an 80px square, and pills 298 × 68 with 13px between them. The square is
-     centred on the name's two lines, like the tiles before it, and when the
-     menu opens it slides left by a pill and a 28px gap. */
+     an 80px square, and pills 68 tall with 13px between them. The square is
+     centred on the name's two lines, like the tiles before it; opened, its
+     pages come out of it in a row to its left, 10 apart (css/nav.css). */
   --menu-size: calc(80 * var(--u));
   --menu-r: calc(22 * var(--u));
-  --item-w: calc(298 * var(--u));
   --item-h: calc(68 * var(--u));
   --item-r: calc(20 * var(--u));
+  /* a screen's title pill (css/base.css): drawn in close around its one
+     word, and round at both ends, a capsule rather than the menu pills'
+     rounded square (its corners were theirs, scaled, for a while) */
+  --title-h: calc(56 * var(--u));
+  --title-pad: calc(20 * var(--u));
+  --title-r: calc(var(--title-h) / 2);
   --item-gap: calc(13 * var(--u));
-  --menu-shift: calc(-326 * var(--u));
 
   /* The composer (css/home.css): 64px tall when it opens, 44px round tools
      with icons drawn at 32 (a 2px stroke), a 38px ink disc for send, and the
@@ -110,6 +164,13 @@
   /* how far the composer's pill and the chat's bubbles reach out past the
      left axis, so the words inside them stand on it */
   --hang: calc(24 * var(--u));
+  /* how far the conversation reaches up past the band, to the top of the
+     window (css/home.css): the band's own distance from it */
+  --reach: var(--band-top);
+  /* the soft edges the conversation fades and blurs into: at the top of
+     the window, and in the air above the composer (css/home.css) */
+  --edge-t: calc(96 * var(--u));
+  --edge-b: calc(32 * var(--u));
   --pill-btn: calc(44 * var(--u));
   --pill-icon: calc(32 * var(--u));
   --pill-small: calc(22 * var(--u));
@@ -171,6 +232,56 @@
   --t-blink: 1.06s;   /* the live caret's period, and the Mac's */
 }
 
+/* ---- the themes ----
+   js/theme.js can turn the page through five colours, one a press: the
+   paper, then night, then three tints, a pink, a blue and a green (taken
+   from the Home frame's gradient art), and back to the paper. For now
+   nothing on the page presses it: the art that did is out, and so is the
+   rainbow dot that took its place. Only the page's own colours change.
+   The pastels are the pastels in every theme: the menu and its pills, the
+   clear square, the Work and Play tiles. They are surfaces with their own
+   ink (--mark), so they hold up on any paper, and they are the site's
+   identity.
+
+   Night is iOS's own dark: a near black, words a step down from white, the
+   composer's pill the raised grey of a sheet, and the question's bubble the
+   saturated blue a dark messenger uses, with the answers' grey deepened to
+   match. The tints keep every ink as it is; only the paper changes, and the
+   answers' bubble becomes a clear white over it, since grey on a pink or a
+   blue reads as dirt. */
+html[data-theme='night'] {
+  --bg: #111112;
+  --ink: #e4e4e6;
+  --ink-2: #8e8e93;
+  --ink-3: #a1a1a6;
+  --ink-4: #4c4c50;
+  --fg: #f5f5f7;
+  --surface: #1c1c1e;
+  --line: 255 255 255;
+  --caret-rest: #f5f5f8;
+  --caret-open: #ffffff;
+  --bubble: #2c5ed8;
+  --bubble-ink: #f5f5f7;
+  --pill: #262628;
+  --bubble-select: #5b86ec;
+  color-scheme: dark;
+}
+html[data-theme='rose'] {
+  --bg: #fbe1ea;
+  --caret-rest: #b79ea7;
+  --pill: rgb(255 255 255 / 0.72);
+}
+html[data-theme='sky'] {
+  --bg: #e0e7fb;
+  --caret-rest: #9ca4b8;
+  --pill: rgb(255 255 255 / 0.72);
+}
+html[data-theme='sage'] {
+  --bg: #dcece2;
+  --caret-rest: #98a9a0;
+  --pill: rgb(255 255 255 / 0.72);
+}
+
 /* A browser too old for linear() gets the live site's nearest cubics: a mild
    back-ease for arrivals and a soft ease-out for leaving. Neither lands the way
    a sampled spring does, but neither is jerky, and that is what matters. */
@@ -186,8 +297,9 @@
 /* ---- the narrow layout. Below 760px the frame's proportions stop working,
    so everything steps down to phone sizes and the type leaves --u for
    px/vw, which still answers to the browser's zoom. The menu square stays
-   where it is on a phone; there is no room beside it, so its pills drop
-   down under it instead (css/nav.css). ---- */
+   where it is on a phone, and its pills still come out on its line; there
+   is no room there beside the name, so the name is wiped away for them
+   while they are out (css/nav.css). ---- */
 @media (max-width: 760px) {
   :root {
     --u: 1px;
@@ -197,6 +309,9 @@
     --top: 20px;
     --bottom: 28px;
     --band-top: 0px;
+    /* the masthead is the menu square or the name's two lines, whichever
+       is taller, and the band starts 24px under it */
+    --screen-top: calc(var(--top) + max(var(--menu-size), 2 * var(--lh) * var(--fs)) + 24px);
     --tile-w: 50px;
     --tile-h: 48px;
     --tile-r: 14px;
@@ -205,13 +320,17 @@
     --pill-gap: 4px;
     --menu-size: 52px;
     --menu-r: 15px;
-    --item-w: min(240px, calc(100vw - 40px));
     --item-h: 52px;
     --item-r: 15px;
+    --title-h: 40px;
     --item-gap: 8px;
-    --menu-shift: 0px;
     --pill-h: 52px;
     --hang: 14px;
+    /* a phone's thread runs under the square, so it reaches up only into
+       the band's own 24px gap, and fades there, just short of the square */
+    --reach: 20px;
+    --edge-t: 20px;
+    --edge-b: 20px;
     --pill-btn: 40px;
     --pill-icon: 26px;
     --pill-small: 16px;

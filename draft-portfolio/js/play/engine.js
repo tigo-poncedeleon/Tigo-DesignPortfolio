@@ -1,5 +1,5 @@
 // play/engine.js — what the three games share: one clock, a canvas fitted
-// to a playfield, the best scores, and the life of a game.
+// to a playfield, and the life of a game.
 //
 // The live site's games are DOM boards: divs moved with translate3d, sized
 // by CSS zoom, and they know the shell they live in. These are canvas. The
@@ -7,7 +7,8 @@
 // glides between cells, capsule paddles, outlined pillars, a bird that tilts.
 // Canvas draws those natively. Each game also keeps its playfield in its own
 // logical units, so the same rules run in a 347px card and on a full stage,
-// and only the fit changes.
+// and only the fit changes. On the stage all three share one court, 840 by
+// 420, so whichever you open, you play it in the same rectangle.
 
 // ---- one clock for everything that runs ----
 // One requestAnimationFrame for every live game, with the frame's time step
@@ -66,9 +67,11 @@ export class Surface {
     this.oy = (h - fh * this.scale) / 2;
     this.dpr = dpr;
     this.px = 1 / this.scale;
-    // the court's own pastel, for anything drawn in "paper" over the ink
-    // (an eye, a highlight): read once here, not every frame
-    this.court = getComputedStyle(this.canvas).getPropertyValue('--card-bg').trim() || '#fafafa';
+    // the court's own colour, for anything drawn in "paper" over the ink
+    // (an eye, a highlight): read once here, not every frame. It is the
+    // game's --screen-bg (css/play.css), written out as a plain colour
+    // there because a canvas cannot be handed a color-mix().
+    this.court = getComputedStyle(this.canvas).getPropertyValue('--screen-bg').trim() || '#fafafa';
     this.onfit?.();
   }
 
@@ -91,6 +94,20 @@ export class Surface {
 }
 
 // ---- small drawing helpers ----
+// A soft shadow under the pieces that move, so they sit on the court rather
+// than being printed on it. Shadows are measured in the canvas's own pixels,
+// whatever the transform, so they are scaled by the pixel ratio here.
+export function lift(c, s) {
+  c.shadowColor = 'rgba(30, 30, 30, 0.2)';
+  c.shadowBlur = 7 * s.dpr;
+  c.shadowOffsetY = 2.5 * s.dpr;
+}
+export function unlift(c) {
+  c.shadowColor = 'transparent';
+  c.shadowBlur = 0;
+  c.shadowOffsetY = 0;
+}
+
 export function roundRect(c, x, y, w, h, r) {
   c.beginPath();
   c.roundRect(x, y, w, h, r);
@@ -107,25 +124,18 @@ export function disc(c, x, y, r) {
 }
 export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-// ---- the best scores stay on this machine ----
-// localStorage only, keyed per game. The live site keeps site-wide records
-// through /api/scores; the draft never calls it, because a POST from here
-// would change the live site's records.
-export function readBest(id) {
-  try { return Number(localStorage.getItem('draft.best.' + id)) || 0; } catch { return 0; }
-}
-function writeBest(id, value) {
-  try { localStorage.setItem('draft.best.' + id, String(value)); } catch { /* private mode */ }
-}
-
 // ---- the life of a game ----
 //   demo       playing itself in its card
 //   idle       on the stage, waiting for you
-//   countdown  3, 2, 1 (timed in the tick, so it pauses with everything else)
+//   countdown  3, 2, 1, three quarters of a second each (timed in the tick,
+//              so it pauses with everything else; a whole second each, the
+//              live site's, was three seconds of waiting to play)
 //   playing
 //   paused
 //   ended      a short lock (600ms, the live Flappy's) so the key that ended
 //              a run cannot also start the next one
+const COUNT = 0.75;
+
 export class Game {
   static id = 'game';
   static countdown = true;
@@ -137,7 +147,6 @@ export class Game {
     this.onChange = onChange;
     this.state = demo ? 'demo' : 'idle';
     this.score = 0;
-    this.best = readBest(this.constructor.id);
     this.count = 0;
     this.countT = 0;
     this.lock = 0;
@@ -182,11 +191,6 @@ export class Game {
     this.state = 'ended';
     this.result = result;
     this.lock = 0.6;
-    this.newBest = this.score > this.best;
-    if (this.newBest) {
-      this.best = this.score;
-      writeBest(this.constructor.id, this.best);
-    }
     this.emit();
   }
 
@@ -196,8 +200,8 @@ export class Game {
     if (this.state === 'demo') this.demo(dt);
     else if (this.state === 'countdown') {
       this.countT += dt;
-      if (this.countT >= 1) {
-        this.countT -= 1;
+      if (this.countT >= COUNT) {
+        this.countT -= COUNT;
         this.count -= 1;
         if (this.count <= 0) {
           this.state = 'playing';

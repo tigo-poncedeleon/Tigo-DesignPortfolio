@@ -12,8 +12,20 @@
 // The buttons around the field (photo, mood, microphone, send) are
 // composer.js; this file only owns the text and the caret, and tells the
 // composer whenever the text changes.
+//
+// The first time Home is in view, the caret types a greeting out on its own
+// (greet, below), a key at a time at a person's uneven pace, lets it be
+// read, and backspaces it away again, leaving itself blinking where you
+// start: the textarea's data-greeting, "Hey there, ask me anything!". Not on
+// a phone, where the caret simply blinks: a line typing itself out while the
+// page is still settling under your thumb read as a message arriving, not
+// as an invitation. (It said "Hi, ask away!" there, which fit the pill's
+// one line; Tigo took it out.)
+
+import { reduced } from './motion.js';
 
 const FINE_POINTER = matchMedia('(hover: hover) and (pointer: fine)');
+const PHONE = matchMedia('(max-width: 760px)');
 
 export function createPrompt(form, { onSubmit, onChange } = {}) {
   const input = form.querySelector('.prompt-input');
@@ -34,11 +46,14 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     const end = input.selectionEnd;
     const at = input.selectionDirection === 'backward' ? start : end;
 
-    mirror.textContent = value.slice(0, at);
+    // an empty field showing the greeting holds the caret at the greeting's
+    // end, where the typing left it
+    const greeting = value ? '' : input.placeholder;
+    mirror.textContent = greeting || value.slice(0, at);
     const tail = document.createElement('span');
     // a zero-width space stands in for "the end", so the tail has a position
     // without taking any room that could push it onto a new line
-    tail.textContent = value.slice(at) || '​';
+    tail.textContent = (!greeting && value.slice(at)) || '​';
     mirror.append(tail);
 
     const lh = parseFloat(getComputedStyle(mirror).lineHeight);
@@ -76,6 +91,8 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   }
 
   input.addEventListener('input', () => {
+    // your first key ends the greeting, for good
+    if (input.value) hush();
     // one line of question: a pasted newline becomes a space
     if (/[\r\n]/.test(input.value)) {
       const at = input.selectionStart;
@@ -126,7 +143,7 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   // at 36px, not the 34.3 the font's metrics would say. The block used to be
   // 0.72em hung 0.33em down, which started 2.4px under the capitals and ran
   // 3px past the baseline. The numbers are written on the root, where the
-  // thread's caret (the same block, riding the same type) reads them too.
+  // block's own rule (css/home.css) reads them.
   const field = form.querySelector('.prompt-field');
   function measureType() {
     const size = parseFloat(getComputedStyle(field).fontSize);
@@ -147,6 +164,60 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   }
   new ResizeObserver(measureType).observe(field);
   document.fonts?.ready.then(measureType);
+
+  // ---- the greeting ----
+  // Typed into the field's placeholder, so it shows only while the field is
+  // empty, and goes the moment you type: for good then (hush), even if it
+  // was still being written. Each key comes 55 to 110ms after the last, a
+  // word's first a little later than the rest of it, with a breath after
+  // the comma and a beat before the "!". Then it stands for a moment to be
+  // read, and is taken back a key at a time, more slowly than it went down,
+  // as a hand on backspace does, a little faster once it gets going and
+  // catching at the start of each word. The caret is solid while it types
+  // and while it deletes, as it is for your own typing, and blinks through
+  // the pause between. Under reduced motion the whole line is simply there,
+  // and stays until you type.
+  let greeted = false;
+  let greetTimer = 0;
+  const HOLD = 1700;
+  function pace(text, i) {
+    let ms = 55 + Math.random() * 55;
+    if (text[i - 1] === ',') ms += 240;
+    else if (text[i - 1] === ' ') ms += 30 + Math.random() * 60;
+    if (text[i] === '!') ms += 140;
+    return ms;
+  }
+  function unpace(text, i, done) {
+    // the first few presses are the slowest, then the hand finds its rhythm
+    let ms = 80 + Math.random() * 50 + Math.max(0, 4 - done) * 25;
+    if (text[i - 1] === ' ') ms += 60 + Math.random() * 80;
+    return ms;
+  }
+  function greet({ delay = 0 } = {}) {
+    const text = input.dataset.greeting;
+    if (greeted || !text || input.value || PHONE.matches) return;
+    greeted = true;
+    if (reduced()) { input.placeholder = text; schedule(); return; }
+    let i = 0;
+    const show = () => { input.placeholder = text.slice(0, i); typing(); schedule(); };
+    const erase = () => {
+      i -= 1;
+      show();
+      greetTimer = i > 0 ? setTimeout(erase, unpace(text, i, text.length - i)) : 0;
+    };
+    const key = () => {
+      i += 1;
+      show();
+      greetTimer = setTimeout(i < text.length ? key : erase, i < text.length ? pace(text, i) : HOLD);
+    };
+    greetTimer = setTimeout(key, delay);
+  }
+  function hush() {
+    greeted = true;
+    clearTimeout(greetTimer);
+    greetTimer = 0;
+    if (input.placeholder) { input.placeholder = ''; schedule(); }
+  }
 
   // Enter hands over to the composer, which knows whether there is a photo
   // too, and so whether an empty field still has something to send.
@@ -189,12 +260,8 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     focusIfDesk() { if (FINE_POINTER.matches) focus(); },
     blur() { input.blur(); },
     clear() { input.value = ''; line = -1; schedule(); },
-    setWaiting(on) { form.classList.toggle('is-waiting', on); },
+    greet,
+    hush,
     setTypeAnywhere(on) { typeAnywhere = on; if (!on && document.activeElement === input) input.blur(); },
-    refresh: schedule,
-    // where the caret block is on screen, for the chat's travelling caret
-    caretRect() { return caret.getBoundingClientRect(); },
-    // the field's box, where a question's flight up into its bubble begins
-    textRect() { return input.getBoundingClientRect(); },
   };
 }

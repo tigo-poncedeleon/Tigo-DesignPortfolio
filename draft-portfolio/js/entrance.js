@@ -15,7 +15,7 @@
 
 import { SPRING, EASE, animate, reduced, u } from './motion.js';
 
-export function playEntrance({ caret } = {}) {
+export function playEntrance({ caret, section = 'home' } = {}) {
   const root = document.documentElement;
   const done = () => root.classList.add('entered');
 
@@ -26,11 +26,16 @@ export function playEntrance({ caret } = {}) {
   }
 
   const k = u();
-  const lines = document.querySelectorAll('.name-line');
+  // the headline: on Home the name, a line at a time, unless a conversation
+  // restored by a reload has it stepped aside; on another screen, its title
+  const lines = section !== 'home'
+    ? document.querySelectorAll(`.headline > [data-for='${section}']`)
+    : document.querySelector('.frame[data-chat]') ? [] : document.querySelectorAll('.name-line');
   // the menu square, or, when a conversation was open before a reload, the
   // clear square standing in its place
   const tiles = [document.querySelector('.menu[data-chat]') ? document.querySelector('.menu-clear') : document.querySelector('.menu-button')];
-  const status = document.querySelector('.status');
+  // the bottom line of the screen the page opens on, if it has one
+  const status = document.querySelector(`.screen[data-section='${section}'] .status`);
   const thread = document.querySelector('.thread');
   const running = [];
 
@@ -38,8 +43,17 @@ export function playEntrance({ caret } = {}) {
     running.push(animate(el, [
       { opacity: 0, translate: `0 ${14 * k}px`, filter: 'blur(6px)' },
       { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
-    ], { duration: 760, easing: EASE.rise, delay: i * 70, fill: 'backwards' }));
+    ], { duration: 760, easing: EASE.rise, delay: i * 70 + (section !== 'home' ? 60 : 0), fill: 'backwards' }));
   });
+  // on another screen, the title's pill swells in first, and the word
+  // rises into it
+  const pill = document.querySelector('.headline-pill');
+  if (section !== 'home' && pill) {
+    running.push(animate(pill, [
+      { opacity: 0, scale: 0.92 },
+      { opacity: 1, scale: 1 },
+    ], { ...SPRING.pop, fill: 'backwards' }));
+  }
 
   tiles.forEach((tile, i) => {
     running.push(animate(tile, [
@@ -55,17 +69,20 @@ export function playEntrance({ caret } = {}) {
   });
 
   // a conversation restored by a reload rises with the frame
-  if (thread.querySelector('.turn')) {
+  if (section === 'home' && thread.querySelector('.turn')) {
     running.push(animate(thread, [
       { opacity: 0, translate: `0 ${14 * k}px` },
       { opacity: 1, translate: '0 0' },
     ], { duration: 760, easing: EASE.rise, delay: 180, fill: 'backwards' }));
   }
 
-  running.push(animate(status, [
-    { opacity: 0, translate: `0 ${14 * k}px` },
-    { opacity: 1, translate: '0 0' },
-  ], { duration: 760, easing: EASE.rise, delay: 300, fill: 'backwards' }));
+  // (Work and About have no bottom line; their pieces rise by themselves)
+  if (status) {
+    running.push(animate(status, [
+      { opacity: 0, translate: `0 ${14 * k}px` },
+      { opacity: 1, translate: '0 0' },
+    ], { duration: 760, easing: EASE.rise, delay: 300, fill: 'backwards' }));
+  }
 
   // The caret waits until everything else has nearly landed, then starts
   // its blink from lit — the last thing to arrive, and the one that asks.
