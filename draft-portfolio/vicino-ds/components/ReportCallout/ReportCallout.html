@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ReportCallout - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="ReportCallout.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1120px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>ReportCallout</h1>
+        <p>
+          Report recommendation block for risk, opportunity, and action guidance. The full surface
+          can route to a source view; avoid left rail stripes and trailing arrow affordances.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Report callout tone variants">
+        <div class="section-title">
+          <span>Risk / opportunity / action</span>
+        </div>
+        <div class="grid">
+          <a class="report-callout report-callout--risk" href="#">
+            <span class="report-callout__icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path d="M10 2.5 17.5 16.5H2.5L10 2.5Z" />
+                <path d="M10 8v4M10 14.4v.1" />
+              </svg>
+            </span>
+            <span class="report-callout__body">
+              <span class="report-callout__head">
+                <span class="report-callout__role">Risk</span>
+                <span class="report-callout__source">Delivery comments</span>
+              </span>
+              <strong class="report-callout__title">Delivery clarity is the loudest risk</strong>
+              <span class="report-callout__text">
+                8 posts in 4 hours are naming slow cross-border delivery. Respond before the trust
+                window widens.
+              </span>
+              <span class="report-callout__meta">
+                <span class="report-callout__metric">47 comments</span>
+                <span>within 5m</span>
+                <span>source: Signal</span>
+              </span>
+            </span>
+          </a>
+
+          <a class="report-callout report-callout--opportunity" href="#">
+            <span class="report-callout__icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path d="M4 14l4-5 4 3 4-6" />
+                <path d="M4 16h12" />
+              </svg>
+            </span>
+            <span class="report-callout__body">
+              <span class="report-callout__head">
+                <span class="report-callout__role">Opportunity</span>
+                <span class="report-callout__source">Creator proof</span>
+              </span>
+              <strong class="report-callout__title">Creator proof posts are converting</strong>
+              <span class="report-callout__text">
+                Try-on proof is carrying saves and qualified clicks across both active launches.
+              </span>
+              <span class="report-callout__meta">
+                <span class="report-callout__metric">+18.7% response lift</span>
+                <span>vs prior week</span>
+              </span>
+            </span>
+          </a>
+
+          <a class="report-callout report-callout--action" href="#">
+            <span class="report-callout__icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path
+                  d="M5 4.5h10a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 15 16.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5Z"
+                />
+                <path d="M7 3v3M13 3v3M3.5 8h13M7 11h2M11 11h2" />
+              </svg>
+            </span>
+            <span class="report-callout__body">
+              <span class="report-callout__head">
+                <span class="report-callout__role">Action</span>
+                <span class="report-callout__source">Calendar</span>
+              </span>
+              <strong class="report-callout__title">Schedule the fit-note carousel</strong>
+              <span class="report-callout__text">
+                Best slot is Thursday evening while try-on saves are still above target.
+              </span>
+              <span class="report-callout__meta">
+                <span class="report-callout__metric">Jun 11, 12:00 PM</span>
+                <span>ready in Studio</span>
+              </span>
+            </span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Report callout states">
+        <div class="section-title">
+          <span>Selected / compact / loading</span>
+        </div>
+        <div class="grid">
+          <button
+            class="report-callout report-callout--opportunity is-selected"
+            type="button"
+            aria-selected="true"
+          >
+            <span class="report-callout__icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path d="M4 14l4-5 4 3 4-6" />
+                <path d="M4 16h12" />
+              </svg>
+            </span>
+            <span class="report-callout__body">
+              <span class="report-callout__head">
+                <span class="report-callout__role">Opportunity</span>
+                <span class="report-callout__source">Selected source</span>
+              </span>
+              <strong class="report-callout__title">Fit proof is carrying the report</strong>
+              <span class="report-callout__text"
+                >Selected state uses tonal fill, not a left rail.</span
+              >
+            </span>
+          </button>
+
+          <a class="report-callout report-callout--action report-callout--compact" href="#">
+            <span class="report-callout__icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path
+                  d="M5 4.5h10a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 15 16.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5Z"
+                />
+                <path d="M7 3v3M13 3v3M3.5 8h13" />
+              </svg>
+            </span>
+            <span class="report-callout__body">
+              <span class="report-callout__head">
+                <span class="report-callout__role">Action</span>
+              </span>
+              <strong class="report-callout__title">Move carousel into Thursday slot</strong>
+            </span>
+          </a>
+
+          <div
+            class="report-callout report-callout--neutral report-callout--loading"
+            aria-busy="true"
+          >
+            <span class="report-callout__icon" aria-hidden="true"></span>
+            <span class="report-callout__body">
+              <span class="report-callout__skeleton">
+                <span
+                  class="report-callout__skeleton-line report-callout__skeleton-line--short"
+                ></span>
+                <span class="report-callout__skeleton-line"></span>
+                <span
+                  class="report-callout__skeleton-line report-callout__skeleton-line--short"
+                ></span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

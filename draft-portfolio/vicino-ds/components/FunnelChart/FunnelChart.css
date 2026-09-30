@@ -1,0 +1,201 @@
+/* FunnelChart — bottom-anchored conversion funnel with per-stage stat cards.
+   Chart-norm rebuild (owner decision 2026-07-07): funnel stages are ORDERED
+   data, so bands wear the validated cyan ordinal ramp (--chart-seq-300→600,
+   solid monotone steps — never an opacity ramp, which washes out against the
+   surface). Stage gaps stay in the surface color; drop-off pills are red
+   (declining data), conversion pills cyan. Band areas are schematic tapers —
+   the final band keeps a minimum height for legibility, and the floating
+   count labels + stat cards carry the exact truth. Token-driven, pure-CSS
+   visual states (SVG <title> tooltips + hover lift).
+   Class names are stable — the app consumes this CSS. Visual source: tokens.css. */
+
+.funnel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1126px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.funnel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.funnel__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+}
+.funnel__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Pills. */
+.funnel__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--r-full);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.funnel__pill--good {
+  background: var(--pulse-cyan-soft);
+  border-color: var(--cyan-200);
+  color: var(--pulse-cyan-dark);
+}
+.funnel__pill--neg {
+  background: var(--trend-down-soft);
+  border-color: var(--red-200);
+  color: var(--red-600);
+}
+
+/* Funnel bands — solid ordinal cyan steps, light→dark toward conversion. */
+.funnel__plot {
+  position: relative;
+  width: 100%;
+}
+
+/* Per-band read-out floating just above each band's top edge — the bands map
+   to their numbers without a round-trip to the stat cards. */
+.funnel__band-label {
+  position: absolute;
+  transform: translateY(calc(-100% - 6px));
+  font-size: var(--fs-2);
+  color: var(--text-3);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.funnel__band-label b {
+  color: var(--text);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+}
+.funnel__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.funnel__stage {
+  transition: filter var(--dur-2) var(--ease-out);
+  outline: none;
+}
+.funnel__stage--1 {
+  fill: var(--chart-seq-200);
+}
+.funnel__stage--2 {
+  fill: var(--chart-seq-400);
+}
+.funnel__stage--3 {
+  fill: var(--chart-seq-500);
+}
+.funnel__stage--4 {
+  /* The conversion end is the chart's black anchor (owner decision:
+     emphasis marks may wear brand ink). */
+  fill: var(--chart-emphasis);
+}
+.funnel__stage:hover {
+  filter: brightness(0.95) saturate(1.15);
+  cursor: pointer;
+}
+.funnel__stage:focus-visible {
+  filter: brightness(0.95) saturate(1.15);
+  stroke: var(--pulse-cyan-line);
+  stroke-width: 3;
+}
+
+/* Stat cards. */
+.funnel__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.funnel__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  transition:
+    transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.funnel__stat--good {
+  background: var(--pulse-cyan-soft);
+}
+.funnel__stat:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-2);
+}
+.funnel__stat-num {
+  font-size: 22px;
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.funnel__stat--good .funnel__stat-num {
+  color: var(--pulse-cyan-dark);
+}
+.funnel__stat-label {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.006em;
+}
+.funnel__stat-meta {
+  font-size: 10px;
+  letter-spacing: -0.006em;
+  color: var(--text);
+} /* token candidate: below --fs-1 */
+.funnel__stat .funnel__pill {
+  margin-top: 4px;
+  align-self: flex-start;
+}
+.funnel__stat .funnel__pill--good {
+  background: #fff;
+}
+
+@media (max-width: 1000px) {
+  .funnel__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Stat-first hero — the widget leads with its number; the chart is evidence
+   (owner-approved reference anatomy: kicker → hero value → chart). */
+.funnel__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: -6px;
+}
+.funnel__hero-value {
+  font-size: var(--fs-9);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.funnel__hero-delta {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-3);
+}

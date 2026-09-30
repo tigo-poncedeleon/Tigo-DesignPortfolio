@@ -1,0 +1,199 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Card - Pulse component source</title>
+    <!-- Design tokens (copied verbatim from src/tokens.css) -->
+    <link rel="stylesheet" href="../tokens.css" />
+    <!-- Component CSS (copied as-is from src/components/Card/Card.css) -->
+    <link rel="stylesheet" href="Card.css" />
+    <style>
+      /* Page chrome only - does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+      }
+      .specimen {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+        align-items: flex-start;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 320px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      /* Sample content inside the card - illustrative only, not part of the component. */
+      .demo-card-body {
+        padding: 24px;
+      }
+      .demo-card-body h3 {
+        margin: 0 0 6px;
+        font-size: var(--type-card-title);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .demo-card-body p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .demo-card-body small {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .demo-card-body strong {
+        color: inherit;
+        font-weight: var(--fw-semibold);
+      }
+      .state-section {
+        flex-basis: 100%;
+        display: grid;
+        gap: 14px;
+        max-width: 1040px;
+        margin-top: 4px;
+      }
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">Card</h1>
+    <p class="handoff-sub">
+      Reference set: the <code>.card</code> surface, empty and with sample content.
+    </p>
+
+    <div class="specimen">
+      <!-- Default: bare surface -->
+      <div class="specimen-item">
+        <span class="specimen-label">Default surface</span>
+        <div class="card" style="height: 140px"></div>
+      </div>
+
+      <!-- With sample inner content -->
+      <div class="specimen-item">
+        <span class="specimen-label">With content</span>
+        <div class="card" tabindex="0" role="button" aria-pressed="false" data-card-choice>
+          <div class="demo-card-body">
+            <small>Selectable</small>
+            <h3>Weekly pulse</h3>
+            <p>Engagement is up 12% across all monitored channels this period.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-item">
+        <span class="specimen-label">Selected</span>
+        <div class="card is-selected" tabindex="0" role="button" aria-pressed="true">
+          <div class="demo-card-body">
+            <small>Active campaign</small>
+            <h3>Quiet Confidence</h3>
+            <p><strong>62%</strong> generated, visual review is in progress.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-item">
+        <span class="specimen-label">Empty</span>
+        <div class="card is-empty">
+          <div class="demo-card-body">
+            <small>No items</small>
+            <h3>No posts queued</h3>
+            <p>Add a campaign post before opening production review.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-item">
+        <span class="specimen-label">Error</span>
+        <div class="card is-error" role="status">
+          <div class="demo-card-body">
+            <small>Needs attention</small>
+            <h3>Preview failed</h3>
+            <p>Refresh the source asset before handing off this post.</p>
+          </div>
+        </div>
+      </div>
+
+      <section class="state-section" aria-label="Card state snapshots">
+        <span class="specimen-label">State snapshots</span>
+        <div class="state-grid">
+          <div class="card is-hover">
+            <div class="demo-card-body">
+              <small>Hover / lift</small>
+              <h3>Signal summary</h3>
+              <p>The surface lifts only when the whole card is an actionable target.</p>
+            </div>
+          </div>
+          <div class="card is-focus" tabindex="0">
+            <div class="demo-card-body">
+              <small>Keyboard focus</small>
+              <h3>Approval card</h3>
+              <p>Focus ring appears without adding another border layer.</p>
+            </div>
+          </div>
+          <div class="card is-selected">
+            <div class="demo-card-body">
+              <small>Selected</small>
+              <h3>Chosen route</h3>
+              <p>Selected state uses tonal emphasis and a soft cyan ring.</p>
+            </div>
+          </div>
+          <div class="card is-empty">
+            <div class="demo-card-body">
+              <small>Empty</small>
+              <h3>No drafts yet</h3>
+              <p>Empty state explains what useful action comes next.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      document.querySelectorAll('[data-card-choice]').forEach((card) => {
+        card.addEventListener('click', () => {
+          const selected = card.classList.toggle('is-selected');
+          card.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        card.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          card.click();
+        });
+      });
+    </script>
+  </body>
+</html>

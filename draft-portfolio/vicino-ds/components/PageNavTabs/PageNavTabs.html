@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PageNavTabs - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../SegmentedTabs/SegmentedTabs.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet,
+      .component-intro,
+      .section,
+      .states,
+      .state {
+        display: grid;
+      }
+      .sheet {
+        gap: 30px;
+        max-width: 1040px;
+      }
+      .component-intro,
+      .section {
+        gap: 12px;
+      }
+      h1,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        max-width: 64ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .label,
+      .state small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .states {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+        gap: 12px;
+      }
+      .page-nav-shell,
+      .tab-page-shell {
+        box-sizing: border-box;
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+        border-radius: var(--r-xl);
+        background: var(--canvas);
+        box-shadow: var(--surface-highlight), var(--shadow-1);
+      }
+      .page-nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .page-nav-meta {
+        display: grid;
+        gap: 3px;
+      }
+      .page-nav-meta strong {
+        color: var(--text);
+        font-size: var(--fs-4);
+        font-weight: var(--fw-semibold);
+      }
+      .page-nav-meta span,
+      .live-status {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .live-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 30px;
+        padding: 0 10px;
+        border-radius: var(--r-full);
+        background: var(--surface);
+      }
+      .live-status::before {
+        width: 7px;
+        height: 7px;
+        border-radius: var(--r-full);
+        background: var(--cyan-600);
+        box-shadow: none;
+        animation: none;
+        content: '';
+      }
+      .sync-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 30px;
+        padding: 0 11px;
+        border: 0;
+        border-radius: var(--r-full);
+        background: var(--ink-900);
+        color: #fff;
+        font: inherit;
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+      }
+      .sync-action:hover {
+        background: var(--ink-800);
+      }
+      .page-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tab-page-body {
+        box-sizing: border-box;
+        display: grid;
+        gap: 8px;
+        min-height: 138px;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--surface);
+      }
+      .tab-page-body strong {
+        color: var(--text);
+        font-size: var(--fs-5);
+        font-weight: var(--fw-medium);
+      }
+      .tab-page-body span {
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+      .state {
+        box-sizing: border-box;
+        gap: 10px;
+        align-content: start;
+        justify-items: start;
+        min-width: 0;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+
+      .state > .page-nav-list {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro">
+        <h1>PageNavTabs</h1>
+        <p>Local page section tabs. This source owns the page-tab interaction and its slices.</p>
+      </header>
+      <section class="section" aria-label="Page nav shell animated component">
+        <span class="label">Animated component</span>
+        <div class="page-nav-shell">
+          <div class="page-nav-header">
+            <div class="page-nav-meta">
+              <strong>Home</strong>
+              <span>Page section navigation</span>
+            </div>
+            <div class="page-nav-actions">
+              <span class="live-status">Live</span>
+              <button class="sync-action" type="button">Sync</button>
+            </div>
+          </div>
+          <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Page navigation">
+            <span class="page-nav-thumb" aria-hidden="true"></span>
+            <button type="button" class="page-nav-item active" aria-pressed="true">Actions</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Report</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Trends</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Campaigns</button>
+          </div>
+        </div>
+      </section>
+      <section class="section" aria-label="Tab page switcher animated component">
+        <span class="label">Tab page switcher</span>
+        <div class="tab-page-shell">
+          <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Large page switcher">
+            <span class="page-nav-thumb" aria-hidden="true"></span>
+            <button type="button" class="page-nav-item active" aria-pressed="true">Overview</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Production</button>
+            <button type="button" class="page-nav-item" aria-pressed="false">Calendar</button>
+          </div>
+          <div class="tab-page-body" aria-live="polite">
+            <strong>Overview</strong>
+            <span
+              >Large tab switches replace the local page body. Unbuilt destinations land on a
+              placeholder state.</span
+            >
+          </div>
+        </div>
+      </section>
+      <section class="section" aria-label="Page nav tab slices">
+        <span class="label">Slices</span>
+        <div class="states">
+          <div class="state">
+            <small>Actions active</small>
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Overview active">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item active" aria-pressed="true">
+                Actions
+              </button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Report</button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Trends</button>
+            </div>
+          </div>
+          <div class="state">
+            <small>Report active</small>
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Signals active">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item" aria-pressed="false">Actions</button>
+              <button type="button" class="page-nav-item active" aria-pressed="true">Report</button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Trends</button>
+            </div>
+          </div>
+          <div class="state">
+            <small>Live status + sync</small>
+            <div class="page-nav-actions">
+              <span class="live-status">Live</span>
+              <button class="sync-action" type="button">Sync</button>
+            </div>
+          </div>
+          <div class="state">
+            <small>Placeholder tab body</small>
+            <div class="tab-page-body">
+              <strong>Campaign workspace</strong>
+              <span
+                >Linked tab destination with placeholder content until the full page ships.</span
+              >
+            </div>
+          </div>
+          <div class="state">
+            <small>Campaigns active</small>
+            <div class="page-nav-list segmented-tabs" role="tablist" aria-label="Reports active">
+              <span class="page-nav-thumb" aria-hidden="true"></span>
+              <button type="button" class="page-nav-item" aria-pressed="false">Actions</button>
+              <button type="button" class="page-nav-item" aria-pressed="false">Report</button>
+              <button type="button" class="page-nav-item active" aria-pressed="true">
+                Campaigns
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="../SegmentedTabs/SegmentedTabs.js"></script>
+  </body>
+</html>

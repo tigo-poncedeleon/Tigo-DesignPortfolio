@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CalendarPostBlock - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../StatusPill/StatusPill.css" />
+    <link rel="stylesheet" href="../PlatformBadge/PlatformBadge.css" />
+    <link rel="stylesheet" href="CalendarPostBlock.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1120px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      .lane {
+        display: grid;
+        gap: 10px;
+        min-height: 360px;
+        padding: 14px;
+        border-radius: var(--r-xl);
+        background: var(--surface);
+        box-shadow: inset 0 0 0 1px var(--surface-edge);
+      }
+
+      .lane__label {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>CalendarPostBlock</h1>
+        <p>
+          Calendar schedule block for posts and events. Parent calendar grids own absolute
+          positioning; this source owns the visible anatomy, selected state, drag state, compact
+          slots, event fallback, and drop preview.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Calendar post block variants">
+        <div class="section-title">
+          <span>Post / selected / dragging</span>
+        </div>
+        <div class="grid">
+          <article
+            class="calendar-post-block"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="false"
+            aria-label="Open Quiet outfits, scheduled 9:00 AM to 10:30 AM"
+          >
+            <span class="calendar-post-block__media" aria-hidden="true">
+              <span class="calendar-post-block__media-mark"></span>
+            </span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__topline">
+                <span class="calendar-post-block__campaign">Quiet Confidence Uniform</span>
+                <span class="calendar-post-block__badges">
+                  <span class="status-pill status-pill--compact status-pill--scheduled"
+                    >Scheduled</span
+                  >
+                  <span
+                    class="platform-badge platform-badge--ig platform-badge--sm"
+                    aria-label="Instagram"
+                  ></span>
+                </span>
+              </span>
+              <strong class="calendar-post-block__title">Quiet outfits: 5 days</strong>
+              <span class="calendar-post-block__summary"
+                >Muted styling proof before the launch sequence starts.</span
+              >
+              <span class="calendar-post-block__meta">
+                <time datetime="2026-06-11T09:00">9:00 AM - 10:30 AM</time>
+                <span>Carousel</span>
+              </span>
+            </span>
+          </article>
+
+          <article
+            class="calendar-post-block is-selected"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="true"
+            aria-label="Open Fit-note carousel, ready in Studio 11:00 AM to 12:30 PM"
+          >
+            <span class="calendar-post-block__media" aria-hidden="true">
+              <span class="calendar-post-block__media-mark"></span>
+            </span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__topline">
+                <span class="calendar-post-block__campaign">Quiet Confidence Uniform</span>
+                <span class="calendar-post-block__badges">
+                  <span class="status-pill status-pill--compact status-pill--ready"
+                    >Ready in Studio</span
+                  >
+                  <span
+                    class="platform-badge platform-badge--ig platform-badge--sm"
+                    aria-label="Instagram"
+                  ></span>
+                </span>
+              </span>
+              <strong class="calendar-post-block__title">Fit-note carousel reminder</strong>
+              <span class="calendar-post-block__summary"
+                >Final proof is ready and can move into the approved slot.</span
+              >
+              <span class="calendar-post-block__meta">
+                <time datetime="2026-06-11T11:00">11:00 AM - 12:30 PM</time>
+                <span>Post</span>
+              </span>
+            </span>
+          </article>
+
+          <article
+            class="calendar-post-block is-dragging"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-grabbed="true"
+            aria-pressed="false"
+            aria-label="Dragging creator try-on proof, scheduled 6:00 PM to 6:30 PM"
+          >
+            <span class="calendar-post-block__media" aria-hidden="true">
+              <span class="calendar-post-block__media-mark"></span>
+            </span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__topline">
+                <span class="calendar-post-block__campaign">Creator proof</span>
+                <span class="calendar-post-block__badges">
+                  <span class="status-pill status-pill--compact status-pill--building"
+                    >Rendering</span
+                  >
+                  <span
+                    class="platform-badge platform-badge--tt platform-badge--sm"
+                    aria-label="TikTok"
+                  ></span>
+                </span>
+              </span>
+              <strong class="calendar-post-block__title">Morning reel cut</strong>
+              <span class="calendar-post-block__summary"
+                >Try-on edit needs a tighter opening before approval.</span
+              >
+              <span class="calendar-post-block__meta">
+                <time datetime="2026-06-11T18:00">6:00 PM - 6:30 PM</time>
+                <span>Reel</span>
+              </span>
+            </span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Calendar compact and conflict states">
+        <div class="section-title">
+          <span>Compact / conflict / failed</span>
+        </div>
+        <div class="grid">
+          <article
+            class="calendar-post-block calendar-post-block--compact"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="false"
+            aria-label="Open community try-on, scheduled 2:00 PM to 2:30 PM"
+          >
+            <span class="calendar-post-block__body">
+              <strong class="calendar-post-block__title">Community try-on - Mia cutdown</strong>
+              <span class="calendar-post-block__meta">
+                <span class="calendar-post-block__meta-dot" aria-hidden="true"></span>
+                <time datetime="2026-06-11T14:00">2:00 PM - 2:30 PM</time>
+              </span>
+            </span>
+          </article>
+
+          <article
+            class="calendar-post-block calendar-post-block--conflict"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="false"
+            aria-label="Open overlapping launch hero review"
+          >
+            <span class="calendar-post-block__body">
+              <strong class="calendar-post-block__title">Launch hero review overlaps slot</strong>
+              <span class="calendar-post-block__meta">
+                <span class="calendar-post-block__meta-dot" aria-hidden="true"></span>
+                <time datetime="2026-06-11T14:00">2:00 PM - 2:30 PM</time>
+              </span>
+            </span>
+          </article>
+
+          <article
+            class="calendar-post-block calendar-post-block--failed"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="false"
+            aria-label="Open failed publish, scheduled 4:00 PM to 4:30 PM"
+          >
+            <span class="calendar-post-block__media" aria-hidden="true">
+              <span class="calendar-post-block__media-mark"></span>
+            </span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__topline">
+                <span class="calendar-post-block__campaign">Launch follow-up</span>
+                <span class="calendar-post-block__badges">
+                  <span class="status-pill status-pill--compact status-pill--failed">Failed</span>
+                  <span
+                    class="platform-badge platform-badge--ig platform-badge--sm"
+                    aria-label="Instagram"
+                  ></span>
+                </span>
+              </span>
+              <strong class="calendar-post-block__title">Delivery reply story</strong>
+              <span class="calendar-post-block__summary"
+                >Publish failed and needs a human slot check.</span
+              >
+              <span class="calendar-post-block__meta">
+                <time datetime="2026-06-11T16:00">4:00 PM - 4:30 PM</time>
+                <span>Story</span>
+              </span>
+            </span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Calendar event block and drop preview">
+        <div class="section-title">
+          <span>CalendarEventBlock / drop / loading</span>
+        </div>
+        <div class="grid">
+          <article
+            class="calendar-post-block calendar-post-block--event"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="false"
+            aria-label="Open creator review sync, scheduled 1:00 PM to 1:45 PM"
+          >
+            <span class="calendar-post-block__kind" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path
+                  d="M5 4.5h10A1.5 1.5 0 0 1 16.5 6v9A1.5 1.5 0 0 1 15 16.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5Z"
+                />
+                <path d="M7 3v3M13 3v3M3.5 8h13" />
+              </svg>
+            </span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__topline">
+                <span class="calendar-post-block__campaign">Internal</span>
+                <span class="calendar-post-block__badges">
+                  <span class="status-pill status-pill--compact status-pill--scheduled"
+                    >Scheduled</span
+                  >
+                  <span class="platform-badge platform-badge--ev platform-badge--sm">
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path
+                        d="M5 4.5h10A1.5 1.5 0 0 1 16.5 6v9A1.5 1.5 0 0 1 15 16.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5Z"
+                      />
+                      <path d="M7 3v3M13 3v3M3.5 8h13" />
+                    </svg>
+                  </span>
+                </span>
+              </span>
+              <strong class="calendar-post-block__title">Creator review sync</strong>
+              <span class="calendar-post-block__summary"
+                >Walk the proof sequence before the evening handoff.</span
+              >
+              <span class="calendar-post-block__meta">
+                <time datetime="2026-06-11T13:00">1:00 PM - 1:45 PM</time>
+                <span>Event</span>
+              </span>
+            </span>
+          </article>
+
+          <div class="calendar-drop-preview" role="status">Drop to reschedule 7:00 PM</div>
+
+          <div
+            class="calendar-post-block calendar-post-block--loading"
+            aria-busy="true"
+            aria-label="Loading calendar post"
+          >
+            <span class="calendar-post-block__media" aria-hidden="true"></span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__skeleton">
+                <span
+                  class="calendar-post-block__skeleton-line calendar-post-block__skeleton-line--short"
+                ></span>
+                <span class="calendar-post-block__skeleton-line"></span>
+                <span
+                  class="calendar-post-block__skeleton-line calendar-post-block__skeleton-line--short"
+                ></span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Calendar lane example">
+        <div class="section-title">
+          <span>Lane composition</span>
+        </div>
+        <div class="lane">
+          <span class="lane__label">Thursday, Jun 11</span>
+          <article
+            class="calendar-post-block"
+            role="button"
+            tabindex="0"
+            draggable="true"
+            aria-pressed="false"
+            aria-label="Open fit with confidence, scheduled 9:00 AM to 10:30 AM"
+          >
+            <span class="calendar-post-block__media" aria-hidden="true">
+              <span class="calendar-post-block__media-mark"></span>
+            </span>
+            <span class="calendar-post-block__body">
+              <span class="calendar-post-block__topline">
+                <span class="calendar-post-block__campaign">Quiet Confidence Uniform</span>
+                <span class="calendar-post-block__badges">
+                  <span class="status-pill status-pill--compact status-pill--ready"
+                    >Ready in Studio</span
+                  >
+                  <span
+                    class="platform-badge platform-badge--ig platform-badge--sm"
+                    aria-label="Instagram"
+                  ></span>
+                </span>
+              </span>
+              <strong class="calendar-post-block__title">Fit with confidence</strong>
+              <span class="calendar-post-block__summary"
+                >Ready carousel explains how the pieces fit.</span
+              >
+              <span class="calendar-post-block__meta">
+                <time datetime="2026-06-11T09:00">9:00 AM - 10:30 AM</time>
+                <span>Carousel</span>
+              </span>
+            </span>
+          </article>
+          <div class="calendar-drop-preview" role="status">Open slot - 12:00 PM</div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.querySelectorAll('.calendar-post-block[role="button"]').forEach((block) => {
+        const setSelected = (selected) => {
+          block.setAttribute('aria-pressed', selected ? 'true' : 'false');
+          block.classList.toggle('is-selected', selected);
+        };
+
+        block.addEventListener('click', () => {
+          setSelected(block.getAttribute('aria-pressed') !== 'true');
+        });
+
+        block.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          block.click();
+        });
+
+        block.addEventListener('dragstart', () => {
+          block.classList.add('is-dragging');
+          block.setAttribute('aria-grabbed', 'true');
+        });
+
+        block.addEventListener('dragend', () => {
+          block.classList.remove('is-dragging');
+          block.removeAttribute('aria-grabbed');
+        });
+      });
+    </script>
+  </body>
+</html>

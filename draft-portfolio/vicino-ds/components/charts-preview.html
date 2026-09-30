@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pulse Charts — family preview</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      .page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 40px 32px 80px;
+      }
+      .head h1 {
+        font-size: var(--fs-8);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .head p {
+        margin-top: 6px;
+        max-width: 78ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .head a {
+        color: var(--pulse-cyan-dark);
+        text-decoration: none;
+      }
+      .head a:hover {
+        text-decoration: underline;
+      }
+
+      /* Anchor chip rail — wraps, never scrolls horizontally. */
+      .chips {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 22px -8px 30px;
+        padding: 10px 8px;
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .chips a {
+        padding: 6px 13px;
+        border-radius: var(--r-full);
+        background: var(--canvas);
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        text-decoration: none;
+        transition:
+          background var(--dur-2) var(--ease-out),
+          color var(--dur-2) var(--ease-out);
+      }
+      .chips a:hover {
+        background: var(--ink-900);
+        color: #fff;
+      }
+
+      .group {
+        margin: 44px 0 10px;
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .chart {
+        margin-bottom: 26px;
+        scroll-margin-top: 64px;
+      }
+      .chart-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 12px;
+        padding: 0 4px 8px;
+      }
+      .chart-bar b {
+        font-size: var(--fs-5);
+        font-weight: var(--fw-bold);
+      }
+      .chart-bar small {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+      }
+      .chart-bar a {
+        margin-left: auto;
+        color: var(--text-3);
+        font-size: var(--fs-2);
+        text-decoration: none;
+      }
+      .chart-bar a:hover {
+        color: var(--text);
+      }
+      .chart iframe {
+        display: block;
+        width: 100%;
+        height: 760px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        background: var(--bg);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="head">
+        <h1>Pulse Charts</h1>
+        <p>
+          The full chart family on one page — every frame below is the live component source under
+          <code>handoff/components/&lt;Name&gt;/</code>, so this gallery can never drift. Theme:
+          mono-cyan + ink (series slot 2 is black), bright band only, one black anchor per chart.
+          Browse a single component with states in the
+          <a href="html-component-preview.html">component browser</a>.
+        </p>
+      </div>
+
+      <nav class="chips" aria-label="Jump to chart">
+        <a href="#VerticalBarChart">柱状 VBar</a>
+        <a href="#HorizontalBarChart">条形 HBar</a>
+        <a href="#MirroredBarChart">镜像 Mirrored</a>
+        <a href="#ComboChart">组合 Combo</a>
+        <a href="#LineChart">折线 Line</a>
+        <a href="#PieChart">饼图 Pie</a>
+        <a href="#DonutChart">环形 Donut</a>
+        <a href="#TreemapChart">Treemap</a>
+        <a href="#FunnelChart">漏斗 Funnel</a>
+        <a href="#RadarChart">雷达 Radar</a>
+        <a href="#ScoreGauge">评分环 Gauge</a>
+        <a href="#GeoChart">地域 Geo</a>
+        <a href="#ActivityHeatmap">热力 Heatmap</a>
+        <a href="#WordCloud">词云 Cloud</a>
+      </nav>
+
+      <div class="group">Columns &amp; bars</div>
+      <section class="chart" id="VerticalBarChart">
+        <div class="chart-bar">
+          <b>VerticalBarChart</b><small>柱状图 · value-ramped columns + black peak</small>
+          <a href="VerticalBarChart/VerticalBarChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="VerticalBarChart/VerticalBarChart.html" title="VerticalBarChart"></iframe>
+      </section>
+      <section class="chart" id="HorizontalBarChart">
+        <div class="chart-bar">
+          <b>HorizontalBarChart</b><small>条形图 · rankings, share bars, meters</small>
+          <a href="HorizontalBarChart/HorizontalBarChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe
+          src="HorizontalBarChart/HorizontalBarChart.html"
+          title="HorizontalBarChart"
+        ></iframe>
+      </section>
+      <section class="chart" id="MirroredBarChart">
+        <div class="chart-bar">
+          <b>MirroredBarChart</b><small>镜像柱 · gained cyan up / lost ink down</small>
+          <a href="MirroredBarChart/MirroredBarChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="MirroredBarChart/MirroredBarChart.html" title="MirroredBarChart"></iframe>
+      </section>
+      <section class="chart" id="ComboChart">
+        <div class="chart-bar">
+          <b>ComboChart</b><small>组合图 · activity columns + post rug marks</small>
+          <a href="ComboChart/ComboChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="ComboChart/ComboChart.html" title="ComboChart"></iframe>
+      </section>
+
+      <div class="group">Trends</div>
+      <section class="chart" id="LineChart">
+        <div class="chart-bar">
+          <b>LineChart</b><small>折线图 · fade-out area + dual series</small>
+          <a href="LineChart/LineChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="LineChart/LineChart.html" title="LineChart"></iframe>
+      </section>
+
+      <div class="group">Share</div>
+      <section class="chart" id="PieChart">
+        <div class="chart-bar">
+          <b>PieChart</b><small>饼图 · mono-cyan + ink slices</small>
+          <a href="PieChart/PieChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="PieChart/PieChart.html" title="PieChart"></iframe>
+      </section>
+      <section class="chart" id="DonutChart">
+        <div class="chart-bar">
+          <b>DonutChart</b><small>环形图 · rounded ring + center KPI</small>
+          <a href="DonutChart/DonutChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="DonutChart/DonutChart.html" title="DonutChart"></iframe>
+      </section>
+      <section class="chart" id="TreemapChart">
+        <div class="chart-bar">
+          <b>TreemapChart</b><small>份额板 · share blocks + trend chips</small>
+          <a href="TreemapChart/TreemapChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="TreemapChart/TreemapChart.html" title="TreemapChart"></iframe>
+      </section>
+
+      <div class="group">Structure &amp; score</div>
+      <section class="chart" id="FunnelChart">
+        <div class="chart-bar">
+          <b>FunnelChart</b><small>漏斗图 · ordinal bands + black conversion end</small>
+          <a href="FunnelChart/FunnelChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="FunnelChart/FunnelChart.html" title="FunnelChart"></iframe>
+      </section>
+      <section class="chart" id="RadarChart">
+        <div class="chart-bar">
+          <b>RadarChart</b><small>雷达图 · profile + dashed comparison</small>
+          <a href="RadarChart/RadarChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="RadarChart/RadarChart.html" title="RadarChart"></iframe>
+      </section>
+      <section class="chart" id="ScoreGauge">
+        <div class="chart-bar">
+          <b>ScoreGauge</b><small>评分环 · radial score badge</small>
+          <a href="ScoreGauge/ScoreGauge.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="ScoreGauge/ScoreGauge.html" title="ScoreGauge"></iframe>
+      </section>
+
+      <div class="group">Place &amp; language</div>
+      <section class="chart" id="GeoChart">
+        <div class="chart-bar">
+          <b>GeoChart</b><small>地域图 · world choropleth + ranked list</small>
+          <a href="GeoChart/GeoChart.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="GeoChart/GeoChart.html" title="GeoChart"></iframe>
+      </section>
+      <section class="chart" id="ActivityHeatmap">
+        <div class="chart-bar">
+          <b>ActivityHeatmap</b><small>活跃热力 · day × time intensity grid</small>
+          <a href="ActivityHeatmap/ActivityHeatmap.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="ActivityHeatmap/ActivityHeatmap.html" title="ActivityHeatmap"></iframe>
+      </section>
+      <section class="chart" id="WordCloud">
+        <div class="chart-bar">
+          <b>WordCloud</b><small>词云 · weighted keyword flow</small>
+          <a href="WordCloud/WordCloud.html" target="_blank">open ↗</a>
+        </div>
+        <iframe src="WordCloud/WordCloud.html" title="WordCloud"></iframe>
+      </section>
+    </div>
+
+    <script>
+      // Fit each frame to its document (same-origin when served); fall back to
+      // the fixed CSS height on file:// where contentDocument is blocked.
+      const fit = (frame) => {
+        try {
+          const doc = frame.contentDocument;
+          if (!doc) return;
+          const h = doc.documentElement.scrollHeight;
+          if (h > 80) frame.style.height = h + 'px';
+        } catch (_) {
+          /* cross-origin (file://) — keep fallback height */
+        }
+      };
+      document.querySelectorAll('iframe').forEach((frame) => {
+        frame.addEventListener('load', () => {
+          fit(frame);
+          setTimeout(() => fit(frame), 350);
+        });
+      });
+      let t;
+      addEventListener('resize', () => {
+        clearTimeout(t);
+        t = setTimeout(() => document.querySelectorAll('iframe').forEach(fit), 200);
+      });
+    </script>
+  </body>
+</html>

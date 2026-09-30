@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ReportRangeTabs - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../SegmentedTabs/SegmentedTabs.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet,
+      .component-intro,
+      .section,
+      .states,
+      .state {
+        display: grid;
+      }
+      .sheet {
+        gap: 30px;
+        max-width: 760px;
+      }
+      .component-intro,
+      .section {
+        gap: 12px;
+      }
+      h1,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        max-width: 64ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .label,
+      .state small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .states {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+      .state {
+        gap: 10px;
+        justify-items: start;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro">
+        <h1>ReportRangeTabs</h1>
+        <p>Compact report range selector with fixed numeric labels and an ink active thumb.</p>
+      </header>
+      <section class="section" aria-label="Report range tabs animated component">
+        <span class="label">Animated component</span>
+        <div class="report-range-tabs segmented-tabs" role="tablist" aria-label="Report range">
+          <span class="segmented-thumb" aria-hidden="true"></span>
+          <button type="button" class="report-range-tab" aria-pressed="false">1D</button>
+          <button type="button" class="report-range-tab active" aria-pressed="true">1W</button>
+          <button type="button" class="report-range-tab" aria-pressed="false">2W</button>
+          <button type="button" class="report-range-tab" aria-pressed="false">1M</button>
+        </div>
+      </section>
+      <section class="section" aria-label="Report range tab slices">
+        <span class="label">Slices</span>
+        <div class="states">
+          <div class="state">
+            <small>1D active</small>
+            <div class="report-range-tabs segmented-tabs" role="tablist" aria-label="1D active">
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="report-range-tab active" aria-pressed="true">1D</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">1W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">2W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">1M</button>
+            </div>
+          </div>
+          <div class="state">
+            <small>1W active</small>
+            <div class="report-range-tabs segmented-tabs" role="tablist" aria-label="1W active">
+              <span class="segmented-thumb" aria-hidden="true"></span>
+              <button type="button" class="report-range-tab" aria-pressed="false">1D</button>
+              <button type="button" class="report-range-tab active" aria-pressed="true">1W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">2W</button>
+              <button type="button" class="report-range-tab" aria-pressed="false">1M</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="../SegmentedTabs/SegmentedTabs.js"></script>
+  </body>
+</html>

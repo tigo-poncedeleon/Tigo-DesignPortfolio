@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AIPanel - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="AIPanel.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      /* AIPanel.css ships the fixed inset-drawer `.ai-panel` frame + scopes every
+         component rule under `.ai-panel`. The specimen renders in-flow, so it (a)
+         wraps its content in one layout-transparent `.ai-panel` so the scoped
+         rules reach the standalone slices, and (b) re-frames the demo panels as
+         in-flow cards. Demo-only chrome (`.ai-panel-demo`, `.ai-context*`) lives
+         here, not in the component CSS. */
+      .ai-panel[data-specimen-flat] {
+        display: contents;
+        visibility: visible;
+      }
+      .ai-panel-demo .ai-panel,
+      .ai-anatomy-slice.is-frame .ai-panel {
+        position: static;
+        inset: auto;
+        z-index: auto;
+        width: 100%;
+        max-width: 360px;
+        min-height: 560px;
+        height: auto;
+        transform: none;
+      }
+      .ai-panel-demo {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: var(--space-6);
+        align-items: stretch;
+        max-width: 980px;
+        padding: var(--space-5);
+        border-radius: 28px;
+        background: var(--surface);
+      }
+      .ai-context {
+        display: grid;
+        align-content: start;
+        gap: var(--space-6);
+        min-height: 560px;
+        padding: var(--space-7);
+        border-radius: var(--r-xl);
+        background: var(--surface);
+      }
+      .ai-context-kicker {
+        display: inline-flex;
+        margin-bottom: var(--space-3);
+        color: var(--text-3);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        text-transform: uppercase;
+      }
+      .ai-context h2 {
+        margin: 0 0 var(--space-3);
+        color: var(--ink-900);
+        font-size: var(--type-h2);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+      .ai-context p {
+        max-width: 54ch;
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .ai-context-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-4);
+        width: min(100%, 420px);
+        padding: 14px 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: var(--shadow-1);
+      }
+      .ai-context-strip span {
+        color: var(--text-3);
+        font-size: var(--fs-3);
+      }
+      .ai-context-strip strong {
+        color: var(--danger);
+        font-size: var(--fs-4);
+        font-weight: var(--fw-semibold);
+      }
+
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+
+      .handoff-sub {
+        margin: 0;
+        max-width: 68ch;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .component-intro {
+        margin-bottom: 34px;
+      }
+      .ai-state-section {
+        display: grid;
+        gap: 14px;
+        max-width: 980px;
+        margin-top: var(--space-7);
+      }
+      .ai-state-section .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .ai-state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--space-4);
+      }
+      .ai-state-card {
+        display: grid;
+        gap: var(--space-3);
+        align-content: start;
+        padding: var(--space-4);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .ai-state-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .ai-anatomy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+        gap: var(--space-4);
+      }
+      .ai-anatomy-slice {
+        display: grid;
+        gap: var(--space-3);
+        align-content: start;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: var(--space-4);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        overflow: hidden;
+      }
+      .ai-anatomy-slice * {
+        box-sizing: border-box;
+      }
+      .ai-anatomy-slice > small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .ai-anatomy-slice.is-frame {
+        grid-row: span 3;
+      }
+      .ai-anatomy-slice .ai-rich-card,
+      .ai-anatomy-slice .ai-compose,
+      .ai-anatomy-slice .ai-head,
+      .ai-anatomy-slice .ai-thread {
+        width: 100%;
+      }
+      .ai-anatomy-slice:not(.is-frame) .ai-head,
+      .ai-anatomy-slice:not(.is-frame) .ai-compose {
+        border-radius: var(--r-lg);
+        border: 1px solid var(--surface-edge);
+      }
+      .ai-anatomy-slice:not(.is-frame) .ai-thread {
+        min-height: 210px;
+        max-height: 260px;
+        padding: var(--space-3);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .ai-menu-slice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--space-4);
+      }
+      .ai-menu-slice {
+        display: grid;
+        gap: var(--space-3);
+        align-content: start;
+        padding: var(--space-4);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .ai-menu-slice small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .ai-menu-slice .ai-head,
+      .ai-menu-slice .ai-compose {
+        border-radius: var(--r-lg);
+        border: 1px solid var(--surface-edge);
+      }
+      .ai-menu-slice .ai-list-items {
+        padding: var(--space-2);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .ai-interaction-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-6) var(--space-5);
+      }
+      .ai-interaction-slice {
+        display: grid;
+        gap: var(--space-3);
+        align-content: start;
+        min-height: 164px;
+        padding: 0 0 var(--space-4);
+        border-bottom: 1px solid var(--surface-edge);
+        background: transparent;
+      }
+      .ai-interaction-slice small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .ai-interaction-slice .ai-head,
+      .ai-interaction-slice .ai-compose {
+        border-radius: var(--r-lg);
+        border: 1px solid var(--surface-edge);
+      }
+      .ai-interaction-slice .ai-thread {
+        min-height: 112px;
+        max-height: 168px;
+        padding: var(--space-3);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .ai-interaction-slice .ai-list-items {
+        padding: var(--space-2);
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      .ai-interaction-slice.is-context-cleared .ai-context-label {
+        color: var(--text-4);
+        background: var(--surface-2);
+      }
+      .ai-interaction-slice.is-context-cleared .ai-context-label button {
+        display: none;
+      }
+      .ai-interaction-note {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        line-height: 1.45;
+      }
+      @media (max-width: 860px) {
+        .ai-anatomy-grid {
+          grid-template-columns: 1fr;
+        }
+        .ai-panel-demo {
+          grid-template-columns: 1fr;
+        }
+        .ai-context {
+          min-height: 520px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- One layout-transparent .ai-panel wraps the whole specimen so AIPanel.css's
+         `.ai-panel`-scoped component rules reach the standalone slices below. It
+         carries no visual box (display:contents). -->
+    <div class="ai-panel" data-specimen-flat>
+      <header class="component-intro" aria-label="Introduction">
+        <h1 class="handoff-title">AIPanel</h1>
+        <p class="handoff-sub">
+          Context-preserving assistant panel with open, close, compose, typing, and rich response
+          states. The dialog is the assistant itself — you message Pulse directly; there is no
+          separate "Ask Pulse" launcher CTA (app entry is the dock + Sidebar recent chat).
+          Conversation switching belongs to Sidebar recent chat; the panel header keeps only the
+          close action. This HTML file is the standalone component source.
+        </p>
+      </header>
+
+      <section class="ai-state-section" aria-label="AIPanel animated component">
+        <span class="specimen-label">Animated component</span>
+        <div class="ai-panel-demo is-panel-open">
+          <section class="ai-context" aria-label="Compressed page context">
+            <div>
+              <span class="ai-context-kicker">Current page</span>
+              <h2>Signal feed context</h2>
+              <p>
+                The page stays readable while Pulse drafts a response, explains a signal, or turns
+                an insight into a campaign action.
+              </p>
+            </div>
+            <div class="ai-context-strip">
+              <span>Delivery risk</span>
+              <strong>Rising 2.4x</strong>
+            </div>
+          </section>
+
+          <aside
+            id="pulse-ai-panel"
+            class="ai-panel is-open"
+            data-ai-panel
+            data-open="true"
+            role="dialog"
+            aria-label="Pulse AI assistant"
+            aria-hidden="false"
+          >
+            <header class="ai-head">
+              <div class="ai-mark" data-agent-mark>P</div>
+              <div class="ai-head-copy">
+                <div class="ai-title">Pulse</div>
+                <div class="ai-sub" data-panel-subtitle>Perception - Risk signal</div>
+              </div>
+              <button
+                class="ai-head-btn"
+                type="button"
+                data-close
+                aria-label="Close Pulse panel"
+                title="Close"
+              >
+                <svg viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M3 3l8 8M11 3l-8 8" />
+                </svg>
+              </button>
+            </header>
+
+            <section class="ai-view ai-view--list" data-view="list" hidden>
+              <div class="ai-list-head">
+                <span>Recent conversations</span>
+                <strong data-list-count>0</strong>
+              </div>
+              <div class="ai-list-items" data-conversation-list></div>
+            </section>
+
+            <section class="ai-view ai-view--chat" data-view="chat">
+              <div class="ai-thread" data-thread aria-live="polite"></div>
+            </section>
+
+            <div class="ai-compose">
+              <div class="ai-context-label" data-context-label>
+                <span data-context-text>Signal - Delivery-time risk</span>
+                <button type="button" aria-label="Clear selected context" title="Clear context">
+                  <svg viewBox="0 0 12 12" aria-hidden="true">
+                    <path d="M3 3l6 6M9 3L3 9" />
+                  </svg>
+                </button>
+              </div>
+
+              <form class="dock-bar" data-compose-form autocomplete="off">
+                <button class="dock-add" type="button" aria-label="Add file" title="Add file">
+                  <svg viewBox="0 0 17 17" aria-hidden="true">
+                    <path d="M8.5 3.25v10.5M3.25 8.5h10.5" />
+                  </svg>
+                </button>
+                <input
+                  class="dock-input"
+                  name="pulsePrompt"
+                  aria-label="Message Pulse"
+                  placeholder="Reply to Pulse, or drop a file..."
+                />
+                <button
+                  class="dock-send"
+                  type="submit"
+                  data-send
+                  disabled
+                  aria-label="Send message"
+                >
+                  <svg viewBox="0 0 15 15" aria-hidden="true">
+                    <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+                  </svg>
+                </button>
+              </form>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="ai-state-section" aria-label="AIPanel static state snapshots">
+        <span class="specimen-label">Slices / state snapshots</span>
+        <div class="ai-state-grid">
+          <div class="ai-state-card">
+            <small>Typing</small>
+            <div class="ai-typing" aria-label="Pulse is typing"><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ai-state-section" aria-label="AIPanel panel anatomy slices">
+        <span class="specimen-label">Slices / panel anatomy</span>
+        <div class="ai-anatomy-grid">
+          <article class="ai-anatomy-slice is-frame">
+            <small>Panel frame / AIPanelFrame</small>
+            <aside class="ai-panel is-open">
+              <header class="ai-head">
+                <div class="ai-mark">P</div>
+                <div class="ai-head-copy">
+                  <div class="ai-title">Pulse</div>
+                  <div class="ai-sub">Perception - Risk signal</div>
+                </div>
+                <button class="ai-head-btn" type="button" aria-label="Close Pulse panel">
+                  <svg viewBox="0 0 14 14" aria-hidden="true">
+                    <path d="M3 3l8 8M11 3l-8 8" />
+                  </svg>
+                </button>
+              </header>
+              <div class="ai-view">
+                <div class="ai-thread">
+                  <div class="ai-msg is-assistant">
+                    <div class="ai-msg-body">
+                      <p>
+                        A new risk signal is spreading faster than usual and needs your attention.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="ai-msg is-user">
+                    <div class="ai-user-bubble"><p>Draft a calm delivery reply</p></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ai-compose">
+                <div class="ai-context-label">
+                  <span>Signal - Delivery-time risk</span>
+                  <button type="button" aria-label="Clear selected context">
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" /></svg>
+                  </button>
+                </div>
+                <div class="dock-bar">
+                  <button class="dock-add" type="button" aria-label="Add file">
+                    <svg viewBox="0 0 17 17" aria-hidden="true">
+                      <path d="M8.5 3.25v10.5M3.25 8.5h10.5" />
+                    </svg>
+                  </button>
+                  <span class="dock-input" aria-hidden="true">Reply to Pulse...</span>
+                  <button class="dock-send" type="button" aria-label="Send">
+                    <svg viewBox="0 0 15 15" aria-hidden="true">
+                      <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </article>
+          <article class="ai-anatomy-slice">
+            <small>Header / AIPanelHeader</small>
+            <header class="ai-head">
+              <div class="ai-mark">P</div>
+              <div class="ai-head-copy">
+                <div class="ai-title">Pulse</div>
+                <div class="ai-sub">Perception - Risk signal</div>
+              </div>
+              <button class="ai-head-btn" type="button" aria-label="Close Pulse panel">
+                <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" /></svg>
+              </button>
+            </header>
+          </article>
+          <article class="ai-anatomy-slice">
+            <small>Message thread / AIThread</small>
+            <div class="ai-thread">
+              <div class="ai-msg is-assistant">
+                <div class="ai-msg-body"><p>What should we draft next?</p></div>
+              </div>
+              <div class="ai-msg is-user">
+                <div class="ai-user-bubble"><p>Build the campaign note.</p></div>
+              </div>
+              <div class="ai-typing" aria-label="Pulse is typing"><i></i><i></i><i></i></div>
+            </div>
+          </article>
+          <article class="ai-anatomy-slice">
+            <small>Rich reply / RichReply</small>
+            <article class="ai-rich-card">
+              <div class="ai-card-head">
+                <div>
+                  <span class="ai-card-kicker">Risk signal</span>
+                  <strong class="ai-card-title">Delivery complaints are accelerating</strong>
+                </div>
+                <span class="ai-card-badge">2.4x</span>
+              </div>
+              <p class="ai-card-body">
+                A calm response in the next 24 hours can keep the thread from hardening.
+              </p>
+              <div class="ai-stat-grid">
+                <span class="ai-stat"><span>Velocity</span><strong>+145%</strong></span>
+                <span class="ai-stat"><span>Window</span><strong>24h</strong></span>
+                <span class="ai-stat"><span>Tone</span><strong>Calm</strong></span>
+              </div>
+              <div class="ai-action-row">
+                <button class="is-primary" type="button">Draft response</button>
+                <button type="button">Build campaign</button>
+              </div>
+            </article>
+          </article>
+          <article class="ai-anatomy-slice">
+            <small>Compose dock / AIComposeDock</small>
+            <div class="ai-compose">
+              <div class="ai-context-label">
+                <span>Signal - Delivery-time risk</span>
+                <button type="button" aria-label="Clear selected context">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" /></svg>
+                </button>
+              </div>
+              <div class="dock-bar">
+                <button class="dock-add" type="button" aria-label="Add file">
+                  <svg viewBox="0 0 17 17" aria-hidden="true">
+                    <path d="M8.5 3.25v10.5M3.25 8.5h10.5" />
+                  </svg>
+                </button>
+                <span class="dock-input" aria-hidden="true">Reply to Pulse...</span>
+                <button class="dock-send" type="button" aria-label="Send">
+                  <svg viewBox="0 0 15 15" aria-hidden="true">
+                    <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="ai-state-section" aria-label="AIPanel conversation handoff slices">
+        <span class="specimen-label">Slices / conversation handoff</span>
+        <div class="ai-menu-slice-grid">
+          <div class="ai-menu-slice">
+            <small>Panel header / chat</small>
+            <header class="ai-head">
+              <div class="ai-mark">P</div>
+              <div class="ai-head-copy">
+                <div class="ai-title">Pulse</div>
+                <div class="ai-sub">Perception - Risk signal</div>
+              </div>
+              <button class="ai-head-btn" type="button" aria-label="Close Pulse panel">
+                <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" /></svg>
+              </button>
+            </header>
+          </div>
+          <div class="ai-menu-slice">
+            <small>Panel header / conversation changed from Sidebar</small>
+            <header class="ai-head">
+              <div class="ai-mark">P</div>
+              <div class="ai-head-copy">
+                <div class="ai-title">Pulse</div>
+                <div class="ai-sub">Conversation changes in Sidebar</div>
+              </div>
+              <button class="ai-head-btn" type="button" aria-label="Close Pulse panel">
+                <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" /></svg>
+              </button>
+            </header>
+          </div>
+          <div class="ai-menu-slice">
+            <small>Sidebar conversation list reference</small>
+            <div class="ai-list-items">
+              <button class="ai-list-item is-active" type="button">
+                <span class="ai-list-dot"></span>
+                <span class="ai-list-text">
+                  <span class="ai-list-name">Delivery risk</span>
+                  <span class="ai-list-preview">A new risk signal is spreading...</span>
+                </span>
+                <span class="ai-list-meta">2</span>
+              </button>
+              <button class="ai-list-item" type="button">
+                <span class="ai-list-dot creative"></span>
+                <span class="ai-list-text">
+                  <span class="ai-list-name">Campaign review</span>
+                  <span class="ai-list-preview">The campaign is ready...</span>
+                </span>
+                <span class="ai-list-meta">1</span>
+              </button>
+            </div>
+          </div>
+          <div class="ai-menu-slice">
+            <small>Context chip + compose</small>
+            <div class="ai-compose">
+              <div class="ai-context-label">
+                <span>Signal - Delivery-time risk</span>
+                <button type="button" aria-label="Clear selected context">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" /></svg>
+                </button>
+              </div>
+              <div class="dock-bar">
+                <button class="dock-add" type="button" aria-label="Add file">
+                  <svg viewBox="0 0 17 17" aria-hidden="true">
+                    <path d="M8.5 3.25v10.5M3.25 8.5h10.5" />
+                  </svg>
+                </button>
+                <span class="dock-input" aria-hidden="true">Reply to Pulse...</span>
+                <button class="dock-send" type="button" disabled aria-label="Send disabled">
+                  <svg viewBox="0 0 15 15" aria-hidden="true">
+                    <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ai-state-section" aria-label="AIPanel chat interaction slices">
+        <span class="specimen-label">Animated component / chat interactions</span>
+        <div class="ai-interaction-grid">
+          <div class="ai-interaction-slice" data-slice-conversation>
+            <small>AIConversationSelectInteraction / select row</small>
+            <div class="ai-list-items">
+              <button class="ai-list-item is-active" type="button" data-slice-conversation-item>
+                <span class="ai-list-dot"></span>
+                <span class="ai-list-text">
+                  <span class="ai-list-name">Delivery risk</span>
+                  <span class="ai-list-preview">A new risk signal is spreading...</span>
+                </span>
+                <span class="ai-list-meta">2</span>
+              </button>
+              <button class="ai-list-item" type="button" data-slice-conversation-item>
+                <span class="ai-list-dot creative"></span>
+                <span class="ai-list-text">
+                  <span class="ai-list-name">Campaign review</span>
+                  <span class="ai-list-preview">The campaign is ready...</span>
+                </span>
+                <span class="ai-list-meta">1</span>
+              </button>
+            </div>
+            <span class="ai-interaction-note">Click changes the active conversation row.</span>
+          </div>
+
+          <div class="ai-interaction-slice" data-slice-context>
+            <small>AIContextClearInteraction / remove context</small>
+            <div class="ai-compose">
+              <div class="ai-context-label" data-slice-context-label>
+                <span data-slice-context-text>Signal - Delivery-time risk</span>
+                <button type="button" data-slice-context-btn aria-label="Clear selected context">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" /></svg>
+                </button>
+              </div>
+              <div class="dock-bar">
+                <button class="dock-add" type="button" aria-label="Add file">
+                  <svg viewBox="0 0 17 17" aria-hidden="true">
+                    <path d="M8.5 3.25v10.5M3.25 8.5h10.5" />
+                  </svg>
+                </button>
+                <span class="dock-input" aria-hidden="true">Reply to Pulse...</span>
+                <button class="dock-send" type="button" disabled aria-label="Send disabled">
+                  <svg viewBox="0 0 15 15" aria-hidden="true">
+                    <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <span class="ai-interaction-note">Click the x to clear the context chip.</span>
+          </div>
+
+          <div class="ai-interaction-slice" data-slice-compose>
+            <small>AIComposeInputInteraction / typed input</small>
+            <div class="ai-thread" data-slice-compose-thread>
+              <div class="ai-msg is-assistant">
+                <div class="ai-msg-body"><p>What should we draft next?</p></div>
+              </div>
+            </div>
+            <form class="dock-bar" data-slice-compose-form autocomplete="off">
+              <button class="dock-add" type="button" aria-label="Add file">
+                <svg viewBox="0 0 17 17" aria-hidden="true">
+                  <path d="M8.5 3.25v10.5M3.25 8.5h10.5" />
+                </svg>
+              </button>
+              <input
+                class="dock-input"
+                name="slicePrompt"
+                aria-label="Chat interaction prompt"
+                placeholder="Type to enable send..."
+              />
+              <button
+                class="dock-send"
+                type="submit"
+                data-slice-send
+                disabled
+                aria-label="Send message"
+              >
+                <svg viewBox="0 0 15 15" aria-hidden="true">
+                  <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div class="ai-interaction-slice" data-slice-send-stream>
+            <small>AISendInteraction / streaming reply</small>
+            <div class="ai-thread" data-slice-send-thread>
+              <div class="ai-msg is-user">
+                <div class="ai-user-bubble"><p>Draft a calm delivery reply</p></div>
+              </div>
+            </div>
+            <button
+              class="dock-send"
+              type="button"
+              data-slice-send-stream-btn
+              aria-label="Send demo"
+            >
+              <svg viewBox="0 0 15 15" aria-hidden="true">
+                <path d="M7.5 13V2M3 6.5l4.5-4.5 4.5 4.5" />
+              </svg>
+            </button>
+            <span class="ai-interaction-note"
+              >Click send to show typing, then a landed answer.</span
+            >
+          </div>
+
+          <div class="ai-interaction-slice" data-slice-rich>
+            <small>AIRichReplyActionInteraction / inline CTA</small>
+            <div class="ai-thread" data-slice-rich-thread>
+              <div class="ai-msg is-assistant">
+                <div class="ai-msg-body">
+                  <p>I can turn this into the next campaign step.</p>
+                  <article class="ai-rich-card">
+                    <div class="ai-card-head">
+                      <div>
+                        <span class="ai-card-kicker">Action</span>
+                        <strong class="ai-card-title">Campaign follow-up</strong>
+                      </div>
+                      <span class="ai-card-badge">Ready</span>
+                    </div>
+                    <p class="ai-card-body">
+                      One click appends the selected action into the thread.
+                    </p>
+                    <div class="ai-action-row">
+                      <button class="is-primary" type="button" data-slice-rich-action>
+                        Draft response
+                      </button>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const conversations = [
+        {
+          key: 'delivery',
+          name: 'Delivery risk',
+          dot: 'perception',
+          agent: 'perception',
+          subtitle: 'Perception - Risk signal',
+          context: 'Signal - Delivery-time risk',
+          messages: [
+            {
+              role: 'assistant',
+              text: 'A new risk signal is spreading faster than usual and needs your attention.',
+              card: {
+                kicker: 'Risk signal',
+                title: 'Delivery complaints are accelerating',
+                badge: '2.4x',
+                body: 'Reddit comments are clustering around delivery timing. A calm response in the next 24 hours can keep the thread from hardening.',
+                stats: [
+                  ['Velocity', '+145%'],
+                  ['Window', '24h'],
+                  ['Tone', 'Calm'],
+                ],
+                actions: ['Draft response', 'Build campaign'],
+              },
+            },
+            {
+              role: 'assistant',
+              text: 'I would anchor the response on clear fit expectations, delivery transparency, and a visible restock date.',
+            },
+          ],
+        },
+        {
+          key: 'campaign',
+          name: 'Campaign review',
+          dot: 'creative',
+          agent: 'creative',
+          subtitle: 'Creative - Campaign',
+          context: 'Campaign - Quiet Confidence Uniform',
+          messages: [
+            {
+              role: 'assistant',
+              text: 'The campaign is ready for review. Texture proof is producing now; the scheduled post is still waiting for final approval.',
+              card: {
+                kicker: 'Pipeline',
+                title: 'Texture try-on credibility',
+                badge: '62%',
+                body: 'Three steps are done. Visual edit is active, review is queued, and publish is scheduled for Thu 19:00.',
+                stats: [
+                  ['Done', '2'],
+                  ['Active', '1'],
+                  ['Queued', '2'],
+                ],
+                actions: ['Watch progress', 'Open campaign'],
+              },
+            },
+          ],
+        },
+        {
+          key: 'analytics',
+          name: 'Analytics read',
+          dot: 'perception',
+          agent: 'perception',
+          subtitle: 'Perception - Analytics',
+          context: 'Analytics - Weekly report',
+          messages: [
+            {
+              role: 'assistant',
+              text: 'TikTok is the strongest immediate allocation. LinkedIn needs a narrower proof-led format before spend increases.',
+              card: {
+                kicker: 'Weekly pulse',
+                title: 'Net positive, one risk window',
+                badge: '+18%',
+                body: 'Reach is up, cost per order is down, and the delivery risk is the only active narrative pressure.',
+                stats: [
+                  ['Reach', '+18%'],
+                  ['CPO', '-12%'],
+                  ['Risk SLA', '24h'],
+                ],
+                actions: ['Summarize', 'Compare platforms'],
+              },
+            },
+          ],
+        },
+      ];
+
+      const panel = document.querySelector('[data-ai-panel]');
+      const demo = document.querySelector('.ai-panel-demo');
+      const close = document.querySelector('[data-close]');
+      const listView = document.querySelector('[data-view="list"]');
+      const chatView = document.querySelector('[data-view="chat"]');
+      const list = document.querySelector('[data-conversation-list]');
+      const listCount = document.querySelector('[data-list-count]');
+      const thread = document.querySelector('[data-thread]');
+      const subtitle = document.querySelector('[data-panel-subtitle]');
+      const mark = document.querySelector('[data-agent-mark]');
+      const contextLabel = document.querySelector('[data-context-label]');
+      const contextText = document.querySelector('[data-context-text]');
+      const form = document.querySelector('[data-compose-form]');
+      const input = form.elements.namedItem('pulsePrompt');
+      const send = document.querySelector('[data-send]');
+
+      let activeKey = 'delivery';
+      let view = 'chat';
+
+      function activeConversation() {
+        return (
+          conversations.find((conversation) => conversation.key === activeKey) || conversations[0]
+        );
+      }
+
+      function render(options = {}) {
+        const { threadScroll = 'preserve' } = options;
+        const active = activeConversation();
+        const inList = view === 'list';
+
+        panel.classList.toggle('is-list', inList);
+        listView.hidden = !inList;
+        chatView.hidden = inList;
+        subtitle.textContent = inList ? 'Conversations' : active.subtitle;
+        mark.classList.toggle('creative', !inList && active.agent === 'creative');
+        contextLabel.hidden = inList;
+        contextText.textContent = active.context;
+        input.placeholder = inList
+          ? 'Start a new conversation...'
+          : 'Reply to Pulse, or drop a file...';
+
+        renderList();
+        renderThread({ scroll: threadScroll });
+        updateSend();
+      }
+
+      function renderList() {
+        listCount.textContent = conversations.length;
+        list.replaceChildren(
+          ...conversations.map((conversation) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `ai-list-item${conversation.key === activeKey ? ' is-active' : ''}`;
+            button.addEventListener('click', () => {
+              activeKey = conversation.key;
+              view = 'chat';
+              render({ threadScroll: 'bottom' });
+            });
+
+            const dot = document.createElement('span');
+            dot.className = `ai-list-dot ${conversation.dot}`;
+
+            const text = document.createElement('span');
+            text.className = 'ai-list-text';
+
+            const name = document.createElement('span');
+            name.className = 'ai-list-name';
+            name.textContent = conversation.name;
+
+            const preview = document.createElement('span');
+            preview.className = 'ai-list-preview';
+            preview.textContent = lastMessageText(conversation);
+
+            const meta = document.createElement('span');
+            meta.className = 'ai-list-meta';
+            meta.textContent = conversation.messages.length;
+
+            text.append(name, preview);
+            button.append(dot, text, meta);
+            return button;
+          })
+        );
+      }
+
+      function renderThread(options = {}) {
+        const { scroll = 'preserve' } = options;
+        const active = activeConversation();
+        const previousTop = thread.scrollTop;
+        const previousHeight = thread.scrollHeight;
+        thread.replaceChildren(...active.messages.map(createMessage));
+        if (scroll === 'bottom') {
+          thread.scrollTop = thread.scrollHeight;
+          return;
+        }
+        thread.scrollTop = previousTop + (thread.scrollHeight - previousHeight);
+      }
+
+      function createMessage(message) {
+        const wrap = document.createElement('div');
+        wrap.className = `ai-msg ${message.role === 'user' ? 'is-user' : 'is-assistant'}`;
+
+        if (message.typing) {
+          const typing = document.createElement('span');
+          typing.className = 'ai-typing';
+          typing.setAttribute('aria-label', 'Pulse is thinking');
+          typing.innerHTML = '<i></i><i></i><i></i>';
+          wrap.append(typing);
+          return wrap;
+        }
+
+        const bubble = document.createElement('div');
+        bubble.className = message.role === 'user' ? 'ai-user-bubble' : 'ai-msg-body';
+
+        const copy = document.createElement('p');
+        copy.textContent = message.text;
+        bubble.append(copy);
+
+        if (message.card) {
+          bubble.append(createRichCard(message.card));
+        }
+
+        wrap.append(bubble);
+        return wrap;
+      }
+
+      function createRichCard(card) {
+        const rich = document.createElement('article');
+        rich.className = 'ai-rich-card';
+
+        const head = document.createElement('div');
+        head.className = 'ai-card-head';
+
+        const titleBlock = document.createElement('div');
+        const kicker = document.createElement('span');
+        kicker.className = 'ai-card-kicker';
+        kicker.textContent = card.kicker;
+        const title = document.createElement('strong');
+        title.className = 'ai-card-title';
+        title.textContent = card.title;
+        titleBlock.append(kicker, title);
+
+        const badge = document.createElement('span');
+        badge.className = 'ai-card-badge';
+        badge.textContent = card.badge;
+        head.append(titleBlock, badge);
+
+        const body = document.createElement('p');
+        body.className = 'ai-card-body';
+        body.textContent = card.body;
+
+        const stats = document.createElement('div');
+        stats.className = 'ai-stat-grid';
+        card.stats.forEach(([label, value]) => {
+          const item = document.createElement('span');
+          item.className = 'ai-stat';
+          const itemLabel = document.createElement('span');
+          itemLabel.textContent = label;
+          const itemValue = document.createElement('strong');
+          itemValue.textContent = value;
+          item.append(itemLabel, itemValue);
+          stats.append(item);
+        });
+
+        const actions = document.createElement('div');
+        actions.className = 'ai-action-row';
+        card.actions.forEach((label, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = index === 0 ? 'is-primary' : '';
+          button.textContent = label;
+          button.addEventListener('click', () => appendActionReply(label));
+          actions.append(button);
+        });
+
+        rich.append(head, body, stats, actions);
+        return rich;
+      }
+
+      function appendActionReply(label) {
+        const active = activeConversation();
+        active.messages.push({
+          role: 'user',
+          text: label,
+        });
+        renderThread({ scroll: 'bottom' });
+        appendTypingReply(replyFor(label));
+      }
+
+      function appendTypingReply(replyText) {
+        const active = activeConversation();
+        active.messages.push({ role: 'assistant', typing: true });
+        renderThread({ scroll: 'bottom' });
+
+        window.setTimeout(() => {
+          const typingIndex = active.messages.findIndex((message) => message.typing);
+          if (typingIndex >= 0) active.messages.splice(typingIndex, 1);
+          active.messages.push({
+            role: 'assistant',
+            text: replyText,
+          });
+          render({ threadScroll: 'bottom' });
+        }, 850);
+      }
+
+      function replyFor(text) {
+        const lower = text.toLowerCase();
+        if (lower.includes('campaign') || lower.includes('progress')) {
+          return 'I can keep the campaign row open, show the active post, and track the remaining review steps without moving you away from this page.';
+        }
+        if (lower.includes('platform') || lower.includes('summarize')) {
+          return 'The useful read is TikTok first for reach, Instagram for proof, and LinkedIn only after the angle becomes more education-led.';
+        }
+        return 'I would keep the response direct: acknowledge the delay, name the restock window, and avoid defensive language.';
+      }
+
+      function lastMessageText(conversation) {
+        const last = [...conversation.messages].reverse().find((message) => message.text);
+        return last ? last.text : 'New conversation';
+      }
+
+      function updateSend() {
+        send.disabled = input.value.trim().length === 0;
+      }
+
+      function closePanel() {
+        panel.dataset.open = 'false';
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        demo.classList.remove('is-panel-open', 'is-chat-opening');
+      }
+
+      close.addEventListener('click', closePanel);
+      input.addEventListener('input', updateSend);
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+
+        if (view === 'list') {
+          const key = `chat-${Date.now()}`;
+          conversations.unshift({
+            key,
+            name: text.slice(0, 36),
+            dot: 'perception',
+            agent: 'perception',
+            subtitle: 'Perception - New chat',
+            context: 'New conversation',
+            messages: [],
+          });
+          activeKey = key;
+          view = 'chat';
+        }
+
+        activeConversation().messages.push({ role: 'user', text });
+        input.value = '';
+        updateSend();
+        renderThread({ scroll: 'bottom' });
+        appendTypingReply(replyFor(text));
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || panel.dataset.open !== 'true') return;
+        if (view === 'list') {
+          view = 'chat';
+          render({ threadScroll: 'preserve' });
+        } else {
+          closePanel();
+        }
+      });
+
+      document.querySelectorAll('[data-slice-conversation]').forEach((slice) => {
+        slice.querySelectorAll('[data-slice-conversation-item]').forEach((item) => {
+          item.addEventListener('click', () => {
+            slice
+              .querySelectorAll('[data-slice-conversation-item]')
+              .forEach((row) => row.classList.toggle('is-active', row === item));
+          });
+        });
+      });
+
+      document.querySelectorAll('[data-slice-context]').forEach((slice) => {
+        const button = slice.querySelector('[data-slice-context-btn]');
+        const text = slice.querySelector('[data-slice-context-text]');
+        button.addEventListener('click', () => {
+          slice.classList.add('is-context-cleared');
+          text.textContent = 'No context attached';
+        });
+      });
+
+      document.querySelectorAll('[data-slice-compose-form]').forEach((sliceForm) => {
+        const sliceInput = sliceForm.elements.namedItem('slicePrompt');
+        const sliceSend = sliceForm.querySelector('[data-slice-send]');
+        const sliceThread = sliceForm
+          .closest('[data-slice-compose]')
+          .querySelector('[data-slice-compose-thread]');
+
+        sliceInput.addEventListener('input', () => {
+          sliceSend.disabled = sliceInput.value.trim().length === 0;
+        });
+
+        sliceForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const text = sliceInput.value.trim();
+          if (!text) return;
+          sliceInput.value = '';
+          sliceSend.disabled = true;
+          const userWrap = document.createElement('div');
+          userWrap.className = 'ai-msg is-user';
+          const userBubble = document.createElement('div');
+          userBubble.className = 'ai-user-bubble';
+          const userCopy = document.createElement('p');
+          userCopy.textContent = text;
+          userBubble.append(userCopy);
+          userWrap.append(userBubble);
+
+          const typingWrap = document.createElement('div');
+          typingWrap.className = 'ai-msg is-assistant';
+          typingWrap.dataset.sliceTyping = 'true';
+          typingWrap.innerHTML =
+            '<span class="ai-typing" aria-label="Pulse is thinking"><i></i><i></i><i></i></span>';
+          sliceThread.append(userWrap, typingWrap);
+
+          window.setTimeout(() => {
+            sliceThread.querySelector('[data-slice-typing]')?.remove();
+            sliceThread.insertAdjacentHTML(
+              'beforeend',
+              '<div class="ai-msg is-assistant"><div class="ai-msg-body"><p>Draft noted. I can turn it into the next calm campaign reply.</p></div></div>'
+            );
+          }, 760);
+        });
+      });
+
+      document.querySelectorAll('[data-slice-send-stream]').forEach((slice) => {
+        const streamButton = slice.querySelector('[data-slice-send-stream-btn]');
+        const streamThread = slice.querySelector('[data-slice-send-thread]');
+        streamButton.addEventListener('click', () => {
+          streamButton.disabled = true;
+          streamThread.insertAdjacentHTML(
+            'beforeend',
+            '<div class="ai-msg is-assistant" data-slice-send-typing><span class="ai-typing" aria-label="Pulse is thinking"><i></i><i></i><i></i></span></div>'
+          );
+
+          window.setTimeout(() => {
+            streamThread.querySelector('[data-slice-send-typing]')?.remove();
+            streamThread.insertAdjacentHTML(
+              'beforeend',
+              '<div class="ai-msg is-assistant"><div class="ai-msg-body"><p>Here is a calm reply that names the delay and the next restock window.</p></div></div>'
+            );
+          }, 760);
+        });
+      });
+
+      document.querySelectorAll('[data-slice-rich]').forEach((slice) => {
+        const action = slice.querySelector('[data-slice-rich-action]');
+        const threadSlice = slice.querySelector('[data-slice-rich-thread]');
+        action.addEventListener('click', () => {
+          threadSlice.insertAdjacentHTML(
+            'beforeend',
+            '<div class="ai-msg is-user"><div class="ai-user-bubble"><p>Draft response</p></div></div><div class="ai-msg is-assistant"><div class="ai-msg-body"><p>I will keep the reply direct, calm, and specific about the restock window.</p></div></div>'
+          );
+        });
+      });
+
+      render({ threadScroll: 'bottom' });
+    </script>
+  </body>
+</html>

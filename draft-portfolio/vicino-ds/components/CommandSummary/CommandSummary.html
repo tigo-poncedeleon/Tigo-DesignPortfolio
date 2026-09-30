@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CommandSummary - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="../MetricBlock/MetricBlock.css" />
+    <link rel="stylesheet" href="../StatusPill/StatusPill.css" />
+    <link rel="stylesheet" href="CommandSummary.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1120px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 78ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .variant-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      .variant-grid .command-summary {
+        height: 100%;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>CommandSummary</h1>
+        <p>
+          Reusable command-center summary for Home, Calendar, Campaign, and Strategy surfaces. It
+          owns one decision sentence, compact status, a MetricBlock strip, stage rail, loading/empty
+          states, and one primary action.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Command summary primary state">
+        <div class="section-title">
+          <span>Default / action feedback</span>
+        </div>
+        <article class="command-summary" aria-labelledby="command-summary-default-title">
+          <header class="command-summary__head">
+            <div class="command-summary__copy">
+              <span class="command-summary__eyebrow">
+                <span class="command-summary__dot" aria-hidden="true"></span>
+                Morning command
+              </span>
+              <h2 class="command-summary__title" id="command-summary-default-title">
+                Quiet confidence launch is ready for approval.
+              </h2>
+              <p class="command-summary__sentence">
+                Creative is complete, two posts are queued, and the only blocker is final approval
+                before the noon publishing window.
+              </p>
+            </div>
+            <div class="command-summary__status" aria-label="Command status">
+              <span class="status-pill status-pill--ready">Ready</span>
+              <span class="status-pill status-pill--scheduled">Due today</span>
+            </div>
+          </header>
+
+          <div class="command-summary__metrics" aria-label="Key metrics">
+            <div class="metric-block metric-block--compact command-summary__metric">
+              <span class="metric-block__label">Posts ready</span>
+              <div class="metric-block__value-row">
+                <span class="metric-block__value">2</span>
+                <span class="metric-block__unit">of 3</span>
+              </div>
+              <p class="metric-block__support">Final carousel waits on approval.</p>
+            </div>
+            <div
+              class="metric-block metric-block--compact metric-block--stable command-summary__metric"
+            >
+              <span class="metric-block__label">Publish window</span>
+              <div class="metric-block__value-row">
+                <span class="metric-block__value">12</span>
+                <span class="metric-block__unit">PM</span>
+              </div>
+              <p class="metric-block__support">Slot held by calendar schedule.</p>
+            </div>
+            <div
+              class="metric-block metric-block--compact metric-block--positive command-summary__metric"
+            >
+              <span class="metric-block__label">Proof score</span>
+              <div class="metric-block__value-row">
+                <span class="metric-block__value">94</span>
+                <span class="metric-block__unit">%</span>
+              </div>
+              <p class="metric-block__support">Fit language is approved.</p>
+            </div>
+          </div>
+
+          <div class="command-summary__body">
+            <div class="command-summary__steps" aria-label="Stage rail">
+              <div class="command-summary__step is-done">
+                <span class="command-summary__step-label">Done</span>
+                <strong>Trend fit locked</strong>
+                <span>Positioning and angle are clear.</span>
+              </div>
+              <div class="command-summary__step is-done">
+                <span class="command-summary__step-label">Done</span>
+                <strong>Shot plan</strong>
+                <span>Proof cards are complete.</span>
+              </div>
+              <div class="command-summary__step is-current">
+                <span class="command-summary__step-label">Next</span>
+                <strong>Approve</strong>
+                <span>Owner review is the handoff.</span>
+              </div>
+              <div class="command-summary__step">
+                <span class="command-summary__step-label">Queued</span>
+                <strong>Publish</strong>
+                <span>Slot opens after approval.</span>
+              </div>
+            </div>
+
+            <aside class="command-summary__action" aria-label="Next action">
+              <h3>Approve the carousel set</h3>
+              <p>Open the approval queue, check the final copy, and release the held slot.</p>
+              <div class="command-summary__actions">
+                <button class="btn btn--dark" type="button" data-command-summary-action>
+                  <span class="btn__spinner" aria-hidden="true"></span>
+                  <svg class="btn__check" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="m4.5 10.5 3.5 3.5 7.5-8" />
+                  </svg>
+                  <span class="btn__label">Open approval queue</span>
+                </button>
+                <button class="btn btn--ghost" type="button">View campaign</button>
+              </div>
+            </aside>
+          </div>
+        </article>
+      </section>
+
+      <section class="section" aria-label="Command summary variants">
+        <div class="section-title">
+          <span>Risk / compact / loading / empty</span>
+        </div>
+        <div class="variant-grid">
+          <article
+            class="command-summary command-summary--risk"
+            aria-labelledby="command-risk-title"
+          >
+            <header class="command-summary__head">
+              <div class="command-summary__copy">
+                <span class="command-summary__eyebrow">
+                  <span class="command-summary__dot" aria-hidden="true"></span>
+                  Calendar command
+                </span>
+                <h2 class="command-summary__title" id="command-risk-title">
+                  Delivery reply needs a calm response today.
+                </h2>
+                <p class="command-summary__sentence">
+                  Eight comments are queued behind one approved reply template. Clear the queue
+                  before sentiment spreads.
+                </p>
+              </div>
+              <div class="command-summary__status">
+                <span class="status-pill status-pill--onhold">Needs attention</span>
+              </div>
+            </header>
+            <div class="command-summary__metrics">
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Queued comments</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">47</span>
+                </div>
+                <p class="metric-block__support">One template can clear the set.</p>
+              </div>
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Response time</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">5</span>
+                  <span class="metric-block__unit">min</span>
+                </div>
+                <p class="metric-block__support">After approval.</p>
+              </div>
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Owner</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">MR</span>
+                </div>
+                <p class="metric-block__support">Brand lead review.</p>
+              </div>
+            </div>
+            <aside class="command-summary__action">
+              <h3>Respond in Studio</h3>
+              <p>Use the approved reply template and route edge cases back to brand lead.</p>
+              <div class="command-summary__actions">
+                <button class="btn btn--warning" type="button">Open response</button>
+              </div>
+            </aside>
+          </article>
+
+          <article
+            class="command-summary command-summary--compact command-summary--success"
+            aria-labelledby="command-compact-title"
+          >
+            <header class="command-summary__head">
+              <div class="command-summary__copy">
+                <span class="command-summary__eyebrow">
+                  <span class="command-summary__dot" aria-hidden="true"></span>
+                  Strategy command
+                </span>
+                <h2 class="command-summary__title" id="command-compact-title">
+                  Weekly proof readout is complete.
+                </h2>
+                <p class="command-summary__sentence">
+                  All required sources are attached; share the readout before the planning sync.
+                </p>
+              </div>
+              <span class="status-pill status-pill--done">Completed</span>
+            </header>
+            <div class="command-summary__metrics">
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Sources</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">6</span>
+                </div>
+                <p class="metric-block__support">Attached.</p>
+              </div>
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Next sync</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">3</span>
+                  <span class="metric-block__unit">PM</span>
+                </div>
+                <p class="metric-block__support">Planning review.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="command-summary command-summary--loading" aria-label="Loading summary">
+            <header class="command-summary__head">
+              <div class="command-summary__copy">
+                <span class="command-summary__eyebrow">
+                  <span class="command-summary__dot" aria-hidden="true"></span>
+                  Building command
+                </span>
+                <h2 class="command-summary__title">Loading command sentence</h2>
+                <p class="command-summary__sentence">Loading command details for the operator.</p>
+              </div>
+              <div class="command-summary__status">
+                <span class="status-pill status-pill--building">Building</span>
+              </div>
+            </header>
+            <div class="command-summary__metrics">
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Metric</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">00</span>
+                </div>
+                <p class="metric-block__support">Loading support.</p>
+              </div>
+              <div class="metric-block metric-block--compact command-summary__metric">
+                <span class="metric-block__label">Metric</span>
+                <div class="metric-block__value-row">
+                  <span class="metric-block__value">00</span>
+                </div>
+                <p class="metric-block__support">Loading support.</p>
+              </div>
+            </div>
+            <div class="command-summary__body">
+              <div class="command-summary__steps">
+                <div class="command-summary__step">
+                  <span class="command-summary__step-label">Queued</span>
+                  <strong>Loading step</strong>
+                  <span>Loading note.</span>
+                </div>
+              </div>
+              <aside class="command-summary__action">
+                <h3>Loading action</h3>
+                <p>Loading next action.</p>
+              </aside>
+            </div>
+          </article>
+
+          <article
+            class="command-summary command-summary--empty"
+            aria-labelledby="command-empty-title"
+          >
+            <header class="command-summary__head">
+              <div class="command-summary__copy">
+                <span class="command-summary__eyebrow">No command needed</span>
+                <h2 class="command-summary__title" id="command-empty-title">
+                  Nothing needs operator attention.
+                </h2>
+                <p class="command-summary__sentence">
+                  Scheduled posts, approvals, and report sources are clear for this workspace.
+                </p>
+              </div>
+            </header>
+            <div class="command-summary__actions">
+              <button class="btn btn--secondary" type="button">Review calendar</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      document.querySelectorAll('[data-command-summary-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (button.classList.contains('is-loading')) return;
+
+          const label = button.querySelector('.btn__label');
+          button.classList.remove('is-success');
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+          label.textContent = 'Opening';
+
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.classList.add('is-success');
+            button.removeAttribute('aria-busy');
+            label.textContent = 'Opened';
+
+            window.setTimeout(() => {
+              button.classList.remove('is-success');
+              label.textContent = 'Open approval queue';
+            }, 900);
+          }, 650);
+        });
+      });
+    </script>
+  </body>
+</html>

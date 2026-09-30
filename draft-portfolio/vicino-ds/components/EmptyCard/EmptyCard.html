@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EmptyCard - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Card/Card.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .stage {
+        max-width: 360px;
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 720px;
+      }
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .component-intro {
+        gap: 8px;
+        max-width: 64ch;
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>EmptyCard</h1>
+        <p>Empty-state card for surfaces with no current content or queue items.</p>
+      </header>
+
+      <section class="section" aria-label="Empty card static slices">
+        <div class="section-title">
+          <span>Slices</span>
+        </div>
+        <article class="card empty-card is-empty stage">
+          <h3>No posts queued</h3>
+          <p>Add a campaign post before opening production review.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

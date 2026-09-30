@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FeedbackState - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="FeedbackState.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 34px;
+        max-width: 1080px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 70ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      .sample {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+        padding: 18px;
+        border-radius: var(--r-xl);
+        background: var(--canvas);
+        box-shadow: var(--shadow-2);
+      }
+
+      .wide {
+        grid-column: 1 / -1;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        align-items: center;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>FeedbackState</h1>
+        <p>
+          Shared loading, alert, progress, empty, and result slices for Pulse pages. Use copy and
+          state tone before adding heavy frames.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Inline alert slices">
+        <div class="section-title">
+          <span>InlineAlert</span>
+        </div>
+        <div class="grid">
+          <div class="feedback-state feedback-state--info inline-alert" role="status">
+            <span class="inline-alert__icon" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="7" cy="7" r="5" />
+                <path d="M7 6.5v3M7 4.4h.01" />
+              </svg>
+            </span>
+            <div class="inline-alert__body">
+              <h2 class="inline-alert__title">Report is queued</h2>
+              <p class="inline-alert__text">
+                Pulse will start once the campaign data finishes syncing.
+              </p>
+            </div>
+          </div>
+
+          <div class="feedback-state feedback-state--warning inline-alert" role="alert">
+            <span class="inline-alert__icon" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M7 2.4 12 11H2L7 2.4Z" />
+                <path d="M7 5.7v2.4M7 9.8h.01" />
+              </svg>
+            </span>
+            <div class="inline-alert__body">
+              <h2 class="inline-alert__title">Approval window is tight</h2>
+              <p class="inline-alert__text">Move the review earlier or keep this post in draft.</p>
+            </div>
+          </div>
+
+          <div class="feedback-state feedback-state--success inline-alert" role="status">
+            <span class="inline-alert__icon" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M3 7.4 5.8 10 11 4" />
+              </svg>
+            </span>
+            <div class="inline-alert__body">
+              <h2 class="inline-alert__title">Post saved</h2>
+              <p class="inline-alert__text">The next publish check now uses the updated caption.</p>
+            </div>
+          </div>
+
+          <div class="feedback-state feedback-state--error inline-alert" role="alert">
+            <span class="inline-alert__icon" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="7" cy="7" r="5" />
+                <path d="M5 5l4 4M9 5 5 9" />
+              </svg>
+            </span>
+            <div class="inline-alert__body">
+              <h2 class="inline-alert__title">Upload failed</h2>
+              <p class="inline-alert__text">Check the media file and retry before scheduling.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Progress and spinner slices">
+        <div class="section-title">
+          <span>Progress / Spinner</span>
+        </div>
+        <div class="grid">
+          <div class="sample">
+            <div
+              class="feedback-state feedback-state--building feedback-progress"
+              role="progressbar"
+              aria-label="Creative render progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="62"
+              style="--feedback-progress-value: 0.62"
+            >
+              <div class="feedback-progress__meta">
+                <span class="feedback-progress__label">Creative render</span>
+                <span class="feedback-progress__value">62%</span>
+              </div>
+              <div class="feedback-progress__track"></div>
+            </div>
+            <p>Linear progress uses one solid semantic fill.</p>
+          </div>
+
+          <div class="sample">
+            <div
+              class="feedback-state feedback-state--success feedback-progress feedback-progress--compact"
+              role="progressbar"
+              aria-label="Approval progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="100"
+              style="--feedback-progress-value: 1"
+            >
+              <div class="feedback-progress__meta">
+                <span class="feedback-progress__label">Approved</span>
+                <span class="feedback-progress__value">Done</span>
+              </div>
+              <div class="feedback-progress__track"></div>
+            </div>
+            <p>Compact progress fits rows and production cards.</p>
+          </div>
+
+          <div class="sample">
+            <div
+              class="feedback-state feedback-state--building feedback-progress feedback-progress--segmented"
+              role="progressbar"
+              aria-label="Generation pipeline progress"
+              aria-valuemin="0"
+              aria-valuemax="5"
+              aria-valuenow="3"
+            >
+              <div class="feedback-progress__meta">
+                <span class="feedback-progress__label">Generation pipeline</span>
+                <span class="feedback-progress__value">3 / 5</span>
+              </div>
+              <div class="feedback-progress__track" aria-hidden="true">
+                <span
+                  class="feedback-progress__segment feedback-progress__segment--scheduled"
+                  style="width: 20%"
+                ></span>
+                <span
+                  class="feedback-progress__segment feedback-progress__segment--building"
+                  style="width: 20%"
+                ></span>
+                <span
+                  class="feedback-progress__segment feedback-progress__segment--ready"
+                  style="width: 20%"
+                ></span>
+                <span
+                  class="feedback-progress__segment"
+                  style="width: 20%; background: var(--surface-3)"
+                ></span>
+                <span
+                  class="feedback-progress__segment"
+                  style="width: 20%; background: var(--surface-3)"
+                ></span>
+              </div>
+            </div>
+            <p>Segmented progress uses adjacent solid colors, not gradients.</p>
+          </div>
+
+          <div class="sample">
+            <div class="row">
+              <div
+                class="feedback-state feedback-state--ready feedback-progress-ring"
+                role="progressbar"
+                aria-label="Ready check progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="62"
+                style="--feedback-progress-value: 0.62"
+              >
+                <span class="feedback-progress-ring__value">62%</span>
+              </div>
+              <span class="feedback-state feedback-state--building feedback-spinner" role="status">
+                <span class="feedback-spinner__mark" aria-hidden="true"></span>
+                Rendering
+              </span>
+            </div>
+            <p>Spinner is for compact inline work, paired with useful copy.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Skeleton loading slices">
+        <div class="section-title">
+          <span>Skeleton</span>
+        </div>
+        <div class="grid">
+          <div class="sample">
+            <div class="skeleton" aria-hidden="true">
+              <div class="skeleton__row">
+                <span class="skeleton__avatar"></span>
+                <span class="skeleton__line"></span>
+                <span class="skeleton__pill"></span>
+              </div>
+              <span class="skeleton__line skeleton__line--mid"></span>
+              <span class="skeleton__line skeleton__line--short"></span>
+            </div>
+            <p role="status">Loading queue row...</p>
+          </div>
+          <div class="sample">
+            <div class="skeleton" aria-hidden="true">
+              <span class="skeleton__block"></span>
+              <span class="skeleton__line"></span>
+              <span class="skeleton__line skeleton__line--short"></span>
+            </div>
+            <p role="status">Preparing preview card...</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Empty and result slices">
+        <div class="section-title">
+          <span>EmptyState / ResultState</span>
+        </div>
+        <div class="grid">
+          <article class="feedback-state feedback-state--neutral empty-state">
+            <span class="empty-state__mark" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="2.4" y="3" width="9.2" height="8" rx="1.4" />
+                <path d="M4.4 5.4h5.2M4.4 7.2h3.8" />
+              </svg>
+            </span>
+            <div class="empty-state__body">
+              <h3>No posts queued</h3>
+              <p>Create or import a campaign post before opening production review.</p>
+            </div>
+            <button class="btn btn--secondary btn--sm" type="button">Add post</button>
+          </article>
+
+          <article class="feedback-state feedback-state--success result-state">
+            <span class="result-state__mark" aria-hidden="true">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M3 7.4 5.8 10 11 4" />
+              </svg>
+            </span>
+            <div class="result-state__body">
+              <h3>Campaign generated</h3>
+              <p>The draft set is ready for review and scheduling.</p>
+            </div>
+            <div class="result-state__actions">
+              <button class="btn btn--dark btn--sm" type="button">Open review</button>
+              <button class="btn btn--ghost btn--muted btn--sm" type="button">Dismiss</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

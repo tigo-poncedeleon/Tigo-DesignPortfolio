@@ -1,0 +1,190 @@
+/* PieChart — part-to-whole share at a glance (owner decision 2026-07-07).
+   Rules baked in: ≤6 segments (fold the tail into a muted "Other"), slices in
+   the fixed categorical order --chart-1→N with a 2px surface-color gap between
+   fills (never a drawn border), in-slice % labels only where they fit (white
+   or ink by fill luminance), and a legend carrying label + value in text
+   tokens. Use a bar chart instead when close values must be compared.
+   Visual source: tokens.css. */
+
+.pie {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.pie__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.pie__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.pie__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Body: plot + legend side by side. */
+.pie__body {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.pie__plot {
+  position: relative;
+  flex: none;
+  width: 176px;
+}
+.pie__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Slices — solid categorical fills separated by a 2px surface gap. */
+.pie__slice {
+  stroke: var(--canvas);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transition: filter var(--dur-2) var(--ease-out);
+  outline: none;
+}
+.pie__slice--1 {
+  fill: var(--chart-1);
+}
+.pie__slice--2 {
+  fill: var(--chart-2);
+}
+.pie__slice--3 {
+  fill: var(--chart-3);
+}
+.pie__slice--4 {
+  fill: var(--chart-4);
+}
+.pie__slice--5 {
+  fill: var(--chart-5);
+}
+.pie__slice--6 {
+  fill: var(--chart-6);
+}
+.pie__slice--muted {
+  fill: var(--chart-muted);
+}
+.pie__slice:hover {
+  filter: brightness(0.95) saturate(1.15);
+  cursor: pointer;
+}
+.pie__slice:focus-visible {
+  filter: brightness(0.95) saturate(1.15);
+  stroke: var(--pulse-cyan-line);
+  stroke-width: 3;
+}
+
+/* In-slice % label — only where it fits; white/ink picked by fill luminance
+   (ink on the bright cyan/amber/teal fills, white on indigo/pink/blue). */
+.pie__slice-label {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: var(--fw-heavy);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.pie__slice-label--ink {
+  fill: var(--ink-800);
+}
+
+/* Legend — identity + value in text tokens; swatch mirrors the mark. */
+.pie__legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.pie__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-3);
+}
+.pie__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+.pie__swatch--1 {
+  background: var(--chart-1);
+}
+.pie__swatch--2 {
+  background: var(--chart-2);
+}
+.pie__swatch--3 {
+  background: var(--chart-3);
+}
+.pie__swatch--4 {
+  background: var(--chart-4);
+}
+.pie__swatch--muted {
+  background: var(--chart-muted);
+}
+.pie__legend-name {
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pie__legend-value {
+  margin-left: auto;
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}

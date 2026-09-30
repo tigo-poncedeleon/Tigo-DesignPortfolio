@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Popover - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="Popover.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: clamp(28px, 3vw, 48px);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 1040px;
+      }
+
+      .intro,
+      .component-set,
+      .state-card {
+        display: grid;
+      }
+
+      .intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      .component-set {
+        gap: 18px;
+        padding-top: 4px;
+      }
+
+      .component-set + .component-set {
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+
+      .eyebrow,
+      .specimen-label,
+      .state-card small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h2 {
+        font-size: var(--fs-5);
+        font-weight: var(--fw-semibold);
+      }
+
+      p {
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+
+      .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+      }
+
+      .state-card {
+        gap: 12px;
+        align-content: start;
+        justify-items: start;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        box-shadow: inset 0 0 0 1px var(--surface-edge);
+      }
+
+      .plain-popover {
+        width: 280px;
+        padding: 14px;
+      }
+
+      .plain-popover h3 {
+        margin: 0;
+        font-size: var(--fs-4);
+        font-weight: var(--fw-semibold);
+      }
+
+      .plain-popover p {
+        font-size: var(--fs-3);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="intro">
+        <span class="eyebrow">Component source</span>
+        <h1>Popover</h1>
+        <p>
+          Anchored, non-modal floating layer for compact choices and date picking. Runtime owns
+          placement, outside click, Escape close, and focus return; this source owns surface,
+          density, focus states, and the date picker slice.
+        </p>
+      </header>
+
+      <section class="component-set" aria-label="Popover shell">
+        <div>
+          <span class="specimen-label">Floating layer</span>
+          <h2>Popover shell</h2>
+        </div>
+        <div class="state-grid">
+          <div class="state-card">
+            <small>Default</small>
+            <section class="popover popover--inline-demo plain-popover" role="dialog">
+              <div class="popover__header">
+                <h3>Quick action</h3>
+                <button class="btn btn--icon btn--sm" type="button" aria-label="Close">
+                  <svg
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 3l8 8M11 3L3 11" />
+                  </svg>
+                </button>
+              </div>
+              <div class="popover__body">
+                <p>Use for anchored choices that should not take over the page.</p>
+              </div>
+            </section>
+          </div>
+          <div class="state-card">
+            <small>Compact actions</small>
+            <section class="popover popover--inline-demo plain-popover" role="dialog">
+              <div class="popover__body">
+                <button class="btn btn--secondary btn--sm" type="button">Move next day</button>
+                <button class="btn btn--secondary btn--sm" type="button">Pick slot</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-set" aria-label="Date picker">
+        <div>
+          <span class="specimen-label">DatePicker slice</span>
+          <h2>Calendar date picker</h2>
+        </div>
+        <div class="state-grid">
+          <div class="state-card">
+            <small>Selected day</small>
+            <section
+              class="popover popover--inline-demo date-picker"
+              role="dialog"
+              aria-label="Choose date"
+            >
+              <div class="popover__header date-picker__header">
+                <button class="date-picker__month" type="button">June 2026</button>
+                <div class="date-picker__arrows">
+                  <button class="btn btn--icon btn--sm date-picker__nav" type="button">
+                    <svg
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 3L5 7l4 4" />
+                    </svg>
+                  </button>
+                  <button class="btn btn--icon btn--sm date-picker__nav" type="button">
+                    <svg
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 3l4 4-4 4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="date-picker__weekdays" aria-hidden="true">
+                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span
+                ><span>Fr</span><span>Sa</span>
+              </div>
+              <div class="date-picker__grid">
+                <button class="date-picker__day is-muted" type="button">31</button>
+                <button class="date-picker__day" type="button">1</button>
+                <button class="date-picker__day" type="button">2</button>
+                <button class="date-picker__day" type="button">3</button>
+                <button class="date-picker__day" type="button">4</button>
+                <button class="date-picker__day" type="button">5</button>
+                <button class="date-picker__day" type="button">6</button>
+                <button class="date-picker__day" type="button">7</button>
+                <button class="date-picker__day is-today" type="button">8</button>
+                <button class="date-picker__day" type="button">9</button>
+                <button class="date-picker__day is-selected" type="button">10</button>
+                <button class="date-picker__day" type="button">11</button>
+                <button class="date-picker__day" type="button">12</button>
+                <button class="date-picker__day" type="button">13</button>
+              </div>
+              <div class="popover__footer date-picker__footer">
+                <button type="button">Clear</button>
+                <button type="button">Today</button>
+              </div>
+            </section>
+          </div>
+          <div class="state-card">
+            <small>Focus / hover</small>
+            <section
+              class="popover popover--inline-demo date-picker"
+              role="dialog"
+              aria-label="Choose date"
+            >
+              <div class="date-picker__grid">
+                <button class="date-picker__day is-hover" type="button">9</button>
+                <button class="date-picker__day is-today" type="button">10</button>
+                <button class="date-picker__day is-selected" type="button">11</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

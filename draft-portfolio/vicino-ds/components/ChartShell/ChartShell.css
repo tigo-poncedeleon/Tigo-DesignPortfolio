@@ -1,0 +1,252 @@
+/* ChartShell - reusable chart container around custom chart implementations.
+   It owns title, description, action, legend, body sizing, loading, and empty
+   states. Individual chart components own marks, axes, tooltips, and series. */
+
+.chart-shell,
+.chart-shell * {
+  box-sizing: border-box;
+}
+
+.chart-shell {
+  --chart-shell-accent: var(--cyan-600);
+  --chart-shell-accent-soft: var(--cyan-50);
+  --chart-shell-accent-line: var(--cyan-200);
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  box-shadow: var(--shadow-1);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.chart-shell--compact {
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--r-lg);
+}
+
+.chart-shell--building {
+  --chart-shell-accent: var(--indigo-500);
+  --chart-shell-accent-soft: var(--indigo-50);
+  --chart-shell-accent-line: var(--indigo-200);
+}
+
+.chart-shell__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.chart-shell__copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.chart-shell__title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-6);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-title);
+  line-height: var(--lh-snug);
+}
+
+.chart-shell__description,
+.chart-shell__meta {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.chart-shell__action {
+  align-self: start;
+}
+
+.chart-shell__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  color: var(--text-3);
+  font-size: var(--fs-2);
+  line-height: 1;
+}
+
+.chart-shell__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.chart-shell__legend-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: var(--r-full);
+  background: var(--chart-shell-accent);
+}
+
+.chart-shell__legend-dot--muted {
+  background: var(--text-4);
+}
+
+.chart-shell__legend-dot--success {
+  background: var(--success-500);
+}
+
+.chart-shell__body {
+  display: grid;
+  min-width: 0;
+  min-height: var(--chart-shell-min-h, 220px);
+}
+
+.chart-shell__plot {
+  position: relative;
+  display: grid;
+  align-content: end;
+  gap: 12px;
+  min-width: 0;
+  min-height: inherit;
+  padding: 16px;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--surface-edge);
+}
+
+.chart-shell__mock-bars {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
+  min-height: 148px;
+}
+
+.chart-shell__mock-bar {
+  display: block;
+  min-height: 20px;
+  height: var(--bar-h, 50%);
+  border-radius: var(--r-md) var(--r-md) 4px 4px;
+  background: var(--chart-shell-accent);
+}
+
+.chart-shell__mock-bar--soft {
+  background: var(--chart-shell-accent-line);
+}
+
+.chart-shell__axis {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.chart-shell__empty,
+.chart-shell__loading {
+  display: grid;
+  place-items: center;
+  min-height: var(--chart-shell-min-h, 220px);
+  padding: 22px;
+  border: 1px dashed var(--surface-edge-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  text-align: center;
+}
+
+.chart-shell__empty-inner {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  max-width: 340px;
+}
+
+.chart-shell__empty-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-lg);
+  background: var(--chart-shell-accent-soft);
+  color: var(--chart-shell-accent);
+  box-shadow: inset 0 0 0 1px var(--chart-shell-accent-line);
+}
+
+.chart-shell__empty-mark svg {
+  width: 20px;
+  height: 20px;
+}
+
+.chart-shell__empty-title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-5);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.chart-shell__empty-text {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.chart-shell__skeleton {
+  display: grid;
+  align-content: end;
+  gap: 12px;
+  width: min(100%, 520px);
+  min-height: 150px;
+}
+
+.chart-shell__skeleton-lines {
+  display: grid;
+  gap: 10px;
+}
+
+.chart-shell__skeleton-line,
+.chart-shell__skeleton-block {
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.chart-shell__skeleton-line {
+  height: 12px;
+}
+
+.chart-shell__skeleton-line--short {
+  width: 58%;
+}
+
+.chart-shell__skeleton-block {
+  min-height: 112px;
+}
+
+@media (max-width: 620px) {
+  .chart-shell__header {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-shell__action {
+    justify-self: start;
+  }
+
+  .chart-shell__body,
+  .chart-shell__empty,
+  .chart-shell__loading {
+    min-height: var(--chart-shell-min-h-mobile, 180px);
+  }
+}

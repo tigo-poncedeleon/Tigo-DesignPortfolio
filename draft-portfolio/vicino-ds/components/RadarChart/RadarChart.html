@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RadarChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="RadarChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 460px));
+        gap: 40px 48px;
+        align-items: flex-start;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">RadarChart</h1>
+    <p class="handoff-sub">
+      Multi-dimension profile on solid hairline rings. The current series draws a bright 2px stroke
+      over a flat wash with ink vertex markers (hover/focus read-out); a comparison period is
+      context and wears a dashed <code>--chart-muted</code> outline with no fill. Cap at 2 series
+      and ~8 axes — past that, use small multiples or a bar chart.
+    </p>
+
+    <div class="specimen">
+      <!-- Variant: dual period comparison -->
+      <div class="specimen-item">
+        <span class="specimen-label">Dual period comparison + legend</span>
+        <div class="radar">
+          <div class="radar__head">
+            <div>
+              <h2 class="radar__title">Engagement Profile</h2>
+              <p class="radar__sub">index per dimension · vs previous 30 days</p>
+            </div>
+            <div class="radar__legend">
+              <span class="radar__legend-item"
+                ><span class="radar__swatch radar__swatch--current"></span>This month</span
+              >
+              <span class="radar__legend-item"
+                ><span class="radar__swatch radar__swatch--previous"></span>Last month</span
+              >
+            </div>
+          </div>
+          <div
+            class="radar__plot"
+            role="img"
+            aria-label="Radar chart of six engagement dimensions this month vs last month. Saves lead at 86; shares trail at 58."
+          >
+            <svg viewBox="0 0 300 276">
+              <g class="radar__grid">
+                <polygon
+                  points="150,113 171.65,125.5 171.65,150.5 150,163 128.35,150.5 128.35,125.5"
+                />
+                <polygon points="150,88 193.3,113 193.3,163 150,188 106.7,163 106.7,113" />
+                <polygon
+                  points="150,63 214.95,100.5 214.95,175.5 150,213 85.05,175.5 85.05,100.5"
+                />
+                <polygon points="150,38 236.6,88 236.6,188 150,238 63.4,188 63.4,88" />
+              </g>
+              <g class="radar__spoke">
+                <line x1="150" y1="138" x2="150" y2="38" />
+                <line x1="150" y1="138" x2="236.6" y2="88" />
+                <line x1="150" y1="138" x2="236.6" y2="188" />
+                <line x1="150" y1="138" x2="150" y2="238" />
+                <line x1="150" y1="138" x2="63.4" y2="188" />
+                <line x1="150" y1="138" x2="63.4" y2="88" />
+              </g>
+              <g class="radar__scale" aria-hidden="true">
+                <text x="155" y="90">50</text>
+                <text x="155" y="40">100</text>
+              </g>
+              <polygon
+                class="radar__area radar__area--previous"
+                points="150,74 200.23,109 210.62,173 150,200 98.04,168 104.97,112"
+              />
+              <polygon
+                class="radar__area"
+                points="150,60 205.43,106 224.48,181 150,196 87.65,174 92.84,105"
+              />
+              <g>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="150"
+                  cy="60"
+                  tabindex="0"
+                  data-tip-value="78"
+                  data-tip-label="Reach · last month 64"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="205.43"
+                  cy="106"
+                  tabindex="0"
+                  data-tip-value="64"
+                  data-tip-label="Engagement · last month 58"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="224.48"
+                  cy="181"
+                  tabindex="0"
+                  data-tip-value="86"
+                  data-tip-label="Saves · last month 70"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="150"
+                  cy="196"
+                  tabindex="0"
+                  data-tip-value="58"
+                  data-tip-label="Shares · last month 62"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="87.65"
+                  cy="174"
+                  tabindex="0"
+                  data-tip-value="72"
+                  data-tip-label="Comments · last month 60"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="92.84"
+                  cy="105"
+                  tabindex="0"
+                  data-tip-value="66"
+                  data-tip-label="Clicks · last month 52"
+                ></circle>
+              </g>
+              <g class="radar__axis-label">
+                <text x="150" y="26" text-anchor="middle">Reach</text>
+                <text x="246" y="84" text-anchor="start">Engagement</text>
+                <text x="246" y="200" text-anchor="start">Saves</text>
+                <text x="150" y="262" text-anchor="middle">Shares</text>
+                <text x="54" y="200" text-anchor="end">Comments</text>
+                <text x="54" y="84" text-anchor="end">Clicks</text>
+              </g>
+            </svg>
+            <div class="chart-tip" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: compact single series -->
+      <div class="specimen-item">
+        <span class="specimen-label">Compact single series · no legend</span>
+        <div class="radar" style="max-width: 380px">
+          <div class="radar__head">
+            <div>
+              <h2 class="radar__title">Creative Score</h2>
+              <p class="radar__sub">latest reel · scored by Pulse AI</p>
+            </div>
+          </div>
+          <div
+            class="radar__plot"
+            role="img"
+            aria-label="Radar chart of five creative dimensions for the latest reel. Hook leads at 82; audio trails at 58."
+            style="width: min(100%, 280px)"
+          >
+            <svg viewBox="0 0 240 208">
+              <g class="radar__grid">
+                <polygon points="120,66 156.14,92.26 142.34,134.74 97.66,134.74 83.86,92.26" />
+                <polygon points="120,28 192.28,80.51 164.67,165.49 75.33,165.49 47.72,80.51" />
+              </g>
+              <g class="radar__spoke">
+                <line x1="120" y1="104" x2="120" y2="28" />
+                <line x1="120" y1="104" x2="192.28" y2="80.51" />
+                <line x1="120" y1="104" x2="164.67" y2="165.49" />
+                <line x1="120" y1="104" x2="75.33" y2="165.49" />
+                <line x1="120" y1="104" x2="47.72" y2="80.51" />
+              </g>
+              <g class="radar__scale" aria-hidden="true">
+                <text x="124" y="68">50</text>
+                <text x="124" y="30">100</text>
+              </g>
+              <polygon
+                class="radar__area"
+                points="120,41.68 167.7,88.5 153.06,149.5 94.09,139.66 69.4,87.56"
+              />
+              <g>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="120"
+                  cy="41.68"
+                  tabindex="0"
+                  data-tip-value="82"
+                  data-tip-label="Hook"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="167.7"
+                  cy="88.5"
+                  tabindex="0"
+                  data-tip-value="66"
+                  data-tip-label="Pacing"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="153.06"
+                  cy="149.5"
+                  tabindex="0"
+                  data-tip-value="74"
+                  data-tip-label="CTA"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="94.09"
+                  cy="139.66"
+                  tabindex="0"
+                  data-tip-value="58"
+                  data-tip-label="Audio"
+                ></circle>
+                <circle
+                  class="radar__dot"
+                  r="4"
+                  cx="69.4"
+                  cy="87.56"
+                  tabindex="0"
+                  data-tip-value="70"
+                  data-tip-label="Visuals"
+                ></circle>
+              </g>
+              <g class="radar__axis-label">
+                <text x="120" y="18" text-anchor="middle">Hook</text>
+                <text x="200" y="76" text-anchor="start">Pacing</text>
+                <text x="170" y="180" text-anchor="middle">CTA</text>
+                <text x="70" y="180" text-anchor="middle">Audio</text>
+                <text x="40" y="76" text-anchor="end">Visuals</text>
+              </g>
+            </svg>
+            <div class="chart-tip" role="status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-vertex hover/focus readout.
+      document.querySelectorAll('.radar__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        if (!tip) return;
+        const show = (dot) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = dot.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = dot.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const dotRect = dot.getBoundingClientRect();
+          tip.style.left = dotRect.left - plotRect.left + dotRect.width / 2 + 'px';
+          tip.style.top = dotRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.radar__dot').forEach((dot) => {
+          dot.addEventListener('pointerenter', () => show(dot));
+          dot.addEventListener('pointerleave', hide);
+          dot.addEventListener('focus', () => show(dot));
+          dot.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,526 @@
+/* PlatformPreview — per-channel post previews (Instagram / YouTube / TikTok / Facebook / X)
+   + tonal platform switcher. Brand-accurate fixtures: platform brand colors
+   and app-like card shadows are intentional, not Pulse surface tokens. */
+.platform-workspace {
+  --accent: #111827;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.platform-workspace--instagram {
+  --accent: #d62976;
+}
+.platform-workspace--youtube {
+  --accent: #ff0033;
+}
+.platform-workspace--tiktok {
+  --accent: #00bcd4;
+}
+.platform-workspace--facebook {
+  --accent: #1877f2;
+}
+.platform-workspace--x {
+  --accent: #111827;
+}
+.platform-switch {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px;
+  background: rgba(15, 23, 42, 0.055);
+  border-radius: 999px;
+  width: fit-content;
+}
+.platform-switch__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-3);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.platform-switch__btn svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+.platform-switch__logo {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 118% 118%;
+}
+.platform-switch__logo--instagram {
+  background-image: url('../../../../assets/platform-logos/instagram.png');
+}
+.platform-switch__logo--tiktok {
+  background-image: url('../../../../assets/platform-logos/TikTok_Icon_Black_Circle.png');
+  background-size: 82% 82%;
+}
+.platform-switch__logo--facebook {
+  background-image: url('../../../../assets/platform-logos/facebook.png');
+}
+.platform-switch__logo--x {
+  background-image: url('../../../../assets/platform-logos/x.png');
+}
+.platform-switch__btn:hover:not(.is-active) {
+  color: var(--text-1);
+}
+.platform-switch__btn.is-active {
+  background: #fff;
+  color: var(--accent);
+  box-shadow: var(--shadow-1);
+}
+.platform-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 584px;
+  padding: 2px 0 4px;
+}
+.ig-post,
+.yt-post,
+.tk-post,
+.fb-post,
+.x-post {
+  margin: 0 auto;
+}
+
+/* ---- Instagram post ---- */
+.ig-post {
+  width: 100%;
+  max-width: 348px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  color: #111827;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 14px 36px rgba(15, 23, 42, 0.12);
+}
+.ig-post__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+}
+.ig-post__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  padding: 2px;
+  background: conic-gradient(from -45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75);
+  display: grid;
+  place-items: center;
+}
+.ig-post__avatar i {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: center / cover #e9edf2;
+  box-shadow: 0 0 0 2px #fff inset;
+}
+.ig-post__id {
+  min-width: 0;
+  line-height: 1.2;
+}
+.ig-post__name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.ig-post__sub {
+  font-size: 11px;
+  color: #8e8e8e;
+}
+.ig-post__more {
+  margin-left: auto;
+  color: #262626;
+  display: inline-flex;
+}
+.ig-post__more svg {
+  width: 18px;
+  height: 18px;
+}
+.ig-post__media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #0f172a center / cover no-repeat;
+}
+.ig-post__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 13px 4px;
+  color: #262626;
+}
+.ig-post__actions svg {
+  width: 23px;
+  height: 23px;
+}
+.ig-post__actions .ig-post__save {
+  margin-left: auto;
+}
+.ig-post__likes {
+  padding: 2px 13px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ig-post__caption {
+  padding: 3px 13px 0;
+  font-size: 13px;
+  line-height: 1.42;
+}
+.ig-post__caption b {
+  font-weight: 600;
+}
+.ig-post__tags {
+  color: #1d62c4;
+}
+.ig-post__comments {
+  padding: 4px 13px 12px;
+  font-size: 12.5px;
+  color: #8e8e8e;
+}
+
+/* ---- YouTube watch ---- */
+.yt-post {
+  width: 100%;
+  max-width: 392px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  color: #0f0f0f;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 14px 36px rgba(15, 23, 42, 0.12);
+}
+.yt-post__player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0f172a center / cover no-repeat;
+}
+.yt-post__dur {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.yt-post__play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 34px;
+  border-radius: 9px;
+  background: #ff0033;
+  display: grid;
+  place-items: center;
+}
+.yt-post__play::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-left-color: #fff;
+  border-right: 0;
+  margin-left: 3px;
+}
+.yt-post__body {
+  padding: 12px 13px 14px;
+}
+.yt-post__title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.32;
+  color: #0f0f0f;
+}
+.yt-post__channel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.yt-post__chav {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: center / cover #e9edf2;
+}
+.yt-post__chid {
+  min-width: 0;
+  line-height: 1.25;
+}
+.yt-post__chname {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.yt-post__chsub {
+  font-size: 11.5px;
+  color: #606060;
+}
+.yt-post__subscribe {
+  margin-left: auto;
+  flex: 0 0 auto;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+.yt-post__meta {
+  font-size: 12px;
+  color: #606060;
+  margin-top: 10px;
+}
+.yt-post__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.yt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f2f2f2;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f0f0f;
+}
+.yt-chip svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---- TikTok reel ---- */
+.tk-post {
+  position: relative;
+  width: 100%;
+  max-width: 232px;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #050505 center / cover no-repeat;
+  color: #fff;
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.06),
+    0 14px 32px rgba(15, 23, 42, 0.12);
+}
+.tk-post__top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 12px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.18), transparent);
+}
+.tk-post__top b {
+  color: #fff;
+}
+.tk-post__top b::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 5px;
+  border-radius: 2px;
+  background: #fff;
+}
+.tk-post__rail {
+  position: absolute;
+  right: 9px;
+  bottom: 78px;
+  display: grid;
+  gap: 16px;
+  place-items: center;
+  z-index: 2;
+}
+.tk-post__rail .tk-rail-item {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+}
+.tk-post__rail svg {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
+}
+.tk-post__rail span {
+  font-size: 11px;
+  font-weight: 600;
+}
+.tk-post__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: center / cover #1b1b1b;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+}
+.tk-post__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 46px 68px 16px 12px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(15, 23, 42, 0.18) 48%,
+    rgba(15, 23, 42, 0.34) 100%
+  );
+  text-shadow: 0 1px 3px rgba(15, 23, 42, 0.28);
+}
+.tk-post__caption strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+.tk-post__caption p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.tk-post__music {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+.tk-post__music svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---- Facebook feed / X post ---- */
+.fb-post,
+.x-post {
+  width: 100%;
+  max-width: 344px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  color: #111827;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 14px 36px rgba(15, 23, 42, 0.12);
+}
+.fb-post__top,
+.x-post__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 13px 8px;
+}
+.fb-post__avatar,
+.x-post__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: center / cover #e9edf2;
+}
+.fb-post__id,
+.x-post__id {
+  min-width: 0;
+  display: grid;
+  line-height: 1.2;
+}
+.fb-post__id b,
+.x-post__id b {
+  font-size: 13px;
+  font-weight: 700;
+}
+.fb-post__id small,
+.x-post__id small {
+  font-size: 11.5px;
+  color: #64748b;
+}
+.fb-post__more,
+.x-post__more {
+  margin-left: auto;
+  display: inline-flex;
+  color: #64748b;
+}
+.fb-post__more svg,
+.x-post__more svg {
+  width: 18px;
+  height: 18px;
+}
+.fb-post__copy,
+.x-post__copy {
+  margin: 0;
+  padding: 0 13px 11px;
+  font-size: 13px;
+  line-height: 1.43;
+}
+.fb-post__media,
+.x-post__media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #0f172a center / cover no-repeat;
+}
+.fb-post__stats,
+.x-post__meta {
+  padding: 9px 13px;
+  color: #64748b;
+  font-size: 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+.fb-post__actions,
+.x-post__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 13px 12px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 650;
+}
+.fb-post__actions span,
+.x-post__actions span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fb-post__actions svg,
+.x-post__actions svg {
+  width: 16px;
+  height: 16px;
+}

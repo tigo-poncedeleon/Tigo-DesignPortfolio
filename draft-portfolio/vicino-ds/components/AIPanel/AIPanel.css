@@ -1,0 +1,1217 @@
+/* AIPanel — Pulse assistant drawer (component CSS truth source).
+   PROMOTED FROM THE APP (ds-single-source-migration §1B ①): this file reproduces
+   the shipped pulse-app AI panel so the app can consume it via ADOPTED_COMPONENTS
+   instead of carrying its own copy. It is concatenated into the app's generated
+   components.css (loaded tokens → components → styles → interaction → page), so:
+
+   - Every panel-internal rule is scoped under `.ai-panel`. That serves two jobs:
+     (a) it keeps DS selectors from bleeding onto analytics' unrelated
+     `.ai-head` / `.ai-body` / `.ai-insight*` / `.ai-rec-list` / `.ai-compose`
+     namespace (those only match inside an `.ai-panel`, and analytics scopes its
+     own copies under `.analytics-page` which always win); and (b) the 0,2,0+
+     specificity out-specifies the app's remaining bare `.ai-*` base rules in
+     `styles.css` (0,1,0), so `styles.css` still fills the exact gaps it filled
+     under the old override layer — a true visual no-op.
+   - The specimen's demo framing (`.ai-panel-demo`, `.ai-context*`, the in-flow
+     `.ai-panel` override) lives in AIPanel.html's <style>, not here, so no demo
+     chrome ships to the app.
+
+   The panel markup is generated at runtime by `renderAIPanel()`
+   (draft/pulse-app/src/runtime/app/50-ai-panel-render.js); the classes below
+   mirror what it emits plus the seeded rich-card / flow / brief / generating /
+   plan-setup / edit-suggestion card types. */
+
+/* ---- Frame: fixed inset drawer, docked after the sidebar rail --------------
+   顶天立地 full-height card (top:12 → bottom:12), inset 12px with rounded
+   corners, sitting to the right of the layout rail. Overrides the DS's former
+   in-flow demo card. */
+.ai-panel {
+  position: fixed;
+  top: 12px;
+  bottom: 12px;
+  left: calc(var(--layout-rail, 220px) + 12px);
+  right: auto;
+  z-index: 1800;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: calc(var(--ai-width, 400px) - 24px);
+  height: auto;
+  min-height: 0;
+  max-width: calc(100vw - var(--layout-rail, 220px) - 24px);
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: var(--r-xl);
+  background: var(--canvas, #fff);
+  box-shadow:
+    0 1px 2px #0f172a0d,
+    0 18px 40px -12px #0f172a2e;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  clip-path: none;
+  transform: translateX(-14px) scale(0.99);
+  transform-origin: left center;
+  transition:
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.sidebar-is-collapsed .ai-panel {
+  left: calc(var(--layout-rail-collapsed, 56px) + 12px);
+  max-width: calc(100vw - var(--layout-rail-collapsed, 56px) - 24px);
+}
+
+.ai-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* Scrim behind the drawer in overlay mode — dims + captures clicks to close. */
+.ai-panel-scrim {
+  position: fixed;
+  inset: 0;
+  left: var(--layout-rail, 220px);
+  z-index: 39;
+  background: rgba(12, 27, 58, 0.32);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-2, 0.2s) var(--ease, ease);
+}
+
+/* Narrow viewports (≤1500px): the panel floats over the content as an overlay
+   drawer instead of pushing it, so a two-column layout keeps its full width and
+   the covered content is reachable by closing the drawer. Only the content
+   margin is zeroed; `--ai-width` still drives the panel's own width. */
+@media (max-width: 1500px) {
+  body.ai-panel-open .main,
+  body.ai-panel-open .calendar-main,
+  body.ai-panel-open main.app > .content {
+    margin-left: 0 !important;
+  }
+
+  body.ai-panel-open .ai-panel-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* ---- Header --------------------------------------------------------------- */
+.ai-panel .ai-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  background: var(--canvas, #fff);
+}
+
+.ai-panel .ai-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #a78bfa;
+}
+
+.ai-panel .ai-mark.creative {
+  background: var(--ink);
+  color: #a78bfa;
+}
+
+.ai-panel .ai-head-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.ai-panel .ai-title {
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-sub {
+  margin-top: 1px;
+  color: var(--text-3);
+  font-size: var(--fs-1);
+}
+
+.ai-panel .ai-head-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink-700, #35383d);
+  transition:
+    transform 150ms ease,
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.ai-panel .ai-head-btn + .ai-head-btn {
+  margin-left: 2px;
+}
+
+.ai-panel .ai-head-btn:first-of-type {
+  margin-left: auto;
+}
+
+.ai-panel .ai-head-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.045);
+  color: var(--ink-900, var(--ink-900));
+}
+
+.ai-panel .ai-head-btn[aria-expanded='true'] {
+  background: var(--surface, #f6f7f7);
+  color: var(--ink-900, var(--ink-900));
+}
+
+.ai-panel .ai-head-btn svg,
+.ai-panel .ai-context-label svg,
+.ai-panel .dock-add svg,
+.ai-panel .dock-send svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Views ---------------------------------------------------------------- */
+.ai-panel .ai-view {
+  min-height: 0;
+  background: var(--canvas, #fff);
+  overflow: hidden;
+}
+
+.ai-panel .ai-view:not([hidden]) {
+  animation: ai-view-settle 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ai-panel .ai-thread,
+.ai-panel .ai-view--list {
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.ai-panel .ai-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 26px 28px;
+  background: var(--canvas, #fff);
+}
+
+/* ---- Conversation list (recent chats) ------------------------------------- */
+.ai-panel .ai-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 10px 6px;
+  color: var(--text-3);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-heavy);
+  text-transform: uppercase;
+}
+
+.ai-panel .ai-list-head strong {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--surface-2, #edf0f0);
+  color: var(--ink-700, #35383d);
+  font-size: var(--fs-1);
+}
+
+.ai-panel .ai-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-panel .ai-list-item {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  transition: background 0.14s var(--ease);
+}
+
+.ai-panel .ai-list-item:hover {
+  background: var(--surface);
+}
+
+.ai-panel .ai-list-item.is-active {
+  background: var(--surface-2);
+}
+
+.ai-panel .ai-list-dot {
+  align-self: center;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.ai-panel .ai-list-dot.perception {
+  background: var(--perception);
+}
+
+.ai-panel .ai-list-dot.creative {
+  background: var(--creative);
+}
+
+.ai-panel .ai-list-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  text-align: left;
+}
+
+.ai-panel .ai-list-name {
+  overflow: hidden;
+  color: var(--text);
+  font-size: var(--type-meta);
+  font-weight: var(--fw-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel .ai-list-preview {
+  overflow: hidden;
+  color: var(--text-3);
+  font-size: var(--fs-1);
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel .ai-list-meta {
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Messages ------------------------------------------------------------- */
+.ai-panel .ai-msg {
+  display: flex;
+  align-items: flex-start;
+}
+
+.ai-panel .ai-msg.is-user {
+  justify-content: flex-end;
+  align-self: flex-end;
+  max-width: 86%;
+  padding-left: 20%;
+}
+
+.ai-panel .ai-msg.is-assistant {
+  justify-content: flex-start;
+}
+
+.ai-panel .ai-msg-body {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text, var(--ink-800));
+  box-shadow: none;
+}
+
+.ai-panel .ai-msg-text {
+  color: var(--text, var(--ink-800));
+  font-size: 14px;
+  line-height: 1.58;
+  letter-spacing: 0;
+}
+
+.ai-panel .ai-msg-text p {
+  margin: 0 0 11px;
+}
+
+.ai-panel .ai-msg-text p:last-child {
+  margin-bottom: 0;
+}
+
+.ai-panel .ai-msg-text strong {
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-user-bubble {
+  max-width: 100%;
+  padding: 13px 16px 14px;
+  border-radius: 18px;
+  background: var(--ink-900, var(--ink-900));
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(17, 21, 33, 0.13);
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  line-height: 1.42;
+}
+
+.ai-panel .ai-user-bubble p,
+.ai-panel .ai-msg-body p {
+  margin: 0;
+}
+
+.ai-panel .ai-user-bubble p + p {
+  margin-top: 8px;
+}
+
+.ai-panel .ai-msg.is-assistant + .ai-msg.is-user,
+.ai-panel .ai-msg.is-user + .ai-msg.is-assistant {
+  margin-top: -3px;
+}
+
+/* ---- Rich reply card ------------------------------------------------------ */
+.ai-panel .ai-rich-card {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: 16px;
+  background: var(--surface, #f6f7f7);
+  box-shadow: none;
+}
+
+.ai-panel .ai-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-panel .ai-card-kicker {
+  color: var(--text-4, #8a8e95);
+  font-size: 10.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ai-panel .ai-card-title {
+  margin-top: 2px;
+  color: var(--ink-900, #141416);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  line-height: 1.28;
+}
+
+.ai-panel .ai-card-badge {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: var(--r-full);
+  background: var(--success-50, #eff9f1);
+  color: var(--success-700, #207d32);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-card-badge.good {
+  background: var(--success-50, #eff9f1);
+  color: var(--success-700, #207d32);
+}
+
+.ai-panel .ai-card-badge.warn {
+  background: var(--amber-50, #fef6e7);
+  color: var(--amber-700, #9a6207);
+}
+
+.ai-panel .ai-card-badge.info {
+  background: var(--blue-50, #eef4fe);
+  color: var(--blue-700, #1f5fc4);
+}
+
+.ai-panel .ai-card-body,
+.ai-panel .ai-card-copy {
+  color: var(--text-2, #4a4f55);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---- Stat grid ------------------------------------------------------------ */
+.ai-panel .ai-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ai-panel .ai-stat-grid > div,
+.ai-panel .ai-stat {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--canvas, #fff);
+}
+
+.ai-panel .ai-stat-grid span,
+.ai-panel .ai-stat span,
+.ai-panel .ai-progress-row {
+  color: var(--text-4, #8a8e95);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-stat-grid strong,
+.ai-panel .ai-stat strong {
+  color: var(--ink-900, #141416);
+  font-size: 15px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-stat.tone-good strong {
+  color: var(--success-600, #2a9d3f);
+}
+
+.ai-panel .ai-stat.tone-warn strong {
+  color: var(--amber-600, #c07a06);
+}
+
+/* ---- Progress row + track ------------------------------------------------- */
+.ai-panel .ai-progress-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-panel .ai-progress-row strong {
+  color: var(--ink-900, #141416);
+}
+
+.ai-panel .ai-progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: var(--r-full);
+  background: var(--surface-3, #e1e8e6);
+}
+
+.ai-panel .ai-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--success-500, #43ba51);
+}
+
+/* ---- Bullet list (tagged insights) ---------------------------------------- */
+.ai-panel .ai-bullet-list {
+  display: grid;
+  gap: 9px;
+}
+
+.ai-panel .ai-bullet {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.ai-panel .ai-bullet-tag {
+  padding: 2px 8px;
+  border-radius: var(--r-full, 999px);
+  background: var(--surface-2, #edf0f0);
+  color: var(--text-3, #6b7177);
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ai-panel .ai-bullet.tone-good .ai-bullet-tag {
+  background: var(--success-50, #eff9f1);
+  color: var(--success-700, #207d32);
+}
+
+.ai-panel .ai-bullet.tone-warn .ai-bullet-tag {
+  background: var(--amber-50, #fef6e7);
+  color: var(--amber-700, #9a6207);
+}
+
+.ai-panel .ai-bullet.tone-info .ai-bullet-tag {
+  background: var(--blue-50, #eef4fe);
+  color: var(--blue-700, #1f5fc4);
+}
+
+.ai-panel .ai-bullet-text {
+  color: var(--text-2, #4a4f55);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* ---- Pill row ------------------------------------------------------------- */
+.ai-panel .ai-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-panel .ai-pill-row span {
+  padding: 4px 10px;
+  border-radius: var(--r-full, 999px);
+  background: var(--canvas, #fff);
+  box-shadow: inset 0 0 0 1px var(--surface-edge, rgba(29, 29, 31, 0.08));
+  color: var(--text-2, #4a4f55);
+  font-size: 11.5px;
+  font-weight: var(--fw-semibold);
+}
+
+/* ---- Ranked plan rows ----------------------------------------------------- */
+.ai-panel .ai-plan-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+}
+
+.ai-panel .ai-plan-rank {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--surface-2, #edf0f0);
+  color: var(--ink-700, #35383d);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-plan-row strong {
+  display: block;
+  color: var(--ink-900, #141416);
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-plan-row span:not(.ai-plan-rank) {
+  color: var(--text-3, #6b7177);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* ---- Card action buttons (interactive flows) ------------------------------ */
+.ai-panel .ai-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.ai-panel .ai-flow-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: var(--r-full, 999px);
+  background: var(--canvas, #fff);
+  color: var(--ink-800, #26282c);
+  font-size: var(--fs-2, 12px);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.ai-panel .ai-flow-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--ink-300, rgba(29, 29, 31, 0.18));
+}
+
+.ai-panel .ai-flow-btn.primary {
+  border-color: var(--ink-900, #141416);
+  background: var(--ink-900, #141416);
+  color: #fff;
+}
+
+.ai-panel .ai-flow-btn.primary:hover {
+  box-shadow: 0 8px 18px rgba(17, 21, 33, 0.18);
+}
+
+/* Rich-reply action row (specimen rich card + seeded cards that pair a primary
+   ink button with a quiet secondary). */
+.ai-panel .ai-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ai-panel .ai-action-row button {
+  min-height: 30px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--r-full);
+  background: var(--canvas);
+  color: var(--ink-800);
+  font: inherit;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    background 150ms ease;
+}
+
+.ai-panel .ai-action-row button:hover {
+  transform: translateY(-1px);
+  background: var(--surface-2);
+}
+
+.ai-panel .ai-action-row .is-primary {
+  background: var(--ink-900);
+  color: #fff;
+}
+
+/* ---- Staged "generating" card --------------------------------------------- */
+.ai-panel .ai-gen-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: 16px;
+  background: var(--surface, #f6f7f7);
+}
+
+.ai-panel .ai-gen-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid var(--surface-3, #e1e8e6);
+  border-top-color: var(--cyan-500, #49e0f5);
+  animation: ai-gen-spin 0.8s linear infinite;
+}
+
+.ai-panel .ai-gen-title {
+  color: var(--ink-900, #141416);
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-gen-stage {
+  color: var(--text-3, #6b7177);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ai-panel .ai-gen-stage-name {
+  color: var(--text-2, #4a4f55);
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-gen-steps {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.ai-panel .ai-gen-step {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3, #e1e8e6);
+  transition:
+    background 200ms ease,
+    transform 200ms ease;
+}
+
+.ai-panel .ai-gen-step.is-done {
+  background: var(--cyan-500, #49e0f5);
+}
+
+.ai-panel .ai-gen-step.is-active {
+  background: var(--cyan-500, #49e0f5);
+  transform: scale(1.25);
+}
+
+/* ---- Plan-setup card (signal flow) ---------------------------------------- */
+.ai-panel .ai-scope-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ai-panel .ai-scope-label {
+  margin-right: 2px;
+  color: var(--text-4, #8a8e95);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ai-panel .ai-scope-btn {
+  height: 26px;
+  padding: 0 12px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: var(--r-full, 999px);
+  background: var(--canvas, #fff);
+  color: var(--text-2, #4a4f55);
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.ai-panel .ai-scope-btn.is-active {
+  border-color: var(--ink-900, #141416);
+  background: var(--ink-900, #141416);
+  color: #fff;
+}
+
+.ai-panel .ai-rec-title {
+  color: var(--text-4, #8a8e95);
+  font-size: 10.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ai-panel .ai-rec-list {
+  display: grid;
+  gap: 7px;
+}
+
+.ai-panel .ai-rec-row {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.ai-panel .ai-rec-key {
+  color: var(--text-4, #8a8e95);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-rec-val {
+  color: var(--text, var(--ink-800));
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* ---- Edit-suggestions card (strategy flow) -------------------------------- */
+.ai-panel .ai-edit-suggest {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.ai-panel .ai-edit-chip {
+  display: block;
+  width: 100%;
+  padding: 10px 13px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: 12px;
+  background: var(--canvas, #fff);
+  color: var(--text, var(--ink-800));
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+.ai-panel .ai-edit-chip:hover {
+  transform: translateY(-1px);
+  background: var(--cyan-50, rgba(73, 224, 245, 0.09));
+  border-color: var(--cyan-200, rgba(73, 224, 245, 0.42));
+}
+
+/* ---- Creative brief card -------------------------------------------------- */
+.ai-panel .ai-brief-card {
+  margin-top: 14px;
+  padding: 14px 15px 4px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: 16px;
+  background: var(--surface, #f6f7f7);
+}
+
+.ai-panel .ai-brief-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+}
+
+.ai-panel .ai-brief-title {
+  color: var(--ink-900, #141416);
+  font-size: var(--fs-3, 14px);
+  font-weight: var(--fw-semibold);
+}
+
+.ai-panel .ai-brief-status {
+  color: var(--text-4, #8a8e95);
+  font-size: 10.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ai-panel .ai-brief-rows {
+  margin: 0;
+  display: grid;
+}
+
+.ai-panel .ai-brief-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.06));
+}
+
+.ai-panel .ai-brief-row dt {
+  color: var(--text-4, #8a8e95);
+  font-size: 10.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+.ai-panel .ai-brief-row dd {
+  margin: 0;
+  color: var(--text, var(--ink-800));
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---- Quick-prompt chips (contextual starters above the composer) ---------- */
+.ai-panel .ai-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 2px 10px;
+}
+
+.ai-panel .ai-quick-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--surface-edge, rgba(29, 29, 31, 0.08));
+  border-radius: var(--r-full, 999px);
+  background: var(--canvas, #fff);
+  color: var(--ink-700, #35383d);
+  font-size: var(--fs-2, 12px);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.ai-panel .ai-quick-chip:hover {
+  transform: translateY(-1px);
+  background: var(--cyan-50, rgba(73, 224, 245, 0.09));
+  border-color: var(--cyan-200, rgba(73, 224, 245, 0.42));
+  color: var(--cyan-700, #0d7685);
+}
+
+/* ---- Thinking indicator (three dots while a reply is generated) ----------- */
+.ai-panel .ai-msg.is-thinking .ai-msg-body {
+  display: inline-flex;
+}
+
+.ai-panel .ai-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 2px;
+}
+
+.ai-panel .ai-thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-3, #6b7177);
+  opacity: 0.35;
+  animation: ai-thinking-bounce 1.1s ease-in-out infinite;
+}
+
+.ai-panel .ai-thinking span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.ai-panel .ai-thinking span:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+/* ---- Typing indicator (specimen "Typing" slice) --------------------------- */
+.ai-typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  border-bottom-left-radius: 6px;
+  background: var(--canvas);
+  box-shadow: var(--shadow-1);
+}
+
+.ai-typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-4);
+  animation: aiDot 0.9s ease-in-out infinite;
+}
+
+.ai-typing i:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.ai-typing i:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+/* ---- Compose + context chip ----------------------------------------------- */
+.ai-panel .ai-compose {
+  display: grid;
+  gap: var(--space-2);
+  padding: 13px;
+  border-top: 1px solid var(--surface-edge);
+  background: var(--canvas);
+}
+
+.ai-panel .ai-context-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 30px;
+  padding: 0 8px 0 12px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: var(--fs-2);
+}
+
+.ai-panel .ai-context-label[hidden] {
+  display: none;
+}
+
+.ai-panel .ai-context-label button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-4);
+  cursor: pointer;
+  transition:
+    background var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+
+.ai-panel .ai-context-label button:hover {
+  background: var(--ink-soft);
+  color: var(--text-2);
+}
+
+/* The context-label clear-button svg is sized by the shared header/compose svg
+   rule above (14px, stroke 1.6) — the app's 05-ai-panel.css likewise let that
+   grouped rule win over its (lower-specificity) 12px bare rule, so this keeps the
+   shipped 14px. */
+
+/* ---- Compose dock ---------------------------------------------------------
+   Kept unscoped so the specimen renders it standalone; the app supplies its own
+   dock geometry from styles.css (`.dock-bar` / `.ai-compose .dock-bar`), which
+   loads after components.css and governs the shipped panel dock. */
+.dock-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: 44px;
+  padding: 5px;
+  border-radius: 24px;
+  background: var(--surface-2);
+}
+
+.dock-add,
+.dock-send {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dock-add {
+  background: var(--canvas);
+  color: var(--text-3);
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.dock-add:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.dock-send {
+  background: var(--ink-900);
+  color: #fff;
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease;
+}
+
+.dock-send:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.dock-send:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.dock-add svg,
+.dock-send svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dock-input {
+  min-width: 0;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-3);
+}
+
+.dock-input::placeholder {
+  color: var(--text-4);
+}
+
+.dock-input:focus {
+  outline: none;
+}
+
+.dock-bar:focus-within {
+  box-shadow: var(--focus-ring);
+}
+
+/* ---- Keyframes ------------------------------------------------------------ */
+@keyframes ai-view-settle {
+  from {
+    transform: translateY(4px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes ai-thinking-bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 0.9;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes ai-gen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aiDot {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-panel,
+  .ai-panel .ai-head-btn,
+  .ai-panel .ai-list-item,
+  .ai-panel .ai-action-row button,
+  .ai-panel .ai-view:not([hidden]),
+  .ai-typing i,
+  .dock-send {
+    transition: none;
+    animation: none;
+  }
+
+  .ai-panel .ai-thinking span {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .ai-panel .ai-gen-spinner {
+    animation-duration: 1.6s;
+  }
+}

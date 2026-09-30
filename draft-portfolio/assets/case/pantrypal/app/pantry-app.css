@@ -1,0 +1,675 @@
+/* ==========================================================================
+   pantry-app.css — PantryPal's Home and Recipe screens, running on the case
+   study (pantry-app.js).
+
+   This is the app's language, not the page's: Fugaz One for every label and
+   Faustina only for recipe prose, ink outlines two points wide, butter under
+   everything, and the shipped colours as the Swift package draws them
+   (PantryPal/design-system/Sources/PantryPalDS/Tokens/DSColors.swift), which
+   are not always the Figma file's: coral is #FF7E7D, sampled off the
+   rendered app, where the token JSON still says #FF8D7E.
+
+   Every number is in the app's own points. The screen is drawn at the
+   393pt design width of an iPhone 16 Pro and --pt is one of its points,
+   so the phone can be any size on the page and still lay out exactly as
+   the app does. The measurements are read off the Swift source (DishCard,
+   CookScreen, the DS tokens) and checked against the app's own captures
+   (tools/ui-sweep/shots/final/16), not eyeballed.
+
+   The header and each screen's title band are the app's own pixels, cropped
+   from its App Store captures (chrome-*.webp): the wordmark, the chef and
+   the scallops are drawn art, and a copy of them would only ever be a
+   worse copy. Everything below the band is live.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'PP Fugaz One';
+  src: url('fonts/FugazOne-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PP Faustina';
+  src: url('fonts/Faustina.ttf') format('truetype');
+  font-weight: 300 800;
+  font-display: swap;
+}
+
+/* One of the app's points, computed once per screen against the screen's own
+   width, so a container query further in (the plate is one) cannot re-read
+   it against a smaller box. */
+@property --pt {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 1px;
+}
+
+/* ---- the device: Tigo's iPhone 16 Pro render over a live screen ----
+   The render is laid over the screen, so its glass highlight falls across
+   it the way real glass does, and it lets every press through. The screen
+   stands in the render's aperture, measured off the render's own alpha
+   (appstore-lab/README.md: x 195–3431, y 187–7227 of 3627×7415), and is
+   clipped to the aperture's corner radius, fitted to the same alpha. */
+.pp-device {
+  position: relative;
+  aspect-ratio: 900 / 1840;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.pp-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.pp-screen {
+  --butter: #ffd67e;
+  --coral: #ff7e7d;
+  --sky: #b8edf8;
+  --red: #ff4b4b;
+  --green: #b4ff85;
+  --steel: #cdcdcd;
+  --offwhite: #f7f7f7;
+  --lettuce: #beeba6;
+  --ink: #000;
+  --placeholder: #5a5a5a;
+  /* Fugaz One's own line, as SwiftUI sets it: its hhea ascent and descent,
+     1046 and 422 in a 1000 em (a title band's rules are overlays, so they
+     add nothing to it) */
+  --fugaz-lh: 1.468;
+  position: absolute;
+  left: 5.3764%;
+  top: 2.5219%;
+  width: 89.2197%;
+  height: 94.9427%;
+  overflow: hidden;
+  border-radius: 15.848% / 7.286%;
+  background: var(--butter);
+  container-type: size;
+  isolation: isolate;
+  /* the screen is the app's, whatever the page sets */
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.25;
+  color: var(--ink);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+.pp-view {
+  --pt: calc(100cqw / 393);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--butter);
+  font-size: calc(16 * var(--pt));
+}
+/* The phone brings its own reset rather than leaning on the page's, and
+   every rule of it weighs nothing (:where), so a class further down always
+   wins: the first cut's plain `.pp-screen button` outweighed `.pp-go` and
+   took the red off Start cooking. */
+:where(.pp-device) *, :where(.pp-device) *::before, :where(.pp-device) *::after { box-sizing: border-box; }
+:where(.pp-screen) :is(p, h1, h2, h3, ol, ul, figure) { margin: 0; padding: 0; }
+:where(.pp-screen) button {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+:where(.pp-screen) button:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(2 * var(--pt)); }
+:where(.pp-screen) img { display: block; }
+.pp-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pp-chrome {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+/* the system's own bar, which a capture does not carry */
+.pp-indicator {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: calc(8 * var(--pt));
+  width: calc(139 * var(--pt));
+  height: calc(5 * var(--pt));
+  margin-left: calc(-69.5 * var(--pt));
+  border-radius: 99px;
+  background: var(--ink);
+  pointer-events: none;
+}
+
+/* the outline every white display word wears: eight copies of the word,
+   two points out, behind the fill (DS OutlinedText, width 2) */
+.pp-outlined {
+  color: #fff;
+  --o: calc(2 * var(--pt));
+  --d: calc(1.4142 * var(--pt));
+  text-shadow:
+    var(--o) 0 0 var(--ink), var(--d) var(--d) 0 var(--ink),
+    0 var(--o) 0 var(--ink), calc(-1 * var(--d)) var(--d) 0 var(--ink),
+    calc(-1 * var(--o)) 0 0 var(--ink), calc(-1 * var(--d)) calc(-1 * var(--d)) 0 var(--ink),
+    0 calc(-1 * var(--o)) 0 var(--ink), var(--d) calc(-1 * var(--d)) 0 var(--ink);
+  white-space: nowrap;
+}
+
+/* ======================================================================
+   Home: the chef's pick
+   ====================================================================== */
+/* the door's count, laid over the one the capture carries */
+.pp-door-count {
+  position: absolute;
+  z-index: 3;
+  left: calc(353 * var(--pt));
+  top: calc(135 * var(--pt));
+  display: grid;
+  place-items: center;
+  width: calc(25 * var(--pt));
+  height: calc(25 * var(--pt));
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(2 * var(--pt)) var(--ink);
+  font-size: calc(14 * var(--pt));
+  line-height: 1;
+  pointer-events: none;
+}
+.pp-door-count.is-bumped { animation: pp-bump 0.42s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes pp-bump { 40% { scale: 1.28; } }
+
+/* the rank badge over the deck: "Chef's top pick", then "Pick 2 of 10" */
+.pp-rank {
+  position: absolute;
+  top: calc(221.7 * var(--pt));
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--pt));
+  height: calc(27 * var(--pt));
+  padding: 0 calc(12 * var(--pt));
+  border-radius: 99px;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  font-size: calc(13 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+  line-height: 1;
+  white-space: nowrap;
+}
+.pp-rank img { width: calc(20 * var(--pt)); height: calc(18 * var(--pt)); object-fit: contain; }
+
+/* The deck: the card on top, and during a throw the one leaving it. */
+.pp-deck {
+  position: absolute;
+  left: calc(20 * var(--pt));
+  top: calc(261.3 * var(--pt));
+  width: calc(353 * var(--pt));
+  height: calc(424.3 * var(--pt));
+  touch-action: pan-y;
+}
+
+/* ---- the dish card (Components/DishCard.swift) ---- */
+.pp-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: calc(2 * var(--pt)) solid var(--ink);
+  border-radius: calc(12 * var(--pt));
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  will-change: translate, rotate;
+}
+.pp-card:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(3 * var(--pt)); }
+/* the plate takes whatever the words below it leave */
+.pp-hero {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(12 * var(--pt)) 0;
+  overflow: hidden;
+}
+/* 12 of padding and the pill's 30-point band, less the two points the
+   capture shows the plate riding up into it */
+.pp-card.is-stocked .pp-hero { padding-top: calc(40.5 * var(--pt)); }
+.pp-stocked {
+  position: absolute;
+  z-index: 2;
+  left: calc(12 * var(--pt));
+  top: calc(12 * var(--pt));
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--pt));
+  padding: calc(4 * var(--pt)) calc(9 * var(--pt));
+  border-radius: 99px;
+  background: var(--green);
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  font-size: calc(11 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+  line-height: var(--fugaz-lh);
+  white-space: nowrap;
+}
+.pp-stocked svg { width: calc(10 * var(--pt)); height: calc(10 * var(--pt)); }
+
+/* The plate (AppChrome.swift DishPlate): the art in a coral ellipse with an
+   ink rim, on a white one 13 points wider, on a sunburst that follows the
+   plate's own proportions and fades into the card. The plate is a size
+   container, so all of it is drawn off its own height. */
+.pp-plate {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  container-type: size;
+}
+.pp-plate > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+}
+.pp-rays {
+  width: calc(100cqh * 1.3 * 1.24);
+  height: calc(100cqh * 1.28);
+  border-radius: 50%;
+  /* twenty rays, every other one filled, from three o'clock */
+  background: repeating-conic-gradient(from 90deg, var(--ray, var(--butter)) 0deg 18deg, transparent 18deg 36deg);
+  -webkit-mask: radial-gradient(circle calc(210 * var(--pt)) at 50% 50%, #000 42%, rgb(0 0 0 / 0.85) 62%, transparent 100%);
+  mask: radial-gradient(circle calc(210 * var(--pt)) at 50% 50%, #000 42%, rgb(0 0 0 / 0.85) 62%, transparent 100%);
+}
+.pp-rim {
+  width: calc(100cqh * 1.3 + 13 * var(--pt));
+  height: calc(100cqh + 13 * var(--pt));
+  border-radius: 50%;
+  background: #fff;
+}
+.pp-dish {
+  width: calc(100cqh * 1.3);
+  height: 100cqh;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: inset 0 0 0 calc(2 * var(--pt)) var(--ink);
+}
+.pp-dish img {
+  position: absolute;
+  inset: calc(8 * var(--pt));
+  width: calc(100% - 16 * var(--pt));
+  height: calc(100% - 16 * var(--pt));
+  object-fit: contain;
+}
+
+/* the title, one line, shrunk to fit rather than cut (min 55%) */
+.pp-title {
+  flex: none;
+  display: grid;
+  place-items: center;
+  height: calc(57 * var(--pt));
+  padding: 0 calc(8 * var(--pt));
+  border-block: calc(2 * var(--pt)) solid var(--ink);
+  background: var(--butter);
+  overflow: hidden;
+}
+.pp-title .pp-outlined { font-size: calc(28 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-body {
+  flex: none;
+  display: grid;
+  justify-items: center;
+  gap: calc(10 * var(--pt));
+  /* the capture measures 10.5 under the pills, not the 12 the source asks */
+  padding: calc(14 * var(--pt)) calc(12 * var(--pt)) calc(10.5 * var(--pt));
+}
+.pp-summary {
+  margin: 0 calc(-4 * var(--pt));
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-family: 'PP Faustina', Georgia, serif;
+  font-weight: 500;
+  font-size: calc(16 * var(--pt));
+  line-height: calc(22 * var(--pt));
+  text-wrap: balance;
+}
+.pp-card.is-short .pp-summary { -webkit-line-clamp: 2; }
+.pp-macros { display: flex; gap: calc(6 * var(--pt)); }
+.pp-macro {
+  padding: calc(2.5 * var(--pt)) calc(8 * var(--pt));
+  border-radius: 99px;
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  font-size: calc(12 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+  line-height: calc(15 * var(--pt));
+  white-space: nowrap;
+}
+.pp-macro:nth-child(1) { background: var(--butter); }
+.pp-macro:nth-child(2) { background: var(--lettuce); }
+.pp-macro:nth-child(3) { background: var(--sky); }
+
+/* what the shelf is short of, and the way to add it (DishCard coverageChip) */
+.pp-missing {
+  display: grid;
+  justify-items: center;
+  gap: calc(5 * var(--pt));
+  padding: calc(8 * var(--pt)) calc(12 * var(--pt));
+  border: calc(2 * var(--pt)) dashed var(--ink);
+  border-radius: calc(12 * var(--pt));
+  background: var(--coral);
+}
+.pp-missing > span { font-size: calc(12 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); line-height: 1.2; }
+.pp-missing-row { display: flex; gap: calc(4 * var(--pt)); }
+.pp-missing-row > span {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: calc(2 * var(--pt));
+  width: calc(62 * var(--pt));
+  height: calc(46 * var(--pt));
+}
+.pp-missing-row i {
+  display: grid;
+  place-items: center;
+  width: calc(34 * var(--pt));
+  height: calc(32 * var(--pt));
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  font-style: normal;
+  font-size: calc(13 * var(--pt));
+}
+.pp-missing-row img { width: calc(26 * var(--pt)); height: calc(24 * var(--pt)); object-fit: contain; }
+.pp-missing-row b {
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: 400;
+  font-size: calc(9.5 * var(--pt));
+  white-space: nowrap;
+  text-overflow: clip;
+}
+.pp-missing-row .is-more b { color: var(--placeholder); }
+.pp-missing-row .is-more i { background: var(--offwhite); width: calc(34 * var(--pt)); }
+
+/* ---- the two actions (DS PPPrimaryButtonStyle, PPSecondaryStickerStyle):
+   a press sinks two points and darkens a tenth, in 80ms ---- */
+.pp-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8 * var(--pt));
+  height: calc(44 * var(--pt));
+  border-radius: calc(10 * var(--pt));
+  box-shadow: inset 0 0 0 calc(2 * var(--pt)) var(--ink);
+  line-height: 1;
+  white-space: nowrap;
+  transition: translate 80ms ease-out;
+}
+.pp-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgb(0 0 0 / 0.1);
+  opacity: 0;
+  transition: opacity 80ms ease-out;
+}
+.pp-btn:active, .pp-btn.is-pressed { translate: 0 calc(2 * var(--pt)); }
+.pp-btn:active::after, .pp-btn.is-pressed::after { opacity: 1; }
+.pp-btn svg { flex: none; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.pp-go {
+  position: absolute;
+  left: calc(20 * var(--pt));
+  top: calc(698.3 * var(--pt));
+  width: calc(353 * var(--pt));
+  background: var(--red);
+  color: #fff;
+  font-size: calc(20 * var(--pt));
+}
+.pp-go svg { width: calc(22 * var(--pt)); height: calc(22 * var(--pt)); stroke-width: 2.2; }
+.pp-row {
+  position: absolute;
+  left: calc(20 * var(--pt));
+  top: calc(754.3 * var(--pt));
+  width: calc(353 * var(--pt));
+  display: flex;
+  gap: calc(8 * var(--pt));
+}
+.pp-next { flex: 1; background: #fff; font-size: calc(16 * var(--pt)); }
+.pp-next svg { width: calc(17 * var(--pt)); height: calc(17 * var(--pt)); stroke-width: 3; }
+/* the way back to the dish before, once there is one */
+.pp-prev {
+  flex: none;
+  width: calc(62 * var(--pt));
+  background: #fff;
+  transition: translate 80ms ease-out, width 0.32s cubic-bezier(0.3, 1.25, 0.5, 1), margin 0.32s cubic-bezier(0.3, 1.25, 0.5, 1), opacity 0.2s ease, scale 0.32s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.pp-prev svg { width: calc(20 * var(--pt)); height: calc(20 * var(--pt)); stroke-width: 3; }
+.pp-prev[hidden] { display: flex; width: 0; margin-right: calc(-8 * var(--pt)); opacity: 0; scale: 0.6; pointer-events: none; }
+
+/* The shelf with nothing on it: the app's own welcome, as it draws it. */
+.pp-welcome {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+.pp-home.is-empty .pp-welcome { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+.pp-home.is-empty .pp-chrome, .pp-home.is-empty .pp-door-count { opacity: 0; }
+
+/* ======================================================================
+   Recipe (Screens/CookScreen.swift)
+   ====================================================================== */
+.pp-recipe { visibility: hidden; }
+.pp-recipe.is-on { visibility: visible; }
+.pp-back {
+  position: absolute;
+  z-index: 3;
+  left: calc(8 * var(--pt));
+  top: calc(146 * var(--pt));
+  width: calc(96 * var(--pt));
+  height: calc(56 * var(--pt));
+  border-radius: calc(12 * var(--pt));
+}
+.pp-scroll {
+  position: absolute;
+  inset: calc(206.7 * var(--pt)) 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.pp-scroll::-webkit-scrollbar { display: none; }
+
+/* the ingredient strip: six to a row at most, the rest balanced below */
+.pp-strip { border-bottom: calc(1 * var(--pt)) solid var(--ink); background: var(--offwhite); }
+.pp-strip-row { display: flex; }
+.pp-strip-row + .pp-strip-row { border-top: calc(1 * var(--pt)) solid var(--ink); }
+.pp-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: calc(70 * var(--pt)) calc(19 * var(--pt));
+}
+.pp-chip + .pp-chip { box-shadow: inset calc(1 * var(--pt)) 0 0 var(--ink); }
+.pp-chip img { width: 100%; height: 100%; padding: calc(4 * var(--pt)); object-fit: contain; }
+.pp-chip span {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 0 calc(2 * var(--pt));
+  font-size: calc(13 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+}
+.pp-chip .pp-outlined { --o: calc(0.69 * var(--pt)); --d: calc(0.49 * var(--pt)); }
+
+.pp-rhero {
+  position: relative;
+  display: grid;
+  /* one column, the phone's width: sized by its content, the column grew to
+     the unshrunk title and the title never had to shrink */
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: calc(12 * var(--pt));
+  padding-bottom: calc(16 * var(--pt));
+  background: var(--butter);
+}
+/* the title: 16 in from each side, 4 above and 16 below, one line shrunk
+   as far as half its size before it is ever cut */
+.pp-rtitle {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: calc(4 * var(--pt)) calc(16 * var(--pt)) calc(16 * var(--pt));
+  text-align: center;
+}
+.pp-rtitle .pp-outlined { display: inline-block; font-size: calc(33 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-rhero .pp-plate { flex: none; width: 100%; height: calc(196 * var(--pt)); --ray: #fff; }
+/* the rays reach past the plate, and the pills are drawn over them; here
+   they keep Fugaz's whole line, where the card's are held to 15 */
+.pp-rhero .pp-macros { position: relative; z-index: 1; }
+.pp-rhero .pp-macro { line-height: calc(12 * var(--fugaz-lh) * var(--pt)); }
+.pp-rule {
+  position: absolute;
+  left: 0;
+  bottom: calc(-6.75 * var(--pt));
+  z-index: 1;
+  width: 100%;
+  height: calc(13.5 * var(--pt));
+  pointer-events: none;
+}
+.pp-rule.is-top { top: calc(-6.75 * var(--pt)); bottom: auto; }
+
+.pp-steps-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(8 * var(--pt));
+  padding: calc(16 * var(--pt)) calc(16 * var(--pt)) calc(12 * var(--pt));
+}
+.pp-steps-head .pp-outlined { font-size: calc(28 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-count {
+  padding: calc(3 * var(--pt)) calc(8 * var(--pt));
+  border-radius: 99px;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  font-size: calc(12 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+  white-space: nowrap;
+  transition: background-color 0.18s ease-out;
+}
+.pp-count.is-done { background: var(--green); }
+.pp-steps { display: grid; gap: calc(12 * var(--pt)); padding: 0 calc(16 * var(--pt)) calc(20 * var(--pt)); }
+.pp-step {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: calc(12 * var(--pt));
+  box-shadow: inset 0 0 0 calc(2 * var(--pt)) var(--ink);
+  background: #fff;
+  text-align: left;
+  transition: opacity 0.25s ease;
+}
+.pp-step-head {
+  display: flex;
+  align-items: center;
+  height: calc(54 * var(--pt));
+  margin: calc(2 * var(--pt)) calc(2 * var(--pt)) 0;
+  border-bottom: calc(2 * var(--pt)) solid var(--ink);
+  background: var(--coral);
+  transition: background-color 0.25s ease;
+}
+.pp-step-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(52 * var(--pt));
+  height: 100%;
+  box-shadow: inset calc(-1 * var(--pt)) 0 0 var(--ink);
+  background: var(--green);
+  font-size: calc(24 * var(--pt));
+  transition: background-color 0.25s ease;
+}
+.pp-step-title {
+  flex: 1;
+  min-width: 0;
+  padding: 0 calc(12 * var(--pt));
+  font-size: calc(20 * var(--pt));
+  line-height: 1.1;
+}
+.pp-step-tick {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(30 * var(--pt));
+  height: calc(30 * var(--pt));
+  margin-right: calc(12 * var(--pt));
+  border-radius: 50%;
+  border: calc(1 * var(--pt)) dashed var(--ink);
+  transition: background-color 0.2s ease, border-color 0.2s ease, scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pp-step-tick svg { width: 62%; height: 62%; fill: none; stroke: var(--ink); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.pp-step-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.3, 1.1, 0.5, 1);
+}
+.pp-step-body > span {
+  overflow: hidden;
+  font-family: 'PP Faustina', Georgia, serif;
+  font-size: calc(19 * var(--pt));
+  line-height: calc(28 * var(--pt));
+}
+.pp-step-body > span > span { display: block; padding: calc(12 * var(--pt)); }
+.pp-step.is-done { opacity: 0.62; }
+.pp-step.is-done .pp-step-head { border-bottom-color: transparent; background: var(--steel); }
+.pp-step.is-done .pp-step-num { background: var(--steel); }
+.pp-step.is-done .pp-step-tick { border: calc(1.5 * var(--pt)) solid var(--ink); background: var(--green); scale: 1.08; }
+.pp-step.is-done .pp-step-tick svg { opacity: 1; }
+.pp-step.is-done .pp-step-body { grid-template-rows: 0fr; }
+
+.pp-finish {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: calc(8 * var(--pt));
+  padding: calc(20 * var(--pt)) calc(24 * var(--pt)) calc(48 * var(--pt));
+  text-align: center;
+}
+.pp-finish img { height: calc(84 * var(--pt)); width: auto; }
+.pp-finish .pp-outlined { font-size: calc(33 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-finish p { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.3; color: var(--placeholder); }
+.pp-finish .pp-btn { width: 100%; max-width: calc(260 * var(--pt)); }
+.pp-save { margin-top: calc(8 * var(--pt)); background: #fff; font-size: calc(16 * var(--pt)); }
+.pp-save svg { width: calc(18 * var(--pt)); height: calc(18 * var(--pt)); stroke-width: 2.4; }
+.pp-save.is-kept { background: var(--green); }
+.pp-done { background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-btn, .pp-prev, .pp-step, .pp-step-head, .pp-step-num, .pp-step-tick, .pp-step-body, .pp-count { transition-duration: 0.01s; }
+  .pp-door-count.is-bumped { animation: none; }
+}

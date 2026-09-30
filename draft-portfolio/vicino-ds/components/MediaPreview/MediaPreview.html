@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediaPreview - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../PlatformBadge/PlatformBadge.css" />
+    <link rel="stylesheet" href="MediaPreview.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1120px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 18px;
+        align-items: start;
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>MediaPreview</h1>
+        <p>
+          Reusable media frame for campaign assets, rendered posts, thumbnails, video posters, and
+          empty media states. Parent cards own actions; MediaPreview owns the visual asset anatomy.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Media preview slices">
+        <div class="section-title">
+          <span>MediaPreview / image / thumbnail stack</span>
+        </div>
+        <div class="grid">
+          <article class="media-preview media-preview--panel media-preview--square">
+            <div class="media-preview__frame">
+              <img
+                class="media-preview__image"
+                src="../../../../demo/assets/images/casual_chic_flat_lay_outfit.png"
+                alt="Flat lay outfit campaign preview"
+              />
+              <div class="media-preview__overlay">
+                <span class="media-preview__status media-preview__status--ready">Ready</span>
+                <span class="media-preview__count">1 / 4</span>
+              </div>
+            </div>
+            <div class="media-preview__body">
+              <h2 class="media-preview__title">Fit with confidence</h2>
+              <p class="media-preview__meta">
+                <span class="platform-badge platform-badge--ig" aria-label="Instagram"></span>
+                Carousel - 4 cards - Quiet Confidence Uniform
+              </p>
+            </div>
+            <div class="media-preview__thumbs" aria-label="Carousel cards">
+              <button class="media-preview__thumb is-selected" type="button" aria-selected="true">
+                <img src="../../../../demo/assets/images/casual_chic_flat_lay_outfit.png" alt="" />
+                <span class="media-preview__thumb-label">01</span>
+              </button>
+              <button class="media-preview__thumb" type="button" aria-selected="false">
+                <img
+                  src="../../../../demo/assets/images/cozy_neutral_toned_capsule_wardrobe_layout.png"
+                  alt=""
+                />
+                <span class="media-preview__thumb-label">02</span>
+              </button>
+              <button class="media-preview__thumb" type="button" aria-selected="false">
+                <img
+                  src="../../../../demo/assets/images/casual_city_style_with_coffee.png"
+                  alt=""
+                />
+                <span class="media-preview__thumb-label">03</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="media-preview media-preview--panel media-preview--wide">
+            <div class="media-preview__frame">
+              <img
+                class="media-preview__video-poster"
+                src="../../../../demo/assets/images/cozy_fashion_haul_in_a_light_filled_room.png"
+                alt="Creator try-on video poster"
+              />
+              <span class="media-preview__play" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M9 6.5v11l9-5.5-9-5.5Z" /></svg>
+              </span>
+              <div class="media-preview__overlay">
+                <span class="media-preview__status media-preview__status--building">Rendering</span>
+                <span class="media-preview__duration">0:18</span>
+              </div>
+            </div>
+            <div class="media-preview__body">
+              <h2 class="media-preview__title">Texture try-on credibility</h2>
+              <p class="media-preview__meta">
+                <span class="platform-badge platform-badge--tt" aria-label="TikTok"></span>
+                Short video - draft 01 - ETA 18m
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Inline and empty media states">
+        <div class="section-title">
+          <span>MediaPreviewInline / empty / invalid</span>
+        </div>
+        <div class="grid">
+          <article class="media-preview media-preview--panel media-preview--inline">
+            <div class="media-preview__frame">
+              <img
+                class="media-preview__image"
+                src="../../../../demo/assets/images/casual_chic_indoor_portrait.png"
+                alt="Indoor creator portrait"
+              />
+            </div>
+            <div class="media-preview__body">
+              <h2 class="media-preview__title">Community try-on - Mia cutdown</h2>
+              <p class="media-preview__meta">
+                <span class="platform-badge platform-badge--ig" aria-label="Instagram"></span>
+                Current asset - Ready in Studio
+              </p>
+            </div>
+          </article>
+
+          <article class="media-preview media-preview--panel">
+            <div class="media-preview__empty">
+              <div class="media-preview__empty-inner">
+                <span class="media-preview__empty-mark" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M4 14.5V5.5A1.5 1.5 0 0 1 5.5 4h9A1.5 1.5 0 0 1 16 5.5v9A1.5 1.5 0 0 1 14.5 16h-9A1.5 1.5 0 0 1 4 14.5Z"
+                    />
+                    <path d="m5 13 3.5-3 2 2 2.5-3L16 13" />
+                    <path d="M8 7.5h.01" />
+                  </svg>
+                </span>
+                <h2 class="media-preview__empty-title">No media attached</h2>
+                <p class="media-preview__empty-text">
+                  Add a product frame, creator clip, or campaign cover before publishing.
+                </p>
+              </div>
+            </div>
+            <div class="media-preview__thumbs" aria-label="Invalid media example">
+              <span class="media-preview__thumb media-preview__thumb--invalid">
+                <span class="media-preview__thumb-label">Wrong type</span>
+              </span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

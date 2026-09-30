@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LineChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="LineChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">LineChart</h1>
+    <p class="handoff-sub">
+      Line / area trend scaffold drawing straight segments between samples — bucketed aggregates
+      have no in-between values to imply, so nothing is smoothed at readable point spacing. A
+      single-series area (bright 2px line over a soft fade-out wash, ink endpoint marker + direct
+      label, metric selector, day/week/month toggle) and a dual-series line (no area wash, bright
+      cyan × ink, legend series toggle, goal-event dropdown). Gridlines are solid hairlines; scrub
+      either plot — the crosshair snaps to the nearest point and the read-out leads with the value.
+    </p>
+
+    <div class="specimen">
+      <!-- Variant: single-series area -->
+      <div class="specimen-item">
+        <span class="specimen-label">Single-series area + metric selector + D/W/M</span>
+        <div class="line-chart">
+          <div class="line-chart__head">
+            <div class="line-chart__title-wrap">
+              <div>
+                <h2 class="line-chart__title">Engagement Rate — Last 12 Weeks</h2>
+                <p class="line-chart__sub">All platforms · weekly view</p>
+              </div>
+              <button class="line-chart__select" type="button">
+                Change metric
+                <svg
+                  width="10"
+                  height="6"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 1.5l4 3 4-3" />
+                </svg>
+              </button>
+            </div>
+            <div class="line-chart__seg" role="group" aria-label="Granularity">
+              <button class="line-chart__seg-btn" type="button" aria-pressed="false">D</button>
+              <button class="line-chart__seg-btn" type="button" aria-pressed="true">W</button>
+              <button class="line-chart__seg-btn" type="button" aria-pressed="false">M</button>
+            </div>
+          </div>
+
+          <div class="line-chart__hero">
+            <span class="line-chart__hero-value">6.7%</span>
+            <span class="line-chart__hero-delta">↑ +1.3pp vs last period</span>
+          </div>
+
+          <div class="line-chart__body">
+            <div class="line-chart__yaxis" aria-hidden="true">
+              <span class="line-chart__ytick" style="top: 28.4%">6.5%</span>
+              <span class="line-chart__ytick" style="top: 47.7%">6.0%</span>
+              <span class="line-chart__ytick" style="top: 67%">5.5%</span>
+              <span class="line-chart__ytick" style="top: 86.4%">5.0%</span>
+            </div>
+            <div
+              class="line-chart__plot"
+              id="areaPlot"
+              role="img"
+              aria-label="Single-series area chart of weekly engagement rate over the last 12 weeks, rising from 5.4% to 6.7% against a 6.2% target."
+            >
+              <svg viewBox="0 0 1084 220" preserveAspectRatio="none" style="height: 240px">
+                <defs>
+                  <linearGradient id="areaFade" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.16" />
+                    <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <g class="line-chart__grid">
+                  <line x1="8" y1="147.5" x2="1076" y2="147.5" />
+                  <line x1="8" y1="105" x2="1076" y2="105" />
+                  <line x1="8" y1="62.5" x2="1076" y2="62.5" />
+                </g>
+                <line class="line-chart__baseline" x1="8" y1="190" x2="1076" y2="190" />
+                <line class="line-chart__ref" x1="8" y1="88" x2="1076" y2="88" />
+                <line class="line-chart__guide" id="areaGuide" x1="8" y1="20" x2="8" y2="190" />
+                <path
+                  d="M8,156 L105.09,130.5 L202.18,147.5 L299.27,113.5 L396.36,96.5 L493.45,122 L590.55,88 L687.64,71 L784.73,79.5 L881.82,54 L978.91,62.5 L1076,45.5 L1076,190 L8,190 Z"
+                  fill="url(#areaFade)"
+                />
+                <path
+                  d="M8,156 L105.09,130.5 L202.18,147.5 L299.27,113.5 L396.36,96.5 L493.45,122 L590.55,88 L687.64,71 L784.73,79.5 L881.82,54 L978.91,62.5 L1076,45.5"
+                  fill="none"
+                  stroke="var(--chart-1-line)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+                <circle class="line-chart__static-point" r="4" cx="1076" cy="45.5" />
+                <circle
+                  class="line-chart__point"
+                  id="areaPoint"
+                  r="4.5"
+                  fill="var(--chart-emphasis)"
+                  stroke="var(--canvas)"
+                  stroke-width="2"
+                  cx="8"
+                  cy="156"
+                />
+              </svg>
+              <div class="line-chart__end-label" style="top: 20.7%; right: 14px">6.7%</div>
+              <div class="line-chart__ref-label" style="top: 40%; right: 14px">target 6.2%</div>
+              <div class="line-chart__badge" id="areaBadge">6.7%</div>
+            </div>
+          </div>
+
+          <div class="line-chart__axis line-chart__axis--gutter-l" aria-hidden="true">
+            <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span
+            ><span>W6</span><span>W7</span><span>W8</span><span>W9</span><span>W10</span
+            ><span>W11</span><span>W12</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: dual-series line -->
+      <div class="specimen-item">
+        <span class="specimen-label">Dual-series line + legend toggle + goal dropdown</span>
+        <div class="line-chart">
+          <div class="line-chart__head">
+            <div>
+              <h2 class="line-chart__title">Performance Trend · Last 30 Days</h2>
+              <p class="line-chart__sub">sessions vs goal events · independent scales</p>
+            </div>
+            <div class="line-chart__legend">
+              <button
+                class="line-chart__legend-item"
+                type="button"
+                data-series="sessions"
+                aria-pressed="true"
+              >
+                <span class="line-chart__swatch line-chart__swatch--sessions"></span>Sessions
+              </button>
+              <button
+                class="line-chart__legend-item"
+                type="button"
+                data-series="goal"
+                aria-pressed="true"
+              >
+                <span class="line-chart__swatch line-chart__swatch--goal"></span>Goal event
+              </button>
+              <div class="line-chart__dropdown" id="goalDropdown">
+                <button
+                  class="line-chart__dropdown-toggle"
+                  type="button"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                >
+                  <span data-dropdown-label>Book a demo</span>
+                  <svg
+                    width="10"
+                    height="6"
+                    viewBox="0 0 10 6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M1 1.5l4 3 4-3" />
+                  </svg>
+                </button>
+                <div class="line-chart__menu" role="listbox" aria-label="Goal event">
+                  <button
+                    class="line-chart__menu-item"
+                    type="button"
+                    role="option"
+                    aria-selected="true"
+                  >
+                    Book a demo
+                  </button>
+                  <button
+                    class="line-chart__menu-item"
+                    type="button"
+                    role="option"
+                    aria-selected="false"
+                  >
+                    Start free trial
+                  </button>
+                  <button
+                    class="line-chart__menu-item"
+                    type="button"
+                    role="option"
+                    aria-selected="false"
+                  >
+                    Newsletter signup
+                  </button>
+                  <button
+                    class="line-chart__menu-item"
+                    type="button"
+                    role="option"
+                    aria-selected="false"
+                  >
+                    Pricing viewed
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="line-chart__body">
+            <div class="line-chart__yaxis" aria-hidden="true">
+              <span class="line-chart__ytick line-chart__ytick--sessions" style="top: 32.9%"
+                >5k</span
+              >
+              <span class="line-chart__ytick line-chart__ytick--sessions" style="top: 49.1%"
+                >4k</span
+              >
+              <span class="line-chart__ytick line-chart__ytick--sessions" style="top: 65.3%"
+                >3k</span
+              >
+            </div>
+            <div
+              class="line-chart__plot"
+              id="trendPlot"
+              role="img"
+              aria-label="Dual-series line chart of sessions and goal events over the last 30 days, both trending up. The two series are drawn on independent scales — sessions labeled on the left axis, goal events on the right."
+            >
+              <svg viewBox="0 0 1126 200" preserveAspectRatio="none" style="height: 230px">
+                <g class="line-chart__grid">
+                  <line x1="16" y1="65.8" x2="1110" y2="65.8" />
+                  <line x1="16" y1="98.2" x2="1110" y2="98.2" />
+                  <line x1="16" y1="130.6" x2="1110" y2="130.6" />
+                </g>
+                <line class="line-chart__baseline" x1="16" y1="172" x2="1110" y2="172" />
+                <line class="line-chart__guide" id="trendGuide" x1="16" y1="12" x2="16" y2="172" />
+
+                <g class="line-chart__series" data-series="sessions">
+                  <path
+                    d="M16,150 L94.1,138 L172.3,128 L250.4,132 L328.6,110 L406.7,96 L484.9,104 L563,88 L641.1,80 L719.3,86 L797.4,70 L875.6,66 L953.7,72 L1031.9,60 L1110,58"
+                    fill="none"
+                    stroke="var(--chart-1-line)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                  <circle class="line-chart__static-point" r="4" cx="1110" cy="58" />
+                  <circle
+                    class="line-chart__point"
+                    id="ptSessions"
+                    r="4.5"
+                    fill="var(--chart-emphasis)"
+                    stroke="var(--canvas)"
+                    stroke-width="2"
+                    cx="16"
+                    cy="150"
+                  />
+                </g>
+
+                <g class="line-chart__series" data-series="goal">
+                  <path
+                    d="M16,168 L94.1,160 L172.3,150 L250.4,154 L328.6,140 L406.7,128 L484.9,134 L563,120 L641.1,112 L719.3,118 L797.4,104 L875.6,100 L953.7,106 L1031.9,96 L1110,94"
+                    fill="none"
+                    stroke="var(--chart-2)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                  <circle
+                    class="line-chart__static-point line-chart__static-point--goal"
+                    r="4"
+                    cx="1110"
+                    cy="94"
+                  />
+                  <circle
+                    class="line-chart__point"
+                    id="ptGoal"
+                    r="4.5"
+                    fill="var(--chart-2)"
+                    stroke="var(--canvas)"
+                    stroke-width="2"
+                    cx="16"
+                    cy="168"
+                  />
+                </g>
+              </svg>
+
+              <div class="line-chart__tooltip" id="trendTooltip">
+                <span class="line-chart__tooltip-date" data-tt-date>May 13</span>
+                <span class="line-chart__tooltip-row"
+                  ><span class="line-chart__tooltip-key" style="background: var(--chart-1)"></span
+                  ><b data-tt-sessions>2,400</b> Sessions</span
+                >
+                <span class="line-chart__tooltip-row"
+                  ><span class="line-chart__tooltip-key" style="background: var(--chart-2)"></span
+                  ><b data-tt-goal>42</b> Goal events</span
+                >
+              </div>
+            </div>
+            <div class="line-chart__yaxis line-chart__yaxis--right" aria-hidden="true">
+              <span class="line-chart__ytick line-chart__ytick--goal" style="top: 55.7%">140</span>
+              <span class="line-chart__ytick line-chart__ytick--goal" style="top: 67.3%">100</span>
+              <span class="line-chart__ytick line-chart__ytick--goal" style="top: 78.8%">60</span>
+            </div>
+          </div>
+
+          <div class="line-chart__axis line-chart__axis--gutter-lr" aria-hidden="true">
+            <span>May 13</span><span>May 17</span><span>May 21</span><span>May 25</span
+            ><span>May 29</span><span>Jun 2</span><span>Jun 6</span><span>Jun 10</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only.
+
+      // --- Day/Week/Month segmented toggle (single-series) -------------------
+      document.querySelectorAll('.line-chart__seg').forEach((seg) => {
+        seg.querySelectorAll('.line-chart__seg-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            seg
+              .querySelectorAll('.line-chart__seg-btn')
+              .forEach((b) => b.setAttribute('aria-pressed', 'false'));
+            btn.setAttribute('aria-pressed', 'true');
+          });
+        });
+      });
+
+      // --- Single-series area crosshair + value badge -------------------------
+      const AREA = [
+        { x: 8, y: 156, v: '5.4%', date: 'W1' },
+        { x: 105.09, y: 130.5, v: '5.7%', date: 'W2' },
+        { x: 202.18, y: 147.5, v: '5.5%', date: 'W3' },
+        { x: 299.27, y: 113.5, v: '5.9%', date: 'W4' },
+        { x: 396.36, y: 96.5, v: '6.1%', date: 'W5' },
+        { x: 493.45, y: 122, v: '5.8%', date: 'W6' },
+        { x: 590.55, y: 88, v: '6.2%', date: 'W7' },
+        { x: 687.64, y: 71, v: '6.4%', date: 'W8' },
+        { x: 784.73, y: 79.5, v: '6.3%', date: 'W9' },
+        { x: 881.82, y: 54, v: '6.6%', date: 'W10' },
+        { x: 978.91, y: 62.5, v: '6.5%', date: 'W11' },
+        { x: 1076, y: 45.5, v: '6.7%', date: 'W12' },
+      ];
+      const aPlot = document.getElementById('areaPlot');
+      const aSvg = aPlot.querySelector('svg');
+      const aGuide = document.getElementById('areaGuide');
+      const aPoint = document.getElementById('areaPoint');
+      const aBadge = document.getElementById('areaBadge');
+      const A_VB_W = 1084,
+        A_VB_H = 220;
+      aPlot.addEventListener('pointermove', (e) => {
+        const rect = aSvg.getBoundingClientRect();
+        const vbX = ((e.clientX - rect.left) / rect.width) * A_VB_W;
+        let near = AREA[0];
+        for (const d of AREA) if (Math.abs(d.x - vbX) < Math.abs(near.x - vbX)) near = d;
+        aPlot.classList.add('is-hovering');
+        aGuide.setAttribute('x1', near.x);
+        aGuide.setAttribute('x2', near.x);
+        aPoint.setAttribute('cx', near.x);
+        aPoint.setAttribute('cy', near.y);
+        aBadge.textContent = near.v + ' · ' + near.date;
+        aBadge.style.left = (near.x / A_VB_W) * rect.width + 'px';
+        aBadge.style.top = (near.y / A_VB_H) * rect.height + 'px';
+      });
+      aPlot.addEventListener('pointerleave', () => aPlot.classList.remove('is-hovering'));
+
+      // --- Goal-event dropdown (dual-series) ---------------------------------
+      const dropdown = document.getElementById('goalDropdown');
+      const ddToggle = dropdown.querySelector('.line-chart__dropdown-toggle');
+      const ddLabel = dropdown.querySelector('[data-dropdown-label]');
+      ddToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = dropdown.classList.toggle('is-open');
+        ddToggle.setAttribute('aria-expanded', String(open));
+      });
+      dropdown.querySelectorAll('.line-chart__menu-item').forEach((opt) => {
+        opt.addEventListener('click', () => {
+          dropdown
+            .querySelectorAll('.line-chart__menu-item')
+            .forEach((o) => o.setAttribute('aria-selected', 'false'));
+          opt.setAttribute('aria-selected', 'true');
+          ddLabel.textContent = opt.textContent;
+          dropdown.classList.remove('is-open');
+          ddToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove('is-open');
+          ddToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // --- Legend series toggle (dual-series) --------------------------------
+      document.querySelectorAll('.line-chart__legend-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const pressed = btn.getAttribute('aria-pressed') === 'true';
+          btn.setAttribute('aria-pressed', String(!pressed));
+          const series = document.querySelector(
+            '.line-chart__series[data-series="' + btn.dataset.series + '"]'
+          );
+          if (series) series.classList.toggle('is-series-hidden', pressed);
+        });
+      });
+
+      // --- Dual-series hover read-out ----------------------------------------
+      // s/g values are linear against each series' own y mapping (independent
+      // scales): s = 2400 + (150 − sy)/0.032394, g = 42 + (168 − gy)/0.578125.
+      const DATA = [
+        { x: 16, date: 'May 13', sy: 150, gy: 168, s: 2400, g: 42 },
+        { x: 94.1, date: 'May 15', sy: 138, gy: 160, s: 2770, g: 56 },
+        { x: 172.3, date: 'May 17', sy: 128, gy: 150, s: 3080, g: 73 },
+        { x: 250.4, date: 'May 19', sy: 132, gy: 154, s: 2960, g: 66 },
+        { x: 328.6, date: 'May 21', sy: 110, gy: 140, s: 3630, g: 90 },
+        { x: 406.7, date: 'May 23', sy: 96, gy: 128, s: 4070, g: 111 },
+        { x: 484.9, date: 'May 25', sy: 104, gy: 134, s: 3820, g: 101 },
+        { x: 563, date: 'May 27', sy: 88, gy: 120, s: 4310, g: 125 },
+        { x: 641.1, date: 'May 29', sy: 80, gy: 112, s: 4560, g: 139 },
+        { x: 719.3, date: 'May 31', sy: 86, gy: 118, s: 4380, g: 129 },
+        { x: 797.4, date: 'Jun 2', sy: 70, gy: 104, s: 4870, g: 153 },
+        { x: 875.6, date: 'Jun 4', sy: 66, gy: 100, s: 4990, g: 160 },
+        { x: 953.7, date: 'Jun 6', sy: 72, gy: 106, s: 4810, g: 149 },
+        { x: 1031.9, date: 'Jun 8', sy: 60, gy: 96, s: 5180, g: 167 },
+        { x: 1110, date: 'Jun 10', sy: 58, gy: 94, s: 5240, g: 170 },
+      ];
+      const VB_W = 1126,
+        VB_H = 200;
+      const plot = document.getElementById('trendPlot');
+      const svg = plot.querySelector('svg');
+      const guide = document.getElementById('trendGuide');
+      const ptS = document.getElementById('ptSessions');
+      const ptG = document.getElementById('ptGoal');
+      const tip = document.getElementById('trendTooltip');
+      const ttDate = tip.querySelector('[data-tt-date]');
+      const ttS = tip.querySelector('[data-tt-sessions]');
+      const ttG = tip.querySelector('[data-tt-goal]');
+      const nf = new Intl.NumberFormat('en-US');
+      plot.addEventListener('pointermove', (e) => {
+        const rect = svg.getBoundingClientRect();
+        const vbX = ((e.clientX - rect.left) / rect.width) * VB_W;
+        let nearest = DATA[0];
+        for (const d of DATA) if (Math.abs(d.x - vbX) < Math.abs(nearest.x - vbX)) nearest = d;
+        plot.classList.add('is-hovering');
+        guide.setAttribute('x1', nearest.x);
+        guide.setAttribute('x2', nearest.x);
+        ptS.setAttribute('cx', nearest.x);
+        ptS.setAttribute('cy', nearest.sy);
+        ptG.setAttribute('cx', nearest.x);
+        ptG.setAttribute('cy', nearest.gy);
+        ttDate.textContent = nearest.date;
+        ttS.textContent = nf.format(nearest.s);
+        ttG.textContent = nf.format(nearest.g);
+        tip.style.left = (nearest.x / VB_W) * rect.width + 'px';
+        tip.style.top = (Math.min(nearest.sy, nearest.gy) / VB_H) * rect.height + 'px';
+      });
+      plot.addEventListener('pointerleave', () => plot.classList.remove('is-hovering'));
+    </script>
+  </body>
+</html>

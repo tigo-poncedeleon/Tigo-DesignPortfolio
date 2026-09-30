@@ -1,0 +1,243 @@
+/* ComboChart — combined column + line scaffold. Background activity bars with a
+   line series overlaid (and optional event dots + a highlighted column). Used
+   for "posting time vs follower activity"-style overlays.
+   Chart-norm rebuild (owner decision 2026-07-07): rounded columns wearing
+   the brand-cyan sequential ramp BY VALUE (light→dark — never a wall of deep
+   fills, never gray), a labeled y-axis for the bars, ink markers pinned on
+   the slots you posted in (each post's engagement lives on its marker — the
+   unlabeled overlay line was retired as unreadable), and a black anchor +
+   chip on the best slot. Time series are ONE BAR PER SLOT at a uniform step
+   (owner catch 2026-07-08: the old specimen mixed 1h/2h/3h bins and shoved a
+   "7–9p" range into the tick row — an "hourly" chart shows 24 hourly bars,
+   and the peak is a single slot, not a bin). Token-driven; hover read-out
+   driven by a small specimen script. Visual source: tokens.css. */
+
+.combo {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1126px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.combo__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.combo__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.combo__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Legend mixes a square (bars), a line (overlay) and a dot (events). */
+.combo__legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.combo__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.combo__swatch--bar {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-full);
+  background: var(--chart-seq-500);
+  flex: none;
+}
+.combo__swatch--dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--ink-900);
+  flex: none;
+}
+
+/* Body: labeled y-axis gutter + stretch plot. */
+.combo__body {
+  display: flex;
+  gap: 10px;
+}
+.combo__yaxis {
+  position: relative;
+  flex: none;
+  width: 34px;
+}
+.combo__ytick {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: var(--fs-2);
+  color: var(--text-4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Plot. */
+.combo__plot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.combo__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.combo__grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.combo__baseline {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+/* Activity bars — sequential ramp by value; the best slot is the deep anchor. */
+.combo__bar {
+  transition: filter var(--dur-2) var(--ease-out);
+}
+.combo__bar:hover {
+  filter: brightness(0.95) saturate(1.15);
+}
+.combo__bar--r200 {
+  fill: var(--chart-seq-200);
+}
+.combo__bar--r300 {
+  fill: var(--chart-seq-300);
+}
+.combo__bar--r400 {
+  fill: var(--chart-seq-400);
+}
+.combo__bar--r500 {
+  fill: var(--chart-seq-500);
+}
+.combo__bar--r600 {
+  fill: var(--chart-seq-600);
+}
+/* The best slot — the one black anchor, paired with the pinned chip. */
+.combo__bar--hot {
+  fill: var(--chart-emphasis);
+}
+
+/* Pinned chip on the best slot. */
+.combo__chip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 8px));
+  padding: 3px 9px;
+  border-radius: var(--r-full);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-1);
+}
+
+/* You-posted rug marks — quiet ink ticks under the baseline; the posted
+   slot's engagement rides its bar's read-out. */
+.combo__rug circle {
+  fill: var(--ink-900);
+}
+.combo__bar {
+  outline: none;
+  cursor: pointer;
+}
+.combo__bar:focus-visible {
+  filter: brightness(0.95) saturate(1.15);
+  stroke: var(--pulse-cyan-line);
+  stroke-width: 3;
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Time axis under the plot (offset past the y-axis gutter). A 24-column hour
+   grid so each tick centers under its own bar — ticks land on real slots
+   (place with an inline grid-column); never mix a range label into the row. */
+.combo__axis {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  margin-top: 6px;
+  padding: 0 4px 0 48px;
+}
+.combo__axis span {
+  grid-row: 1;
+  justify-self: center;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+.combo__axis .is-peak {
+  color: var(--pulse-cyan-dark);
+  font-weight: var(--fw-bold);
+}
+
+/* Stat-first hero — the widget leads with its number; the chart is evidence
+   (owner-approved reference anatomy: kicker → hero value → chart). */
+.combo__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: -6px;
+}
+.combo__hero-value {
+  font-size: var(--fs-9);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.combo__hero-delta {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-3);
+}

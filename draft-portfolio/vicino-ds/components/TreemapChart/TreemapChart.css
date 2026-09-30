@@ -1,0 +1,157 @@
+/* TreemapChart — share blocks with a big % and a trend chip per block
+   (owner-approved adoption of the reference "Transaction report" widget,
+   2026-07-07). Blocks wear the bright categorical bases; the biggest share is
+   the brand-cyan anchor. Block AREAS are an illustrative fixed grid — the %
+   figure carries the exact value (this is a glanceable share board, not a
+   measured treemap). In-block text picks ink/white by fill luminance; trend
+   chips are data-trend semantics (green up / red down / blue flat).
+   Visual source: tokens.css. */
+
+.treemap {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 560px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.treemap__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.treemap__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.treemap__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Fixed illustrative grid — the hero block spans 2×2. */
+.treemap__plot {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: repeat(3, 88px);
+  grid-template-areas:
+    'video video carousel'
+    'video video carousel'
+    'story other static';
+  gap: 6px;
+}
+.treemap__block--video {
+  grid-area: video;
+}
+.treemap__block--carousel {
+  grid-area: carousel;
+}
+.treemap__block--static {
+  grid-area: static;
+}
+.treemap__block--story {
+  grid-area: story;
+}
+.treemap__block--other {
+  grid-area: other;
+}
+
+.treemap__block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: var(--r-lg);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter var(--dur-2) var(--ease-out);
+  color: var(--ink-800);
+}
+.treemap__block:hover {
+  filter: brightness(0.96) saturate(1.15);
+}
+.treemap__block:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.treemap__block--video {
+  background: var(--chart-1);
+}
+.treemap__block--carousel {
+  /* The ink block grounds the board (series slot 2 IS the black anchor). */
+  background: var(--chart-2);
+  color: #fff;
+}
+.treemap__block--static {
+  background: var(--chart-3);
+}
+.treemap__block--story {
+  background: var(--chart-seq-300);
+}
+.treemap__block--other {
+  background: var(--chart-muted);
+}
+
+.treemap__block-name {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.006em;
+}
+.treemap__block-pct {
+  font-size: var(--fs-8);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.treemap__block--video .treemap__block-pct {
+  font-size: var(--fs-9);
+}
+
+/* Trend chip — top-right, translucent surface so it reads on any fill. */
+.treemap__chip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+/* Delta whisper (owner decision 922322d): improving numbers stay neutral and
+   only the direction arrow carries green — declines/flats keep their tint so
+   the minority pops. */
+.treemap__chip--up {
+  color: var(--text-2);
+}
+.treemap__chip--up .treemap__chip-arrow {
+  color: var(--success-600);
+}
+.treemap__chip--down {
+  color: var(--red-600);
+}
+.treemap__chip--flat {
+  color: var(--blue-600);
+}

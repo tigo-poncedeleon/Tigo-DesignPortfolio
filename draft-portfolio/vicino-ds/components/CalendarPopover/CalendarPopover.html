@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CalendarPopover - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="../Modal/Modal.css" />
+    <link rel="stylesheet" href="../Field/Field.css" />
+    <link rel="stylesheet" href="../StatusPill/StatusPill.css" />
+    <link rel="stylesheet" href="../PlatformBadge/PlatformBadge.css" />
+    <link rel="stylesheet" href="../DateRangeControl/DateRangeControl.css" />
+    <link rel="stylesheet" href="CalendarPopover.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 32px;
+        max-width: 1140px;
+      }
+
+      .component-intro {
+        display: grid;
+        gap: 8px;
+        max-width: 78ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>CalendarPopover</h1>
+        <p>
+          Calendar detail, edit, create, and loading flow. It composes Modal, Field, Button,
+          StatusPill, PlatformBadge, and DateRangeControl while leaving persistence, focus trap, and
+          calendar date math to the runtime.
+        </p>
+      </header>
+
+      <section class="calendar-popover-source" aria-label="Calendar popover component source">
+        <div class="calendar-popover-switcher" aria-label="Calendar popover states">
+          <button
+            class="btn btn--sm btn--ghost"
+            type="button"
+            aria-pressed="true"
+            data-calendar-popover-view="detail"
+          >
+            Detail
+          </button>
+          <button
+            class="btn btn--sm btn--ghost"
+            type="button"
+            aria-pressed="false"
+            data-calendar-popover-view="edit"
+          >
+            Edit
+          </button>
+          <button
+            class="btn btn--sm btn--ghost"
+            type="button"
+            aria-pressed="false"
+            data-calendar-popover-view="create"
+          >
+            Create
+          </button>
+          <button
+            class="btn btn--sm btn--ghost"
+            type="button"
+            aria-pressed="false"
+            data-calendar-popover-view="loading"
+          >
+            Loading
+          </button>
+        </div>
+
+        <div class="calendar-popover-stage">
+          <div class="calendar-popover-closed" hidden data-calendar-popover-closed>
+            <p>Detail flow closed. Runtime restores focus to the calendar block that opened it.</p>
+            <button
+              class="btn btn--secondary btn--sm"
+              type="button"
+              data-calendar-popover-view="detail"
+            >
+              Reopen detail
+            </button>
+          </div>
+
+          <article
+            class="modal-dialog modal-dialog--wide calendar-popover-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="calendar-popover-detail-title"
+            data-calendar-popover-panel="detail"
+          >
+            <header class="modal-header modal-header--divided calendar-popover-header">
+              <div class="calendar-popover-header-main">
+                <span class="modal-eyebrow">Post detail</span>
+                <h2 class="modal-title" id="calendar-popover-detail-title">Fit with confidence</h2>
+              </div>
+              <div class="calendar-popover-tools">
+                <button
+                  class="btn btn--secondary btn--sm"
+                  type="button"
+                  data-calendar-popover-view="edit"
+                >
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M4 14.5V16h1.5L15.1 6.4l-1.5-1.5L4 14.5Z" />
+                    <path d="m12.7 5.8 1.5 1.5" />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  class="btn btn--icon btn--sm"
+                  type="button"
+                  aria-label="Close detail"
+                  data-calendar-popover-close
+                >
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M5 5l10 10M15 5 5 15" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+
+            <div class="modal-body calendar-popover-body">
+              <section class="calendar-popover-hero" aria-label="Post summary">
+                <div>
+                  <span class="calendar-popover-kicker">Quiet confidence uniform</span>
+                  <p class="calendar-popover-summary">
+                    Ready carousel explains how the pieces fit so the edit feels wearable, not just
+                    aesthetic.
+                  </p>
+                </div>
+                <div class="calendar-popover-badges">
+                  <span class="status-pill status-pill--ready">Ready in Studio</span>
+                  <span class="platform-badge platform-badge--ig" aria-label="Instagram"></span>
+                </div>
+              </section>
+
+              <dl class="calendar-popover-meta-grid">
+                <div>
+                  <dt>Schedule</dt>
+                  <dd>Jun 12, 2026, 11:00 AM - 12:30 PM</dd>
+                </div>
+                <div>
+                  <dt>Campaign</dt>
+                  <dd>Quiet Confidence Uniform</dd>
+                </div>
+                <div>
+                  <dt>Format</dt>
+                  <dd>Carousel - 4 cards</dd>
+                </div>
+                <div>
+                  <dt>Owner</dt>
+                  <dd>Studio</dd>
+                </div>
+              </dl>
+
+              <section class="calendar-popover-section" aria-label="Brief">
+                <span class="calendar-popover-section__label">Brief</span>
+                <p>
+                  Ready carousel explains how the pieces fit so the edit feels wearable, not just
+                  aesthetic.
+                </p>
+              </section>
+
+              <section class="calendar-popover-section" aria-label="Post context">
+                <span class="calendar-popover-section__label">Post context</span>
+                <p>
+                  Studio has the proof cards ready. Final pass should check size-language clarity
+                  and make the CTA feel calm.
+                </p>
+              </section>
+            </div>
+
+            <footer class="modal-footer calendar-popover-footer">
+              <button class="btn btn--secondary" type="button">Move next day</button>
+              <button class="btn btn--secondary" type="button" data-calendar-popover-view="edit">
+                Pick slot
+              </button>
+              <button class="btn btn--danger" type="button">Remove</button>
+            </footer>
+          </article>
+
+          <article
+            class="modal-dialog modal-dialog--wide calendar-popover-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="calendar-popover-edit-title"
+            data-calendar-popover-panel="edit"
+            hidden
+          >
+            <header class="modal-header modal-header--divided calendar-popover-header">
+              <div class="calendar-popover-header-main">
+                <span class="modal-eyebrow">Edit post</span>
+                <h2 class="modal-title" id="calendar-popover-edit-title">Fit with confidence</h2>
+              </div>
+              <button
+                class="btn btn--icon btn--sm"
+                type="button"
+                aria-label="Close edit"
+                data-calendar-popover-close
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 5l10 10M15 5 5 15" />
+                </svg>
+              </button>
+            </header>
+
+            <div class="modal-body calendar-popover-body">
+              <div class="calendar-popover-form">
+                <label class="ds-field is-wide">
+                  <span>Title</span>
+                  <input class="ds-input" type="text" value="Fit with confidence" />
+                </label>
+
+                <div
+                  class="date-range-control date-range-control--compact is-wide"
+                  data-date-range-control
+                >
+                  <div class="date-range-control__head">
+                    <span class="date-range-control__label">Schedule</span>
+                    <span class="date-range-control__summary">Jun 12, 11:00 AM - 12:30 PM</span>
+                  </div>
+                  <div class="date-range-control__grid">
+                    <label class="ds-field ds-field--compact">
+                      <span>Start</span>
+                      <input class="ds-input" type="datetime-local" value="2026-06-12T11:00" />
+                    </label>
+                    <label class="ds-field ds-field--compact">
+                      <span>End</span>
+                      <input class="ds-input" type="datetime-local" value="2026-06-12T12:30" />
+                    </label>
+                  </div>
+                </div>
+
+                <label class="ds-field">
+                  <span>Status</span>
+                  <select class="ds-select">
+                    <option>Ready in Studio</option>
+                    <option>Scheduled</option>
+                    <option>Rendering</option>
+                    <option>Draft</option>
+                  </select>
+                </label>
+                <label class="ds-field">
+                  <span>Platform</span>
+                  <select class="ds-select">
+                    <option>Instagram</option>
+                    <option>TikTok</option>
+                    <option>YouTube</option>
+                  </select>
+                </label>
+                <label class="ds-field">
+                  <span>Campaign</span>
+                  <input class="ds-input" type="text" value="Quiet Confidence Uniform" />
+                </label>
+                <label class="ds-field">
+                  <span>Format</span>
+                  <input class="ds-input" type="text" value="Carousel - 4 cards" />
+                </label>
+                <label class="ds-field is-wide">
+                  <span>Brief</span>
+                  <textarea class="ds-textarea">
+Ready carousel explains how the pieces fit so the edit feels wearable, not just aesthetic.</textarea>
+                </label>
+                <label class="ds-field is-wide">
+                  <span>Post context</span>
+                  <textarea class="ds-textarea">
+Studio has the proof cards ready. Final pass should check size-language clarity and make the CTA feel calm.</textarea>
+                </label>
+              </div>
+            </div>
+
+            <footer class="modal-footer calendar-popover-footer">
+              <button class="btn btn--ghost" type="button" data-calendar-popover-view="detail">
+                Cancel
+              </button>
+              <button class="btn btn--dark" type="button" data-calendar-popover-save>
+                <span class="btn__spinner" aria-hidden="true"></span>
+                <svg class="btn__check" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="m4.5 10.5 3.5 3.5 7.5-8" />
+                </svg>
+                <span class="btn__label">Save changes</span>
+              </button>
+            </footer>
+          </article>
+
+          <article
+            class="modal-dialog modal-dialog--wide calendar-popover-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="calendar-popover-create-title"
+            data-calendar-popover-panel="create"
+            hidden
+          >
+            <header class="modal-header modal-header--divided calendar-popover-header">
+              <div class="calendar-popover-header-main">
+                <span class="modal-eyebrow">Create</span>
+                <h2 class="modal-title" id="calendar-popover-create-title">New calendar item</h2>
+              </div>
+              <button
+                class="btn btn--icon btn--sm"
+                type="button"
+                aria-label="Close create"
+                data-calendar-popover-close
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 5l10 10M15 5 5 15" />
+                </svg>
+              </button>
+            </header>
+
+            <div class="modal-body calendar-popover-body">
+              <div class="calendar-popover-kind-tabs" aria-label="Calendar item type">
+                <button class="calendar-popover-kind-tab" type="button" aria-pressed="true">
+                  Event
+                </button>
+                <button class="calendar-popover-kind-tab" type="button" aria-pressed="false">
+                  Task
+                </button>
+                <button class="calendar-popover-kind-tab" type="button" aria-pressed="false">
+                  Out of office
+                </button>
+                <button class="calendar-popover-kind-tab" type="button" aria-pressed="false">
+                  Working location
+                </button>
+              </div>
+
+              <label class="ds-field">
+                <span>Title</span>
+                <input class="ds-input" type="text" placeholder="Add title" />
+              </label>
+
+              <div class="date-range-control" data-date-range-control>
+                <div class="date-range-control__head">
+                  <span class="date-range-control__label">Time</span>
+                  <span class="date-range-control__summary">Jun 11, 9:00 AM - 10:00 AM</span>
+                </div>
+                <div class="date-range-control__grid">
+                  <label class="ds-field ds-field--compact">
+                    <span>Start date</span>
+                    <input class="ds-input" type="date" value="2026-06-11" />
+                  </label>
+                  <label class="ds-field ds-field--compact date-range-control__time">
+                    <span>Start time</span>
+                    <input class="ds-input" type="time" value="09:00" />
+                  </label>
+                  <span class="date-range-control__dash" aria-hidden="true">-</span>
+                  <label class="ds-field ds-field--compact">
+                    <span>End date</span>
+                    <input class="ds-input" type="date" value="2026-06-11" />
+                  </label>
+                  <label class="ds-field ds-field--compact date-range-control__time">
+                    <span>End time</span>
+                    <input class="ds-input" type="time" value="10:00" />
+                  </label>
+                </div>
+                <div class="date-range-control__options">
+                  <label class="ds-field ds-field--check">
+                    <input class="ds-checkbox" type="checkbox" data-all-day-toggle />
+                    <span class="ds-field__label">All day</span>
+                  </label>
+                </div>
+                <div class="date-range-control__quick" aria-label="Quick slots">
+                  <button
+                    class="date-range-control__chip is-selected"
+                    type="button"
+                    aria-pressed="true"
+                  >
+                    60 min
+                  </button>
+                  <button class="date-range-control__chip" type="button" aria-pressed="false">
+                    90 min
+                  </button>
+                  <button class="date-range-control__chip" type="button" aria-pressed="false">
+                    Tomorrow
+                  </button>
+                </div>
+              </div>
+
+              <div class="calendar-popover-form">
+                <label class="ds-field">
+                  <span>Repeat</span>
+                  <select class="ds-select">
+                    <option>Does not repeat</option>
+                    <option>Weekly</option>
+                    <option>Monthly</option>
+                  </select>
+                </label>
+                <label class="ds-field">
+                  <span>Guests</span>
+                  <input class="ds-input" type="text" placeholder="Add people" />
+                </label>
+                <label class="ds-field">
+                  <span>Location</span>
+                  <input class="ds-input" type="text" placeholder="Add location" />
+                </label>
+                <label class="ds-field">
+                  <span>Campaign</span>
+                  <input class="ds-input" type="text" placeholder="Optional campaign" />
+                </label>
+                <label class="ds-field is-wide">
+                  <span>Description</span>
+                  <textarea
+                    class="ds-textarea"
+                    placeholder="Add notes for this calendar item"
+                  ></textarea>
+                </label>
+              </div>
+
+              <div class="calendar-popover-inline-note">
+                <p>Create and edit share the same date range control and field contract.</p>
+              </div>
+            </div>
+
+            <footer class="modal-footer calendar-popover-footer">
+              <button class="btn btn--ghost" type="button">More options</button>
+              <button class="btn btn--dark" type="button">Save</button>
+            </footer>
+          </article>
+
+          <article
+            class="modal-dialog modal-dialog--wide calendar-popover-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="calendar-popover-loading-title"
+            data-calendar-popover-panel="loading"
+            hidden
+          >
+            <header class="modal-header modal-header--divided calendar-popover-header">
+              <div class="calendar-popover-header-main">
+                <span class="modal-eyebrow">Loading</span>
+                <h2 class="modal-title" id="calendar-popover-loading-title">
+                  Opening calendar item
+                </h2>
+              </div>
+            </header>
+            <div class="modal-body calendar-popover-body">
+              <div class="calendar-popover-skeleton" aria-hidden="true">
+                <span class="calendar-popover-skeleton__line"></span>
+                <span class="calendar-popover-skeleton__line"></span>
+                <span class="calendar-popover-skeleton__block"></span>
+                <span class="calendar-popover-skeleton__line"></span>
+              </div>
+              <p>Keep the modal footprint stable while post details load.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const calendarPopoverPanels = document.querySelectorAll('[data-calendar-popover-panel]');
+      const calendarPopoverSwitches = document.querySelectorAll('[data-calendar-popover-view]');
+      const calendarPopoverClosed = document.querySelector('[data-calendar-popover-closed]');
+
+      function showCalendarPopoverPanel(view) {
+        calendarPopoverClosed.hidden = true;
+        calendarPopoverPanels.forEach((panel) => {
+          panel.hidden = panel.dataset.calendarPopoverPanel !== view;
+        });
+        calendarPopoverSwitches.forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.calendarPopoverView === view));
+        });
+      }
+
+      calendarPopoverSwitches.forEach((button) => {
+        button.addEventListener('click', () => {
+          showCalendarPopoverPanel(button.dataset.calendarPopoverView);
+        });
+      });
+
+      document.querySelectorAll('[data-calendar-popover-close]').forEach((button) => {
+        button.addEventListener('click', () => {
+          calendarPopoverPanels.forEach((panel) => {
+            panel.hidden = true;
+          });
+          calendarPopoverSwitches.forEach((switchButton) => {
+            switchButton.setAttribute('aria-pressed', 'false');
+          });
+          calendarPopoverClosed.hidden = false;
+        });
+      });
+
+      document.querySelectorAll('.calendar-popover-kind-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.calendar-popover-kind-tab').forEach((candidate) => {
+            candidate.setAttribute('aria-pressed', 'false');
+          });
+          tab.setAttribute('aria-pressed', 'true');
+        });
+      });
+
+      document.querySelectorAll('[data-date-range-control]').forEach((control) => {
+        control.querySelectorAll('[data-all-day-toggle]').forEach((toggle) => {
+          toggle.addEventListener('change', () => {
+            control.classList.toggle('is-all-day', toggle.checked);
+            control
+              .querySelectorAll('.date-range-control__time input')
+              .forEach((input) => (input.disabled = toggle.checked));
+          });
+        });
+
+        control.querySelectorAll('.date-range-control__chip').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            control.querySelectorAll('.date-range-control__chip').forEach((candidate) => {
+              candidate.classList.remove('is-selected');
+              candidate.setAttribute('aria-pressed', 'false');
+            });
+            chip.classList.add('is-selected');
+            chip.setAttribute('aria-pressed', 'true');
+          });
+        });
+      });
+
+      document.querySelectorAll('[data-calendar-popover-save]').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (button.classList.contains('is-loading')) return;
+          const label = button.querySelector('.btn__label');
+          button.classList.remove('is-success');
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+          label.textContent = 'Saving';
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.classList.add('is-success');
+            button.removeAttribute('aria-busy');
+            label.textContent = 'Saved';
+            window.setTimeout(() => {
+              button.classList.remove('is-success');
+              label.textContent = 'Save changes';
+              showCalendarPopoverPanel('detail');
+            }, 700);
+          }, 650);
+        });
+      });
+    </script>
+  </body>
+</html>

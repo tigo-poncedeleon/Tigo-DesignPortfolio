@@ -1,0 +1,114 @@
+/* Canonical card is bordered (border + --card-shadow), per pulse-app-standard.md
+   §4. Hierarchy still leads with tone/shadow; the hairline border is light
+   containment, not the primary structure. */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  transition:
+    border-color var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease);
+}
+
+.card:hover,
+.card.is-hover {
+  border-color: var(--surface-edge-strong);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.card:focus-visible,
+.card.is-focus {
+  outline: none;
+  box-shadow: var(--focus-ring), var(--card-shadow);
+}
+
+.card.is-selected {
+  border-color: var(--cyan-300, var(--cyan-500));
+  box-shadow:
+    inset 0 0 0 1px var(--cyan-300, var(--cyan-500)),
+    var(--card-shadow);
+}
+
+.card.is-empty {
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--text-4);
+  box-shadow: var(--card-shadow);
+}
+
+.card.is-error {
+  border-color: var(--red-200);
+  background: var(--red-50);
+  color: var(--red-600);
+  box-shadow: var(--card-shadow);
+}
+
+.action-card,
+.media-card,
+.empty-card,
+.error-card {
+  min-width: 0;
+}
+
+.action-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.action-card__body {
+  display: grid;
+  gap: 7px;
+}
+
+.action-card__body h3,
+.media-card__body h3,
+.empty-card h3,
+.error-card h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--type-card-title);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-title);
+}
+
+.action-card__body p,
+.media-card__body p,
+.empty-card p,
+.error-card p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-4);
+  line-height: var(--lh-normal);
+}
+
+.media-card {
+  display: grid;
+  overflow: hidden;
+}
+
+.media-card__media {
+  min-height: 150px;
+  background:
+    radial-gradient(circle at 22% 20%, rgba(73, 224, 245, 0.32), transparent 34%),
+    linear-gradient(135deg, rgba(29, 29, 31, 0.86), rgba(29, 29, 31, 0.48)), var(--canvas);
+}
+
+.media-card__body {
+  display: grid;
+  gap: 7px;
+  padding: 18px;
+}
+
+.empty-card,
+.error-card {
+  display: grid;
+  gap: 8px;
+  align-content: center;
+  min-height: 180px;
+  padding: 22px;
+}

@@ -1,0 +1,1364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pulse HTML Component Preview</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      * {
+        margin: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .browser {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        height: 100dvh;
+        min-height: 0;
+      }
+
+      /* Header */
+      .browser-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 8px 16px;
+        padding: 26px 32px 18px;
+      }
+      .browser-head h1 {
+        font-size: var(--fs-8);
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+      .browser-head .count {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .browser-head p {
+        flex-basis: 100%;
+        max-width: 70ch;
+        margin-top: 2px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+      .browser-head a.up {
+        margin-left: auto;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        text-decoration: none;
+      }
+      .browser-head a.up:hover {
+        color: var(--text);
+      }
+
+      /* Two-pane shell */
+      .browser-body {
+        display: grid;
+        grid-template-columns: 272px minmax(0, 1fr);
+        gap: 18px;
+        padding: 0 28px 28px;
+        min-height: 0;
+        overflow: hidden;
+      }
+      /* Collapse the nav to give the component iframe the full width. */
+      .browser-body.nav-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+      }
+      .browser-body.nav-collapsed .browser-sidebar {
+        display: none;
+      }
+
+      .browser-sidebar {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 10px;
+        min-height: 0;
+      }
+
+      .nav-tools {
+        display: grid;
+        gap: 8px;
+        padding: 10px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+
+      .nav-search {
+        width: 100%;
+        height: 36px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: var(--r-full);
+        outline: 0;
+        background: var(--surface);
+        color: var(--text);
+        font: inherit;
+        font-size: var(--fs-3);
+        box-shadow: var(--surface-highlight);
+      }
+
+      .nav-search::placeholder {
+        color: var(--text-5);
+      }
+
+      .nav-control-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-select {
+        width: 100%;
+        height: 32px;
+        min-width: 0;
+        padding: 0 30px 0 12px;
+        border: 0;
+        border-radius: var(--r-full);
+        outline: 0;
+        appearance: none;
+        background:
+          linear-gradient(45deg, transparent 50%, var(--text-4) 50%) calc(100% - 15px) 13px / 5px
+            5px no-repeat,
+          linear-gradient(135deg, var(--text-4) 50%, transparent 50%) calc(100% - 10px) 13px / 5px
+            5px no-repeat,
+          var(--surface-2);
+        color: var(--text-3);
+        font: inherit;
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+      }
+
+      .nav-select:focus-visible {
+        box-shadow: var(--focus-ring);
+      }
+
+      .nav-count {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      /* Sidebar tonal list, no per-item borders */
+      .browser-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-content: start;
+        min-height: 0;
+        overflow-y: auto;
+        scroll-padding-block: 6px;
+        padding: 6px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+        scrollbar-width: none;
+      }
+      .browser-nav::-webkit-scrollbar,
+      .browser-body::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-item {
+        display: grid;
+        gap: 2px;
+        padding: 10px 12px;
+        border-radius: var(--r-md);
+        background: transparent;
+        border: 0;
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+        transition: background var(--dur-2) var(--ease-out);
+      }
+      .nav-item:hover {
+        background: var(--surface-2);
+      }
+      .nav-item.active {
+        background: var(--ink-900);
+      }
+      .nav-item b {
+        font-size: var(--fs-4);
+        font-weight: var(--fw-semibold);
+        color: var(--text);
+      }
+      .nav-item small {
+        font-size: var(--fs-1);
+        color: var(--text-4);
+      }
+      .nav-item .nav-meta {
+        color: var(--text-5);
+        font-size: 10px;
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .nav-item.active b {
+        color: #fff;
+      }
+      .nav-item.active small {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .nav-item.active .nav-meta {
+        color: rgba(255, 255, 255, 0.48);
+      }
+      .nav-item[hidden] {
+        display: none;
+      }
+      /* Category section header inside the nav list */
+      .nav-group {
+        position: sticky;
+        top: -6px;
+        z-index: 1;
+        margin: 10px 4px 2px;
+        padding: 6px 8px;
+        background: var(--canvas);
+        color: var(--text-4);
+        font-size: 10px;
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .nav-group:first-child {
+        margin-top: 0;
+      }
+      .nav-group[hidden] {
+        display: none;
+      }
+
+      /* Preview pane */
+      .browser-view {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-height: 0;
+        border-radius: var(--r-lg);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .view-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--canvas);
+      }
+      .view-bar b {
+        font-size: var(--fs-4);
+        font-weight: var(--fw-semibold);
+      }
+      .view-toggle {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        flex: 0 0 auto;
+        border: 0;
+        border-radius: var(--r-md);
+        background: var(--surface-2);
+        color: var(--text-2);
+        font-size: 15px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background var(--dur-2) var(--ease-out);
+      }
+      .view-toggle:hover {
+        background: var(--surface-3);
+      }
+      .view-toggle:focus-visible {
+        outline: 2px solid var(--ink-900);
+        outline-offset: 2px;
+      }
+      .view-bar code {
+        min-width: 0;
+        overflow: hidden;
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-family: var(--font-mono);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .view-meta,
+      .view-slices {
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 9px;
+        border-radius: var(--r-full);
+        background: var(--surface-2);
+        color: var(--text-3);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .view-slices {
+        background: var(--cyan-100);
+        color: var(--cyan-800);
+      }
+      .view-bar a {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: var(--control-height-sm);
+        padding: 0 14px;
+        border-radius: var(--r-full);
+        background: var(--surface-2);
+        color: var(--text-2);
+        font-size: var(--fs-3);
+        font-weight: var(--fw-semibold);
+        text-decoration: none;
+        transition: background var(--dur-2) var(--ease-out);
+      }
+      .view-bar a:hover {
+        background: var(--surface-3);
+      }
+      .browser-view iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        border: 0;
+        background: var(--bg);
+      }
+
+      @media (max-width: 880px) {
+        .browser-body {
+          grid-template-columns: 1fr;
+          grid-template-rows: 220px minmax(0, 1fr);
+          padding: 0 18px 18px;
+        }
+        .browser-nav {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+        .nav-item {
+          min-width: 0;
+        }
+        .browser-head {
+          padding: 18px;
+        }
+        .view-bar a {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="browser">
+      <header class="browser-head">
+        <h1>Pulse HTML Component Preview</h1>
+        <span class="count" id="count"></span>
+        <a class="up" href="charts-preview.html">Open chart gallery</a>
+        <a class="up" style="margin-left: 0" href="../figma-component-library.html"
+          >Open Figma component library</a
+        >
+        <p>
+          Live, single-file component specimens. Each one is a standalone
+          <code>&lt;Name&gt;/&lt;Name&gt;.html</code> that links the shared
+          <code>tokens.css</code> and its own <code>.css</code>. This is the current HTML/CSS
+          implementation source for preview, Figma handoff, and later engineering extraction.
+        </p>
+      </header>
+
+      <div class="browser-body">
+        <aside class="browser-sidebar">
+          <div class="nav-tools" aria-label="Component filters">
+            <input
+              class="nav-search"
+              id="nav-search"
+              type="search"
+              placeholder="Search components..."
+              aria-label="Search components"
+            />
+            <div class="nav-control-row">
+              <select class="nav-select" id="nav-filter" aria-label="Filter by category"></select>
+              <span class="nav-count" id="nav-count"></span>
+            </div>
+          </div>
+          <nav class="browser-nav" id="nav" aria-label="Components"></nav>
+        </aside>
+        <section class="browser-view">
+          <div class="view-bar">
+            <button
+              class="view-toggle"
+              id="nav-toggle"
+              type="button"
+              aria-pressed="false"
+              aria-label="Hide or show the component list"
+              title="Hide / show list"
+            >
+              ☰
+            </button>
+            <b id="view-name">Component</b>
+            <code id="view-path"></code>
+            <span class="view-meta" id="view-meta"></span>
+            <span class="view-slices" id="view-slices"></span>
+            <a id="view-open" href="#" target="_blank" rel="noopener">Open in new tab</a>
+          </div>
+          <iframe id="frame" title="Component preview"></iframe>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      // Component registry. Add a row here when a new components/<Name>/ ships.
+      const COMPONENTS = [
+        {
+          name: 'AIPanel',
+          file: 'AIPanel/AIPanel.html',
+          category: 'Business pattern',
+          type: 'AI assistant surface',
+          desc: 'Assistant panel states',
+          slices: [
+            'AIPanel',
+            'AIPanelFrame',
+            'AIPanelHeader',
+            'AIThread',
+            'AIMenuToggle',
+            'AIMenuToggleInteraction',
+            'AIConversationItem',
+            'AIConversationSelectInteraction',
+            'AIMessage',
+            'AICompose',
+            'AIComposeDock',
+            'AIComposeInputInteraction',
+            'AIContextChip',
+            'AIContextClearInteraction',
+            'AISendButton',
+            'AISendInteraction',
+            'ConversationList',
+            'RichReply',
+            'RichReplyAction',
+            'AIRichReplyActionInteraction',
+            'TypingState',
+          ],
+        },
+        {
+          name: 'Button',
+          file: 'Button/Button.html',
+          category: 'Actions',
+          type: 'Action control',
+          desc: 'Variants and states',
+          slices: [
+            'ButtonPrimary',
+            'ButtonPrimaryInteraction',
+            'ButtonSecondary',
+            'ButtonSecondaryInteraction',
+            'ButtonGhost',
+            'ButtonGhostInteraction',
+            'ButtonDanger',
+            'ButtonDangerInteraction',
+            'IconButton',
+            'IconButtonInteraction',
+            'ButtonSpinner',
+            'ButtonSuccess',
+          ],
+        },
+        {
+          name: 'ButtonPrimary',
+          file: 'ButtonPrimary/ButtonPrimary.html',
+          category: 'Actions',
+          type: 'Action control / Primary button source',
+          desc: 'Primary button states',
+          slices: ['ButtonPrimary', 'ButtonPrimaryInteraction', 'ButtonSpinner', 'ButtonSuccess'],
+        },
+        {
+          name: 'ButtonSecondary',
+          file: 'ButtonSecondary/ButtonSecondary.html',
+          category: 'Actions',
+          type: 'Action control / Secondary button source',
+          desc: 'Secondary button states',
+          slices: ['ButtonSecondary', 'ButtonSecondaryInteraction', 'ButtonSpinner'],
+        },
+        {
+          name: 'ButtonGhost',
+          file: 'ButtonGhost/ButtonGhost.html',
+          category: 'Actions',
+          type: 'Action control / Ghost button source',
+          desc: 'Ghost button states',
+          slices: ['ButtonGhost', 'ButtonGhostInteraction'],
+        },
+        {
+          name: 'ButtonDanger',
+          file: 'ButtonDanger/ButtonDanger.html',
+          category: 'Actions',
+          type: 'Action control / Destructive button source',
+          desc: 'Danger button states',
+          slices: ['ButtonDanger', 'ButtonDangerInteraction', 'ButtonSpinner'],
+        },
+        {
+          name: 'IconButton',
+          file: 'IconButton/IconButton.html',
+          category: 'Actions',
+          type: 'Action control / Icon-only button source',
+          desc: 'Icon button states',
+          slices: ['IconButton', 'IconButtonInteraction'],
+        },
+        {
+          name: 'Card',
+          file: 'Card/Card.html',
+          category: 'Surfaces',
+          type: 'Surface',
+          desc: 'Surface recipe',
+          slices: ['Card', 'MetricCard', 'ActionCard', 'MediaCard', 'EmptyCard', 'ErrorCard'],
+        },
+        {
+          name: 'Grid',
+          file: 'Grid/Grid.html',
+          category: 'Layout',
+          type: 'Layout primitive',
+          desc: 'Document, section, split, and responsive content grids',
+          slices: [
+            'Grid',
+            'DocumentGrid',
+            'SectionGrid',
+            'ContentGrid',
+            'SplitGrid',
+            'AutoGrid',
+            'ResponsiveCollapse',
+          ],
+        },
+        {
+          name: 'MetricCard',
+          file: 'MetricCard/MetricCard.html',
+          category: 'Surfaces',
+          type: 'Surface / Metric card source',
+          desc: 'Metric summary card with compact, mini, ink, and status variants',
+          slices: ['MetricCard'],
+        },
+        {
+          name: 'ActionCard',
+          file: 'ActionCard/ActionCard.html',
+          category: 'Surfaces',
+          type: 'Surface / Action card source',
+          desc: 'Action card with CTA',
+          slices: ['ActionCard'],
+        },
+        {
+          name: 'MediaCard',
+          file: 'MediaCard/MediaCard.html',
+          category: 'Surfaces',
+          type: 'Surface / Media card source',
+          desc: 'Media preview card',
+          slices: ['MediaCard'],
+        },
+        {
+          name: 'EmptyCard',
+          file: 'EmptyCard/EmptyCard.html',
+          category: 'General',
+          type: 'Surface / Empty state source',
+          desc: 'Empty card state',
+          slices: ['EmptyCard'],
+        },
+        {
+          name: 'ErrorCard',
+          file: 'ErrorCard/ErrorCard.html',
+          category: 'Surfaces',
+          type: 'Surface / Error state source',
+          desc: 'Error card state',
+          slices: ['ErrorCard'],
+        },
+        {
+          name: 'ConfirmBar',
+          file: 'ConfirmBar/ConfirmBar.html',
+          category: 'Feedback',
+          type: 'Decision prompt',
+          desc: 'Inline confirm prompt',
+          slices: [
+            'ConfirmBar',
+            'ConfirmAction',
+            'EditAction',
+            'BusyAction',
+            'SavedAction',
+            'NarrowConfirmBar',
+          ],
+        },
+        {
+          name: 'FeedbackState',
+          file: 'FeedbackState/FeedbackState.html',
+          category: 'Feedback',
+          type: 'Loading / result atom',
+          desc: 'Alerts, progress, skeletons, empty, and result states',
+          slices: [
+            'InlineAlert',
+            'Progress',
+            'ProgressRing',
+            'SegmentedProgress',
+            'Spinner',
+            'Skeleton',
+            'EmptyState',
+            'ResultState',
+          ],
+        },
+        {
+          name: 'Modal',
+          file: 'Modal/Modal.html',
+          category: 'Overlay',
+          type: 'Dialog shell',
+          desc: 'Overlay modal shell (backdrop, dialog, header, body, footer)',
+          slices: ['Modal', 'ModalHeader', 'ModalClose', 'ModalFooter'],
+        },
+        {
+          name: 'Popover',
+          file: 'Popover/Popover.html',
+          category: 'Overlay',
+          type: 'Floating layer',
+          desc: 'Anchored floating layer plus date picker slice',
+          slices: [
+            'Popover',
+            'PopoverHeader',
+            'PopoverBody',
+            'PopoverFooter',
+            'DatePicker',
+            'DatePickerMonth',
+            'DatePickerNav',
+            'DatePickerGrid',
+            'DatePickerDay',
+            'DatePickerSelected',
+          ],
+        },
+        {
+          name: 'Field',
+          file: 'Field/Field.html',
+          category: 'Data entry',
+          type: 'Form field',
+          desc: 'Labelled input, select, textarea, and checkbox field contract',
+          slices: [
+            'Field',
+            'FieldLabel',
+            'FieldControl',
+            'FieldHelp',
+            'FieldError',
+            'Input',
+            'Select',
+            'Textarea',
+            'CheckboxField',
+          ],
+        },
+        {
+          name: 'DateRangeControl',
+          file: 'DateRangeControl/DateRangeControl.html',
+          category: 'Data entry',
+          type: 'Date range editor',
+          desc: 'Calendar range editor with all-day, quick slot, invalid, readonly, and compact states',
+          slices: [
+            'DateRangeControl',
+            'DateRangeStart',
+            'DateRangeEnd',
+            'DateRangeAllDay',
+            'DateRangeQuickSlot',
+            'DateRangeInvalid',
+            'DateRangeReadonly',
+            'DateRangeCompact',
+          ],
+        },
+        {
+          name: 'Icon',
+          file: 'Icon/Icon.html',
+          category: 'Foundations',
+          type: 'Icon atom',
+          desc: 'Icon set',
+          slices: ['Icon', 'GeminiSparkle'],
+        },
+        {
+          name: 'PlatformBadge',
+          file: 'PlatformBadge/PlatformBadge.html',
+          category: 'Data display',
+          type: 'Metadata badge',
+          desc: 'Metadata badges',
+          slices: ['PlatformBadge', 'TagPill', 'PlatformIconDot', 'StaticMetadataBadge'],
+        },
+        {
+          name: 'PostChip',
+          file: 'PostChip/PostChip.html',
+          category: 'Business pattern',
+          type: 'Campaign production',
+          desc: 'Campaign row + post disclosure',
+          slices: [
+            'PostChip',
+            'CampaignRowShell',
+            'CampaignMeta',
+            'CampaignRow',
+            'PostChipRail',
+            'MoreTask',
+            'MoreTaskStrip',
+            'RightState',
+            'ProgressMeter',
+            'PipelineHeader',
+            'CampaignPipeline',
+            'PipelineAction',
+            'TaskStep',
+          ],
+        },
+        {
+          name: 'CommandSummary',
+          file: 'CommandSummary/CommandSummary.html',
+          category: 'Business pattern',
+          type: 'Command center summary',
+          desc: 'Decision sentence, metric strip, stage rail, next action, loading, and empty states',
+          slices: [
+            'CommandSummary',
+            'CommandSummaryHero',
+            'CommandMetricStrip',
+            'CommandSummaryAction',
+            'CommandStageRail',
+            'CommandSummaryCompact',
+            'CommandSummaryRisk',
+            'CommandSummaryLoading',
+            'CommandSummaryEmpty',
+          ],
+        },
+        {
+          name: 'PlatformPreview',
+          file: 'PlatformPreview/PlatformPreview.html',
+          category: 'Business pattern',
+          type: 'Studio / channel post preview',
+          desc: 'Per-channel post previews',
+          slices: [
+            'PlatformSwitch',
+            'InstagramPost',
+            'YouTubeWatch',
+            'TikTokReel',
+            'FacebookFeed',
+            'XPost',
+          ],
+        },
+        {
+          name: 'CalendarPostBlock',
+          file: 'CalendarPostBlock/CalendarPostBlock.html',
+          category: 'Business pattern',
+          type: 'Calendar scheduling block',
+          desc: 'Post and event blocks with selected, drag, compact, conflict, drop, and loading states',
+          slices: [
+            'CalendarPostBlock',
+            'CalendarEventBlock',
+            'CalendarPostMedia',
+            'CalendarPostMeta',
+            'CalendarPostBlockSelected',
+            'CalendarPostBlockDragging',
+            'CalendarPostBlockCompact',
+            'CalendarPostBlockConflict',
+            'CalendarDropPreview',
+            'CalendarPostBlockLoading',
+          ],
+        },
+        {
+          name: 'CalendarPopover',
+          file: 'CalendarPopover/CalendarPopover.html',
+          category: 'Business pattern',
+          type: 'Calendar detail / create / edit flow',
+          desc: 'Calendar detail, edit, create, loading, date range, and footer action states',
+          slices: [
+            'CalendarPopover',
+            'CalendarDetailView',
+            'CalendarDetailEdit',
+            'CalendarCreateForm',
+            'CalendarDetailActions',
+            'CalendarPopoverLoading',
+            'CalendarDetailBadges',
+            'CalendarCreateTabs',
+          ],
+        },
+        {
+          name: 'ReportCallout',
+          file: 'ReportCallout/ReportCallout.html',
+          category: 'Business pattern',
+          type: 'Report readout / callout source',
+          desc: 'Risk, opportunity, action, selected, compact, and loading report callouts',
+          slices: [
+            'ReportCallout',
+            'ReportCalloutRisk',
+            'ReportCalloutOpportunity',
+            'ReportCalloutAction',
+            'ReportCalloutSelected',
+            'ReportCalloutCompact',
+            'ReportCalloutLoading',
+          ],
+        },
+        {
+          name: 'SourceCitationRow',
+          file: 'SourceCitationRow/SourceCitationRow.html',
+          category: 'Business pattern',
+          type: 'Report readout / source citation source',
+          desc: 'Source evidence rows with platform, meta, confidence, and open action',
+          slices: [
+            'SourceCitationRow',
+            'SourcePlatform',
+            'SourceMeta',
+            'SourceConfidence',
+            'SourceOpenAction',
+            'SourceCitationCompact',
+            'SourceCitationLoading',
+            'SourceCitationSelected',
+          ],
+        },
+        {
+          name: 'ApprovalChain',
+          file: 'ApprovalChain/ApprovalChain.html',
+          category: 'Business pattern',
+          type: 'Approval workflow',
+          desc: 'Sequential approval timeline (plan / brief / content / inbox)',
+          slices: [
+            'ApprovalChain',
+            'ApprovalBlock',
+            'ApprovalStep',
+            'StatusBadge',
+            'ApprovalRail',
+            'CheckpointLabel',
+            'YouTag',
+            'ChangesBanner',
+            'ChangesRequested',
+          ],
+        },
+        {
+          name: 'SegmentedTabs',
+          file: 'SegmentedTabs/SegmentedTabs.html',
+          category: 'Navigation',
+          type: 'Segmented control',
+          desc: 'Sliding segmented control',
+          slices: [
+            'SegmentedTabs',
+            'SegmentThumb',
+            'PageNavTabs',
+            'ReportRangeTabs',
+            'ActionRangeTabs',
+            'AnalyticsSubtabs',
+            'SignalSeverityTabs',
+            'PageTabsInteraction',
+            'ReportRangeInteraction',
+            'ActionRangeInteraction',
+            'AnalyticsSubtabInteraction',
+            'SignalSeverityInteraction',
+            'PageTabsActiveStates',
+            'AnalyticsSubtabActiveStates',
+            'SignalSeverityActiveStates',
+            'CompactRangeActiveState',
+            'DisabledGroup',
+            'OverflowTabs',
+          ],
+        },
+        {
+          name: 'PageNavTabs',
+          file: 'PageNavTabs/PageNavTabs.html',
+          category: 'Navigation',
+          type: 'Segmented control / Page tabs source',
+          desc: 'Page section nav, live sync, and large tab-page switcher states',
+          slices: [
+            'PageNavTabs',
+            'PageNavShell',
+            'PageNavLiveStatus',
+            'PageNavSyncAction',
+            'TabPageSwitcher',
+            'TabPagePlaceholder',
+            'PageTabsInteraction',
+            'PageTabsActiveStates',
+            'TabPageActiveStates',
+          ],
+        },
+        {
+          name: 'ReportRangeTabs',
+          file: 'ReportRangeTabs/ReportRangeTabs.html',
+          category: 'Navigation',
+          type: 'Segmented control / Report range source',
+          desc: 'Compact report range states',
+          slices: ['ReportRangeTabs', 'ReportRangeInteraction', 'CompactRangeActiveState'],
+        },
+        {
+          name: 'ActionRangeTabs',
+          file: 'ActionRangeTabs/ActionRangeTabs.html',
+          category: 'Navigation',
+          type: 'Segmented control / Action range source',
+          desc: 'Action range states',
+          slices: ['ActionRangeTabs', 'ActionRangeInteraction', 'DisabledGroup'],
+        },
+        {
+          name: 'AnalyticsSubtabs',
+          file: 'AnalyticsSubtabs/AnalyticsSubtabs.html',
+          category: 'Navigation',
+          type: 'Segmented control / Analytics subtab source',
+          desc: 'Analytics review subtab states',
+          slices: ['AnalyticsSubtabs', 'AnalyticsSubtabInteraction', 'AnalyticsSubtabActiveStates'],
+        },
+        {
+          name: 'SignalSeverityTabs',
+          file: 'SignalSeverityTabs/SignalSeverityTabs.html',
+          category: 'Navigation',
+          type: 'Segmented control / Signal severity source',
+          desc: 'Signal severity tab states',
+          slices: ['SignalSeverityTabs', 'SignalSeverityInteraction', 'SignalSeverityActiveStates'],
+        },
+        {
+          name: 'SignalRow',
+          file: 'SignalRow/SignalRow.html',
+          category: 'Data display',
+          type: 'Feed row',
+          desc: 'Signal feed row',
+          slices: ['SignalRow', 'SignalMetric', 'SourceLink', 'DismissAction', 'SelectedSignalRow'],
+        },
+        {
+          name: 'SignalCard',
+          file: 'SignalCard/SignalCard.html',
+          category: 'Business pattern',
+          type: 'Feed card',
+          desc: 'Rich signal-feed card (tag, title, action, stat, trend badge, sparkline)',
+          slices: ['SignalCard', 'SignalCardTag', 'SignalCardStat', 'SignalCardBadge'],
+        },
+        {
+          name: 'DataList',
+          file: 'DataList/DataList.html',
+          category: 'Data display',
+          type: 'Operational list',
+          desc: 'Rows, metadata pairs, and responsive table-lite',
+          slices: [
+            'DataList',
+            'DataRow',
+            'DataRowInteractive',
+            'DataRowSelected',
+            'RowMedia',
+            'RowMeta',
+            'RowValue',
+            'RowAction',
+            'DescriptionList',
+            'DescriptionTerm',
+            'DescriptionValue',
+            'TableLite',
+            'TableLiteHeader',
+            'TableLiteRow',
+            'TableLiteMobileRow',
+          ],
+        },
+        {
+          name: 'MetricBlock',
+          file: 'MetricBlock/MetricBlock.html',
+          category: 'Data display',
+          type: 'Metric atom',
+          desc: 'Label, value, unit, delta, trend, and compact metric layouts',
+          slices: [
+            'MetricBlock',
+            'MetricBlockLabel',
+            'MetricBlockValue',
+            'MetricBlockUnit',
+            'MetricDelta',
+            'MetricTrend',
+            'MetricBlockCompact',
+            'MetricBlockHero',
+            'MetricBlockInline',
+          ],
+        },
+        {
+          name: 'ChartShell',
+          file: 'ChartShell/ChartShell.html',
+          category: 'Data display',
+          type: 'Chart shell',
+          desc: 'Header, legend, action, loading, and empty states around custom charts',
+          slices: [
+            'ChartShell',
+            'ChartShellHeader',
+            'ChartShellLegend',
+            'ChartShellBody',
+            'ChartShellAction',
+            'ChartShellLoading',
+            'ChartShellEmpty',
+          ],
+        },
+        {
+          name: 'Timeline',
+          file: 'Timeline/Timeline.html',
+          category: 'Data display',
+          type: 'Timeline',
+          desc: 'Rail, marker, item, compact, and horizontal event sequence states',
+          slices: [
+            'Timeline',
+            'TimelineItem',
+            'TimelineRail',
+            'TimelineMarker',
+            'TimelineMeta',
+            'TimelineCurrent',
+            'TimelineCompact',
+            'TimelineHorizontal',
+          ],
+        },
+        {
+          name: 'MediaPreview',
+          file: 'MediaPreview/MediaPreview.html',
+          category: 'Data display',
+          type: 'Media preview',
+          desc: 'Image/video frame, overlay status, thumbnail stack, empty, and invalid states',
+          slices: [
+            'MediaPreview',
+            'MediaFrame',
+            'MediaImage',
+            'MediaVideoPoster',
+            'MediaOverlay',
+            'MediaThumbStack',
+            'MediaPreviewInline',
+            'MediaPreviewEmpty',
+            'MediaInvalidThumb',
+          ],
+        },
+        {
+          name: 'HorizontalBarChart',
+          file: 'HorizontalBarChart/HorizontalBarChart.html',
+          category: 'Data display',
+          type: 'Bar chart / horizontal',
+          desc: 'Ranking, share, and meter bars',
+          slices: ['RankedBars', 'IconBarTrend', 'ShareBar', 'SignalMeter', 'BarPanelCTA'],
+        },
+        {
+          name: 'VerticalBarChart',
+          file: 'VerticalBarChart/VerticalBarChart.html',
+          category: 'Data display',
+          type: 'Bar chart / vertical',
+          desc: 'Single-series and grouped columns',
+          slices: ['SingleSeries', 'GroupedSeries', 'Legend', 'Annotation', 'StatTrio', 'ChartTip'],
+        },
+        {
+          name: 'ComboChart',
+          file: 'ComboChart/ComboChart.html',
+          category: 'Data display',
+          type: 'Combo bars + line',
+          desc: 'Ramped activity bars + your-post markers',
+          slices: ['ActivityBars', 'PostMarkers', 'PeakColumn', 'HoverReadout'],
+        },
+        {
+          name: 'LineChart',
+          file: 'LineChart/LineChart.html',
+          category: 'Data display',
+          type: 'Line / area chart',
+          desc: 'Single-area + dual-series trend',
+          slices: [
+            'SingleArea',
+            'MetricSelector',
+            'RangeToggle',
+            'DualSeries',
+            'LegendToggle',
+            'GoalDropdown',
+          ],
+        },
+        {
+          name: 'FunnelChart',
+          file: 'FunnelChart/FunnelChart.html',
+          category: 'Data display',
+          type: 'Funnel chart',
+          desc: 'Conversion funnel bands + stage stats',
+          slices: ['FunnelBands', 'FunnelStat', 'ConversionPill', 'DropoffPill'],
+        },
+        {
+          name: 'PieChart',
+          file: 'PieChart/PieChart.html',
+          category: 'Data display',
+          type: 'Pie chart',
+          desc: 'Part-to-whole slices + value legend',
+          slices: ['PieSlices', 'PieSliceLabel', 'PieLegend'],
+        },
+        {
+          name: 'DonutChart',
+          file: 'DonutChart/DonutChart.html',
+          category: 'Data display',
+          type: 'Donut chart',
+          desc: 'Share ring with a center KPI',
+          slices: ['DonutSegments', 'DonutCenterKPI', 'DonutLegend'],
+        },
+        {
+          name: 'RadarChart',
+          file: 'RadarChart/RadarChart.html',
+          category: 'Data display',
+          type: 'Radar chart',
+          desc: 'Multi-dimension profile, period compare',
+          slices: ['DualPeriodRadar', 'CompactRadar', 'RadarAxisLabels', 'VertexReadout'],
+        },
+        {
+          name: 'GeoChart',
+          file: 'GeoChart/GeoChart.html',
+          category: 'Data display',
+          type: 'Geo / region map',
+          desc: 'World choropleth + ranked region list',
+          slices: ['RegionChoropleth', 'ScaleBins', 'RegionRankList', 'RegionReadout'],
+        },
+        {
+          name: 'WordCloud',
+          file: 'WordCloud/WordCloud.html',
+          category: 'Data display',
+          type: 'Keyword cloud',
+          desc: 'Weighted keyword flow, 5 size tiers',
+          slices: ['KeywordCloud', 'WeightTiers', 'TermReadout', 'CloudMeta'],
+        },
+        {
+          name: 'ActivityHeatmap',
+          file: 'ActivityHeatmap/ActivityHeatmap.html',
+          category: 'Data display',
+          type: 'Activity heatmap',
+          desc: 'Day × time intensity grid + read-out',
+          slices: ['HeatCells', 'HeatScaleLegend', 'DayTimeAxes', 'CellReadout'],
+        },
+        {
+          name: 'TreemapChart',
+          file: 'TreemapChart/TreemapChart.html',
+          category: 'Data display',
+          type: 'Treemap share board',
+          desc: 'Share blocks with big % + trend chips',
+          slices: ['ShareBlocks', 'BlockTrendChip', 'BlockLabel'],
+        },
+        {
+          name: 'MirroredBarChart',
+          file: 'MirroredBarChart/MirroredBarChart.html',
+          category: 'Data display',
+          type: 'Mirrored bar chart',
+          desc: 'Gained vs lost bipolar bars + stat rail',
+          slices: ['GainLossBars', 'CenterBaseline', 'MirrorStatRail', 'MirrorReadout'],
+        },
+        {
+          name: 'DataTable',
+          file: 'DataTable/DataTable.html',
+          category: 'Data display',
+          type: 'Data table',
+          desc: 'Analytics rows: bars, pills, row hover',
+          slices: [
+            'AttributionRows',
+            'RowHover',
+            'InlineBar',
+            'SourcePill',
+            'AudienceRows',
+            'AgePill',
+          ],
+        },
+        {
+          name: 'ScoreGauge',
+          file: 'ScoreGauge/ScoreGauge.html',
+          category: 'Data display',
+          type: 'Score / index ring',
+          desc: 'Radial score badge + blurb',
+          slices: ['RingBlurb', 'CompactRing'],
+        },
+        {
+          name: 'StatList',
+          file: 'StatList/StatList.html',
+          category: 'Data display',
+          type: 'Stat / metric kit',
+          desc: 'Status & ranked lists, insights, metric cards',
+          slices: [
+            'StatusList',
+            'RankedList',
+            'TemplateCard',
+            'InsightCards',
+            'AISuggestionCard',
+            'CampaignMetricCard',
+          ],
+        },
+        {
+          name: 'Sidebar',
+          file: 'Sidebar/Sidebar.html',
+          category: 'Navigation',
+          type: 'App shell',
+          desc: 'Left shell rail: Brand, Workspace, Recent chat',
+          slices: [
+            'Sidebar',
+            'SidebarBrand',
+            'SidebarWorkspace',
+            'SidebarExpandedRail',
+            'SidebarCollapsedRail',
+            'SidebarWorkspaceItemExpanded',
+            'SidebarWorkspaceItemCollapsed',
+            'SidebarRecentChatExpanded',
+            'SidebarRecentChatCollapsed',
+            'SidebarNewChatAction',
+            'SidebarManageChats',
+            'SidebarDeleteChatsAction',
+            'SidebarUserRail',
+            'SidebarEdgeToggleCollapse',
+            'SidebarEdgeToggleExpand',
+          ],
+        },
+        {
+          name: 'StatusPill',
+          file: 'StatusPill/StatusPill.html',
+          category: 'Data display',
+          type: 'Status indicator',
+          desc: 'Data and generation status pills',
+          slices: [
+            'DataStatusPill',
+            'GenerationStatusPill',
+            'SeverityPill',
+            'StatusDot',
+            'PageStatusPill',
+          ],
+        },
+        {
+          name: 'NodeGenerationMap',
+          file: 'NodeGenerationMap/NodeGenerationMap.html',
+          category: 'Business pattern',
+          type: 'Generation state',
+          desc: 'Animated generation DAG: queued/running/done nodes, progress, pipeline',
+          slices: ['NodeGenerationMap', 'GenStage', 'GenNode', 'GenEdge', 'GenPipeline'],
+        },
+      ];
+
+      const nav = document.getElementById('nav');
+      const frame = document.getElementById('frame');
+      const viewName = document.getElementById('view-name');
+      const viewPath = document.getElementById('view-path');
+      const viewMeta = document.getElementById('view-meta');
+      const viewSlices = document.getElementById('view-slices');
+      const viewOpen = document.getElementById('view-open');
+      const search = document.getElementById('nav-search');
+      const filter = document.getElementById('nav-filter');
+      const navCount = document.getElementById('nav-count');
+      let activeCategory = 'All';
+      document.getElementById('count').textContent = COMPONENTS.length + ' components';
+
+      function normalize(value) {
+        return value.toLowerCase().trim();
+      }
+
+      function filterNav() {
+        const query = normalize(search.value);
+        let visible = 0;
+        const shownByCategory = {};
+        // Pass 1: item buttons.
+        for (const node of nav.children) {
+          if (node.dataset.groupHead != null) continue;
+          const categoryMatch =
+            activeCategory === 'All' || node.dataset.category === activeCategory;
+          const textMatch = normalize(node.dataset.search).includes(query);
+          const isVisible = categoryMatch && textMatch;
+          node.hidden = !isVisible;
+          if (isVisible) {
+            visible += 1;
+            shownByCategory[node.dataset.category] = true;
+          }
+        }
+        // Pass 2: hide a category header when its group has no visible items.
+        for (const node of nav.children) {
+          if (node.dataset.groupHead == null) continue;
+          node.hidden = !shownByCategory[node.dataset.groupHead];
+        }
+        navCount.textContent = visible + ' shown';
+      }
+
+      function select(comp, options = {}) {
+        const { revealNav = false } = options;
+        frame.src = comp.file;
+        viewName.textContent = comp.name;
+        viewPath.textContent = comp.file;
+        viewMeta.textContent = comp.category + ' / ' + comp.type;
+        viewSlices.textContent = comp.slices.length + ' slices';
+        viewOpen.href = comp.file;
+        for (const btn of nav.children) {
+          btn.classList.toggle('active', btn.dataset.name === comp.name);
+          if (revealNav && btn.dataset.name === comp.name && !btn.hidden) {
+            btn.scrollIntoView({ block: 'nearest' });
+          }
+        }
+        if (location.hash.slice(1) !== comp.name) {
+          history.replaceState(null, '', '#' + comp.name);
+        }
+      }
+
+      // Stable category order for nav grouping + the filter dropdown.
+      const CATEGORY_ORDER = [
+        'Foundations',
+        'Actions',
+        'Data entry',
+        'Surfaces',
+        'Data display',
+        'Navigation',
+        'Feedback',
+        'Business pattern',
+      ];
+      function categoryRank(category) {
+        const i = CATEGORY_ORDER.indexOf(category);
+        return i === -1 ? CATEGORY_ORDER.length : i;
+      }
+      const orderedComponents = [...COMPONENTS].sort(
+        (a, b) => categoryRank(a.category) - categoryRank(b.category)
+      );
+
+      let lastCategory = null;
+      for (const comp of orderedComponents) {
+        if (comp.category !== lastCategory) {
+          lastCategory = comp.category;
+          const head = document.createElement('div');
+          head.className = 'nav-group';
+          head.dataset.groupHead = comp.category;
+          head.textContent = comp.category;
+          nav.appendChild(head);
+        }
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'nav-item';
+        btn.dataset.name = comp.name;
+        btn.dataset.category = comp.category;
+        btn.dataset.search = [comp.name, comp.desc, comp.category, comp.type, ...comp.slices].join(
+          ' '
+        );
+        btn.innerHTML = '<b></b><small></small><span class="nav-meta"></span>';
+        btn.querySelector('b').textContent = comp.name;
+        btn.querySelector('small').textContent = comp.desc;
+        btn.querySelector('.nav-meta').textContent =
+          comp.category + ' / ' + comp.type + ' / ' + comp.slices.length + ' slices';
+        btn.title = comp.slices.join(', ');
+        btn.addEventListener('click', () => select(comp));
+        nav.appendChild(btn);
+      }
+
+      const categories = [
+        'All',
+        ...[...new Set(COMPONENTS.map((comp) => comp.category))].sort(
+          (a, b) => categoryRank(a) - categoryRank(b)
+        ),
+      ];
+      for (const category of categories) {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category === 'All' ? 'All categories' : category;
+        filter.appendChild(option);
+      }
+      filter.addEventListener('change', () => {
+        activeCategory = filter.value;
+        filterNav();
+      });
+      search.addEventListener('input', filterNav);
+
+      const navToggle = document.getElementById('nav-toggle');
+      const browserBody = document.querySelector('.browser-body');
+      navToggle.addEventListener('click', () => {
+        const collapsed = browserBody.classList.toggle('nav-collapsed');
+        navToggle.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+      });
+
+      window.addEventListener('hashchange', () => {
+        const c = COMPONENTS.find((x) => x.name === location.hash.slice(1));
+        if (c) select(c, { revealNav: true });
+      });
+
+      const fromHash = COMPONENTS.find((c) => c.name === location.hash.slice(1));
+      select(fromHash || COMPONENTS[0], { revealNav: Boolean(fromHash) });
+      filterNav();
+    </script>
+  </body>
+</html>

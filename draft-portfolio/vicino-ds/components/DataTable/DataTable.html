@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DataTable — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="DataTable.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">DataTable</h1>
+    <p class="handoff-sub">
+      Flat-grid table scaffold for analytics rows — columns set per instance via
+      <code>--cols</code>, with full-row hover, inline share bars, and status / source / age pills.
+      Hover any row for the full-row wash.
+    </p>
+
+    <div class="specimen">
+      <!-- Variant: attribution rows (inline bar + source/CVR pills) -->
+      <div class="specimen-item">
+        <span class="specimen-label">Attribution rows · inline bar + source / CVR pills</span>
+        <div class="data-table-card">
+          <h2 class="data-table-card__title">Website Performance</h2>
+          <div
+            class="data-table"
+            style="--cols: 220px repeat(5, minmax(0, 1fr)) 200px"
+            role="table"
+            aria-label="Website performance by landing page"
+          >
+            <div class="data-table__th" role="columnheader">Landing Page</div>
+            <div class="data-table__th" role="columnheader">Source</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">Sessions</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">Eng. Rate</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">Goal Events</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">Conv. Rate</div>
+            <div class="data-table__th" role="columnheader">Traffic Share</div>
+
+            <div class="data-table__td data-table__td--strong" data-row="0" role="cell">/demo</div>
+            <div class="data-table__td" data-row="0" role="cell">
+              <span class="data-table__pill data-table__pill--source">LinkedIn</span>
+            </div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="0"
+              role="cell"
+            >
+              4,200
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="0" role="cell">49%</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="0"
+              role="cell"
+            >
+              180
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="0" role="cell">
+              <span class="data-table__pill data-table__pill--good">4.3%</span>
+            </div>
+            <div class="data-table__td" data-row="0" role="cell">
+              <span class="data-table__bar-wrap"
+                ><span class="data-table__bar"
+                  ><span class="data-table__bar-fill" style="--pct: 32%"></span></span
+                ><span class="data-table__bar-val">32%</span></span
+              >
+            </div>
+
+            <div class="data-table__td data-table__td--strong" data-row="1" role="cell">
+              /pricing
+            </div>
+            <div class="data-table__td" data-row="1" role="cell">
+              <span class="data-table__pill data-table__pill--source">Email</span>
+            </div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="1"
+              role="cell"
+            >
+              2,100
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="1" role="cell">55%</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="1"
+              role="cell"
+            >
+              126
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="1" role="cell">
+              <span class="data-table__pill data-table__pill--good">6.0%</span>
+            </div>
+            <div class="data-table__td" data-row="1" role="cell">
+              <span class="data-table__bar-wrap"
+                ><span class="data-table__bar"
+                  ><span class="data-table__bar-fill" style="--pct: 16%"></span></span
+                ><span class="data-table__bar-val">16%</span></span
+              >
+            </div>
+
+            <div class="data-table__td data-table__td--strong" data-row="2" role="cell">
+              /blog/ai-marketing
+              <span class="data-table__pill data-table__pill--warn">Low CVR</span>
+            </div>
+            <div class="data-table__td" data-row="2" role="cell">
+              <span class="data-table__pill data-table__pill--source">Organic</span>
+            </div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="2"
+              role="cell"
+            >
+              7,000
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="2" role="cell">38%</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="2"
+              role="cell"
+            >
+              74
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="2" role="cell">
+              <span class="data-table__pill data-table__pill--warn">1.1%</span>
+            </div>
+            <div class="data-table__td" data-row="2" role="cell">
+              <span class="data-table__bar-wrap"
+                ><span class="data-table__bar"
+                  ><span class="data-table__bar-fill" style="--pct: 53%"></span></span
+                ><span class="data-table__bar-val">53%</span></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: audience breakdown rows (age pill) -->
+      <div class="specimen-item">
+        <span class="specimen-label">Audience breakdown · age pill</span>
+        <div class="data-table-card">
+          <h2 class="data-table-card__title">Platform Audience Breakdown</h2>
+          <div
+            class="data-table"
+            style="--cols: 1.4fr 1fr 1fr 1fr 1fr 0.8fr"
+            role="table"
+            aria-label="Audience breakdown by platform"
+          >
+            <div class="data-table__th" role="columnheader">Platform</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">Followers</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">Gender</div>
+            <div class="data-table__th" role="columnheader">Top Age</div>
+            <div class="data-table__th" role="columnheader">Region</div>
+            <div class="data-table__th data-table__th--num" role="columnheader">SPI</div>
+
+            <div class="data-table__td data-table__td--strong" data-row="0" role="cell">
+              Instagram
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="0" role="cell">48.2K</div>
+            <div class="data-table__td data-table__td--num" data-row="0" role="cell">72% F</div>
+            <div class="data-table__td" data-row="0" role="cell">
+              <span class="data-table__pill data-table__pill--age">25–34</span>
+            </div>
+            <div class="data-table__td" data-row="0" role="cell">SEA</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="0"
+              role="cell"
+            >
+              84
+            </div>
+
+            <div class="data-table__td data-table__td--strong" data-row="1" role="cell">TikTok</div>
+            <div class="data-table__td data-table__td--num" data-row="1" role="cell">31.7K</div>
+            <div class="data-table__td data-table__td--num" data-row="1" role="cell">61% F</div>
+            <div class="data-table__td" data-row="1" role="cell">
+              <span class="data-table__pill data-table__pill--age">18–24</span>
+            </div>
+            <div class="data-table__td" data-row="1" role="cell">SEA</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="1"
+              role="cell"
+            >
+              66
+            </div>
+
+            <div class="data-table__td data-table__td--strong" data-row="2" role="cell">
+              LinkedIn
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="2" role="cell">12.4K</div>
+            <div class="data-table__td data-table__td--num" data-row="2" role="cell">54% M</div>
+            <div class="data-table__td" data-row="2" role="cell">
+              <span class="data-table__pill data-table__pill--age">30–40</span>
+            </div>
+            <div class="data-table__td" data-row="2" role="cell">ANZ / NA</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="2"
+              role="cell"
+            >
+              91
+            </div>
+
+            <div class="data-table__td data-table__td--strong" data-row="3" role="cell">
+              Facebook
+            </div>
+            <div class="data-table__td data-table__td--num" data-row="3" role="cell">8.9K</div>
+            <div class="data-table__td data-table__td--num" data-row="3" role="cell">58% F</div>
+            <div class="data-table__td" data-row="3" role="cell">
+              <span class="data-table__pill data-table__pill--age">35–44</span>
+            </div>
+            <div class="data-table__td" data-row="3" role="cell">SEA</div>
+            <div
+              class="data-table__td data-table__td--num data-table__td--strong"
+              data-row="3"
+              role="cell"
+            >
+              61
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — group full-row hover by data-row (a flat CSS
+      // grid has no row element, so each cell carries the same data-row).
+      document.querySelectorAll('.data-table').forEach((table) => {
+        table.querySelectorAll('.data-table__td[data-row]').forEach((cell) => {
+          const peers = () =>
+            table.querySelectorAll('.data-table__td[data-row="' + cell.dataset.row + '"]');
+          cell.addEventListener('pointerenter', () =>
+            peers().forEach((c) => c.classList.add('is-row-hover'))
+          );
+          cell.addEventListener('pointerleave', () =>
+            peers().forEach((c) => c.classList.remove('is-row-hover'))
+          );
+        });
+      });
+    </script>
+  </body>
+</html>

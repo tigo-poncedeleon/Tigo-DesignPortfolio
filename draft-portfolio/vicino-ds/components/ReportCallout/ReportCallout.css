@@ -1,0 +1,242 @@
+/* ReportCallout - reusable report recommendation block. The whole surface can
+   route to a source view, so the component avoids trailing arrows and heavy
+   left rails. Role, icon tile, tone, and metadata carry the hierarchy. */
+
+.report-callout,
+.report-callout * {
+  box-sizing: border-box;
+}
+
+.report-callout {
+  --report-callout-accent: var(--blue-500);
+  --report-callout-soft: var(--blue-50);
+  --report-callout-line: var(--blue-200);
+  --report-callout-ink: var(--blue-700);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  width: 100%;
+  max-width: 620px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  color: var(--text);
+  font: inherit;
+  font-family: var(--font-sans);
+  text-align: left;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out);
+}
+
+.report-callout--risk {
+  --report-callout-accent: var(--amber-500);
+  --report-callout-soft: var(--amber-50);
+  --report-callout-line: var(--amber-200);
+  --report-callout-ink: var(--amber-700);
+}
+
+.report-callout--opportunity {
+  --report-callout-accent: var(--success-500);
+  --report-callout-soft: var(--success-50);
+  --report-callout-line: var(--success-200);
+  --report-callout-ink: var(--success-700);
+}
+
+.report-callout--action {
+  --report-callout-accent: var(--blue-500);
+  --report-callout-soft: var(--blue-50);
+  --report-callout-line: var(--blue-200);
+  --report-callout-ink: var(--blue-700);
+}
+
+.report-callout--neutral {
+  --report-callout-accent: var(--text-4);
+  --report-callout-soft: var(--surface-2);
+  --report-callout-line: var(--surface-edge);
+  --report-callout-ink: var(--text-3);
+}
+
+.report-callout[href],
+button.report-callout {
+  cursor: pointer;
+}
+
+.report-callout:hover,
+.report-callout.is-hover {
+  background: #fff;
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+.report-callout:focus-visible,
+.report-callout.is-focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.report-callout[aria-selected='true'],
+.report-callout.is-selected {
+  background: var(--report-callout-soft);
+  box-shadow: inset 0 0 0 1px var(--report-callout-line);
+}
+
+.report-callout[disabled],
+button.report-callout:disabled {
+  cursor: default;
+  opacity: 0.48;
+  pointer-events: none;
+}
+
+.report-callout__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  background: var(--report-callout-soft);
+  color: var(--report-callout-ink);
+  box-shadow: inset 0 0 0 1px var(--report-callout-line);
+}
+
+.report-callout__icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.report-callout__body {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.report-callout__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.report-callout__role {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 9px;
+  border-radius: var(--r-full);
+  background: var(--report-callout-soft);
+  color: var(--report-callout-ink);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.report-callout__source {
+  color: var(--text-4);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.report-callout__title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-5);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-title);
+  line-height: var(--lh-snug);
+}
+
+.report-callout__text {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.report-callout__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  color: var(--text-4);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  line-height: 1.25;
+}
+
+.report-callout__metric {
+  color: var(--report-callout-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.report-callout--compact {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--r-md);
+}
+
+.report-callout--compact .report-callout__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+
+.report-callout--compact .report-callout__title {
+  font-size: var(--fs-4);
+}
+
+.report-callout--loading {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.report-callout__skeleton {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.report-callout__skeleton-line {
+  height: 11px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+
+.report-callout__skeleton-line--short {
+  width: 62%;
+}
+
+@media (max-width: 560px) {
+  .report-callout {
+    grid-template-columns: 1fr;
+  }
+
+  .report-callout__icon {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-callout {
+    transition: none !important;
+  }
+
+  .report-callout:hover,
+  .report-callout.is-hover {
+    transform: none;
+  }
+}

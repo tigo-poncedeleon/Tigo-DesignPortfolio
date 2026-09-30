@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TreemapChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="TreemapChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">TreemapChart</h1>
+    <p class="handoff-sub">
+      Glanceable share board — rounded blocks with a big % and a trend chip each, the biggest share
+      anchored in brand cyan. Block areas are an illustrative fixed grid; the % figure carries the
+      exact value. Use PieChart/DonutChart when proportion accuracy matters, a bar chart when close
+      values must be compared.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Share blocks + trend chips</span>
+        <div class="treemap">
+          <div class="treemap__head">
+            <div>
+              <h2 class="treemap__title">Engagement by Format</h2>
+              <p class="treemap__sub">share of total engagement · last 30 days</p>
+            </div>
+          </div>
+          <div
+            class="treemap__plot"
+            role="img"
+            aria-label="Share blocks: video 46% up 2.6, carousel 22% up 12, static image 14% down 1.2, story 10% up 0.8, other 8% flat."
+          >
+            <button class="treemap__block treemap__block--video" type="button">
+              <span class="treemap__block-name">Video</span>
+              <span class="treemap__chip treemap__chip--up"
+                ><span class="treemap__chip-arrow" aria-hidden="true">↑</span> +2.6%</span
+              >
+              <span class="treemap__block-pct">46%</span>
+            </button>
+            <button class="treemap__block treemap__block--carousel" type="button">
+              <span class="treemap__block-name">Carousel</span>
+              <span class="treemap__chip treemap__chip--up"
+                ><span class="treemap__chip-arrow" aria-hidden="true">↑</span> +12%</span
+              >
+              <span class="treemap__block-pct">22%</span>
+            </button>
+            <button class="treemap__block treemap__block--story" type="button">
+              <span class="treemap__block-name">Story</span>
+              <span class="treemap__chip treemap__chip--up"
+                ><span class="treemap__chip-arrow" aria-hidden="true">↑</span> +0.8%</span
+              >
+              <span class="treemap__block-pct">10%</span>
+            </button>
+            <button class="treemap__block treemap__block--other" type="button">
+              <span class="treemap__block-name">Other</span>
+              <span class="treemap__chip treemap__chip--flat">– flat</span>
+              <span class="treemap__block-pct">8%</span>
+            </button>
+            <button class="treemap__block treemap__block--static" type="button">
+              <span class="treemap__block-name">Static image</span>
+              <span class="treemap__chip treemap__chip--down">↓ −1.2%</span>
+              <span class="treemap__block-pct">14%</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

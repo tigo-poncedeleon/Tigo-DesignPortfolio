@@ -1,0 +1,500 @@
+/* LineChart — line / area trend scaffold. Covers a single-series area
+   (flat ~10% wash, metric selector, day/week/month toggle, hover crosshair)
+   and a dual-series line (legend series toggle, goal-event dropdown, hover
+   read-out). Chart-norm rebuild (owner decision 2026-07-07): 2px lines in
+   --chart-1/--chart-2, solid hairline gridlines (never dashed), a flat area
+   wash only on the single series, ≥8px markers with a 2px surface ring, the
+   endpoint direct-labeled, and tooltips where the value leads and the series
+   is keyed by a short line stroke.
+   Data-rigor rules (2026-07-08): lines are for CONTINUOUS measures sampled
+   over time — discrete per-bucket counts belong to columns. Lines draw
+   STRAIGHT segments between samples (owner call 2026-07-08, superseding the
+   smooth-curve round): the points are bucketed aggregates, so a spline
+   invents visible between-point wiggles at readable spacing. Cosmetic
+   smoothing is allowed only on dense series (≳30 points, point gap too
+   small to show a curve feature) and only with monotone interpolation that
+   cannot overshoot a sample; read-outs always return the sampled value,
+   never an interpolated one. Bars must be zero-based, but a
+   line may window its y-range — the area wash must then fade to transparent
+   (never a solid fill on a truncated axis). A granularity toggle (D/W/M)
+   re-picks the mark for the new density: <8 points → columns/dots, 8–31 →
+   line with hover markers, >31 → thin line with endpoint label only — and
+   keeps ~5–8 labeled ticks at every density. Two series of different units
+   draw on independent scales ONLY when declared (sub + aria), or share an
+   indexed base. Visual source: tokens.css. */
+
+.line-chart {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1126px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.line-chart__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.line-chart__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.line-chart__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.line-chart__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+.line-chart__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Day / Week / Month segmented toggle. */
+.line-chart__seg {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+}
+.line-chart__seg-btn {
+  height: 26px;
+  min-width: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--r-full);
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-4);
+  cursor: pointer;
+  transition:
+    background var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+.line-chart__seg-btn:hover:not([aria-pressed='true']) {
+  color: var(--text-2);
+}
+.line-chart__seg-btn[aria-pressed='true'] {
+  background: var(--canvas);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+}
+.line-chart__seg-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Bordered metric selector (single-series variant). */
+.line-chart__select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  font: inherit;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--dur-2) var(--ease-out);
+}
+.line-chart__select:hover {
+  background: var(--surface-2);
+}
+.line-chart__select svg {
+  color: var(--text-4);
+}
+.line-chart__select:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Legend (dual-series variant). */
+.line-chart__legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.line-chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+  cursor: pointer;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+.line-chart__legend-item:hover {
+  color: var(--text-2);
+}
+.line-chart__legend-item[aria-pressed='false'] {
+  opacity: 0.4;
+}
+.line-chart__legend-item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--r-sm);
+}
+.line-chart__swatch {
+  width: 20px;
+  height: 2px;
+  border-radius: 1px;
+  flex: none;
+}
+.line-chart__swatch--sessions {
+  background: var(--chart-1-line);
+}
+.line-chart__swatch--goal {
+  background: var(--chart-2);
+}
+
+/* Inline dropdown (goal event). */
+.line-chart__dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.line-chart__dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  cursor: pointer;
+  transition: color var(--dur-2) var(--ease-out);
+}
+.line-chart__dropdown-toggle:hover {
+  color: var(--ink-900);
+}
+.line-chart__dropdown-toggle svg {
+  color: var(--text-4);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.line-chart__dropdown.is-open .line-chart__dropdown-toggle svg {
+  transform: rotate(180deg);
+}
+.line-chart__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  min-width: 160px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-glass-strong);
+  box-shadow: var(--shadow-2);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+.line-chart__dropdown.is-open .line-chart__menu {
+  display: flex;
+}
+.line-chart__menu-item {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-medium);
+  color: var(--text-2);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+.line-chart__menu-item:hover {
+  background: var(--ink-soft);
+  color: var(--text);
+}
+.line-chart__menu-item[aria-selected='true'] {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+
+/* Plot. */
+/* Body: labeled y-axis gutter(s) + stretch plot. Dual-axis charts label each
+   side in its series' color — the scale must be readable without hover. */
+.line-chart__body {
+  display: flex;
+  gap: 10px;
+}
+.line-chart__yaxis {
+  position: relative;
+  flex: none;
+  width: 34px;
+}
+.line-chart__yaxis--right {
+  width: 30px;
+}
+.line-chart__ytick {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: var(--fs-2);
+  color: var(--text-4);
+  font-variant-numeric: tabular-nums;
+}
+.line-chart__yaxis--right .line-chart__ytick {
+  right: auto;
+  left: 0;
+}
+.line-chart__ytick--sessions {
+  color: var(--chart-1-strong);
+  font-weight: var(--fw-semibold);
+}
+.line-chart__ytick--goal {
+  color: var(--text-2);
+  font-weight: var(--fw-semibold);
+}
+
+/* Reference marks (average / target / benchmark): the only DASHED line in a
+   chart — gridlines stay solid so references stand apart. Always labeled. */
+.line-chart__ref {
+  stroke: var(--text-4);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.line-chart__ref-label {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  background: var(--canvas);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-3);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.line-chart__plot {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}
+.line-chart__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.line-chart__grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.line-chart__baseline {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+.line-chart__series {
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.line-chart__series.is-series-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.line-chart__point {
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-out);
+}
+.line-chart__plot.is-hovering .line-chart__point {
+  opacity: 1;
+}
+/* Endpoint marker — ink point on the bright line, 2px surface ring. */
+.line-chart__static-point {
+  fill: var(--chart-emphasis);
+  stroke: var(--canvas);
+  stroke-width: 2;
+}
+.line-chart__static-point--goal {
+  fill: var(--chart-2);
+}
+/* Crosshair — a solid hairline that snaps to the nearest X. */
+.line-chart__guide {
+  opacity: 0;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+.line-chart__plot.is-hovering .line-chart__guide {
+  opacity: 1;
+}
+
+/* Endpoint direct label (HTML overlay — ink, never the series color). */
+.line-chart__end-label {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* Tooltip — compact dual-series read-out. */
+.line-chart__tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-glass-strong);
+  box-shadow: var(--shadow-2);
+  font-size: var(--fs-1);
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 12px));
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+.line-chart__plot.is-hovering .line-chart__tooltip {
+  display: flex;
+}
+.line-chart__tooltip-date {
+  color: var(--text-4);
+  font-weight: var(--fw-semibold);
+}
+/* Value leads, series label follows; the series is keyed by a short line
+   stroke (never a filled box) — the legend's hierarchy inverted. */
+.line-chart__tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+}
+.line-chart__tooltip-row b {
+  color: var(--text);
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-2);
+  font-variant-numeric: tabular-nums;
+}
+.line-chart__tooltip-key {
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  flex: none;
+}
+
+/* Tooltip — dark value badge (single-series variant). */
+.line-chart__badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  display: none;
+  padding: 4px 9px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-1);
+  font-weight: var(--fw-heavy);
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 12px));
+}
+.line-chart__plot.is-hovering .line-chart__badge {
+  display: block;
+}
+
+.line-chart__axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 4px;
+}
+/* Offset past the y-axis gutter(s) so x labels align with the plot. */
+.line-chart__axis--gutter-l {
+  padding-left: 48px;
+}
+.line-chart__axis--gutter-lr {
+  padding-left: 48px;
+  padding-right: 44px;
+}
+.line-chart__axis span {
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Trend caption pill (single-series). */
+.line-chart__caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  background: var(--pulse-cyan-soft);
+  color: var(--pulse-cyan-dark);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+}
+
+/* Stat-first hero — the widget leads with its number; the chart is evidence
+   (owner-approved reference anatomy: kicker → hero value → chart). */
+.line-chart__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: -6px;
+}
+.line-chart__hero-value {
+  font-size: var(--fs-9);
+  font-weight: var(--fw-heavy);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.line-chart__hero-delta {
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--success-600);
+}

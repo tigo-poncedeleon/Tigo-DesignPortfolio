@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IconButton - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .sheet {
+        display: grid;
+        gap: 30px;
+        max-width: 760px;
+      }
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+      .component-intro {
+        gap: 8px;
+        max-width: 66ch;
+      }
+      .section-title {
+        display: grid;
+        gap: 5px;
+      }
+      .section-title span,
+      small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: 1.55;
+      }
+      .demo-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .states {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .state {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+      }
+      svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.6;
+      }
+      .icon-demo.is-loading .icon-filter,
+      .icon-demo.is-success .icon-filter {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>IconButton</h1>
+        <p>Compact icon-only action button for filters, tools, and dense control surfaces.</p>
+      </header>
+
+      <section class="section" aria-label="Icon button animated component">
+        <div class="section-title">
+          <span>Animated component</span>
+          <p>Click-through loading and success behavior for icon-only controls.</p>
+        </div>
+        <div class="demo-strip">
+          <div class="state">
+            <small>Filter flow</small
+            ><button
+              class="btn btn--icon icon-demo"
+              type="button"
+              aria-label="Run filter demo"
+              data-icon-demo
+            >
+              <span class="btn__spinner" aria-hidden="true"></span>
+              <svg class="icon-filter" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+              <svg class="btn__check" viewBox="0 0 14 14" aria-hidden="true">
+                <path d="M3 7.4l2.6 2.6L11 4.2" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Icon button static slices">
+        <div class="section-title">
+          <span>Slices</span>
+          <p>Frozen states for the icon button component set.</p>
+        </div>
+        <div class="states">
+          <div class="state">
+            <small>Default</small
+            ><button class="btn btn--icon" type="button" aria-label="Filter">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="state">
+            <small>Hover</small
+            ><button class="btn btn--icon is-hover" type="button" aria-label="Filter hover">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="state">
+            <small>Focus</small
+            ><button class="btn btn--icon is-focus" type="button" aria-label="Filter focus">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+          <div class="state">
+            <small>Compact</small
+            ><button class="btn btn--icon btn--sm" type="button" aria-label="Previous month">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M10 4L6 8l4 4" />
+              </svg>
+            </button>
+          </div>
+          <div class="state">
+            <small>Danger hover</small
+            ><button
+              class="btn btn--icon btn--sm btn--danger is-hover"
+              type="button"
+              aria-label="Delete hover"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M3 4.5h10M6 4.5V3h4v1.5M5 4.5l.6 8h4.8l.6-8" />
+              </svg>
+            </button>
+          </div>
+          <div class="state">
+            <small>Disabled</small
+            ><button class="btn btn--icon" type="button" aria-label="Filter disabled" disabled>
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.5 4h11M4.5 8h7M6.5 12h3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      document.querySelectorAll('[data-icon-demo]').forEach((button) => {
+        button.addEventListener('click', () => {
+          button.classList.remove('is-success');
+          button.classList.add('is-loading');
+          button.setAttribute('aria-busy', 'true');
+          window.setTimeout(() => {
+            button.classList.remove('is-loading');
+            button.classList.add('is-success');
+            button.removeAttribute('aria-busy');
+          }, 760);
+        });
+      });
+    </script>
+  </body>
+</html>

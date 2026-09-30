@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StatList — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="StatList.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 480px));
+        gap: 40px 48px;
+        align-items: flex-start;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">StatList</h1>
+    <p class="handoff-sub">
+      Data-display kit for stat / insight rows and composed metric cards — status lists, ranked
+      lists, key-value rows, pipeline chips, segment + AI insights, and campaign metric cards. Folds
+      in the former AnalyticsInsights patterns. Styles are scoped under <code>.ds-stat-list</code>
+      for safe app-bundle adoption.
+    </p>
+
+    <div class="specimen ds-stat-list">
+      <!-- Variant: status list -->
+      <div class="specimen-item">
+        <span class="specimen-label">Status list · dot + value + status pill</span>
+        <div class="stat-card">
+          <div class="stat-card__head"><h2 class="stat-card__title">Campaign Health</h2></div>
+          <div class="stat-list">
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__dot stat-row__dot--green"></span
+                ><span class="stat-row__name">Summer Product Launch</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__meta">6.9% eng</span
+                ><span class="stat-pill stat-pill--good">On Track</span></span
+              >
+            </div>
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__dot stat-row__dot--blue"></span
+                ><span class="stat-row__name">May Brand Awareness</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__meta">0.41 cr/1K</span
+                ><span class="stat-pill stat-pill--info">Completed</span></span
+              >
+            </div>
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__dot stat-row__dot--amber"></span
+                ><span class="stat-row__name">Q2 Thought Leadership</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__meta">3.1% eng</span
+                ><span class="stat-pill stat-pill--warn">Behind pace</span></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: ranked list -->
+      <div class="specimen-item">
+        <span class="specimen-label">Ranked list · rank + icon + value + meta</span>
+        <div class="stat-card">
+          <div class="stat-card__head"><h2 class="stat-card__title">Top Posts This Week</h2></div>
+          <div class="stat-list">
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__rank">#1</span
+                ><span
+                  class="stat-row__icon"
+                  style="background: #000; color: #fff"
+                  aria-hidden="true"
+                  >♪</span
+                ><span class="stat-row__name">BTS: Summer Launch Prep</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__value">8.2%</span
+                ><span class="stat-row__meta">24K imp</span></span
+              >
+            </div>
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__rank">#2</span
+                ><span
+                  class="stat-row__icon"
+                  style="background: #e1306c; color: #fff"
+                  aria-hidden="true"
+                  >◎</span
+                ><span class="stat-row__name">Product Drop countdown</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__value">7.4%</span
+                ><span class="stat-row__meta">18K imp</span></span
+              >
+            </div>
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__rank">#3</span
+                ><span
+                  class="stat-row__icon"
+                  style="background: #e1306c; color: #fff"
+                  aria-hidden="true"
+                  >◎</span
+                ><span class="stat-row__name">Team spotlight — summer reel</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__value">6.1%</span
+                ><span class="stat-row__meta">12K imp</span></span
+              >
+            </div>
+            <div class="stat-row">
+              <span class="stat-row__main"
+                ><span class="stat-row__rank">#4</span
+                ><span
+                  class="stat-row__icon"
+                  style="background: #0a66c2; color: #fff"
+                  aria-hidden="true"
+                  >in</span
+                ><span class="stat-row__name">Q2 thought leadership article</span></span
+              >
+              <span class="stat-row__end"
+                ><span class="stat-row__value">4.8%</span
+                ><span class="stat-row__meta">9K imp</span></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: best-template card (chips + key-value rows + CTA) -->
+      <div class="specimen-item">
+        <span class="specimen-label">Template card · chips + key-value rows + CTA</span>
+        <div class="stat-card">
+          <div class="stat-card__head">
+            <div>
+              <h2 class="stat-card__title">Best Performing Template</h2>
+              <p class="stat-card__sub">Most replicable script structure this period</p>
+            </div>
+          </div>
+          <div class="stat-chips">
+            <span class="stat-chip">Question Hook</span><span class="stat-chip-arrow">→</span>
+            <span class="stat-chip">Reveal @ 0:08</span><span class="stat-chip-arrow">→</span>
+            <span class="stat-chip">Social Proof</span><span class="stat-chip-arrow">→</span>
+            <span class="stat-chip">CTA Final 20%</span>
+          </div>
+          <div class="stat-list">
+            <div class="stat-kv">
+              <span class="stat-kv__label">Posts using this structure</span
+              ><span class="stat-kv__value">6 posts</span>
+            </div>
+            <div class="stat-kv">
+              <span class="stat-kv__label">Avg completion rate</span
+              ><span class="stat-kv__value">68%</span>
+            </div>
+            <div class="stat-kv">
+              <span class="stat-kv__label">Avg engagement rate</span
+              ><span class="stat-kv__value">7.1%</span>
+            </div>
+            <div class="stat-kv">
+              <span class="stat-kv__label">Credit efficiency</span
+              ><span class="stat-kv__value">0.39 cr/1K</span>
+            </div>
+          </div>
+          <button class="stat-cta" type="button">Create from template</button>
+        </div>
+      </div>
+
+      <!-- Variant: segment + AI insight cards -->
+      <div class="specimen-item">
+        <span class="specimen-label">Insight cards · segment + AI insight rows</span>
+        <div class="stat-list" style="gap: 6px; max-width: 480px">
+          <div class="stat-segment">
+            <span class="stat-segment__mark" aria-hidden="true">👜</span>
+            <div>
+              <p class="stat-segment__title">Women 25–34 · SPI 89</p>
+              <p class="stat-segment__sub">
+                iPhone Pro · Shopee + Lazada power shoppers · avg basket SGD 180
+              </p>
+            </div>
+          </div>
+          <div class="stat-segment">
+            <span class="stat-segment__mark" aria-hidden="true">🌏</span>
+            <div>
+              <p class="stat-segment__title">Creator Try-On converts 2.4× better</p>
+              <p class="stat-segment__sub">Prioritize this format for the next LinkedIn push.</p>
+            </div>
+          </div>
+          <div class="stat-segment" style="background: rgba(241, 154, 8, 0.1)">
+            <span class="stat-segment__mark" aria-hidden="true">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 18 18"
+                fill="none"
+                stroke="var(--amber-600)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 2.25L16.5 15.25H1.5Z" />
+                <path d="M9 7v3.75" />
+                <circle cx="9" cy="13.1" r="0.4" fill="var(--amber-600)" stroke="none" />
+              </svg>
+            </span>
+            <div>
+              <p class="stat-segment__title">
+                /blog/ai-marketing drives 7K sessions but only 1.1% CVR
+              </p>
+              <p class="stat-segment__sub">Add a stronger CTA above the fold.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: AI suggestion card -->
+      <div class="specimen-item">
+        <span class="specimen-label">AI suggestion card</span>
+        <div class="stat-card">
+          <div class="stat-ai">
+            <p class="stat-ai__eyebrow">AI Conversion Suggestion · Based on Attribution Data</p>
+            <p class="stat-ai__text">
+              <strong>Creator Try-On on TikTok</strong> is your highest-converting creative at 2.4×
+              vs generic posts. Shifting 2–3 upcoming TikTok slots to this format and fixing
+              <strong>utm_content tracking</strong> could lift conversion rate by an estimated
+              <span class="stat-pos">+18%</span>.
+            </p>
+            <button class="stat-cta" type="button">Optimize Campaign Mix</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: campaign metric card -->
+      <div class="specimen-item">
+        <span class="specimen-label">Campaign metric card · progress + stats + insight + CTA</span>
+        <div class="stat-card" style="max-width: 360px">
+          <div class="stat-card__head">
+            <div>
+              <h2 class="stat-card__title">Summer Product Launch</h2>
+              <p class="stat-card__sub">Jun 2-20, Instagram, TikTok, LinkedIn</p>
+            </div>
+            <span class="stat-pill stat-pill--good">Active</span>
+          </div>
+          <div class="stat-progress">
+            <div class="stat-progress__head">
+              <span class="stat-progress__label">75% published</span
+              ><span class="stat-progress__value">9/12 posts</span>
+            </div>
+            <div class="stat-progress__track">
+              <span class="stat-progress__fill" style="--pct: 75%"></span>
+            </div>
+          </div>
+          <div class="stat-list">
+            <div class="stat-kv">
+              <span class="stat-kv__label">Impressions</span
+              ><span class="stat-kv__value">45.2K</span>
+            </div>
+            <div class="stat-kv">
+              <span class="stat-kv__label">Eng. rate</span><span class="stat-kv__value">6.9%</span>
+            </div>
+            <div class="stat-kv">
+              <span class="stat-kv__label">Credit eff.</span
+              ><span class="stat-kv__value">0.53 cr/1K</span>
+            </div>
+          </div>
+          <div class="stat-insight">
+            <span class="stat-insight__spark" aria-hidden="true">✦</span>
+            <span>On track. BTS reels driving most of the engagement lift.</span>
+          </div>
+          <button class="stat-cta stat-cta--ghost" type="button">View Detail</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

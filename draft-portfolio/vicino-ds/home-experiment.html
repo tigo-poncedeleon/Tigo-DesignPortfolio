@@ -1,0 +1,1873 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      if (window.self !== window.top) document.documentElement.classList.add('is-embedded');
+    </script>
+    <style>
+/* ===================================================================
+   Pulse React design tokens.
+   Source of truth for the React app. The static design-system/handoff files
+   are handoff documentation; this file owns product implementation.
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Newsreader:ital,opsz,wght@0,18..72,400..500;1,18..72,400..500&display=swap');
+
+:root {
+  /* Core surfaces: neutral command UI with cyan reserved for auxiliary status/highlight. */
+  --bg: #f4f7f7;
+  --canvas: #ffffff;
+  --surface: #f8faf9;
+  --surface-2: #ecf1f0;
+  --surface-3: #e1e8e6;
+  --border: rgba(29, 29, 31, 0.08);
+  --border-strong: rgba(29, 29, 31, 0.16);
+  --ink-900: #141416;
+  --ink-800: #1d1d1f;
+  --ink-700: #2f3135;
+  --ink-600: #44464a;
+  /* Text hierarchy. Lead with weight + tone, not size, to separate levels.
+     1 primary  → titles, key numbers, primary body
+     2 secondary→ standard body, descriptions
+     3 tertiary → supporting copy, meta, captions
+     4 quaternary→ labels, eyebrows, placeholder, quiet meta
+     5 disabled → disabled / faint, non-actionable text */
+  --text-1: var(--ink-800);
+  --text: var(--text-1);
+  --text-2: var(--ink-600);
+  --text-3: #5f6369;
+  --text-4: #8a8e95;
+  --text-5: #b1b5bb;
+
+  --ink: var(--ink-800);
+  --ink-2: var(--ink-700);
+  --ink-soft: rgba(29, 29, 31, 0.06);
+  --ink-line: rgba(29, 29, 31, 0.12);
+  --white-glass: rgba(255, 255, 255, 0.74);
+
+  --pulse-cyan: #49e0f5;
+  --pulse-cyan-strong: #16a9bc;
+  --pulse-cyan-dark: #0d7685;
+  --pulse-cyan-soft: #e5fbff;
+  --pulse-cyan-line: rgba(73, 224, 245, 0.42);
+
+  /* Legacy green/lime names remain as aliases until component class names are renamed. */
+  --pulse-lime: var(--pulse-cyan);
+  --pulse-lime-strong: var(--pulse-cyan-strong);
+  --pulse-lime-soft: var(--pulse-cyan-soft);
+  --pulse-lime-line: var(--pulse-cyan-line);
+
+  --cyan-50: #f0fdff;
+  --cyan-100: #e5fbff;
+  --cyan-200: #b8f3fb;
+  --cyan-500: var(--pulse-cyan);
+  --cyan-600: #0ea5b8;
+  --cyan-700: var(--pulse-cyan-dark);
+
+  /* --green-* is the real green ramp (positive / live / data-up), mirroring the
+     --success-* semantic alias. Honest naming: --green is green, --cyan is cyan —
+     never alias --green to cyan. If you need cyan, use --cyan-*. */
+  --green-50: var(--success-50);
+  --green-100: var(--success-100);
+  --green-200: var(--success-200);
+  --green-500: var(--success-500);
+  --green-600: var(--success-600);
+  --green-700: var(--success-700);
+
+  /* Success — real green for landed states: completed, approved, published,
+     on-track, delivered. Distinct from cyan momentum and from severity.
+     Status base = #43ba51. On white, use 600/700 for text (500 is a fill/dot). */
+  --success-50: #eff9f1;
+  --success-100: #d5f0da;
+  --success-200: #abe2b3;
+  --success-500: #43ba51;
+  --success-600: #2e9d40;
+  --success-700: #207d32;
+  --success: var(--success-600);
+  --success-soft: var(--success-100);
+  --success-line: var(--success-200);
+
+  /* Functional color only. Do not use blue as brand chrome. Status base = #3987f3. */
+  --info: #3987f3;
+  --info-soft: rgba(57, 135, 243, 0.11);
+  --info-line: rgba(57, 135, 243, 0.26);
+
+  --brand: var(--pulse-lime);
+  --brand-2: var(--pulse-lime-strong);
+  --brand-soft: var(--pulse-lime-soft);
+  --navy-deep: var(--ink);
+
+  --blue: var(--info);
+  --indigo: #6366f1;
+  --cyan: var(--cyan-600);
+  --green: var(--success);
+  --red: #ef4444;
+  --orange: #f19a08;
+  --yellow: #f5b800;
+  --teal: #14b8a6;
+  --pink: #ec4899;
+
+  --cyan-soft: var(--cyan-100);
+  --green-soft: var(--success-soft);
+  --red-soft: rgba(239, 68, 68, 0.11);
+  --orange-soft: rgba(241, 154, 8, 0.14);
+  --blue-soft: var(--info-soft);
+  --indigo-soft: rgba(99, 102, 241, 0.12);
+
+  /* Semantic lightness ramps. Same 6 stops as cyan: 50/100 soft fills, 200
+     borders/lines, 500 the base, 600 text/dot on light, 700 deepest emphasis. */
+  --red-50: #fef2f2;
+  --red-100: #fde4e4;
+  --red-200: #f9c9c9;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* Status base = #f19a08. Amber on white is low-contrast: use 700 for text. */
+  --amber-50: #fef6e7;
+  --amber-100: #fce7be;
+  --amber-200: #f7ce84;
+  --amber-500: #f19a08;
+  --amber-600: #cc7f06;
+  --amber-700: #a1640b;
+  --amber: var(--amber-500);
+  --amber-soft: var(--amber-100);
+  --amber-line: var(--amber-200);
+
+  /* Status base = #3987f3. On white, use 600/700 for text. */
+  --blue-50: #eff5fe;
+  --blue-100: #d7e6fd;
+  --blue-200: #b0cdfa;
+  --blue-500: #3987f3;
+  --blue-600: #1f6fe0;
+  --blue-700: #1a57b0;
+
+  --indigo-50: #f1f1fe;
+  --indigo-100: #e2e3fc;
+  --indigo-200: #c7c9f8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+
+  --perception: var(--ink);
+  --perception-soft: var(--ink-soft);
+  --creative: var(--pulse-lime);
+  --creative-soft: var(--pulse-lime-soft);
+
+  --severity-critical: var(--severity-watch);
+  --severity-critical-soft: var(--severity-watch-soft);
+  --severity-critical-line: var(--severity-watch-line);
+  --severity-warning: var(--amber-600);
+  --severity-warning-soft: rgba(204, 127, 6, 0.14);
+  --severity-warning-line: rgba(204, 127, 6, 0.3);
+  --severity-info: var(--info);
+  --severity-info-soft: var(--info-soft);
+  --severity-info-line: var(--info-line);
+  --severity-positive: var(--success-500);
+  --severity-positive-soft: var(--success-50);
+  --severity-positive-line: var(--success-200);
+
+  --status-live: var(--success-500);
+  --status-live-soft: var(--success-50);
+  --status-live-line: var(--success-200);
+  --status-ready: var(--cyan-700);
+  --status-ready-soft: var(--cyan-50);
+  --status-ready-line: var(--cyan-200);
+  /* Done / Approved / Published / On-track. Real green, separate from cyan
+     Live/Ready momentum. Use for landed positive states, not for severity. */
+  --status-success: var(--success-500);
+  --status-success-soft: var(--success-100);
+  --status-success-line: var(--success-200);
+  --status-scheduled: var(--blue-500);
+  --status-scheduled-soft: var(--blue-50);
+  --status-scheduled-line: var(--blue-200);
+  --status-draft: var(--amber-500);
+  --status-draft-soft: var(--amber-50);
+  --status-draft-line: var(--amber-200);
+  --status-rendering: var(--indigo-500);
+  --status-rendering-soft: var(--indigo-50);
+  --status-rendering-line: var(--indigo-200);
+  --status-neutral: var(--text-4);
+  --status-neutral-soft: rgba(29, 29, 31, 0.045);
+  --status-neutral-line: rgba(29, 29, 31, 0.08);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-2xl: 30px;
+  --r-3xl: 40px;
+  --r-full: 9999px;
+
+  /* Layered modern shadow scale — kept light. Hairline / subtle resting / overlay. */
+  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-2: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 10px rgba(15, 23, 42, 0.04);
+  --shadow-3: 0 2px 6px rgba(15, 23, 42, 0.05), 0 14px 30px rgba(15, 23, 42, 0.07);
+  --shadow-panel: -10px 0 28px rgba(15, 23, 42, 0.06), -1px 0 3px rgba(15, 23, 42, 0.03);
+  --shadow-dock: 0 2px 4px rgba(15, 23, 42, 0.05), 0 16px 36px rgba(15, 23, 42, 0.08);
+
+  --surface-glass: #ffffff;
+  --surface-glass-strong: #ffffff;
+  --surface-edge: rgba(29, 29, 31, 0.068);
+  --surface-edge-strong: rgba(29, 29, 31, 0.11);
+  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --surface-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --surface-shadow-hover: 0 1px 3px rgba(15, 23, 42, 0.05), 0 10px 24px rgba(15, 23, 42, 0.055);
+
+  --card-bg: var(--surface-glass);
+  --card-bg-strong: var(--surface-glass-strong);
+  --card-border: var(--surface-edge);
+  --card-radius: 16px;
+  --card-shadow: var(--surface-highlight), var(--surface-shadow-rest);
+  --card-shadow-hover: var(--surface-highlight), var(--surface-shadow-hover);
+  --button-dark: var(--ink-900);
+  --button-dark-hover: var(--ink-700);
+  --button-glass: rgba(255, 255, 255, 0.76);
+  --focus-ring: 0 0 0 3px rgba(73, 224, 245, 0.42);
+
+  /* Shared control geometry. Use these for buttons, pills, chips, and handoffs. */
+  --control-height-sm: 34px;
+  --control-height-md: 38px;
+  --control-height-lg: 44px;
+  --control-pad-x-sm: 16px;
+  --control-pad-x-md: 18px;
+  --control-pad-x-lg: 24px;
+  --control-gap: 7px;
+  --chip-height: 32px;
+  --chip-pad-x: 14px;
+  --chip-pad-x-compact: 12px;
+  --module-pad-x: clamp(28px, 3.6vw, 58px);
+  --module-pad-y: 28px;
+  --inner-card-radius: 20px;
+  --inner-media-radius: 16px;
+
+  --font-sans:
+    'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial,
+    sans-serif;
+  --font-display: var(--font-sans);
+  /* Manrope-only platform: numeric/code slots inherit the sans stack and rely
+     on font-variant-numeric for tabular alignment. */
+  --font-mono: var(--font-sans);
+  /* The ONE exception to the single-typeface rule: Newsreader is a serif used
+     only for stylized report display titles above 64px (covers, report heroes).
+     Never for body, UI, labels, numbers, or any heading on the H1-H4 ladder.
+     Weight caps at medium (400-500); italic is available and on-brand here. */
+  --font-report: 'Newsreader', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --type-report-display: clamp(64px, 8vw, 96px);
+
+  /* Type scale */
+  --fs-1: 11px;
+  --fs-2: 12px;
+  --fs-3: 13px;
+  --fs-4: 14px;
+  --fs-5: 15px;
+  --fs-6: 17px;
+  --fs-7: 20px;
+  --fs-8: 24px;
+  /* Key data figures (KPI / metric numbers, cadence) use one standard size. */
+  --fs-figure: 32px;
+  --fs-9: 30px;
+  --fs-10: 42px;
+  --fs-11: 58px;
+
+  /* Heading system. Page entrances may use a stylized Manrope display title;
+     module and card headings stay calmer for reading. Hierarchy comes from
+     size, spacing, position, and structure — NOT from heavier weight. */
+  --type-page-display: 64px; /* expressive page entrance / workspace title */
+  --type-h1: 48px; /* primary page / large title */
+  --type-h2: 28px; /* section / sub title */
+  --type-h3: 21px; /* mid title — kept substantial, not a tiny step */
+  --type-h4: 18px; /* card title — kept substantial, not a tiny step */
+  /* Fixed gap between content headings and captions. Display page entrances
+     need a larger gap so the support line reads as its own calm row. */
+  --heading-gap: 8px;
+  --display-heading-gap: 20px;
+
+  --type-display: var(--type-page-display);
+  --type-headline: var(--type-h1);
+  --type-section: var(--type-h2);
+  --type-card-title: var(--type-h4);
+  --type-caption: 13px; /* description / supporting line under a title */
+  --type-body: 14px;
+  --type-supporting: 13px;
+  --type-meta: 12.5px;
+  --type-label: 11px;
+  --type-metric: 26px;
+  --type-page-title: var(--type-page-display);
+  --type-module-title: var(--type-h2);
+  --type-ui-title: var(--type-card-title);
+  --type-ui-body: var(--type-body);
+  --type-ui-supporting: var(--type-supporting);
+  --type-ui-meta: var(--type-meta);
+  --type-ui-label: var(--type-label);
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 650;
+  --fw-heavy: 700;
+  --fw-black: 760;
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.62;
+  --tracking-display: 0;
+  --tracking-title: 0;
+  --tracking-ui: 0;
+  --tracking-label: 0.06em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 72px;
+
+  --layout-rail: 220px;
+  --layout-rail-collapsed: 64px;
+  --layout-page-max: 1240px;
+  --layout-readable: 720px;
+  --layout-wide-readable: 960px;
+  --layout-pad-desktop: 48px;
+  --layout-pad-compact: 34px;
+  --layout-pad-mobile: 20px;
+  --grid-columns: 12;
+  --grid-gap: 24px;
+  --grid-gap-tight: 16px;
+  --grid-gap-loose: 32px;
+  --section-gap: 76px;
+  --section-gap-mobile: 52px;
+  --bp-mobile: 820px;
+  --bp-tablet: 1180px;
+  --bp-desktop: 1440px;
+  --bp-wide: 1728px;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-disclosure: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-1: 0.12s;
+  --dur-2: 0.18s;
+  --dur-3: 0.32s;
+  --dur-disclosure: 0.42s;
+
+  --panel-bg: transparent;
+  --panel-border-color: transparent;
+  --panel-shadow: none;
+  --panel-radius: 0;
+  --panel-pad: 0;
+}
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow: hidden;
+  letter-spacing: 0;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button:focus-visible,
+.nav-item:focus-visible,
+.action-row:focus-visible,
+.section-head:focus-visible,
+.post-chip:focus-visible {
+  outline: 2px solid rgba(155, 229, 84, 0.9);
+  outline-offset: 3px;
+}
+
+/* When the AI side panel is open, keep the sidebar fixed at the far left and
+   slide the assistant into the space immediately to its right. Only the page
+   content column shifts, so the navigation order stays: rail -> AI -> content. */
+.app .main,
+.signal-page .main,
+.analytics-page .main,
+.calendar-app .calendar-main,
+.strategy-page .main,
+.campaigns-page .main,
+.studio-page .main {
+  transition: margin-left 0.36s cubic-bezier(0.32, 0.72, 0.24, 1);
+}
+body.ai-panel-open .app .main,
+body.ai-panel-open .signal-page .main,
+body.ai-panel-open .analytics-page .main,
+body.ai-panel-open .calendar-app .calendar-main,
+body.ai-panel-open .strategy-page .main,
+body.ai-panel-open .campaigns-page .main,
+body.ai-panel-open .studio-page .main {
+  margin-left: var(--ai-width, 400px);
+}
+
+/* Inner two-column layouts assume ~1200px headroom. When the AI panel eats
+   400px of the viewport, even a 1600px monitor effectively becomes <1200px
+   in the content area, so collapse to single column based on viewport. */
+@media (max-width: 1600px) {
+  body.ai-panel-open .action-workspace {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      'posts'
+      'signals' !important;
+  }
+  body.ai-panel-open .signal-queue-panel {
+    min-height: 0;
+  }
+}
+
+    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pulse Home Cyan Experiment</title>
+    <style>
+      /* Experiment-local accent. Everything else resolves to tokens.css. */
+      :root {
+        --cyan: #49e0f5;
+        --ink-soft-local: var(--ink-soft);
+        --panel: var(--canvas);
+        --panel-strong: var(--canvas);
+        --line: var(--border);
+        --line-strong: var(--border-strong);
+        --shadow-soft: var(--shadow-1);
+        --shadow-rest: var(--surface-shadow-rest);
+        --radius-panel: var(--card-radius);
+        --radius-card: var(--r-md);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: auto;
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        overflow: auto;
+        color: var(--text);
+        letter-spacing: 0;
+        background: var(--bg);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        transition:
+          transform var(--dur-2) var(--ease-out),
+          background var(--dur-2) var(--ease-out),
+          border-color var(--dur-2) var(--ease-out);
+      }
+
+      button:focus-visible {
+        outline-color: var(--cyan);
+      }
+
+      button:active {
+        transform: translateY(1px) scale(0.985);
+      }
+
+      .cyan-home {
+        min-height: 100dvh;
+        display: grid;
+        grid-template-columns: var(--layout-rail) minmax(0, 1fr);
+        isolation: isolate;
+      }
+
+      .side {
+        position: sticky;
+        top: 0;
+        height: 100dvh;
+        padding: 18px 14px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: var(--grid-gap-tight);
+        border-right: 1px solid var(--line);
+        background: var(--bg);
+      }
+
+      .brand {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 8px;
+      }
+
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--r-sm);
+        background: var(--ink-900);
+        position: relative;
+      }
+
+      .brand-mark::before,
+      .brand-mark::after {
+        content: '';
+        position: absolute;
+        border-radius: 4px;
+        border: 1.5px solid #fff;
+      }
+
+      .brand-mark::before {
+        width: 9px;
+        height: 9px;
+        left: 7px;
+        top: 7px;
+      }
+
+      .brand-mark::after {
+        width: 6px;
+        height: 6px;
+        right: 7px;
+        bottom: 7px;
+        border-color: var(--cyan);
+        background: var(--cyan);
+      }
+
+      .brand strong {
+        display: block;
+        font-size: var(--type-body);
+        line-height: 1.1;
+        font-weight: var(--fw-semibold);
+        color: var(--ink-800);
+      }
+
+      .brand span {
+        display: block;
+        margin-top: 2px;
+        font-size: var(--type-label);
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-label);
+        color: var(--text-4);
+      }
+
+      .nav {
+        display: grid;
+        align-content: start;
+        gap: 7px;
+        padding-top: 6px;
+      }
+
+      .nav button {
+        min-height: var(--control-height-sm);
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 9px;
+        padding: 0 10px;
+        border-radius: var(--r-full);
+        color: var(--text-3);
+        text-align: left;
+        border: 1px solid transparent;
+      }
+
+      .nav button:hover {
+        background: var(--ink-soft);
+        color: var(--ink-800);
+      }
+
+      .nav button.is-active {
+        background: var(--canvas);
+        border-color: var(--line);
+        color: var(--ink-900);
+      }
+
+      .nav svg {
+        width: 17px;
+        height: 17px;
+        stroke: currentColor;
+        stroke-width: 1.75;
+        fill: none;
+      }
+
+      .nav-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: var(--type-supporting);
+        font-weight: var(--fw-medium);
+      }
+
+      .nav-count {
+        min-width: 22px;
+        height: 22px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--r-full);
+        background: var(--ink-soft);
+        color: var(--text-3);
+        font-size: var(--type-label);
+        font-weight: var(--fw-bold);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .side-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-card);
+        background: var(--canvas);
+        padding: 14px;
+      }
+
+      .side-card b {
+        display: block;
+        font-size: var(--type-metric);
+        line-height: 1;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+        font-variant-numeric: tabular-nums;
+        color: var(--ink-900);
+      }
+
+      .side-card span {
+        display: block;
+        margin-top: 7px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        line-height: 1.3;
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .main {
+        min-width: 0;
+        padding: 14px 30px 110px;
+      }
+
+      .content {
+        width: min(100%, var(--layout-page-max));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--grid-gap-tight);
+        margin-bottom: 22px;
+      }
+
+      .crumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .crumb::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--cyan);
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .icon-btn,
+      .share-btn {
+        height: var(--control-height-md);
+        border-radius: var(--r-full);
+        border: 1px solid var(--line);
+        background: var(--canvas);
+        color: var(--ink-700);
+      }
+
+      .icon-btn {
+        width: var(--control-height-md);
+        display: grid;
+        place-items: center;
+      }
+
+      .share-btn {
+        padding: 0 var(--control-pad-x-sm);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--control-gap);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+      }
+
+      .icon-btn svg,
+      .share-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 1.75;
+        fill: none;
+      }
+
+      .share-btn {
+        background: var(--button-dark);
+        color: #fff;
+        border-color: var(--button-dark);
+      }
+
+      .share-btn:hover {
+        background: var(--button-dark-hover);
+        border-color: var(--button-dark-hover);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.82fr);
+        gap: var(--grid-gap-tight);
+        align-items: stretch;
+        margin-bottom: 18px;
+      }
+
+      .hero-panel,
+      .today-panel,
+      .module,
+      .assistant-bar {
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .hero-panel {
+        min-height: 432px;
+        border-radius: var(--radius-panel);
+        padding: var(--module-pad-y) var(--module-pad-x);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 26px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-copy,
+      .hero-visual {
+        position: relative;
+        z-index: 1;
+        min-width: 0;
+      }
+
+      .hero-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .hero-kicker::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--cyan);
+      }
+
+      .kinetic-title {
+        margin: 0;
+        max-width: 740px;
+        color: var(--ink-900);
+        font-size: var(--type-display);
+        line-height: var(--lh-tight);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-display);
+        text-wrap: balance;
+        position: relative;
+      }
+
+      .kinetic-title span {
+        display: inline-block;
+        transform: translateX(-0.015em);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .hero-subcopy {
+        margin: 22px 0 0;
+        max-width: 590px;
+        color: var(--text-3);
+        font-size: var(--type-body);
+        line-height: 1.58;
+      }
+
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        min-height: var(--control-height-md);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--control-gap);
+        border-radius: var(--r-full);
+        padding: 0 var(--control-pad-x-sm);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-bold);
+        border: 1px solid var(--line);
+      }
+
+      .primary-btn {
+        background: var(--button-dark);
+        color: #fff;
+        border-color: var(--button-dark);
+      }
+
+      .primary-btn:hover {
+        background: var(--button-dark-hover);
+        border-color: var(--button-dark-hover);
+      }
+
+      .secondary-btn {
+        background: var(--canvas);
+        color: var(--ink-700);
+      }
+
+      .primary-btn svg,
+      .secondary-btn svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        fill: none;
+      }
+
+      .hero-visual {
+        align-self: end;
+        display: grid;
+        gap: 12px;
+      }
+
+      .mini-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-card);
+        background: var(--canvas);
+        padding: 16px;
+      }
+
+      .mini-card.dark {
+        color: #fff;
+        background: var(--ink-900);
+        border-color: var(--ink-900);
+      }
+
+      .mini-label {
+        color: inherit;
+        opacity: 0.62;
+        font-size: var(--type-label);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+        font-weight: var(--fw-semibold);
+      }
+
+      .mini-value {
+        margin-top: 10px;
+        font-size: var(--fs-9);
+        line-height: 1;
+        letter-spacing: var(--tracking-title);
+        font-weight: var(--fw-medium);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .mini-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        color: inherit;
+        opacity: 0.72;
+        font-size: var(--fs-2);
+      }
+
+      .sparkline {
+        width: 100%;
+        height: 84px;
+        margin-top: 12px;
+        display: block;
+      }
+
+      .sparkline .grid {
+        stroke: var(--border);
+        stroke-width: 1;
+      }
+
+      .sparkline .fill {
+        fill: none;
+      }
+
+      .sparkline .main-line {
+        fill: none;
+        stroke: var(--ink-900);
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      .sparkline .cyan-line {
+        fill: none;
+        stroke: var(--cyan);
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      .today-panel {
+        min-height: 432px;
+        border-radius: var(--radius-panel);
+        padding: var(--space-5);
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 16px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .panel-title {
+        color: var(--ink-800);
+        font-size: var(--type-card-title);
+        line-height: 1.18;
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-ui);
+      }
+
+      .panel-meta {
+        margin-top: 4px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .segmented {
+        min-width: 168px;
+        height: 36px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        align-items: center;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-full);
+        background: var(--surface-2);
+      }
+
+      .segmented button {
+        height: 28px;
+        border-radius: var(--r-full);
+        color: var(--text-4);
+        font-size: var(--type-label);
+        font-weight: var(--fw-semibold);
+      }
+
+      .segmented button.is-active {
+        color: var(--ink-900);
+        background: var(--canvas);
+        border: 1px solid var(--line);
+      }
+
+      .date-strip {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 6px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 14px;
+      }
+
+      .date {
+        min-width: 0;
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        color: var(--text-4);
+        font-size: var(--type-label);
+      }
+
+      .date b {
+        width: 29px;
+        height: 29px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: var(--text-3);
+        font-size: var(--type-label);
+        font-weight: var(--fw-bold);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .date.is-active b {
+        background: var(--cyan);
+        color: var(--ink-900);
+      }
+
+      .queue {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .queue-row {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        min-height: 58px;
+        border-radius: var(--radius-card);
+        border: 1px solid var(--line);
+        background: var(--canvas);
+        padding: 9px 10px;
+      }
+
+      .queue-icon {
+        width: 32px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--r-sm);
+        background: var(--ink-soft-local);
+        color: var(--ink-800);
+        font-size: var(--type-label);
+        font-weight: var(--fw-heavy);
+      }
+
+      .queue-title {
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: var(--ink-800);
+        font-size: var(--type-supporting);
+        font-weight: var(--fw-semibold);
+      }
+
+      .queue-sub {
+        margin-top: 2px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .queue-time {
+        color: var(--text-4);
+        font-size: var(--type-label);
+        font-weight: var(--fw-semibold);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .module-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr) minmax(280px, 0.92fr);
+        gap: var(--grid-gap-tight);
+        align-items: stretch;
+      }
+
+      .module {
+        min-height: 286px;
+        border-radius: var(--radius-panel);
+        padding: var(--space-5);
+        overflow: hidden;
+      }
+
+      .module.wide {
+        grid-column: span 2;
+      }
+
+      .module-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .module-title {
+        color: var(--ink-800);
+        font-size: var(--type-card-title);
+        line-height: 1.18;
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-ui);
+      }
+
+      .module-sub {
+        margin-top: 4px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .module-tools {
+        display: flex;
+        gap: 7px;
+      }
+
+      .tool-dot {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--r-full);
+        border: 1px solid var(--line);
+        background: var(--canvas);
+        color: var(--text-4);
+      }
+
+      .tool-dot svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        fill: none;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 9px;
+        margin-bottom: 18px;
+      }
+
+      .metric {
+        min-height: 72px;
+        border-radius: var(--radius-card);
+        border: 1px solid var(--line);
+        background: var(--panel-strong);
+        padding: 11px;
+        box-shadow: var(--shadow-rest);
+      }
+
+      .metric b {
+        display: block;
+        color: var(--ink-900);
+        font-size: var(--type-metric);
+        line-height: 1;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 7px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        line-height: 1.24;
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .metric.is-cyan {
+        box-shadow: inset 0 2px 0 var(--cyan);
+      }
+
+      .bar-chart {
+        height: 132px;
+        display: grid;
+        grid-template-columns: repeat(18, 1fr);
+        align-items: end;
+        gap: 6px;
+        padding: 14px 0 2px;
+        border-top: 1px solid var(--line);
+      }
+
+      .bar {
+        min-width: 0;
+        height: var(--h);
+        border-radius: 3px 3px 0 0;
+        background: var(--ink-line);
+        position: relative;
+      }
+
+      .bar.is-active {
+        background: var(--ink-900);
+      }
+
+      .bar.is-cyan {
+        background: var(--cyan);
+      }
+
+      .trend-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .trend {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+        border-radius: var(--radius-card);
+        border: 1px solid var(--line);
+        background: var(--canvas);
+        padding: 10px 11px;
+      }
+
+      .trend strong {
+        display: block;
+        color: var(--ink-800);
+        font-size: var(--type-supporting);
+        line-height: 1.2;
+        font-weight: var(--fw-semibold);
+      }
+
+      .trend span {
+        display: block;
+        margin-top: 3px;
+        color: var(--text-4);
+        font-size: var(--type-label);
+        line-height: 1.25;
+      }
+
+      .trend em {
+        font-style: normal;
+        color: var(--ink-900);
+        font-size: var(--fs-6);
+        line-height: 1;
+        letter-spacing: var(--tracking-title);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 12px;
+        padding-top: 2px;
+      }
+
+      .timeline-row {
+        display: grid;
+        grid-template-columns: 70px minmax(0, 1fr) 56px;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .timeline-row > span {
+        color: var(--text-4);
+        font-size: var(--type-label);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .track {
+        height: 10px;
+        border-radius: var(--r-full);
+        background: var(--ink-soft);
+        overflow: hidden;
+      }
+
+      .fill {
+        width: var(--w);
+        height: 100%;
+        border-radius: inherit;
+        background: var(--ink-900);
+      }
+
+      .fill.cyan {
+        background: var(--cyan);
+      }
+
+      .timeline-row b {
+        color: var(--ink-800);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-bold);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .assistant-bar {
+        position: sticky;
+        bottom: 18px;
+        width: min(660px, calc(100vw - 48px));
+        min-height: 58px;
+        margin: 22px auto 0;
+        border-radius: var(--r-xl);
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        padding: 8px;
+        background: var(--ink-900);
+        color: #fff;
+        border-color: var(--ink-900);
+        box-shadow: var(--shadow-dock);
+      }
+
+      .assistant-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--r-md);
+        display: grid;
+        place-items: center;
+        background: var(--cyan);
+        color: var(--ink-900);
+      }
+
+      .assistant-mark svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        fill: none;
+      }
+
+      .assistant-placeholder {
+        min-width: 0;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: var(--type-body);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .assistant-actions {
+        display: flex;
+        gap: 7px;
+      }
+
+      .assistant-actions button {
+        width: var(--control-height-md);
+        height: var(--control-height-md);
+        display: grid;
+        place-items: center;
+        border-radius: var(--r-md);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .assistant-actions svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        fill: none;
+      }
+
+      @media (max-width: 1180px) {
+        .cyan-home {
+          grid-template-columns: 74px minmax(0, 1fr);
+        }
+
+        .brand div:last-child,
+        .nav-label,
+        .nav-count,
+        .side-card {
+          display: none;
+        }
+
+        .side {
+          padding-inline: 9px;
+        }
+
+        .brand,
+        .nav button {
+          justify-content: center;
+          grid-template-columns: 1fr;
+          padding-inline: 0;
+        }
+
+        .hero-grid,
+        .module-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .module.wide {
+          grid-column: auto;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .cyan-home {
+          display: block;
+        }
+
+        .side {
+          position: relative;
+          height: auto;
+          min-height: 0;
+          grid-template-rows: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+          justify-content: flex-start;
+        }
+
+        .brand div:last-child {
+          display: block;
+        }
+
+        .nav {
+          grid-auto-flow: row;
+          grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+          padding-bottom: 4px;
+        }
+
+        .nav button {
+          min-width: 54px;
+        }
+
+        .main {
+          padding: 12px 12px 96px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+        }
+
+        .toolbar {
+          flex-wrap: wrap;
+          justify-content: flex-end;
+        }
+
+        .hero-panel {
+          min-height: 0;
+          grid-template-columns: 1fr;
+          padding: 24px;
+        }
+
+        .hero-visual {
+          grid-template-columns: 1fr;
+        }
+
+        .today-panel,
+        .module {
+          min-height: auto;
+        }
+
+        .date-strip {
+          grid-template-columns: repeat(7, minmax(38px, 1fr));
+        }
+
+        .metric-row {
+          grid-template-columns: 1fr;
+        }
+
+        .timeline-row {
+          grid-template-columns: 58px minmax(0, 1fr) 46px;
+        }
+
+        .assistant-bar {
+          position: static;
+          width: 100%;
+          margin-top: 18px;
+        }
+      }
+    </style>
+      <style>.is-embedded body { padding-top: 12px; }</style>
+  </head>
+  <body>
+    <div class="cyan-home">
+      <aside class="side" aria-label="Pulse navigation">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <strong>Pulse</strong>
+            <span>Cider workspace</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="is-active" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 11.4 12 4l8 7.4v7.1a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 18.5v-7.1Z"
+              />
+              <path d="M9 20v-6h6v6" />
+            </svg>
+            <span class="nav-label">Home</span>
+            <span class="nav-count">12</span>
+          </button>
+          <button type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 5.5h16M4 12h16M4 18.5h16" />
+              <path d="M8 4v3M16 10.5v3M11 17v3" />
+            </svg>
+            <span class="nav-label">Signals</span>
+            <span class="nav-count">7</span>
+          </button>
+          <button type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 19V5" />
+              <path d="M5 19h14" />
+              <path d="M8 15.5l3.5-4 3 2.4L19 8" />
+            </svg>
+            <span class="nav-label">Report</span>
+            <span class="nav-count">4</span>
+          </button>
+          <button type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 5h12v14H6z" />
+              <path d="M9 9h6M9 13h6M9 17h3" />
+            </svg>
+            <span class="nav-label">Campaigns</span>
+            <span class="nav-count">9</span>
+          </button>
+          <button type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 4v3M18 4v3M4.5 9h15" />
+              <path
+                d="M6 6h12a1.5 1.5 0 0 1 1.5 1.5V18A1.5 1.5 0 0 1 18 19.5H6A1.5 1.5 0 0 1 4.5 18V7.5A1.5 1.5 0 0 1 6 6Z"
+              />
+            </svg>
+            <span class="nav-label">Calendar</span>
+            <span class="nav-count">5</span>
+          </button>
+        </nav>
+
+        <div class="side-card">
+          <b>87%</b>
+          <span>Content plan ready</span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="content">
+          <header class="topbar">
+            <div class="crumb">Home overview / Jun 11</div>
+            <div class="toolbar" aria-label="Page tools">
+              <button class="icon-btn" type="button" aria-label="Filter">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+                  <path d="M14 5v4M6 15v4" />
+                </svg>
+              </button>
+              <button class="icon-btn" type="button" aria-label="Focus mode">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M8 4H5.5A1.5 1.5 0 0 0 4 5.5V8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16"
+                  />
+                </svg>
+              </button>
+              <button class="share-btn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M16 6h2.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H8"
+                  />
+                  <path d="M12 14V4" />
+                  <path d="m8.5 7.5 3.5-3.5 3.5 3.5" />
+                </svg>
+                Share
+              </button>
+            </div>
+          </header>
+
+          <section class="hero-grid" aria-label="Home summary">
+            <article class="hero-panel">
+              <div class="hero-copy">
+                <div class="hero-kicker">Brand pulse live</div>
+                <h1 class="kinetic-title">
+                  <span>18 signals moved today.</span>
+                </h1>
+                <p class="hero-subcopy">
+                  Delivery clarity is still the loudest risk window, but creator response quality is
+                  improving. The cyan accent marks the work that is ready to route, approve, or
+                  ship.
+                </p>
+                <div class="hero-actions">
+                  <button class="primary-btn" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 12h14" />
+                      <path d="m13 6 6 6-6 6" />
+                    </svg>
+                    Review signals
+                  </button>
+                  <button class="secondary-btn" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 19V5" />
+                      <path d="M5 19h14" />
+                      <path d="M8 15.5l3.5-4 3 2.4L19 8" />
+                    </svg>
+                    Open report
+                  </button>
+                </div>
+              </div>
+
+              <div class="hero-visual">
+                <div class="mini-card dark">
+                  <div class="mini-label">Decision queue</div>
+                  <div class="mini-value">5 open</div>
+                  <div class="mini-row"><span>Two ready for approval</span><span>+3h</span></div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-label">Signal velocity</div>
+                  <svg
+                    class="sparkline"
+                    viewBox="0 0 280 84"
+                    role="img"
+                    aria-label="Signal velocity line chart"
+                  >
+                    <path class="grid" d="M0 14H280M0 42H280M0 70H280" />
+                    <path
+                      class="fill"
+                      d="M0 58 C34 52 54 22 86 30 C118 38 142 62 174 46 C204 31 226 18 256 28 C268 32 276 27 280 24 L280 84 L0 84 Z"
+                    />
+                    <path
+                      class="cyan-line"
+                      d="M0 67 C32 54 58 50 88 56 C122 63 145 40 174 46 C206 52 224 39 256 42 C270 44 276 37 280 34"
+                    />
+                    <path
+                      class="main-line"
+                      d="M0 58 C34 52 54 22 86 30 C118 38 142 62 174 46 C204 31 226 18 256 28 C268 32 276 27 280 24"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </article>
+
+            <aside class="today-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">Today</div>
+                  <div class="panel-meta">Jun 11 / active work</div>
+                </div>
+                <div class="segmented" role="tablist" aria-label="View period">
+                  <button class="is-active" type="button">Day</button>
+                  <button type="button">Week</button>
+                  <button type="button">Month</button>
+                </div>
+              </div>
+              <div class="date-strip" aria-label="Week dates">
+                <div class="date"><span>Mon</span><b>08</b></div>
+                <div class="date"><span>Tue</span><b>09</b></div>
+                <div class="date"><span>Wed</span><b>10</b></div>
+                <div class="date is-active"><span>Thu</span><b>11</b></div>
+                <div class="date"><span>Fri</span><b>12</b></div>
+                <div class="date"><span>Sat</span><b>13</b></div>
+                <div class="date"><span>Sun</span><b>14</b></div>
+              </div>
+              <div class="queue">
+                <div class="queue-row">
+                  <div class="queue-icon">01</div>
+                  <div>
+                    <div class="queue-title">Reply to delivery thread</div>
+                    <div class="queue-sub">Community response draft is ready</div>
+                  </div>
+                  <div class="queue-time">9:40</div>
+                </div>
+                <div class="queue-row">
+                  <div class="queue-icon">02</div>
+                  <div>
+                    <div class="queue-title">Approve try-on reel cut</div>
+                    <div class="queue-sub">Creator proof angle is strongest</div>
+                  </div>
+                  <div class="queue-time">11:10</div>
+                </div>
+                <div class="queue-row">
+                  <div class="queue-icon">03</div>
+                  <div>
+                    <div class="queue-title">Schedule fit-note carousel</div>
+                    <div class="queue-sub">Best slot: Thu evening</div>
+                  </div>
+                  <div class="queue-time">15:20</div>
+                </div>
+              </div>
+            </aside>
+          </section>
+
+          <section class="module-grid" aria-label="Home modules">
+            <article class="module wide">
+              <div class="module-head">
+                <div>
+                  <div class="module-title">Weekly report</div>
+                  <div class="module-sub">Cyan marks actionable peaks</div>
+                </div>
+                <div class="module-tools" aria-label="Report tools">
+                  <button class="tool-dot" type="button" aria-label="Filter report">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+                      <path d="M14 5v4M6 15v4" />
+                    </svg>
+                  </button>
+                  <button class="tool-dot" type="button" aria-label="Expand report">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M20 16v4h-4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="metric-row">
+                <div class="metric">
+                  <b>126.4k</b>
+                  <span>Weighted engagement</span>
+                </div>
+                <div class="metric is-cyan">
+                  <b>+18.7%</b>
+                  <span>Response lift</span>
+                </div>
+                <div class="metric">
+                  <b>42 min</b>
+                  <span>Saved in routing</span>
+                </div>
+              </div>
+              <div class="bar-chart" aria-label="Weekly activity chart">
+                <i class="bar" style="--h: 38%"></i><i class="bar" style="--h: 48%"></i
+                ><i class="bar" style="--h: 45%"></i><i class="bar is-active" style="--h: 64%"></i
+                ><i class="bar" style="--h: 52%"></i><i class="bar" style="--h: 59%"></i
+                ><i class="bar" style="--h: 42%"></i><i class="bar is-cyan" style="--h: 82%"></i
+                ><i class="bar" style="--h: 58%"></i><i class="bar" style="--h: 71%"></i
+                ><i class="bar is-active" style="--h: 68%"></i><i class="bar" style="--h: 49%"></i
+                ><i class="bar" style="--h: 60%"></i><i class="bar is-cyan" style="--h: 94%"></i
+                ><i class="bar" style="--h: 76%"></i><i class="bar" style="--h: 66%"></i
+                ><i class="bar" style="--h: 54%"></i><i class="bar" style="--h: 73%"></i>
+              </div>
+            </article>
+
+            <article class="module">
+              <div class="module-head">
+                <div>
+                  <div class="module-title">Signal mix</div>
+                  <div class="module-sub">Current priority</div>
+                </div>
+                <div class="module-tools">
+                  <button class="tool-dot" type="button" aria-label="Expand signal mix">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M20 16v4h-4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="trend-list">
+                <div class="trend">
+                  <div>
+                    <strong>Delivery clarity</strong><span>Need response before evening</span>
+                  </div>
+                  <em>38%</em>
+                </div>
+                <div class="trend">
+                  <div><strong>Fit proof</strong><span>Creator examples are converting</span></div>
+                  <em>24%</em>
+                </div>
+                <div class="trend">
+                  <div><strong>Summer bundles</strong><span>Two assets ready to publish</span></div>
+                  <em>19%</em>
+                </div>
+              </div>
+            </article>
+
+            <article class="module">
+              <div class="module-head">
+                <div>
+                  <div class="module-title">Campaign pipeline</div>
+                  <div class="module-sub">Next shipping window</div>
+                </div>
+                <div class="module-tools">
+                  <button class="tool-dot" type="button" aria-label="Filter pipeline">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h10M18 7h2M4 17h2M10 17h10" />
+                      <path d="M14 5v4M6 15v4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="timeline-row">
+                  <span>Try-on</span>
+                  <div class="track"><div class="fill cyan" style="--w: 86%"></div></div>
+                  <b>86%</b>
+                </div>
+                <div class="timeline-row">
+                  <span>Bundles</span>
+                  <div class="track"><div class="fill" style="--w: 64%"></div></div>
+                  <b>64%</b>
+                </div>
+                <div class="timeline-row">
+                  <span>Reddit</span>
+                  <div class="track"><div class="fill" style="--w: 51%"></div></div>
+                  <b>51%</b>
+                </div>
+                <div class="timeline-row">
+                  <span>Email</span>
+                  <div class="track"><div class="fill" style="--w: 43%"></div></div>
+                  <b>43%</b>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <div class="assistant-bar" role="search">
+            <div class="assistant-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3l1.7 5.1L19 10l-5.3 1.9L12 17l-1.7-5.1L5 10l5.3-1.9L12 3Z" />
+                <path d="M18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8L18 16Z" />
+              </svg>
+            </div>
+            <div class="assistant-placeholder">Ask anything or search the workspace</div>
+            <div class="assistant-actions">
+              <button type="button" aria-label="Ask for help">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9.5 9a2.5 2.5 0 0 1 4.6 1.4c0 2.1-2.8 2.2-2.8 4" />
+                  <path d="M12 18h.01" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+              </button>
+              <button type="button" aria-label="Open tools">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h5v5h-5z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

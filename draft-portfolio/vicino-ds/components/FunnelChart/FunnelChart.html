@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FunnelChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="FunnelChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">FunnelChart</h1>
+    <p class="handoff-sub">
+      Bottom-anchored conversion funnel — sessions narrowing through engagement to a final goal
+      event, with a floating count label per band and a stat card + drop-off pill per stage. Stages
+      are ordered data: bands ramp light→deep cyan and the conversion end is the chart's black
+      anchor. Hover or focus a band for its count and rate.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Funnel bands + per-stage stat cards</span>
+        <div class="funnel">
+          <div class="funnel__head">
+            <div>
+              <h2 class="funnel__title">Event Funnel</h2>
+              <p class="funnel__sub">AI Marketing Launch · LinkedIn · Last 30 days</p>
+            </div>
+          </div>
+
+          <div class="funnel__hero">
+            <span class="funnel__hero-value">3.9%</span>
+            <span class="funnel__hero-delta">end-to-end conversion · sessions → demo requests</span>
+          </div>
+
+          <div
+            class="funnel__plot"
+            role="img"
+            aria-label="Event funnel: 3,200 sessions narrowing to 126 demo requests."
+          >
+            <svg viewBox="0 0 1126 150" preserveAspectRatio="none" style="height: 150px">
+              <path
+                class="funnel__stage funnel__stage--1"
+                tabindex="0"
+                d="M2,148 L2,29 Q2,23 8,23 C141,23 141,84 274,84 Q280,84 280,90 L280,148 Z"
+              >
+                <title>Sessions · 3,200 · 100%</title>
+              </path>
+              <path
+                class="funnel__stage funnel__stage--2"
+                tabindex="0"
+                d="M284,148 L284,90 Q284,84 290,84 C423,84 423,115.5 556,115.5 Q562,115.5 562,121.5 L562,148 Z"
+              >
+                <title>Engaged Sessions · 1,630 · 51%</title>
+              </path>
+              <path
+                class="funnel__stage funnel__stage--3"
+                tabindex="0"
+                d="M566,148 L566,121.5 Q566,115.5 572,115.5 C705,115.5 705,129 838,129 Q844,129 844,135 L844,148 Z"
+              >
+                <title>Demo Page Views · 820 · 26%</title>
+              </path>
+              <path
+                class="funnel__stage funnel__stage--4"
+                tabindex="0"
+                d="M848,148 L848,135 Q848,129 854,129 L1118,129 Q1124,129 1124,135 L1124,148 Z"
+              >
+                <title>Demo Requests · 126 · 15% cvr</title>
+              </path>
+            </svg>
+            <div class="funnel__band-label" style="left: calc(0.2% + 8px); top: 15.3%">
+              <b>3,200</b> Sessions
+            </div>
+            <div class="funnel__band-label" style="left: calc(25.2% + 8px); top: 56%">
+              <b>1,630</b> Engaged
+            </div>
+            <div class="funnel__band-label" style="left: calc(50.3% + 8px); top: 77%">
+              <b>820</b> Demo views
+            </div>
+            <div class="funnel__band-label" style="left: calc(75.3% + 8px); top: 86%">
+              <b>126</b> Requests
+            </div>
+          </div>
+
+          <div class="funnel__stats">
+            <div class="funnel__stat">
+              <span class="funnel__stat-num">3,200</span>
+              <span class="funnel__stat-label">Sessions</span>
+              <span class="funnel__stat-meta">page_view · 100%</span>
+            </div>
+            <div class="funnel__stat">
+              <span class="funnel__stat-num">1,630</span>
+              <span class="funnel__stat-label">Engaged Sessions</span>
+              <span class="funnel__stat-meta">engaged_session · 51%</span>
+              <span class="funnel__pill funnel__pill--neg">−49%</span>
+            </div>
+            <div class="funnel__stat">
+              <span class="funnel__stat-num">820</span>
+              <span class="funnel__stat-label">Demo Page Views</span>
+              <span class="funnel__stat-meta">demo_page_viewed · 26%</span>
+              <span class="funnel__pill funnel__pill--neg">−50%</span>
+            </div>
+            <div class="funnel__stat funnel__stat--good">
+              <span class="funnel__stat-num">126</span>
+              <span class="funnel__stat-label">Demo Requests</span>
+              <span class="funnel__stat-meta">demo_request_submitted</span>
+              <span class="funnel__pill funnel__pill--good">15% cvr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

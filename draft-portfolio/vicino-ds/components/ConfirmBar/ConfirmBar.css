@@ -1,0 +1,232 @@
+/* ConfirmBar - inline brand-check / decision prompt.
+   Canonical component CSS. The action area uses two stable slots so the confirm
+   button can move to the right slot during processing and success without
+   layout measurement or reverse shifting. */
+
+.confirm-bar {
+  box-sizing: border-box;
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  width: 100%;
+  max-width: 640px;
+  padding: 14px 16px 14px 24px;
+  border-radius: 20px; /* token candidate: between --r-lg (16) and --r-xl (22) */
+  background: var(--ink-900);
+}
+
+.confirm-bar *,
+.confirm-bar *::before,
+.confirm-bar *::after {
+  box-sizing: border-box;
+}
+
+.confirm-bar__question {
+  flex: 1 1 240px;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: var(--fs-5);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+  transition:
+    color var(--dur-2) var(--ease-out),
+    opacity var(--dur-2) var(--ease-out);
+}
+
+.confirm-bar__actions {
+  --confirm-slide: calc(100% + 10px);
+  display: grid;
+  grid-template-columns: repeat(2, 160px);
+  gap: 10px;
+  position: relative;
+}
+
+.confirm-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height-lg);
+  padding: 0 22px;
+  border: 0;
+  border-radius: var(--r-full);
+  font: inherit;
+  font-size: var(--fs-5);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.006em;
+  white-space: nowrap;
+  color: var(--ink-900);
+  cursor: pointer;
+  transition:
+    transform var(--dur-3) var(--ease-disclosure),
+    opacity var(--dur-2) var(--ease-out),
+    background var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+.confirm-bar__btn svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.confirm-bar__btn--confirm {
+  grid-column: 1;
+  grid-row: 1;
+  background: var(--pulse-cyan);
+  z-index: 2;
+}
+
+.confirm-bar__btn--confirm:hover {
+  background: #5fe6f7;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.confirm-bar__btn--edit {
+  grid-column: 2;
+  grid-row: 1;
+  background: #fff;
+}
+
+.confirm-bar__btn--edit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.confirm-bar__btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(73, 224, 245, 0.5);
+}
+
+.confirm-bar__label,
+.confirm-bar__check,
+.confirm-bar__spinner {
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out);
+}
+
+.confirm-bar__spinner {
+  display: none;
+  width: 18px;
+  height: 18px;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 18px;
+  border-radius: 50%;
+  background: conic-gradient(from 45deg, transparent 0 24%, currentColor 24% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0);
+  animation: confirmSpin 0.72s linear infinite;
+}
+
+.confirm-bar[data-state='processing'] .confirm-bar__question {
+  opacity: 0.48;
+}
+
+.confirm-bar[data-state='processing'] .confirm-bar__btn--confirm,
+.confirm-bar[data-state='confirmed'] .confirm-bar__btn--confirm {
+  transform: translateX(var(--confirm-slide));
+  pointer-events: none;
+}
+
+.confirm-bar[data-state='processing'] .confirm-bar__btn--confirm {
+  background: var(--pulse-cyan);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.confirm-bar[data-state='confirmed'] .confirm-bar__question {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.confirm-bar[data-state='confirmed'] .confirm-bar__btn--confirm {
+  background: var(--success-500);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(32, 125, 50, 0.24);
+}
+
+.confirm-bar[data-state='processing'] .confirm-bar__btn--edit,
+.confirm-bar[data-state='confirmed'] .confirm-bar__btn--edit {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+.confirm-bar[data-state='processing'] .confirm-bar__check,
+.confirm-bar[data-state='processing'] .confirm-bar__label {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+.confirm-bar[data-state='processing'] .confirm-bar__spinner {
+  display: inline-block;
+}
+
+.confirm-bar[data-state='confirmed'] .confirm-bar__check,
+.confirm-bar[data-state='confirmed'] .confirm-bar__label {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.confirm-bar[data-state='editing'] .confirm-bar__btn--edit {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+}
+
+@keyframes confirmSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@container (max-width: 440px) {
+  .confirm-bar {
+    padding: 16px;
+  }
+
+  .confirm-bar__question {
+    flex-basis: 100%;
+  }
+
+  .confirm-bar__actions {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .confirm-bar__btn {
+    min-width: 0;
+    padding: 0 16px;
+  }
+}
+
+@container (max-width: 300px) {
+  .confirm-bar__actions {
+    --confirm-slide: 0px;
+    grid-template-columns: 1fr;
+  }
+
+  .confirm-bar__btn--confirm,
+  .confirm-bar__btn--edit {
+    grid-column: 1;
+  }
+
+  .confirm-bar__btn--edit {
+    grid-row: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-bar__btn,
+  .confirm-bar__label,
+  .confirm-bar__check,
+  .confirm-bar__spinner,
+  .confirm-bar__question {
+    transition: none !important;
+    animation: none !important;
+  }
+}

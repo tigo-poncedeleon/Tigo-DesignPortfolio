@@ -1,0 +1,214 @@
+/* SourceCitationRow - evidence row for report readouts. It owns source platform,
+   title, meta, confidence, selected/compact/loading states, and one open action.
+   Page-specific report sections decide where the source opens. */
+
+.source-citation-row,
+.source-citation-row * {
+  box-sizing: border-box;
+}
+
+.source-citation-row {
+  --source-confidence: var(--success-500);
+  --source-confidence-soft: var(--success-50);
+  --source-confidence-line: var(--success-200);
+  --source-confidence-ink: var(--success-700);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 760px;
+  min-width: 0;
+  min-height: 64px;
+  padding: 12px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font-sans);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+
+.source-citation-row[href],
+button.source-citation-row {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.source-citation-row:hover,
+.source-citation-row.is-hover {
+  background: #fff;
+  box-shadow: var(--shadow-2);
+}
+
+.source-citation-row:focus-visible,
+.source-citation-row.is-focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.source-citation-row[aria-selected='true'],
+.source-citation-row.is-selected {
+  background: var(--cyan-50);
+  box-shadow: inset 0 0 0 1px var(--cyan-200);
+}
+
+.source-citation-row--medium {
+  --source-confidence: var(--blue-500);
+  --source-confidence-soft: var(--blue-50);
+  --source-confidence-line: var(--blue-200);
+  --source-confidence-ink: var(--blue-700);
+}
+
+.source-citation-row--low {
+  --source-confidence: var(--amber-500);
+  --source-confidence-soft: var(--amber-50);
+  --source-confidence-line: var(--amber-200);
+  --source-confidence-ink: var(--amber-700);
+}
+
+.source-citation-row__source {
+  display: grid;
+  place-items: center;
+}
+
+.source-citation-row__body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.source-citation-row__title {
+  overflow: hidden;
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-4);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-citation-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-2);
+  line-height: var(--lh-normal);
+}
+
+.source-citation-row__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.source-citation-row__meta-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: var(--r-full);
+  background: currentColor;
+}
+
+.source-citation-row__confidence {
+  display: grid;
+  gap: 6px;
+  min-width: 86px;
+}
+
+.source-citation-row__confidence-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+.source-citation-row__confidence-value {
+  color: var(--source-confidence-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.source-citation-row__confidence-track {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+}
+
+.source-citation-row__confidence-track::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--source-confidence-value, 0%);
+  border-radius: inherit;
+  background: var(--source-confidence);
+}
+
+.source-citation-row__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.source-citation-row--compact {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 52px;
+  padding: 10px;
+}
+
+.source-citation-row--compact .source-citation-row__confidence {
+  display: none;
+}
+
+.source-citation-row--loading {
+  pointer-events: none;
+}
+
+.source-citation-row__skeleton {
+  display: grid;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.source-citation-row__skeleton-line {
+  height: 11px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+
+.source-citation-row__skeleton-line--short {
+  width: 58%;
+}
+
+@media (max-width: 680px) {
+  .source-citation-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .source-citation-row__confidence,
+  .source-citation-row__action {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

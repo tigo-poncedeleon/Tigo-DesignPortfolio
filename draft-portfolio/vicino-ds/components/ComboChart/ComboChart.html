@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ComboChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="ComboChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">ComboChart</h1>
+    <p class="handoff-sub">
+      Activity columns on a labeled y-axis, wearing the brand-cyan sequential ramp by value
+      (light→dark), with quiet rug marks under the slots you posted in and a black anchor + chip on
+      the best slot. One bar per time slot at a uniform step — never mixed bin widths. Hover or
+      focus a bar for its read-out — a posted slot's read-out includes that post's engagement, never
+      a second axis.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Bars + post markers + peak chip</span>
+        <div class="combo">
+          <div class="combo__head">
+            <div>
+              <h2 class="combo__title">Posting Time vs Follower Activity</h2>
+              <p class="combo__sub">
+                Hourly follower activity · dots mark the hours you posted · last 30 days
+              </p>
+            </div>
+            <div class="combo__legend">
+              <span class="combo__legend-item"
+                ><span class="combo__swatch--bar"></span>Follower activity</span
+              >
+              <span class="combo__legend-item"
+                ><span class="combo__swatch--dot"></span>Your posts</span
+              >
+            </div>
+          </div>
+
+          <div class="combo__hero">
+            <span class="combo__hero-value">8p</span>
+            <span class="combo__hero-delta">best posting hour · 52% of followers active</span>
+          </div>
+
+          <div class="combo__body">
+            <div class="combo__yaxis" aria-hidden="true">
+              <span class="combo__ytick" style="top: 4%">60%</span>
+              <span class="combo__ytick" style="top: 33.4%">40%</span>
+              <span class="combo__ytick" style="top: 62.7%">20%</span>
+              <span class="combo__ytick" style="top: 92%">0</span>
+            </div>
+            <div
+              class="combo__plot"
+              id="comboPlot"
+              role="img"
+              aria-label="24 hourly follower-activity bars with rug marks under the hours you posted; 8pm is the best hour at 52% activity."
+            >
+              <svg viewBox="0 0 1080 200" preserveAspectRatio="none" style="height: 230px">
+                <g class="combo__grid">
+                  <line x1="8" y1="8" x2="1072" y2="8" />
+                  <line x1="8" y1="66.7" x2="1072" y2="66.7" />
+                  <line x1="8" y1="125.3" x2="1072" y2="125.3" />
+                </g>
+                <line class="combo__baseline" x1="8" y1="184" x2="1072" y2="184" />
+
+                <!-- activity bars — one per hour, sequential ramp by value -->
+                <g>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M15.2,184 V156.8 Q15.2,148.8 23.2,148.8 H37.2 Q45.2,148.8 45.2,156.8 V184 Z"
+                    tabindex="0"
+                    data-tip-value="12% active"
+                    data-tip-label="12a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M59.5,184 V165.6 Q59.5,157.6 67.5,157.6 H81.5 Q89.5,157.6 89.5,165.6 V184 Z"
+                    tabindex="0"
+                    data-tip-value="9% active"
+                    data-tip-label="1a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M103.8,184 V171.5 Q103.8,163.5 111.8,163.5 H125.8 Q133.8,163.5 133.8,171.5 V184 Z"
+                    tabindex="0"
+                    data-tip-value="7% active"
+                    data-tip-label="2a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M148.2,184 V174.4 Q148.2,166.4 156.2,166.4 H170.2 Q178.2,166.4 178.2,174.4 V184 Z"
+                    tabindex="0"
+                    data-tip-value="6% active"
+                    data-tip-label="3a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M192.5,184 V174.4 Q192.5,166.4 200.5,166.4 H214.5 Q222.5,166.4 222.5,174.4 V184 Z"
+                    tabindex="0"
+                    data-tip-value="6% active"
+                    data-tip-label="4a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M236.8,184 V168.5 Q236.8,160.5 244.8,160.5 H258.8 Q266.8,160.5 266.8,168.5 V184 Z"
+                    tabindex="0"
+                    data-tip-value="8% active"
+                    data-tip-label="5a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r200"
+                    d="M281.2,184 V156.8 Q281.2,148.8 289.2,148.8 H303.2 Q311.2,148.8 311.2,156.8 V184 Z"
+                    tabindex="0"
+                    data-tip-value="12% active"
+                    data-tip-label="6a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r300"
+                    d="M325.5,184 V145.1 Q325.5,137.1 333.5,137.1 H347.5 Q355.5,137.1 355.5,145.1 V184 Z"
+                    tabindex="0"
+                    data-tip-value="16% active"
+                    data-tip-label="7a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r300"
+                    d="M369.8,184 V127.5 Q369.8,119.5 377.8,119.5 H391.8 Q399.8,119.5 399.8,127.5 V184 Z"
+                    tabindex="0"
+                    data-tip-value="22% active"
+                    data-tip-label="8a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r400"
+                    d="M414.2,184 V112.8 Q414.2,104.8 422.2,104.8 H436.2 Q444.2,104.8 444.2,112.8 V184 Z"
+                    tabindex="0"
+                    data-tip-value="27% active"
+                    data-tip-label="9a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r400"
+                    d="M458.5,184 V104 Q458.5,96 466.5,96 H480.5 Q488.5,96 488.5,104 V184 Z"
+                    tabindex="0"
+                    data-tip-value="30% active"
+                    data-tip-label="10a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r400"
+                    d="M502.8,184 V95.2 Q502.8,87.2 510.8,87.2 H524.8 Q532.8,87.2 532.8,95.2 V184 Z"
+                    tabindex="0"
+                    data-tip-value="33% active"
+                    data-tip-label="11a"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M547.2,184 V86.4 Q547.2,78.4 555.2,78.4 H569.2 Q577.2,78.4 577.2,86.4 V184 Z"
+                    tabindex="0"
+                    data-tip-value="36% active"
+                    data-tip-label="12p · you posted — 5.2% engagement"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M591.5,184 V92.3 Q591.5,84.3 599.5,84.3 H613.5 Q621.5,84.3 621.5,92.3 V184 Z"
+                    tabindex="0"
+                    data-tip-value="34% active"
+                    data-tip-label="1p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r400"
+                    d="M635.8,184 V98.1 Q635.8,90.1 643.8,90.1 H657.8 Q665.8,90.1 665.8,98.1 V184 Z"
+                    tabindex="0"
+                    data-tip-value="32% active"
+                    data-tip-label="2p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r400"
+                    d="M680.2,184 V101.1 Q680.2,93.1 688.2,93.1 H702.2 Q710.2,93.1 710.2,101.1 V184 Z"
+                    tabindex="0"
+                    data-tip-value="31% active"
+                    data-tip-label="3p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r400"
+                    d="M724.5,184 V95.2 Q724.5,87.2 732.5,87.2 H746.5 Q754.5,87.2 754.5,95.2 V184 Z"
+                    tabindex="0"
+                    data-tip-value="33% active"
+                    data-tip-label="4p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M768.8,184 V86.4 Q768.8,78.4 776.8,78.4 H790.8 Q798.8,78.4 798.8,86.4 V184 Z"
+                    tabindex="0"
+                    data-tip-value="36% active"
+                    data-tip-label="5p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M813.2,184 V74.7 Q813.2,66.7 821.2,66.7 H835.2 Q843.2,66.7 843.2,74.7 V184 Z"
+                    tabindex="0"
+                    data-tip-value="40% active"
+                    data-tip-label="6p · you posted — 5.4% engagement"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M857.5,184 V62.9 Q857.5,54.9 865.5,54.9 H879.5 Q887.5,54.9 887.5,62.9 V184 Z"
+                    tabindex="0"
+                    data-tip-value="44% active"
+                    data-tip-label="7p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--hot"
+                    d="M901.8,184 V39.5 Q901.8,31.5 909.8,31.5 H923.8 Q931.8,31.5 931.8,39.5 V184 Z"
+                    tabindex="0"
+                    data-tip-value="52% active"
+                    data-tip-label="8p · best hour · you posted — 6.7% engagement"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M946.2,184 V57.1 Q946.2,49.1 954.2,49.1 H968.2 Q976.2,49.1 976.2,57.1 V184 Z"
+                    tabindex="0"
+                    data-tip-value="46% active"
+                    data-tip-label="9p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r500"
+                    d="M990.5,184 V92.3 Q990.5,84.3 998.5,84.3 H1012.5 Q1020.5,84.3 1020.5,92.3 V184 Z"
+                    tabindex="0"
+                    data-tip-value="34% active"
+                    data-tip-label="10p"
+                  ></path>
+                  <path
+                    class="combo__bar combo__bar--r300"
+                    d="M1034.8,184 V127.5 Q1034.8,119.5 1042.8,119.5 H1056.8 Q1064.8,119.5 1064.8,127.5 V184 Z"
+                    tabindex="0"
+                    data-tip-value="22% active"
+                    data-tip-label="11p"
+                  ></path>
+                </g>
+
+                <!-- you-posted rug marks — quiet ink ticks under the baseline -->
+                <g class="combo__rug" aria-hidden="true">
+                  <circle r="3" cx="562.2" cy="196" />
+                  <circle r="3" cx="828.2" cy="196" />
+                  <circle r="3" cx="916.8" cy="196" />
+                </g>
+              </svg>
+
+              <div class="combo__chip" style="left: 84.9%; top: 15.8%">BEST · 52%</div>
+              <div class="chart-tip" role="status"></div>
+            </div>
+          </div>
+
+          <!-- Ticks every 4 hours on the 24-column hour grid; the peak hour keeps
+               its own tick. Never mix a range label into the tick row. -->
+          <div class="combo__axis" aria-hidden="true">
+            <span style="grid-column: 1">12a</span><span style="grid-column: 5">4a</span
+            ><span style="grid-column: 9">8a</span><span style="grid-column: 13">12p</span
+            ><span style="grid-column: 17">4p</span
+            ><span class="is-peak" style="grid-column: 21">8p</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-bar and per-marker hover/focus readout.
+      document.querySelectorAll('.combo__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        if (!tip) return;
+        const show = (el) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = el.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = el.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+          tip.style.left = elRect.left - plotRect.left + elRect.width / 2 + 'px';
+          tip.style.top = elRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.combo__bar').forEach((el) => {
+          el.addEventListener('pointerenter', () => show(el));
+          el.addEventListener('pointerleave', hide);
+          el.addEventListener('focus', () => show(el));
+          el.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

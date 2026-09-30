@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SourceCitationRow - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../PlatformBadge/PlatformBadge.css" />
+    <link rel="stylesheet" href="SourceCitationRow.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1080px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>SourceCitationRow</h1>
+        <p>
+          Source evidence row for report readouts. It uses platform badges, structured metadata,
+          confidence, and one open action without exposing raw platform codes.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Source citation row states">
+        <div class="section-title">
+          <span>SourceCitationRow / confidence states</span>
+        </div>
+
+        <a class="source-citation-row is-selected" href="#" aria-selected="true">
+          <span class="source-citation-row__source">
+            <span class="platform-badge platform-badge--ig" aria-label="Instagram"></span>
+          </span>
+          <span class="source-citation-row__body">
+            <strong class="source-citation-row__title"
+              >Delivery-time complaints need a calm response</strong
+            >
+            <span class="source-citation-row__meta">
+              <span class="source-citation-row__meta-item">Signal thread</span>
+              <span class="source-citation-row__meta-item">47 comments</span>
+              <span class="source-citation-row__meta-item">
+                <span class="source-citation-row__meta-dot"></span>
+                Updated 4h ago
+              </span>
+            </span>
+          </span>
+          <span class="source-citation-row__confidence" style="--source-confidence-value: 92%">
+            <span class="source-citation-row__confidence-label">
+              Confidence
+              <span class="source-citation-row__confidence-value">92%</span>
+            </span>
+            <span class="source-citation-row__confidence-track"></span>
+          </span>
+          <span class="source-citation-row__action">Open source</span>
+        </a>
+
+        <a class="source-citation-row source-citation-row--medium" href="#">
+          <span class="source-citation-row__source">
+            <span class="platform-badge platform-badge--tt" aria-label="TikTok"></span>
+          </span>
+          <span class="source-citation-row__body">
+            <strong class="source-citation-row__title"
+              >Creator try-on proof is lifting qualified saves</strong
+            >
+            <span class="source-citation-row__meta">
+              <span class="source-citation-row__meta-item">Campaign post set</span>
+              <span class="source-citation-row__meta-item">24K monthly convos</span>
+            </span>
+          </span>
+          <span class="source-citation-row__confidence" style="--source-confidence-value: 76%">
+            <span class="source-citation-row__confidence-label">
+              Confidence
+              <span class="source-citation-row__confidence-value">76%</span>
+            </span>
+            <span class="source-citation-row__confidence-track"></span>
+          </span>
+          <span class="source-citation-row__action">Open source</span>
+        </a>
+
+        <a class="source-citation-row source-citation-row--low" href="#">
+          <span class="source-citation-row__source">
+            <span class="platform-badge platform-badge--ga" aria-label="Google Analytics"></span>
+          </span>
+          <span class="source-citation-row__body">
+            <strong class="source-citation-row__title"
+              >Static post fatigue may be isolated to one channel</strong
+            >
+            <span class="source-citation-row__meta">
+              <span class="source-citation-row__meta-item">Attribution readout</span>
+              <span class="source-citation-row__meta-item">sample still thin</span>
+            </span>
+          </span>
+          <span class="source-citation-row__confidence" style="--source-confidence-value: 48%">
+            <span class="source-citation-row__confidence-label">
+              Confidence
+              <span class="source-citation-row__confidence-value">48%</span>
+            </span>
+            <span class="source-citation-row__confidence-track"></span>
+          </span>
+          <span class="source-citation-row__action">Open source</span>
+        </a>
+      </section>
+
+      <section class="section" aria-label="Compact and loading source citation rows">
+        <div class="section-title">
+          <span>Compact / loading</span>
+        </div>
+
+        <a class="source-citation-row source-citation-row--compact" href="#">
+          <span class="source-citation-row__source">
+            <span class="platform-badge platform-badge--li" aria-label="LinkedIn"></span>
+          </span>
+          <span class="source-citation-row__body">
+            <strong class="source-citation-row__title"
+              >LinkedIn carousel holds above benchmark</strong
+            >
+            <span class="source-citation-row__meta">
+              <span class="source-citation-row__meta-item">Report source</span>
+              <span class="source-citation-row__meta-item">5.1% engagement</span>
+            </span>
+          </span>
+          <span class="source-citation-row__action">Open</span>
+        </a>
+
+        <div class="source-citation-row source-citation-row--loading" aria-busy="true">
+          <span class="source-citation-row__source">
+            <span class="platform-badge platform-badge--muted" aria-hidden="true"></span>
+          </span>
+          <span class="source-citation-row__body">
+            <span class="source-citation-row__skeleton">
+              <span class="source-citation-row__skeleton-line"></span>
+              <span
+                class="source-citation-row__skeleton-line source-citation-row__skeleton-line--short"
+              ></span>
+            </span>
+          </span>
+          <span class="source-citation-row__confidence" style="--source-confidence-value: 0%">
+            <span class="source-citation-row__confidence-label">
+              Confidence
+              <span class="source-citation-row__confidence-value">--</span>
+            </span>
+            <span class="source-citation-row__confidence-track"></span>
+          </span>
+          <span class="source-citation-row__action">Open source</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

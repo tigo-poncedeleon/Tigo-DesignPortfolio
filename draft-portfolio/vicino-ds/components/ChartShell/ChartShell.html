@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChartShell - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="../Button/Button.css" />
+    <link rel="stylesheet" href="ChartShell.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1120px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      @media (max-width: 860px) {
+        body {
+          padding: 28px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>ChartShell</h1>
+        <p>
+          Chart container for report and analytics panels. The shell owns copy, actions, legend,
+          body sizing, loading, and empty states; chart-specific components own the marks.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Chart shell core slices">
+        <div class="section-title">
+          <span>ChartShell / header / legend / body</span>
+        </div>
+        <div class="chart-shell">
+          <header class="chart-shell__header">
+            <div class="chart-shell__copy">
+              <h2 class="chart-shell__title">Share of conversation</h2>
+              <p class="chart-shell__description">
+                Delivery and fit-proof topics across active campaign channels.
+              </p>
+            </div>
+            <a class="btn btn--secondary btn--sm chart-shell__action" href="#">Open report</a>
+          </header>
+
+          <div class="chart-shell__legend" aria-label="Chart legend">
+            <span class="chart-shell__legend-item">
+              <span class="chart-shell__legend-dot"></span>
+              Delivery
+            </span>
+            <span class="chart-shell__legend-item">
+              <span class="chart-shell__legend-dot chart-shell__legend-dot--success"></span>
+              Fit proof
+            </span>
+            <span class="chart-shell__legend-item">
+              <span class="chart-shell__legend-dot chart-shell__legend-dot--muted"></span>
+              Baseline
+            </span>
+          </div>
+
+          <div class="chart-shell__body">
+            <div class="chart-shell__plot" role="img" aria-label="Conversation share sample chart">
+              <div class="chart-shell__mock-bars">
+                <span class="chart-shell__mock-bar" style="--bar-h: 46%"></span>
+                <span
+                  class="chart-shell__mock-bar chart-shell__mock-bar--soft"
+                  style="--bar-h: 66%"
+                ></span>
+                <span class="chart-shell__mock-bar" style="--bar-h: 74%"></span>
+                <span
+                  class="chart-shell__mock-bar chart-shell__mock-bar--soft"
+                  style="--bar-h: 52%"
+                ></span>
+                <span class="chart-shell__mock-bar" style="--bar-h: 88%"></span>
+                <span
+                  class="chart-shell__mock-bar chart-shell__mock-bar--soft"
+                  style="--bar-h: 61%"
+                ></span>
+              </div>
+              <div class="chart-shell__axis" aria-hidden="true">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Chart shell state slices">
+        <div class="section-title">
+          <span>Loading / empty</span>
+        </div>
+        <div class="grid">
+          <section
+            class="chart-shell chart-shell--compact chart-shell--building"
+            aria-label="Loading chart"
+          >
+            <header class="chart-shell__header">
+              <div class="chart-shell__copy">
+                <h2 class="chart-shell__title">Report activity</h2>
+                <p class="chart-shell__meta">Compiling source rows.</p>
+              </div>
+            </header>
+            <div class="chart-shell__loading" aria-busy="true">
+              <div class="chart-shell__skeleton">
+                <div class="chart-shell__skeleton-block"></div>
+                <div class="chart-shell__skeleton-lines">
+                  <span class="chart-shell__skeleton-line"></span>
+                  <span class="chart-shell__skeleton-line chart-shell__skeleton-line--short"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="chart-shell chart-shell--compact" aria-label="Empty chart">
+            <header class="chart-shell__header">
+              <div class="chart-shell__copy">
+                <h2 class="chart-shell__title">Source lift</h2>
+                <p class="chart-shell__meta">No qualifying posts yet.</p>
+              </div>
+            </header>
+            <div class="chart-shell__empty">
+              <div class="chart-shell__empty-inner">
+                <span class="chart-shell__empty-mark" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 15V9M10 15V5M16 15v-3" />
+                  </svg>
+                </span>
+                <h3 class="chart-shell__empty-title">No chartable data</h3>
+                <p class="chart-shell__empty-text">
+                  Add campaign posts or widen the date range before rendering this chart.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

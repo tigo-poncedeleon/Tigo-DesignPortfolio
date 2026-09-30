@@ -1,0 +1,153 @@
+/* WordCloud — weighted keyword cloud for social listening (owner decision
+   2026-07-07: the disciplined flow form). Terms flow in a centered wrap —
+   never rotated or scatter-placed — with 5 size/weight tiers carrying
+   frequency. Here the word IS the mark, so only the top tier wears the data
+   hue (--chart-1, large-text contrast); every other tier steps down the ink
+   text ladder. Hover/focus a term for mentions + trend; exact counts stay
+   reachable via the read-out (pair with DataTable for the full table).
+   Visual source: tokens.css. */
+
+.cloud {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 640px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.cloud__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cloud__title {
+  margin: 0;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.cloud__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Flow plot — centered wrap, baseline-aligned, generous rhythm. */
+.cloud__plot {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px 18px;
+  padding: 10px 6px;
+}
+
+/* Terms — plain text buttons; size + weight carry frequency. */
+.cloud__term {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-family: inherit;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  border-radius: var(--r-md);
+  transition: color var(--dur-2) var(--ease-out);
+}
+.cloud__term:hover {
+  color: var(--pulse-cyan-dark);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.cloud__term:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Size/weight tiers — a brand-cyan monochrome ladder (owner decision
+   2026-07-07: no gray in charts). Frequency fades from the deep text-safe
+   cyan down the sequential ramp; hover/read-out carries the tail. */
+.cloud__term--w5 {
+  font-size: 40px;
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.02em;
+  color: var(--chart-emphasis);
+  /* The leads sit on a soft brand-cyan pill — the cloud's focal chips. */
+  padding: 4px 20px;
+  border-radius: var(--r-full);
+  background: var(--pulse-cyan-soft);
+}
+.cloud__term--w4 {
+  font-size: 27px;
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.015em;
+  color: var(--pulse-cyan-dark);
+}
+.cloud__term--w3 {
+  font-size: 19px;
+  font-weight: var(--fw-semibold);
+  color: var(--pulse-cyan-strong);
+}
+.cloud__term--w2 {
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--cyan-600);
+}
+.cloud__term--w1 {
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  color: var(--cyan-600);
+  opacity: 0.75;
+}
+
+/* Footer meta line. */
+.cloud__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Shared hover readout (value leads, label follows). */
+.chart-tip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--ink-900);
+  color: #fff;
+  font-size: var(--fs-2);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-2);
+  z-index: 2;
+}
+.chart-tip.is-visible {
+  display: flex;
+}
+.chart-tip__value {
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-3);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip__label {
+  color: rgba(255, 255, 255, 0.72);
+}

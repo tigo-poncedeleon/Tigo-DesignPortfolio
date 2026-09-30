@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ai-generation-guide.md — Pulse / Post AI Generation Guide</title>
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add('is-embedded');
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; }
+
+    :root {
+      --stage: #f4f7f7;
+      --surface: #ffffff;
+      --ink: #1d1d1f;
+      --text-2: #44464a;
+      --text-3: #5f6369;
+      --text-4: #8a8e95;
+      --line: rgba(15, 23, 42, 0.1);
+      --line-soft: rgba(15, 23, 42, 0.06);
+      --cyan-100: #e5fbff;
+      --cyan-500: #49e0f5;
+      --cyan-700: #0d7685;
+      --red: #ef4444;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: var(--stage);
+      color: var(--text-2);
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 20px 96px;
+    }
+    .is-embedded body { padding: 20px 14px 64px; }
+
+    .doc {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 16px;
+      padding: 48px 56px 56px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 28px rgba(15, 23, 42, 0.05);
+    }
+    .is-embedded .doc { padding: 32px 30px 44px; border-radius: 12px; }
+
+    /* ---- the YAML frontmatter, kept as the file's passport ---- */
+    .frontmatter {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 20px;
+      color: var(--text-3);
+      background: #fbfcfc;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 36px;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
+    .frontmatter .fm-key { color: var(--cyan-700); }
+    .fm-note {
+      margin: -26px 0 36px;
+      font-size: 12px;
+      color: var(--text-4);
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      margin: 44px 0 14px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line-soft);
+    }
+    p { font-size: 14.5px; line-height: 24px; margin-bottom: 14px; }
+    p strong, li strong { font-weight: 600; color: var(--ink); }
+    code {
+      font-family: var(--mono);
+      font-size: 0.88em;
+      color: var(--cyan-700);
+      background: rgba(73, 224, 245, 0.09);
+      border-radius: 4px;
+      padding: 1px 5px;
+      overflow-wrap: break-word;
+    }
+
+    /* the guide's dominant voice: 19 bold-lead rule paragraphs */
+    .rule { padding-left: 16px; border-left: 2px solid var(--line-soft); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      line-height: 21px;
+      margin: 18px 0 8px;
+    }
+    th {
+      text-align: left;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-4);
+      padding: 8px 14px 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    td {
+      vertical-align: top;
+      padding: 10px 14px 10px 0;
+      border-bottom: 1px solid var(--line-soft);
+      overflow-wrap: break-word;
+    }
+    td:first-child {
+      width: 128px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    ul { padding-left: 0; list-style: none; }
+    ul li {
+      position: relative;
+      font-size: 14.5px;
+      line-height: 24px;
+      margin-bottom: 12px;
+      padding-left: 22px;
+    }
+    ul li::before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 10px;
+      width: 6px;
+      height: 6px;
+      border-radius: 2px;
+      background: var(--cyan-500);
+    }
+
+    .fail {
+      margin-top: 18px;
+      padding: 16px 20px;
+      border: 1.5px solid rgba(239, 68, 68, 0.45);
+      border-radius: 12px;
+      background: rgba(239, 68, 68, 0.04);
+    }
+    .fail p { margin: 0; color: var(--text-2); }
+  </style>
+</head>
+<body>
+  <article class="doc">
+    <pre class="frontmatter">---
+<span class="fm-key">name:</span> pulse-design-system
+<span class="fm-key">description:</span> Generation contract for the Pulse/Post visual system. Load this whenever an AI agent generates a new Pulse screen, component variant, or React extraction, so output stays inside the existing design system instead of inventing a new dashboard style.
+---</pre>
+
+    <h1>Pulse / Post AI Generation Guide</h1>
+
+    <p>The implementation source is the standalone component library under <code>design-system/handoff/components/</code> - one folder per component with its own HTML + CSS, sharing <code>components/tokens.css</code>, browsable via <code>components/html-component-preview.html</code>. The React app (<code>demo/pulse-react/</code>) is paused and kept only as legacy reference. Tokens live in <code>components/tokens.css</code> (mirrored from <code>demo/pulse-react/src/tokens.css</code>); the component inventory and contracts are in <code>design-system/component-library.md</code>, and the visual handbook is <code>design-system/handoff/design-system.html</code>.</p>
+
+    <p>Treat that component library as the generation source, like Pulse's internal shadcn-style registry. New screens should compose the canonical component contracts, token families, variants, and states first; page-local markup is a fallback only when a pattern is genuinely feature-specific or still marked as a candidate component.</p>
+
+    <h2>Prompt contract</h2>
+
+    <p>Before creating new markup, identify which component category the work belongs to: Foundation, General, Layout, Navigation, Data entry, Data display, Feedback, or Business pattern. Reuse the existing primitive or pattern when it exists; when it does not, prefer filling the missing category with a small shared component over adding another page-local one-off. The highest-risk gaps are Data entry (<code>Field</code>, <code>Input</code>, <code>Textarea</code>, <code>Select</code>), Feedback (<code>Popover</code>, <code>Tooltip</code>, <code>Modal</code>, <code>Drawer</code>, <code>Skeleton</code>), and Data display (<code>MetricBlock</code>, <code>DataRow</code>, <code>EmptyState</code>, <code>DescriptionList</code>, <code>TableLite</code>). This is a taxonomy rule only: do not adopt another library's visual style.</p>
+
+    <p>Extraction order is: form fields first, overlays second, feedback states third, data display fourth, and business patterns last. Start from repeated local implementations in Signal, Calendar, Analytics, ActionItems, Campaign production, and Strategy. A shared component is ready only when it defines behavior, state, accessibility, placement, validation, or a reusable data anatomy; visual-only repetition can stay as local composition plus tokens.</p>
+
+    <p>Generate Post product screens using the existing Pulse/Post visual system:</p>
+
+    <p class="rule"><strong>Typography.</strong> Manrope is the platform typeface - 400/500/600/700, with <code>font-variant-numeric: tabular-nums</code> for aligned numerics. The heading system has a stronger product workspace entrance tier: page display <code>64</code> (<code>--type-page-display</code> / <code>--type-page-title</code>) when the title carries the screen without a kicker, standard H1 <code>48</code> (<code>--type-h1</code>), H2 section / sub <code>28</code> (<code>--type-h2</code>), H3 <code>21</code>, H4 / card title <code>18</code>, body <code>14</code>, caption / description <code>13</code> (<code>--type-caption</code>), label <code>11</code>, metric tabular. Section and sub headings stay substantial - do not divide hierarchy by shrinking everything to tiny type; lean on spacing, weight, and tonal labels. Build hierarchy from size, spacing, position, and structure - never from heavier weight; headings cap at medium, with semibold allowed only for optical support at display sizes, and a title is never made important by the heaviest Bold. The content headings use an <code>8px</code> support gap (<code>--heading-gap</code>); 64px page display titles use a larger <code>20px</code> support gap (<code>--display-heading-gap</code>) so the subtitle reads as its own calm row. One typeface for title, body, number, label, and metric - never switch fonts to emphasize a title. The single exception is <code>--font-report</code> (Newsreader serif), used only for stylized report display titles above <code>64px</code> (<code>--type-report-display</code>), weight capped at medium (<code>400-500</code>) with italic available - never body, UI, labels, numbers, or standard H1-H4 headings. Geist Mono, Open Sans, Inter, Canela, and Satoshi are not in the system.</p>
+
+    <p class="rule"><strong>Surfaces.</strong> The primary palette is neutral: clean gray stage (<code>#f4f7f7</code>) with three very soft cyan radial blooms washed across the page; neutral canvas (<code>#f8faf9</code>) only when grouping is useful; glass outer bentos (<code>rgba(255,255,255,0.28)</code> + 36px backdrop blur) so the page wash bleeds through; solid white inner cards for reading; ink (<code>#1d1d1f</code>) for focus and active chrome. Keep page width restrained and avoid cold blue-gray casts in the shell, sidebar, and module backgrounds.</p>
+
+    <p class="rule"><strong>Radius.</strong> The hierarchy is 16px outer bento / 14px in-card slot / 12px inner card. Never repeat the same radius across nested layers; never use the deprecated 22-30px product radii. Pills stay fully rounded.</p>
+
+    <p class="rule"><strong>Cyan.</strong> Pulse cyan (<code>#49e0f5</code>) is the ready-state family and neutral diagram color. Do not use it as ambient background, generic progress, positive metrics, or decorative active chrome. Ready text uses cyan 700 (<code>#0D7685</code>) on a light cyan fill; diagram-neutral paths use primary cyan.</p>
+
+    <p class="rule"><strong>Status layer split.</strong> Keep status tags, data trends, and diagram semantics separate. Status tags use one compact outlined pill scale: green <code>#43BA51</code> for positive, active/live, and approved; blue <code>#3987F3</code> for suggested action and scheduled; amber <code>#F19A08</code> for risk, negative, and on hold; ready uses a light cyan background with <code>#0D7685</code> text; purple <code>#6366F1</code> means in progress. Red is not a status tag color.</p>
+
+    <p class="rule"><strong>Data trend and diagram colors.</strong> Red <code>#EF4444</code> is reserved for declining data only: negative delta, drop-off, loss, or a metric moving down. Use green <code>#43BA51</code> for upward trends and blue <code>#3987F3</code> for stable trends. Diagrams use primary cyan <code>#49E0F5</code> for neutral paths, green for best performance, and amber for worst performance.</p>
+
+    <p class="rule"><strong>Exempt colors (platform brands and calendar today).</strong> Two color sets sit deliberately OUTSIDE the semantic ladder above. Platform brand glyphs (Instagram, Pinterest, YouTube, LinkedIn, Facebook, TikTok, X) are external marks, not Pulse status/data colors — consume them from the <code>--platform-*</code> tokens, one canonical value per platform, and never route them through the status/severity/trend ramps. The calendar "today" marker keeps a red accent by industry convention (mainstream calendars mark today in red); this is the one sanctioned use of red in chrome and does not weaken the "red = declining data only" rule everywhere else.</p>
+
+    <p class="rule"><strong>Generation and legacy wording.</strong> Generation state is process state, not data classification. Live/approved/published are green, ready is cyan-dark on a light cyan fill, scheduled is blue, on hold/risk is amber, in progress/rendering is purple, and queued is gray. Do not map "risk" or "protect now" to red unless the data itself is falling.</p>
+
+    <p class="rule"><strong>Generation status ladder.</strong> Use this ladder consistently: <code>Queued</code> neutral gray; <code>Scheduled</code> blue <code>#3987F3</code>; <code>In progress</code>, <code>Generating</code>, <code>Rendering</code>, and <code>Building</code> purple <code>#6366F1</code>; <code>Ready</code> light cyan with <code>#0D7685</code> text; <code>Approved</code>, <code>Live</code>, <code>Published</code>, and <code>Completed</code> green <code>#43BA51</code>; <code>On hold</code>, <code>Blocked</code>, <code>Failed</code>, and <code>Needs attention</code> amber <code>#F19A08</code>. Red never appears in generation status. Status dots are flat solid markers only. Do not add glow, halo, ping, pulse, or soft outward rings around dots; selected or active states should be expressed with surface tone, border, text weight, or the standard focus ring.</p>
+
+    <p class="rule"><strong>Color depth.</strong> Every semantic color has the same six stops as cyan (<code>50/100</code> soft fills, <code>200</code> line, <code>500</code> base, <code>600</code> text/dot on light, <code>700</code> deepest): <code>--cyan-*</code>, <code>--success-*</code>, <code>--red-*</code>, <code>--amber-*</code>, <code>--blue-*</code>, <code>--indigo-*</code>. Build hierarchy with these tones and the five text levels (<code>--text-1</code> primary / <code>--text-5</code> disabled) and the ink/neutral surface steps (<code>--canvas</code> / <code>--surface</code> / <code>--surface-2/3</code>) before adding a border. <code>--green-*</code> and <code>--pulse-lime-*</code> are legacy cyan aliases, not the new green; use <code>--success-*</code> when you mean completion.</p>
+
+    <p class="rule"><strong>Progress.</strong> Progress bars and production tracks use a single solid semantic fill, not gradients. Use cyan 600 for active pipeline/progress, success green for completed segments, blue for scheduled/logistics progress, indigo for rendering/generation, and neutral gray for pending/draft. Segmented progress may place multiple solid segments next to each other, but each segment remains flat. Do not use green-to-cyan, blue-to-cyan, or any decorative gradient to make progress feel more premium.</p>
+
+    <p class="rule"><strong>States.</strong> Use shared state layers for hover, focus, pressed, selected, and disabled; do not invent one-off hover colors. Shadow depth follows information hierarchy and elevation, not card size: overlays / floating layers (popover, modal, dropdown, dock, AI panel) get a strong shadow; an elevated primary surface gets a light-to-medium resting shadow; the base layer - stage, section / background containers, flat tonal blocks, data-highlight metric cards, buttons, and inline groups - carries no shadow and reads by tone, fill, spacing, and border, gaining lift only on hover, focus, or true elevation. Map to <code>--shadow-*</code> tokens, never one-off shadows. Dark CTAs sit flat on the card by default and gain only a light lift on hover. Keyboard focus always gets a visible ring.</p>
+
+    <p class="rule"><strong>Cards.</strong> Media previews show the image only; campaign info and due timing sit in the card body; current status belongs in the top-right status pill, with progress folded into that pill when needed. No second status or progress row beneath the description. Decision/action cards use one command title plus campaign info and current status - no duplicate helper chips.</p>
+
+    <p class="rule"><strong>Command summaries.</strong> Use <code>CommandSummary</code> when a page needs one operator decision before details: one sentence, a compact status row, MetricBlock-style metrics, a current/done/queued stage rail, and one primary action. Do not replace it with a row of equal-weight cards or multiple competing CTAs.</p>
+
+    <p class="rule"><strong>Campaigns.</strong> Always the React CampaignRow pattern: one row per campaign, visible PostChips, a <code>+N more</code> strip for scale, a right-state panel that changes with chip selection, and a closed-by-default five-step CampaignPipeline opened by selected chips or hidden tasks. Never one card per post. Hidden <code>MoreTask</code> cards reuse the exact PostChip anatomy: status pill, clamped title, numbered footer, and PlatformBadge icon. Queued, planned, rendering, and ready change only by generation-status color, not by card structure. PlatformBadge must use the approved logo PNG assets, not hand-drawn social glyphs or visible raw codes such as <code>IG</code>, <code>TT</code>, <code>LI</code>, <code>FB</code>, or <code>X</code>. Keep the readable platform name in <code>aria-label</code>, <code>title</code>, or expanded metadata. Official PNGs render inside the badge at the shared visual glyph size; use the per-platform visual-size variable when a brand asset ships with extra canvas or background padding. Do not use raw <code>contain</code> sizing that makes padded assets look smaller.</p>
+
+    <p class="rule"><strong>AI assistant.</strong> A floating inset card on the right that compresses the main view via <code>body.ai-panel-open</code>; inner two-column grids collapse to one column when the panel is open below ~1600px viewport. Conversations are selected from Sidebar recent chat; the AI panel header keeps only the close action. Do not add a menu/list CTA to the AI panel header.</p>
+
+    <p class="rule"><strong>Report callouts.</strong> ReportCallout rows use an icon tile, compact role pill, type weight, and quiet metadata for hierarchy. Do not use left rail stripes, stacked color bars, or trailing arrow affordances. Risk/watch uses amber, opportunity uses success green, and action uses suggested-action blue.</p>
+
+    <p class="rule"><strong>Sidebar.</strong> Keep the app rail taxonomy to Brand, Workspace, and Recent chat. Workspace includes the brand switcher plus all former Perception / Creative destinations; do not introduce Studio as a standalone nav destination. In collapsed rail states, page navigation is icon-only and each visible recent conversation keeps its own compact dot affordance.</p>
+
+    <p class="rule"><strong>Layout and reading rhythm.</strong> Keep section containers unframed; use cards only for repeated items, metrics, reports, media, actions, and campaign rows. Start shared page structure from the <code>Grid</code> component source (<code>.pulse-grid</code>, <code>.pulse-grid--document</code>, <code>.pulse-grid--section</code>, <code>.pulse-grid--content</code>, <code>.pulse-grid--auto</code>, <code>.pulse-grid--split</code>) before inventing a page-local grid. Do not make hierarchy by stacking borders or nesting cards. Use color, tone, background layers, type weight, spacing, and vertical grouping first. Avoid long rows of many parallel blocks unless side-by-side comparison is the point; prefer a calmer top-to-bottom reading path. Inside one large container, use light dividers or spacing for local grouping only, not another full framed surface. Carry emphasis with a tonal fill - a quiet light container with the key datum on a slightly stronger block - rather than a heavier outline; aim for a lighter, looser surface with breathing room. Preserve existing hover, segmented-control, live-update, reveal, sidebar collapse, and pipeline interactions.</p>
+
+    <h2>What to keep stable</h2>
+
+    <table>
+      <thead>
+        <tr><th>Area</th><th>Rule</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Font</td><td>Manrope only - the single platform typeface; tabular-nums for numerics; named type roles only.</td></tr>
+        <tr><td>Surfaces</td><td>Page wash carries the brand tint; outer bentos are glass, inner cards solid white, ink covers one or two anchors. No nested glass-on-glass, no painted-cyan bentos.</td></tr>
+        <tr><td>Radius</td><td>Step 16 / 14 / 12 outer to inner. Pills full. No repeated radius across nesting, no 22-30px scale.</td></tr>
+        <tr><td>Color</td><td>Primary surfaces are black, white, neutral gray. Primary cyan is ready/diagram-neutral; green positive/data-up/best; blue suggested/scheduled/stable; amber risk/on-hold/worst; purple in progress; red data-down only.</td></tr>
+        <tr><td>Status</td><td>Routine chips use compact semantic pills: green live/approved, blue scheduled/suggested, amber risk/on-hold, cyan ready, purple in progress, gray queued.</td></tr>
+        <tr><td>Contrast</td><td>Body text stays on ink or muted neutral. Cyan 700 (<code>#0D7685</code>) is reserved for ready text on light cyan. Primary cyan is for ready fills and neutral diagram paths, not generic icons or actions.</td></tr>
+        <tr><td>Progress</td><td>Bars and production tracks use flat semantic fills, never decorative gradients. Segments can differ by meaning, but each segment is solid.</td></tr>
+        <tr><td>States</td><td>Hover/selected/focus/pressed/disabled use shared state layers; focus ring always visible.</td></tr>
+        <tr><td>Charts</td><td>Mono-cyan + ink: series slots <code>--chart-1..6</code> in fixed order (slot 1 brand cyan, slot 2 ink, indigo/teal only as the 5–6 escape hatch); single series wears slot 1 only; context/"Other" wears <code>--chart-muted</code>; magnitude and ordered stages wear the <code>--chart-seq-*</code> ramp as solid steps; at most one ink <code>--chart-emphasis</code> anchor per chart; red only for declining data. Fills stay in the bright band (never darker than <code>--cyan-600</code>); no gray series, no warm hues, never rank/value-colored bars. Every chart ships visible value labels, a value legend, or the <code>DataTable</code> twin. Form follows the data type: counts → columns, continuous measures → lines (straight segments between samples; cosmetic smoothing only on dense ≳30-point series with non-overshooting interpolation), part-to-whole → share forms, open comparisons → bare ranked bars; one mark per time slot at a uniform step; bars zero-based (lines may window with a fade-out wash only); hatched tracks only for true fractions of a whole; independent scales must be declared. A chart must read without hover: label the y scale (or a real-valued scale legend) and the x slots; draw averages/targets as labeled 1px dashed hairlines (the only dashed lines — gridlines stay solid). On large areas keep ramps pale-dominant (saturated cyan + ink only on top bins/peaks) and alternate chart cards with neutral surfaces so the cyan doesn't fatigue. Full contract: <code>component-library.md</code> §11 "Charts (shared)".</td></tr>
+        <tr><td>Component taxonomy</td><td>Fill missing categories deliberately: Data entry, Feedback, and Data display come before new business-only one-offs.</td></tr>
+        <tr><td>Campaigns</td><td>One row per campaign; chips switch state; more reveals hidden posts; pipeline closed by default.</td></tr>
+        <tr><td>Motion</td><td>Animate transform, opacity, and shadow only. Preserve existing component interactions.</td></tr>
+        <tr><td>Copy</td><td>Action card titles are commands. Supporting text is context, not a paragraph report.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>What to avoid (negative prompt)</h2>
+
+    <ul>
+      <li><strong>No stripes.</strong> No diagonal hatching or unexplained decorative background texture. The one sanctioned exception is the chart meter/share track: its hatched remainder is a pale step of the same data ramp that encodes remaining capacity (owner decision 2026-07-07) — chart tracks only, never gray, never a background texture.</li>
+      <li><strong>One-layer glass.</strong> Outer bento is glass; inner content is solid. Never stack glass on glass, never give an inner card backdrop-filter, never raise outer white opacity past ~0.45 to "fake" presence - raise blur instead.</li>
+      <li><strong>No painted-on cyan.</strong> Brand color lives in the page wash and reads through the glass. Don't fill a bento with <code>--pulse-cyan-soft</code> or add a cyan border to suggest brand - that signal goes flat the moment a second card does it.</li>
+      <li><strong>No cyan on structural chrome.</strong> Section numbers, letter indices (A/B/C), eyebrow pills, "open X" links, kicker labels, and decorative left borders are structural: they render in ink / text-3 / a 0.045 neutral wash. Save cyan for ready-state and neutral diagram semantics. Positive/active/approved status and upward data trends are green; in-progress machine work is purple.</li>
+      <li><strong>No clutter.</strong> No platform badges, extra slate rows, lifecycle dots, or secondary CTAs unless workflow-critical.</li>
+      <li><strong>No one-off control sprawl.</strong> Do not create page-local inputs, selects, popovers, modals, drawers, empty states, or metric rows when the same category is likely to appear elsewhere. Define the shared contract first, then compose the page-specific content inside it.</li>
+      <li><strong>No border scaffolding.</strong> Do not use borders or nested cards as the default way to explain structure. If a module feels unclear, first adjust tone, background, type weight, spacing, or vertical grouping.</li>
+      <li><strong>No tense horizontal scanning.</strong> Do not split one row into too many equal-weight blocks. A user should not need to sweep left-to-right across a row of small modules to understand the page.</li>
+      <li><strong>No horizontal scroll fallback.</strong> Tabs, state boards, chip rails, task strips, and data rows should fit by wrapping, splitting into calmer sections, compacting, or progressively moving lower-priority items into <code>+N more</code>. Do not hide primary reading content off-canvas.</li>
+      <li><strong>Hidden tab axis only inside the component.</strong> SegmentedTabs stay on one row and hide their internal scroll axis; pages still cannot depend on horizontal scrolling to reveal primary content.</li>
+      <li><strong>No fake premium.</strong> No neon shadows, huge gradients, mystery blobs, generic purple AI styling, or card-on-card sections.</li>
+      <li><strong>No loose cyan bars.</strong> Cyan must explain ready-state or diagram-neutral meaning, never a decorative strip for vibe.</li>
+      <li><strong>No gradient progress.</strong> Progress bars, production tracks, and completion meters use solid semantic fills only. Do not blend success into cyan, blue into cyan, or indigo into green.</li>
+      <li><strong>No multiple action surfaces.</strong> Zero or one saturated action card per page. Two means the page lost its anchor.</li>
+      <li><strong>No heavy type.</strong> Avoid bold body copy; use size, spacing, and color for hierarchy.</li>
+      <li><strong>No new semantics.</strong> Do not introduce new color meanings without updating the token table in <code>tokens.css</code>.</li>
+    </ul>
+
+    <h2>Fail the output if</h2>
+
+    <div class="fail">
+      <p>Text clips, colors do not explain state, card shadows form square artifacts, nested cards appear, or a user cannot tell the next action.</p>
+    </div>
+  </article>
+</body>
+</html>

@@ -1,0 +1,351 @@
+/* StatList — data-display kit for stat/insight rows and composed metric cards.
+   Covers status lists, ranked lists, key-value stat rows, pipeline chips,
+   segment insight cards, AI insight rows + suggestion cards, and campaign metric
+   cards. Token-driven, pure-CSS hover. Visual source: src/tokens.css. Scoped under .ds-stat-list so app adoption does not collide with legacy page-local stat-* classes. */
+
+.ds-stat-list .stat-list {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Card surface (mirrors Card.css) for the panel variants. */
+.ds-stat-list .stat-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 480px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+}
+.ds-stat-list .stat-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ds-stat-list .stat-card__title {
+  margin: 0;
+  font-size: var(--fs-5);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.ds-stat-list .stat-card__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* ===== Row (status / value list) ====================================== */
+.ds-stat-list .stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.ds-stat-list .stat-row:last-child {
+  border-bottom: 0;
+}
+.ds-stat-list .stat-row__main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ds-stat-list .stat-row__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+  flex: none;
+}
+.ds-stat-list .stat-row__dot--green {
+  background: var(--success-500);
+}
+.ds-stat-list .stat-row__dot--blue {
+  background: var(--info);
+}
+.ds-stat-list .stat-row__dot--amber {
+  background: var(--orange);
+}
+.ds-stat-list .stat-row__name {
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.006em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-stat-list .stat-row__end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.ds-stat-list .stat-row__value {
+  font-size: var(--fs-3);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+.ds-stat-list .stat-row__meta {
+  font-size: var(--fs-2);
+  color: var(--text-4);
+}
+
+/* Rank index + icon (ranked list). */
+.ds-stat-list .stat-row__rank {
+  width: 24px;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-4);
+  flex: none;
+}
+.ds-stat-list .stat-row__icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+}
+
+/* ===== Key-value rows (compact, right-aligned value) ================== */
+.ds-stat-list .stat-kv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-3);
+}
+.ds-stat-list .stat-kv:last-child {
+  border-bottom: 0;
+}
+.ds-stat-list .stat-kv__label {
+  color: var(--text-3);
+}
+.ds-stat-list .stat-kv__value {
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+
+/* ===== Pipeline chips ================================================= */
+.ds-stat-list .stat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.ds-stat-list .stat-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+}
+.ds-stat-list .stat-chip-arrow {
+  color: var(--text-4);
+}
+
+/* ===== Segment insight card (emoji + body) =========================== */
+.ds-stat-list .stat-segment {
+  box-sizing: border-box;
+  display: flex;
+  gap: 10px;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--cyan-50, #f9feff);
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out);
+}
+.ds-stat-list .stat-segment:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+.ds-stat-list .stat-segment__mark {
+  flex: none;
+  font-size: var(--fs-4);
+  line-height: 1.2;
+}
+.ds-stat-list .stat-segment__title {
+  margin: 0;
+  font-size: var(--fs-4);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.005em;
+}
+.ds-stat-list .stat-segment__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-2);
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
+/* ===== AI suggestion card ============================================ */
+.ds-stat-list .stat-ai {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ds-stat-list .stat-ai__eyebrow {
+  margin: 0;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-heavy);
+  color: var(--pulse-cyan-dark);
+}
+.ds-stat-list .stat-ai__text {
+  margin: 0;
+  font-size: var(--fs-3);
+  line-height: 1.65;
+  letter-spacing: -0.006em;
+  color: var(--text-2);
+}
+.ds-stat-list .stat-ai__text strong {
+  color: var(--text);
+  font-weight: var(--fw-heavy);
+}
+.ds-stat-list .stat-ai__text .stat-pos {
+  color: var(--pulse-cyan-dark);
+  font-weight: var(--fw-heavy);
+}
+
+/* ===== Insight callout (inside metric cards) ========================= */
+.ds-stat-list .stat-insight {
+  display: flex;
+  gap: 8px;
+  padding: 11px 13px;
+  border-radius: var(--r-md);
+  background: rgba(73, 224, 245, 0.08); /* token candidate */
+  font-size: var(--fs-2);
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.ds-stat-list .stat-insight__spark {
+  flex: none;
+  color: var(--pulse-cyan-dark);
+}
+
+/* ===== Publish progress bar ========================================= */
+.ds-stat-list .stat-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ds-stat-list .stat-progress__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-2);
+}
+.ds-stat-list .stat-progress__label {
+  color: var(--text-3);
+}
+.ds-stat-list .stat-progress__value {
+  font-weight: var(--fw-heavy);
+}
+.ds-stat-list .stat-progress__track {
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.ds-stat-list .stat-progress__fill {
+  height: 100%;
+  width: var(--pct, 0%);
+  border-radius: var(--r-full);
+  background: var(--pulse-cyan);
+}
+
+/* ===== Pills ========================================================= */
+.ds-stat-list .stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--r-full);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.ds-stat-list .stat-pill--good {
+  background: rgba(67, 186, 81, 0.05);
+  border-color: rgba(67, 186, 81, 0.3);
+  color: var(--success-500);
+}
+.ds-stat-list .stat-pill--info {
+  background: rgba(57, 135, 243, 0.05);
+  border-color: rgba(57, 135, 243, 0.3);
+  color: var(--info);
+}
+.ds-stat-list .stat-pill--warn {
+  background: rgba(241, 154, 8, 0.1);
+  border-color: rgba(241, 154, 8, 0.3);
+  color: var(--orange);
+}
+
+/* ===== Dark CTA (mirrors Button .btn--dark) ========================= */
+.ds-stat-list .stat-cta {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: var(--control-height-md, 44px);
+  margin-top: 2px;
+  border: 0;
+  border-radius: var(--r-full);
+  background: var(--ink-900);
+  color: #fff;
+  font: inherit;
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    var(--shadow-1);
+  transition:
+    background var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+}
+.ds-stat-list .stat-cta:hover {
+  background: var(--ink-700);
+  transform: translateY(-1px);
+}
+.ds-stat-list .stat-cta:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.ds-stat-list .stat-cta--ghost {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: none;
+  height: 38px;
+}
+.ds-stat-list .stat-cta--ghost:hover {
+  background: var(--surface-2);
+}

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ConfirmBar - Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="ConfirmBar.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+      }
+      .component-intro {
+        max-width: 68ch;
+        margin-bottom: 34px;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        max-width: 720px;
+      }
+      .specimen-row,
+      .state-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .state-grid {
+        gap: 18px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+      .specimen-narrow {
+        width: 340px;
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="component-intro" aria-label="Introduction">
+      <h1 class="handoff-title">ConfirmBar</h1>
+      <p class="handoff-sub">
+        Inline brand-check / decision prompt - one question, one cyan confirm, one plain edit.
+        Adapts to its container width.
+      </p>
+    </header>
+
+    <div class="specimen">
+      <div class="specimen-row">
+        <span class="specimen-label">Animated component</span>
+        <div class="confirm-bar" data-state="pending">
+          <span class="confirm-bar__question">Does this look like your brand?</span>
+          <div class="confirm-bar__actions">
+            <button class="confirm-bar__btn confirm-bar__btn--confirm" type="button" data-confirm>
+              <svg
+                class="confirm-bar__check"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M3 7.4l2.6 2.6L11 4.2" />
+              </svg>
+              <span class="confirm-bar__spinner" aria-hidden="true"></span>
+              <span class="confirm-bar__label">Looks right</span>
+            </button>
+            <button class="confirm-bar__btn confirm-bar__btn--edit" type="button" data-edit>
+              I want to edit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-row">
+        <span class="specimen-label">Slices</span>
+        <div class="state-grid">
+          <div class="confirm-bar" data-state="pending" data-static>
+            <span class="confirm-bar__question">Does this look like your brand?</span>
+            <div class="confirm-bar__actions">
+              <button class="confirm-bar__btn confirm-bar__btn--confirm" type="button">
+                <svg
+                  class="confirm-bar__check"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7.4l2.6 2.6L11 4.2" />
+                </svg>
+                <span class="confirm-bar__spinner" aria-hidden="true"></span>
+                <span class="confirm-bar__label">Looks right</span>
+              </button>
+              <button class="confirm-bar__btn confirm-bar__btn--edit" type="button">
+                I want to edit
+              </button>
+            </div>
+          </div>
+
+          <div class="confirm-bar" data-state="processing" data-static>
+            <span class="confirm-bar__question">Checking brand fit...</span>
+            <div class="confirm-bar__actions">
+              <button
+                class="confirm-bar__btn confirm-bar__btn--confirm"
+                type="button"
+                aria-busy="true"
+              >
+                <svg
+                  class="confirm-bar__check"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7.4l2.6 2.6L11 4.2" />
+                </svg>
+                <span class="confirm-bar__spinner" aria-hidden="true"></span>
+                <span class="confirm-bar__label">Checking</span>
+              </button>
+              <button class="confirm-bar__btn confirm-bar__btn--edit" type="button">
+                I want to edit
+              </button>
+            </div>
+          </div>
+
+          <div class="confirm-bar" data-state="confirmed" data-static>
+            <span class="confirm-bar__question">Brand direction saved.</span>
+            <div class="confirm-bar__actions">
+              <button class="confirm-bar__btn confirm-bar__btn--confirm" type="button">
+                <svg
+                  class="confirm-bar__check"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7.4l2.6 2.6L11 4.2" />
+                </svg>
+                <span class="confirm-bar__spinner" aria-hidden="true"></span>
+                <span class="confirm-bar__label">Saved</span>
+              </button>
+              <button class="confirm-bar__btn confirm-bar__btn--edit" type="button">
+                I want to edit
+              </button>
+            </div>
+          </div>
+
+          <div class="confirm-bar" data-state="editing" data-static>
+            <span class="confirm-bar__question">Opening edit controls...</span>
+            <div class="confirm-bar__actions">
+              <button class="confirm-bar__btn confirm-bar__btn--confirm" type="button">
+                <svg
+                  class="confirm-bar__check"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7.4l2.6 2.6L11 4.2" />
+                </svg>
+                <span class="confirm-bar__spinner" aria-hidden="true"></span>
+                <span class="confirm-bar__label">Looks right</span>
+              </button>
+              <button
+                class="confirm-bar__btn confirm-bar__btn--edit"
+                type="button"
+                aria-pressed="true"
+              >
+                I want to edit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="specimen-row">
+        <span class="specimen-label">Responsive slice</span>
+        <div class="specimen-narrow">
+          <div class="confirm-bar" data-state="pending">
+            <span class="confirm-bar__question">Does this look like your brand?</span>
+            <div class="confirm-bar__actions">
+              <button class="confirm-bar__btn confirm-bar__btn--confirm" type="button" data-confirm>
+                <svg
+                  class="confirm-bar__check"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7.4l2.6 2.6L11 4.2" />
+                </svg>
+                <span class="confirm-bar__spinner" aria-hidden="true"></span>
+                <span class="confirm-bar__label">Looks right</span>
+              </button>
+              <button class="confirm-bar__btn confirm-bar__btn--edit" type="button" data-edit>
+                I want to edit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.confirm-bar:not([data-static])').forEach((bar) => {
+        const question = bar.querySelector('.confirm-bar__question');
+        const confirm = bar.querySelector('[data-confirm]');
+        const edit = bar.querySelector('[data-edit]');
+        const confirmLabel = confirm.querySelector('.confirm-bar__label');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        confirm.addEventListener('click', () => {
+          if (bar.dataset.state === 'processing') return;
+          bar.dataset.state = 'processing';
+          question.textContent = 'Checking brand fit...';
+          confirmLabel.textContent = 'Checking';
+          confirm.setAttribute('aria-busy', 'true');
+          confirm.setAttribute('aria-pressed', 'true');
+          edit.setAttribute('aria-pressed', 'false');
+
+          window.setTimeout(
+            () => {
+              bar.dataset.state = 'confirmed';
+              question.textContent = 'Brand direction saved.';
+              confirmLabel.textContent = 'Saved';
+              confirm.removeAttribute('aria-busy');
+            },
+            reduceMotion.matches ? 0 : 920
+          );
+        });
+
+        edit.addEventListener('click', () => {
+          bar.dataset.state = 'editing';
+          question.textContent = 'Opening edit controls...';
+          confirmLabel.textContent = 'Looks right';
+          confirm.removeAttribute('aria-busy');
+          edit.setAttribute('aria-pressed', 'true');
+          confirm.setAttribute('aria-pressed', 'false');
+        });
+      });
+    </script>
+  </body>
+</html>

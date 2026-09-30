@@ -1,0 +1,358 @@
+/* CommandSummary - reusable command-center summary pattern.
+   Owns one decision sentence, compact status, metric strip, next action, stage
+   rail, and loading/empty states. Parent pages provide business copy and
+   routing; child metrics reuse MetricBlock. */
+
+.command-summary,
+.command-summary * {
+  box-sizing: border-box;
+}
+
+.command-summary {
+  --command-accent: var(--cyan-700);
+  --command-accent-soft: var(--cyan-50);
+  --command-accent-line: var(--cyan-200);
+  display: grid;
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-2xl);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--command-accent-soft) 78%, transparent),
+      transparent 52%
+    ),
+    var(--canvas);
+  color: var(--text);
+  box-shadow: var(--shadow-2);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.command-summary--compact {
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--r-xl);
+}
+
+.command-summary--risk {
+  --command-accent: var(--amber-700);
+  --command-accent-soft: var(--amber-50);
+  --command-accent-line: var(--amber-200);
+}
+
+.command-summary--success {
+  --command-accent: var(--success-700);
+  --command-accent-soft: var(--success-50);
+  --command-accent-line: var(--success-200);
+}
+
+.command-summary__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  min-width: 0;
+}
+
+.command-summary__copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.command-summary__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--lh-snug);
+  text-transform: uppercase;
+}
+
+.command-summary__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--command-accent);
+}
+
+.command-summary__title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-8);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-title);
+  line-height: var(--lh-tight);
+}
+
+.command-summary--compact .command-summary__title {
+  font-size: var(--fs-6);
+}
+
+.command-summary__sentence {
+  max-width: 76ch;
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-4);
+  line-height: var(--lh-normal);
+}
+
+.command-summary__status {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.command-summary__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+.command-summary__metric {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.command-summary__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.36fr);
+  gap: 16px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.command-summary__steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.command-summary__step {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--r-md);
+  background: transparent;
+}
+
+.command-summary__step.is-current {
+  background: var(--command-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--command-accent-line);
+}
+
+.command-summary__step-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.command-summary__step-label::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.command-summary__step.is-done .command-summary__step-label {
+  color: var(--success-700);
+}
+
+.command-summary__step.is-current .command-summary__step-label {
+  color: var(--command-accent);
+}
+
+.command-summary__step strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: var(--fs-3);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-summary__step span:last-child {
+  color: var(--text-3);
+  font-size: var(--fs-2);
+  line-height: var(--lh-snug);
+}
+
+.command-summary__action {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.command-summary__action h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-5);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-title);
+}
+
+.command-summary__action p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.command-summary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.command-summary__actions .btn--ghost {
+  padding-inline: 12px;
+}
+
+.command-summary--loading .command-summary__title,
+.command-summary--loading .command-summary__sentence,
+.command-summary--loading .metric-block__label,
+.command-summary--loading .metric-block__value-row,
+.command-summary--loading .metric-block__support,
+.command-summary--loading .command-summary__step strong,
+.command-summary--loading .command-summary__step span:last-child,
+.command-summary--loading .command-summary__action h3,
+.command-summary--loading .command-summary__action p {
+  width: max-content;
+  max-width: 100%;
+  color: transparent;
+  border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--surface-2), #fff, var(--surface-2));
+  background-size: 220% 100%;
+  animation: commandSummarySkeleton 1.2s var(--ease) infinite;
+}
+
+.command-summary--loading .command-summary__title {
+  width: 54%;
+}
+
+.command-summary--loading .command-summary__sentence {
+  width: 72%;
+}
+
+.command-summary--loading .command-summary__actions {
+  display: none;
+}
+
+.command-summary--empty {
+  align-items: center;
+  min-height: 260px;
+  text-align: center;
+}
+
+.command-summary--empty .command-summary__head {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.command-summary--empty .command-summary__sentence {
+  margin-inline: auto;
+}
+
+.command-summary--empty .command-summary__status,
+.command-summary--empty .command-summary__metrics,
+.command-summary--empty .command-summary__body {
+  display: none;
+}
+
+.command-summary[aria-disabled='true'],
+.command-summary.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@keyframes commandSummarySkeleton {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-summary--loading .command-summary__title,
+  .command-summary--loading .command-summary__sentence,
+  .command-summary--loading .metric-block__label,
+  .command-summary--loading .metric-block__value-row,
+  .command-summary--loading .metric-block__support,
+  .command-summary--loading .command-summary__step strong,
+  .command-summary--loading .command-summary__step span:last-child,
+  .command-summary--loading .command-summary__action h3,
+  .command-summary--loading .command-summary__action p {
+    animation: none;
+  }
+}
+
+@media (max-width: 920px) {
+  .command-summary__head,
+  .command-summary__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .command-summary__status {
+    justify-content: flex-start;
+  }
+
+  .command-summary__metrics,
+  .command-summary__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .command-summary {
+    padding: 16px;
+    border-radius: var(--r-xl);
+  }
+
+  .command-summary__title {
+    font-size: var(--fs-7);
+  }
+
+  .command-summary__metrics,
+  .command-summary__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .command-summary__actions .btn {
+    width: 100%;
+  }
+}

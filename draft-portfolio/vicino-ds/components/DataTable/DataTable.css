@@ -1,0 +1,135 @@
+/* DataTable — flat-grid table scaffold for analytics rows. Columns are set per
+   instance via the --cols custom property; cells carry data-row so full-row
+   hover can be grouped by a small specimen script (a flat CSS grid has no row
+   element). Supports inline bars, status/source pills, and emphasis cells.
+   Visual source: src/tokens.css. */
+
+.data-table-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1126px;
+  padding: 21px;
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-sans);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+.data-table-card__title {
+  margin: 0 0 16px;
+  font-size: var(--fs-6);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.01em;
+}
+
+.data-table {
+  display: grid;
+  grid-template-columns: var(--cols);
+}
+
+.data-table__th,
+.data-table__td {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--border);
+}
+.data-table__th {
+  height: 28px;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-4);
+  white-space: nowrap;
+}
+.data-table__th--num,
+.data-table__td--num {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.data-table__td {
+  height: 44px;
+  gap: 6px;
+  font-size: var(--fs-2);
+  letter-spacing: -0.006em;
+  color: var(--text);
+}
+.data-table__td--strong {
+  font-weight: var(--fw-heavy);
+}
+
+/* Full-row hover wash (JS toggles is-row-hover on every cell of a data-row). */
+.data-table:not(.is-no-hover) .data-table__td {
+  transition: background var(--dur-2) var(--ease-out);
+}
+.data-table .data-table__td.is-row-hover {
+  background: var(--ink-soft);
+}
+
+/* Inline share bar. */
+.data-table__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.data-table__bar {
+  position: relative;
+  flex: none;
+  width: 100px;
+  height: 4px;
+  border-radius: 3px;
+  background: var(--ink-soft);
+  overflow: hidden;
+}
+.data-table__bar-fill {
+  display: block; /* the fill is a <span>; without this, width/height are ignored (inline) and the bar renders empty */
+  height: 100%;
+  width: var(--pct, 0%);
+  border-radius: 3px;
+  background: var(--pulse-cyan);
+}
+.data-table__bar-val {
+  font-size: var(--fs-1);
+  color: var(--text);
+}
+
+/* Pills. */
+.data-table__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--r-full);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.data-table__pill--good {
+  background: rgba(73, 224, 245, 0.1);
+  border-color: rgba(73, 224, 245, 0.3);
+  color: var(--pulse-cyan-dark);
+}
+.data-table__pill--warn {
+  background: rgba(241, 154, 8, 0.1);
+  border-color: rgba(241, 154, 8, 0.3);
+  color: var(--orange);
+}
+.data-table__pill--source {
+  padding: 4px 8px;
+  background: #f7f7f7;
+  color: var(--text);
+  font-size: 10px;
+  letter-spacing: -0.006em;
+} /* token candidate */
+.data-table__pill--age {
+  padding: 3px 9px;
+  background: var(--cyan-50, rgba(73, 224, 245, 0.08));
+  color: var(--pulse-cyan-dark);
+}

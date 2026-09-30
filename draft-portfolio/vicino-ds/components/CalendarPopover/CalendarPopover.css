@@ -1,0 +1,321 @@
+/* CalendarPopover - calendar detail/create/edit flow. It composes Modal,
+   Button, Field, StatusPill, PlatformBadge, and DateRangeControl. Runtime
+   owns anchoring, persistence, focus trap, and calendar date math. */
+
+.calendar-popover-source,
+.calendar-popover-source * {
+  box-sizing: border-box;
+}
+
+.calendar-popover-source {
+  display: grid;
+  gap: 18px;
+  width: 100%;
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.calendar-popover-switcher,
+.calendar-popover-closed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.calendar-popover-switcher {
+  padding: 6px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.68);
+  width: max-content;
+  max-width: 100%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.calendar-popover-switcher .btn[aria-pressed='true'] {
+  background: var(--button-dark);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.calendar-popover-stage {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-2xl);
+  background: linear-gradient(180deg, rgba(73, 224, 245, 0.08), transparent 42%), var(--canvas);
+  box-shadow: var(--shadow-2);
+}
+
+.calendar-popover-dialog {
+  width: 100%;
+  max-width: 920px;
+  max-height: none;
+  margin: 0 auto;
+  overflow: hidden;
+  opacity: 1;
+  transform: none;
+}
+
+.calendar-popover-dialog[hidden],
+.calendar-popover-closed[hidden] {
+  display: none;
+}
+
+.calendar-popover-header {
+  align-items: center;
+  padding: 22px 24px;
+}
+
+.calendar-popover-header-main {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.calendar-popover-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.calendar-popover-body {
+  display: grid;
+  gap: 16px;
+  padding: 22px 24px;
+  overflow: visible;
+}
+
+.calendar-popover-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--surface-edge);
+}
+
+.calendar-popover-kicker {
+  color: var(--cyan-700);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.calendar-popover-summary {
+  margin: 8px 0 0;
+  max-width: 64ch;
+  color: var(--text-3);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.calendar-popover-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.calendar-popover-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.calendar-popover-meta-grid > div,
+.calendar-popover-section,
+.calendar-popover-inline-note {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.calendar-popover-meta-grid dt,
+.calendar-popover-section__label {
+  color: var(--text-4);
+  font-size: var(--fs-1);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.calendar-popover-meta-grid dd,
+.calendar-popover-section p,
+.calendar-popover-inline-note p {
+  min-width: 0;
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-3);
+  line-height: var(--lh-normal);
+}
+
+.calendar-popover-meta-grid dd {
+  font-weight: var(--fw-semibold);
+}
+
+.calendar-popover-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.calendar-popover-form > .is-wide {
+  grid-column: 1 / -1;
+}
+
+.calendar-popover-dialog .date-range-control {
+  max-width: none;
+}
+
+.calendar-popover-kind-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+.calendar-popover-kind-tab {
+  display: grid;
+  place-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-3);
+  font: inherit;
+  font-size: var(--fs-2);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+}
+
+.calendar-popover-kind-tab:hover {
+  background: #fff;
+  color: var(--text);
+}
+
+.calendar-popover-kind-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.calendar-popover-kind-tab[aria-pressed='true'] {
+  border-color: var(--cyan-200);
+  background: var(--cyan-50);
+  color: var(--cyan-700);
+}
+
+.calendar-popover-inline-note {
+  border-color: var(--cyan-200);
+  background: var(--cyan-50);
+}
+
+.calendar-popover-inline-note p {
+  color: var(--cyan-700);
+  font-weight: var(--fw-semibold);
+}
+
+.calendar-popover-footer {
+  flex-wrap: wrap;
+  padding: 16px 24px;
+}
+
+.calendar-popover-footer .btn--danger {
+  margin-left: auto;
+}
+
+.calendar-popover-skeleton {
+  display: grid;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.calendar-popover-skeleton__line,
+.calendar-popover-skeleton__block {
+  display: block;
+  border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--surface-2), #fff, var(--surface-2));
+  background-size: 220% 100%;
+  animation: calendarPopoverSkeleton 1.2s var(--ease) infinite;
+}
+
+.calendar-popover-skeleton__line {
+  width: 62%;
+  height: 12px;
+}
+
+.calendar-popover-skeleton__line:nth-child(2) {
+  width: 84%;
+}
+
+.calendar-popover-skeleton__block {
+  width: 100%;
+  height: 112px;
+  border-radius: var(--r-lg);
+}
+
+@keyframes calendarPopoverSkeleton {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-popover-skeleton__line,
+  .calendar-popover-skeleton__block {
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .calendar-popover-stage {
+    padding: 14px;
+  }
+
+  .calendar-popover-header,
+  .calendar-popover-body,
+  .calendar-popover-footer {
+    padding-inline: 18px;
+  }
+
+  .calendar-popover-header,
+  .calendar-popover-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .calendar-popover-tools,
+  .calendar-popover-badges {
+    justify-content: flex-start;
+  }
+
+  .calendar-popover-meta-grid,
+  .calendar-popover-form,
+  .calendar-popover-kind-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .calendar-popover-footer {
+    justify-content: stretch;
+  }
+
+  .calendar-popover-footer .btn,
+  .calendar-popover-footer .btn--danger {
+    width: 100%;
+    margin-left: 0;
+  }
+}

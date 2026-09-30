@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HorizontalBarChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <!-- IconBarTrend uses the canonical PlatformBadge for leading platform icons. -->
+    <link rel="stylesheet" href="../PlatformBadge/PlatformBadge.css" />
+    <link rel="stylesheet" href="HorizontalBarChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">HorizontalBarChart</h1>
+    <p class="handoff-sub">
+      Horizontal bar scaffold for rankings, share, and meters — Pulse's most reused analytics
+      pattern, with a distinct form per job so the variants never blur together: ranked rows (rank
+      digits, thick bars, ink leader), icon share meters (hatched track + trend pills), ONE stacked
+      share strip with keyed region rows, score tiles where the value leads, and a card panel with a
+      CTA footer. Bar length carries the ranking; the ink leader is the black anchor, never rank
+      coloring. The hatched track appears only when the value is a true fraction of a whole (share,
+      score out of 100) — open-scale comparisons stay on bare bars.
+    </p>
+
+    <div class="specimen">
+      <!-- Variant: ranked bars — rank digits, thick bars, ink leader -->
+      <div class="specimen-item">
+        <span class="specimen-label">RankedBars · rank digits + thick bars + ink leader</span>
+        <div class="hbar-specimen-frame">
+          <div class="hbar" style="--hbar-label: 96px">
+            <div class="hbar__row hbar__row--ranked">
+              <span class="hbar__rank">1</span>
+              <span class="hbar__label"><span class="hbar__label-text">TikTok</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill hbar__fill--lead" style="--pct: 96%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">6.8%</span><span class="hbar__meta">8 posts</span></span
+              >
+            </div>
+            <div class="hbar__row hbar__row--ranked">
+              <span class="hbar__rank">2</span>
+              <span class="hbar__label"><span class="hbar__label-text">LinkedIn</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 72%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">5.1%</span><span class="hbar__meta">7 posts</span></span
+              >
+            </div>
+            <div class="hbar__row hbar__row--ranked">
+              <span class="hbar__rank">3</span>
+              <span class="hbar__label"><span class="hbar__label-text">Instagram</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 54%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">3.8%</span><span class="hbar__meta">6 posts</span></span
+              >
+            </div>
+            <div class="hbar__row hbar__row--ranked">
+              <span class="hbar__rank">4</span>
+              <span class="hbar__label"><span class="hbar__label-text">X / Twitter</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 27%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">1.9%</span><span class="hbar__meta">3 posts</span></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: leading icon + share meter + trend pill (share of engagement by
+           platform — the hatched remainder is the rest of the whole, so the fill IS
+           the value; never normalize bar lengths to the leader on a meter track). -->
+      <div class="specimen-item">
+        <span class="specimen-label">IconBarTrend · leading icon + share meter + trend pill</span>
+        <div class="hbar-specimen-frame">
+          <div class="hbar" style="--hbar-label: 132px">
+            <div class="hbar__row">
+              <span class="hbar__label"
+                ><span class="platform-badge platform-badge--tt" aria-label="TikTok" title="TikTok"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M14.6 4c.4 2.5 1.8 4 4.2 4.4v3.1c-1.5-.1-2.9-.6-4.2-1.5v5.7c0 3.2-2.1 5.3-5.1 5.3-2.7 0-4.8-1.8-4.8-4.4 0-2.8 2.2-4.6 5.2-4.4.3 0 .6.1.8.1v3.1c-.3-.1-.6-.2-1-.2-1.1 0-1.9.6-1.9 1.5s.7 1.5 1.7 1.5c1.2 0 1.9-.7 1.9-2.3V4h3.2Z"
+                    /></svg></span
+                ><span class="hbar__label-text">TikTok</span></span
+              >
+              <span class="hbar__track"><span class="hbar__fill" style="--pct: 42%"></span></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">42%</span
+                ><span class="hbar__pill hbar__pill--up"
+                  ><svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 8.5V2M2.5 4.5L5 2l2.5 2.5" /></svg
+                  >+4pp</span
+                ></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"
+                ><span
+                  class="platform-badge platform-badge--ig"
+                  aria-label="Instagram"
+                  title="Instagram"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="5" width="14" height="14" rx="4" />
+                    <circle cx="12" cy="12" r="3.2" />
+                    <circle
+                      cx="16.8"
+                      cy="7.2"
+                      r="1"
+                      fill="currentColor"
+                      stroke="none"
+                    /></svg></span
+                ><span class="hbar__label-text">Instagram</span></span
+              >
+              <span class="hbar__track"><span class="hbar__fill" style="--pct: 23%"></span></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">23%</span
+                ><span class="hbar__pill hbar__pill--up"
+                  ><svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 8.5V2M2.5 4.5L5 2l2.5 2.5" /></svg
+                  >+1pp</span
+                ></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"
+                ><span
+                  class="platform-badge platform-badge--fb"
+                  aria-label="Facebook"
+                  title="Facebook"
+                ></span
+                ><span class="hbar__label-text">Facebook</span></span
+              >
+              <span class="hbar__track"><span class="hbar__fill" style="--pct: 15%"></span></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">15%</span
+                ><span class="hbar__pill hbar__pill--flat"
+                  ><svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                  >
+                    <path d="M2.5 5h5" /></svg
+                  >flat</span
+                ></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"
+                ><span
+                  class="platform-badge platform-badge--li"
+                  aria-label="LinkedIn"
+                  title="LinkedIn"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M6.8 8.8h3.1v10H6.8v-10Zm1.55-4.95a1.78 1.78 0 1 1 0 3.56 1.78 1.78 0 0 1 0-3.56ZM11.8 8.8h2.98v1.36h.04c.42-.8 1.44-1.64 2.96-1.64 3.16 0 3.74 2.08 3.74 4.78v5.5h-3.1v-4.88c0-1.16-.02-2.66-1.62-2.66-1.62 0-1.87 1.27-1.87 2.58v4.96h-3.1v-10Z"
+                    /></svg></span
+                ><span class="hbar__label-text">LinkedIn</span></span
+              >
+              <span class="hbar__track"><span class="hbar__fill" style="--pct: 12%"></span></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">12%</span
+                ><span class="hbar__pill hbar__pill--down"
+                  ><svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 1.5V8M2.5 5.5L5 8l2.5-2.5" /></svg
+                  >−2pp</span
+                ></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"
+                ><span
+                  class="platform-badge platform-badge--yt"
+                  aria-label="YouTube"
+                  title="YouTube"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M21 8.2a3 3 0 0 0-2.1-2.1C17.1 5.6 12 5.6 12 5.6s-5.1 0-6.9.5A3 3 0 0 0 3 8.2 31 31 0 0 0 2.5 12a31 31 0 0 0 .5 3.8 3 3 0 0 0 2.1 2.1c1.8.5 6.9.5 6.9.5s5.1 0 6.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-3.8 31 31 0 0 0-.5-3.8ZM10 15.1V8.9l5.4 3.1-5.4 3.1Z"
+                    /></svg></span
+                ><span class="hbar__label-text">YouTube</span></span
+              >
+              <span class="hbar__track"><span class="hbar__fill" style="--pct: 8%"></span></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">8%</span
+                ><span class="hbar__pill hbar__pill--flat"
+                  ><svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                  >
+                    <path d="M2.5 5h5" /></svg
+                  >flat</span
+                ></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: stacked share bar + trend pill (region) -->
+      <div class="specimen-item">
+        <span class="specimen-label">ShareBar · one stacked strip + region rows</span>
+        <div class="hbar-specimen-frame">
+          <div class="hbar">
+            <div
+              class="hbar__share-strip"
+              role="img"
+              aria-label="Audience share: Southeast Asia 41%, East Asia 22%, North America 12%, other regions 25%."
+            >
+              <span class="hbar__share-seg" style="width: 41%; background: var(--chart-1)"></span>
+              <span class="hbar__share-seg" style="width: 22%; background: var(--chart-2)"></span>
+              <span class="hbar__share-seg" style="width: 12%; background: var(--chart-3)"></span>
+              <span
+                class="hbar__share-seg"
+                style="width: 25%; background: var(--chart-muted)"
+              ></span>
+            </div>
+            <div class="hbar__share-rows">
+              <div class="hbar__share-row">
+                <span class="hbar__share-key" style="background: var(--chart-1)"></span>
+                <span class="hbar__label-text">Southeast Asia</span>
+                <span class="hbar__caption">SG · MY · ID · TH · PH</span>
+                <span class="hbar__pct">41%</span>
+                <span class="hbar__delta hbar__delta--up"
+                  ><span class="hbar__delta-arrow" aria-hidden="true">↑</span> +18%</span
+                >
+              </div>
+              <div class="hbar__share-row">
+                <span class="hbar__share-key" style="background: var(--chart-2)"></span>
+                <span class="hbar__label-text">East Asia</span>
+                <span class="hbar__caption">CN · JP · KR · TW · HK</span>
+                <span class="hbar__pct">22%</span>
+                <span class="hbar__delta hbar__delta--up"
+                  ><span class="hbar__delta-arrow" aria-hidden="true">↑</span> +6%</span
+                >
+              </div>
+              <div class="hbar__share-row">
+                <span class="hbar__share-key" style="background: var(--chart-3)"></span>
+                <span class="hbar__label-text">North America</span>
+                <span class="hbar__caption">US · CA</span>
+                <span class="hbar__pct">12%</span>
+                <span class="hbar__delta hbar__delta--down">↓ −3%</span>
+              </div>
+              <div class="hbar__share-row">
+                <span class="hbar__share-key" style="background: var(--chart-muted)"></span>
+                <span class="hbar__label-text">Other regions</span>
+                <span class="hbar__caption">EU · ANZ · LATAM</span>
+                <span class="hbar__pct">25%</span>
+                <span class="hbar__delta hbar__delta--flat">– flat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: signal meter — score tiles, value leads -->
+      <div class="specimen-item">
+        <span class="specimen-label">SignalMeter · score tiles (value leads)</span>
+        <div class="hbar-specimen-frame">
+          <div class="hbar__meters">
+            <div class="hbar__meter">
+              <span class="hbar__meter-label">Location tier</span>
+              <span class="hbar__meter-score">82</span>
+              <span class="hbar__meter-track"
+                ><span class="hbar__meter-fill" style="--pct: 82%"></span
+              ></span>
+            </div>
+            <div class="hbar__meter">
+              <span class="hbar__meter-label">Device tier</span>
+              <span class="hbar__meter-score">79</span>
+              <span class="hbar__meter-track"
+                ><span class="hbar__meter-fill" style="--pct: 79%"></span
+              ></span>
+            </div>
+            <div class="hbar__meter">
+              <span class="hbar__meter-label">Online shopping activity</span>
+              <span class="hbar__meter-score">68</span>
+              <span class="hbar__meter-track"
+                ><span class="hbar__meter-fill" style="--pct: 68%"></span
+              ></span>
+            </div>
+            <div class="hbar__meter">
+              <span class="hbar__meter-label">Platform engagement depth</span>
+              <span class="hbar__meter-score">71</span>
+              <span class="hbar__meter-track"
+                ><span class="hbar__meter-fill" style="--pct: 71%"></span
+              ></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant: card panel with CTA footer (attribution panel) -->
+      <div class="specimen-item">
+        <span class="specimen-label">BarPanelCTA · titled card + ranked rows + CTA</span>
+        <div class="hbar__card" style="max-width: 480px">
+          <div>
+            <h2 class="hbar__title">Format Attribution</h2>
+            <p class="hbar__sub-head">Avg engagement rate by format · last 30 days · 24 posts</p>
+          </div>
+          <div class="hbar" style="--hbar-label: 96px; max-width: none">
+            <div class="hbar__row">
+              <span class="hbar__label"><span class="hbar__label-text">Reel</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 96%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">6.3%</span><span class="hbar__meta">10 posts</span></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"><span class="hbar__label-text">Video</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 88%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">5.9%</span><span class="hbar__meta">8 posts</span></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"><span class="hbar__label-text">Carousel</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 56%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">3.7%</span><span class="hbar__meta">2 posts</span></span
+              >
+            </div>
+            <div class="hbar__row">
+              <span class="hbar__label"><span class="hbar__label-text">Static</span></span>
+              <span class="hbar__track hbar__track--bare"
+                ><span class="hbar__fill" style="--pct: 30%"></span
+              ></span>
+              <span class="hbar__end"
+                ><span class="hbar__value">2.0%</span><span class="hbar__meta">4 posts</span></span
+              >
+            </div>
+          </div>
+          <button class="hbar__cta" type="button">Adjust Content Strategy</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

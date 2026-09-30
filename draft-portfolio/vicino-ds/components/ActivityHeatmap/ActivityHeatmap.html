@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ActivityHeatmap — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="ActivityHeatmap.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">ActivityHeatmap</h1>
+    <p class="handoff-sub">
+      Day × time grid of rounded cells for "when is my audience online". Cells wear the bright
+      brand-cyan sequential ramp by intensity; the Less→More scale legend names the ramp and every
+      cell carries a hover/focus read-out with the exact share. Pair with ComboChart when the answer
+      needs an hourly curve instead of a week grid.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Week grid + intensity ramp + cell read-out</span>
+        <div class="heatmap">
+          <div class="heatmap__head">
+            <div>
+              <h2 class="heatmap__title">Audience Activity by Time</h2>
+              <p class="heatmap__sub">share of followers online · last 4 weeks · all platforms</p>
+            </div>
+          </div>
+          <div class="heatmap__plot">
+            <span></span>
+            <span class="heatmap__day">Mon</span>
+            <span class="heatmap__day">Tue</span>
+            <span class="heatmap__day">Wed</span>
+            <span class="heatmap__day">Thu</span>
+            <span class="heatmap__day">Fri</span>
+            <span class="heatmap__day">Sat</span>
+            <span class="heatmap__day">Sun</span>
+            <span class="heatmap__time">6a</span>
+            <button
+              class="heatmap__cell heatmap__cell--l1"
+              type="button"
+              data-tip-value="8% active"
+              data-tip-label="Mon · 6a"
+              aria-label="Mon 6a: 8 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l1"
+              type="button"
+              data-tip-value="8% active"
+              data-tip-label="Tue · 6a"
+              aria-label="Tue 6a: 8 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Wed · 6a"
+              aria-label="Wed 6a: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l1"
+              type="button"
+              data-tip-value="8% active"
+              data-tip-label="Thu · 6a"
+              aria-label="Thu 6a: 8 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Fri · 6a"
+              aria-label="Fri 6a: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Sat · 6a"
+              aria-label="Sat 6a: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Sun · 6a"
+              aria-label="Sun 6a: 16 percent of followers active"
+            ></button>
+            <span class="heatmap__time">9a</span>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Mon · 9a"
+              aria-label="Mon 9a: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Tue · 9a"
+              aria-label="Tue 9a: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Wed · 9a"
+              aria-label="Wed 9a: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Thu · 9a"
+              aria-label="Thu 9a: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Fri · 9a"
+              aria-label="Fri 9a: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Sat · 9a"
+              aria-label="Sat 9a: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Sun · 9a"
+              aria-label="Sun 9a: 28 percent of followers active"
+            ></button>
+            <span class="heatmap__time">12p</span>
+            <button
+              class="heatmap__cell heatmap__cell--l2"
+              type="button"
+              data-tip-value="16% active"
+              data-tip-label="Mon · 12p"
+              aria-label="Mon 12p: 16 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Tue · 12p"
+              aria-label="Tue 12p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Wed · 12p"
+              aria-label="Wed 12p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Thu · 12p"
+              aria-label="Thu 12p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Fri · 12p"
+              aria-label="Fri 12p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Sat · 12p"
+              aria-label="Sat 12p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Sun · 12p"
+              aria-label="Sun 12p: 42 percent of followers active"
+            ></button>
+            <span class="heatmap__time">3p</span>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Mon · 3p"
+              aria-label="Mon 3p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Tue · 3p"
+              aria-label="Tue 3p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Wed · 3p"
+              aria-label="Wed 3p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Thu · 3p"
+              aria-label="Thu 3p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Fri · 3p"
+              aria-label="Fri 3p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l5"
+              type="button"
+              data-tip-value="56% active"
+              data-tip-label="Sat · 3p"
+              aria-label="Sat 3p: 56 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l5"
+              type="button"
+              data-tip-value="56% active"
+              data-tip-label="Sun · 3p"
+              aria-label="Sun 3p: 56 percent of followers active"
+            ></button>
+            <span class="heatmap__time">6p</span>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Mon · 6p"
+              aria-label="Mon 6p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Tue · 6p"
+              aria-label="Tue 6p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l5"
+              type="button"
+              data-tip-value="56% active"
+              data-tip-label="Wed · 6p"
+              aria-label="Wed 6p: 56 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l5"
+              type="button"
+              data-tip-value="56% active"
+              data-tip-label="Thu · 6p"
+              aria-label="Thu 6p: 56 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l5"
+              type="button"
+              data-tip-value="56% active"
+              data-tip-label="Fri · 6p"
+              aria-label="Fri 6p: 56 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l6"
+              type="button"
+              data-tip-value="71% active"
+              data-tip-label="Sat · 6p"
+              aria-label="Sat 6p: 71 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l6"
+              type="button"
+              data-tip-value="71% active"
+              data-tip-label="Sun · 6p"
+              aria-label="Sun 6p: 71 percent of followers active"
+            ></button>
+            <span class="heatmap__time">9p</span>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Mon · 9p"
+              aria-label="Mon 9p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l3"
+              type="button"
+              data-tip-value="28% active"
+              data-tip-label="Tue · 9p"
+              aria-label="Tue 9p: 28 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Wed · 9p"
+              aria-label="Wed 9p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Thu · 9p"
+              aria-label="Thu 9p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Fri · 9p"
+              aria-label="Fri 9p: 42 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l5"
+              type="button"
+              data-tip-value="56% active"
+              data-tip-label="Sat · 9p"
+              aria-label="Sat 9p: 56 percent of followers active"
+            ></button>
+            <button
+              class="heatmap__cell heatmap__cell--l4"
+              type="button"
+              data-tip-value="42% active"
+              data-tip-label="Sun · 9p"
+              aria-label="Sun 9p: 42 percent of followers active"
+            ></button>
+            <div class="chart-tip" role="status"></div>
+          </div>
+          <div class="heatmap__scale" aria-hidden="true">
+            Less
+            <span class="heatmap__scale-swatch heatmap__cell--l1"></span>
+            <span class="heatmap__scale-swatch heatmap__cell--l2"></span>
+            <span class="heatmap__scale-swatch heatmap__cell--l3"></span>
+            <span class="heatmap__scale-swatch heatmap__cell--l4"></span>
+            <span class="heatmap__scale-swatch heatmap__cell--l5"></span>
+            <span class="heatmap__scale-swatch heatmap__cell--l6"></span>
+            More
+            <span class="heatmap__scale-range">8–71% of followers active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-cell hover/focus readout.
+      document.querySelectorAll('.heatmap__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        if (!tip) return;
+        const show = (cell) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = cell.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = cell.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const cellRect = cell.getBoundingClientRect();
+          tip.style.left = cellRect.left - plotRect.left + cellRect.width / 2 + 'px';
+          tip.style.top = cellRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.heatmap__cell').forEach((cell) => {
+          cell.addEventListener('pointerenter', () => show(cell));
+          cell.addEventListener('pointerleave', hide);
+          cell.addEventListener('focus', () => show(cell));
+          cell.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grid - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="Grid.css" />
+    <style>
+      /* Page chrome and demo-only specimen labels. The reusable source is Grid.css. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .handoff-title {
+        margin: 0 0 var(--heading-gap);
+        font-size: var(--fs-7);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+      }
+
+      .handoff-sub {
+        max-width: 78ch;
+        margin: 0 0 34px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        line-height: var(--lh-normal);
+      }
+
+      .specimen-stack {
+        display: grid;
+        gap: 28px;
+        max-width: 1180px;
+      }
+
+      .specimen-section {
+        display: grid;
+        gap: 12px;
+      }
+
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .specimen-boundary {
+        padding: 18px;
+        border: 1px dashed var(--surface-edge-strong);
+        border-radius: var(--r-lg);
+        background: rgba(255, 255, 255, 0.38);
+      }
+
+      .demo-block {
+        display: grid;
+        min-height: 78px;
+        padding: 14px;
+        border-radius: var(--r-md);
+        background: var(--surface);
+        color: var(--text-2);
+        box-shadow: var(--surface-highlight);
+        align-content: space-between;
+      }
+
+      .demo-block b {
+        color: var(--text);
+        font-size: var(--fs-4);
+        font-weight: var(--fw-semibold);
+      }
+
+      .demo-block small {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      .demo-rail {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .demo-rail span,
+      .demo-line {
+        display: block;
+        height: 12px;
+        border-radius: var(--r-full);
+        background: var(--surface-3);
+      }
+
+      .demo-rail span:first-child {
+        width: 72%;
+        background: var(--ink-900);
+      }
+
+      .demo-content {
+        display: grid;
+        gap: 12px;
+        padding: 18px;
+        border-radius: var(--r-lg);
+        background: var(--canvas);
+      }
+
+      .demo-line.short {
+        width: 58%;
+      }
+
+      .demo-cell {
+        min-height: 48px;
+        border-radius: var(--r-md);
+        background: var(--surface-2);
+      }
+
+      .demo-column-marker {
+        display: grid;
+        min-height: 44px;
+        place-items: center;
+        border-radius: var(--r-sm);
+        background: var(--cyan-100);
+        color: var(--cyan-800);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        font-variant-numeric: tabular-nums;
+      }
+
+      @media (max-width: 760px) {
+        body {
+          padding: 28px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">Grid</h1>
+    <p class="handoff-sub">
+      Layout primitive for Pulse document, section, split, and responsive content grids. Grid is
+      structural, not a card: use dashed boundaries in specimens, keep real page sections unframed,
+      and let spacing and tone carry hierarchy before borders.
+    </p>
+
+    <main class="specimen-stack">
+      <section class="specimen-section" aria-label="Document grid">
+        <span class="specimen-label">Document grid / 12 columns</span>
+        <div class="specimen-boundary">
+          <div class="pulse-grid pulse-grid--document pulse-grid--tight">
+            <span class="demo-column-marker">01</span>
+            <span class="demo-column-marker">02</span>
+            <span class="demo-column-marker">03</span>
+            <span class="demo-column-marker">04</span>
+            <span class="demo-column-marker">05</span>
+            <span class="demo-column-marker">06</span>
+            <span class="demo-column-marker">07</span>
+            <span class="demo-column-marker">08</span>
+            <span class="demo-column-marker">09</span>
+            <span class="demo-column-marker">10</span>
+            <span class="demo-column-marker">11</span>
+            <span class="demo-column-marker">12</span>
+            <div class="demo-block pulse-grid__item pulse-grid__item--span-8">
+              <b>Main reading area</b>
+              <small>span 8</small>
+            </div>
+            <div class="demo-block pulse-grid__item pulse-grid__item--span-4">
+              <b>Context rail</b>
+              <small>span 4</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="specimen-section" aria-label="Section grid">
+        <span class="specimen-label">Section grid / rail plus content</span>
+        <div class="specimen-boundary">
+          <div class="pulse-grid pulse-grid--section">
+            <aside class="demo-rail pulse-grid__item">
+              <span></span>
+              <span></span>
+              <span></span>
+            </aside>
+            <div class="demo-content pulse-grid__item">
+              <span class="demo-line short"></span>
+              <div class="pulse-grid pulse-grid--content">
+                <span class="demo-cell"></span>
+                <span class="demo-cell"></span>
+                <span class="demo-cell"></span>
+              </div>
+              <span class="demo-line"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="specimen-section" aria-label="Responsive content grid">
+        <span class="specimen-label">Content grid / responsive wrap</span>
+        <div class="specimen-boundary">
+          <div class="pulse-grid pulse-grid--auto" style="--grid-min: 210px">
+            <div class="demo-block">
+              <b>Metric group</b>
+              <small>auto fit</small>
+            </div>
+            <div class="demo-block">
+              <b>Signal cluster</b>
+              <small>auto fit</small>
+            </div>
+            <div class="demo-block">
+              <b>Report readout</b>
+              <small>auto fit</small>
+            </div>
+            <div class="demo-block">
+              <b>Action queue</b>
+              <small>auto fit</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="specimen-section" aria-label="Split grid">
+        <span class="specimen-label">Split grid / content plus support</span>
+        <div class="specimen-boundary">
+          <div class="pulse-grid pulse-grid--split">
+            <div class="demo-block">
+              <b>Primary work surface</b>
+              <small>fluid</small>
+            </div>
+            <div class="demo-block">
+              <b>Support panel</b>
+              <small>min 280</small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

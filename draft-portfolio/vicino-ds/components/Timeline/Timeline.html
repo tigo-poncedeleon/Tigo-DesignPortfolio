@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Timeline - Pulse component source</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="Timeline.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+
+      .sheet {
+        display: grid;
+        gap: 36px;
+        max-width: 1120px;
+      }
+
+      .component-intro,
+      .section {
+        display: grid;
+        gap: 14px;
+      }
+
+      .component-intro {
+        gap: 8px;
+        max-width: 74ch;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--tracking-title);
+      }
+
+      h1 {
+        font-size: var(--fs-8);
+      }
+
+      h2 {
+        font-size: var(--fs-6);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-3);
+        font-size: var(--fs-3);
+        line-height: var(--lh-normal);
+      }
+
+      .section-title span {
+        color: var(--text-4);
+        font-size: var(--fs-1);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="component-intro" aria-label="Introduction">
+        <h1>Timeline</h1>
+        <p>
+          Ordered event display for schedule, production, approval, and report sequences. Timeline
+          owns the rail and state anatomy; product patterns provide copy and actions.
+        </p>
+      </header>
+
+      <section class="section" aria-label="Vertical timeline slices">
+        <div class="section-title">
+          <span>Timeline / item states</span>
+        </div>
+        <div class="timeline timeline--panel">
+          <article class="timeline__item timeline__item--complete">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <div class="timeline__head">
+                <h2 class="timeline__title">Trend fit locked</h2>
+                <time class="timeline__time" datetime="2026-06-10T09:00">9:00 AM</time>
+              </div>
+              <p class="timeline__description">
+                Mood-edit angle matched to Quiet Confidence Uniform.
+              </p>
+              <p class="timeline__meta">
+                <span class="timeline__meta-item">
+                  <span class="timeline__meta-dot"></span>
+                  Completed
+                </span>
+                <span class="timeline__meta-item">Studio</span>
+              </p>
+            </div>
+          </article>
+
+          <article class="timeline__item timeline__item--current">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <div class="timeline__head">
+                <h2 class="timeline__title">Creative render</h2>
+                <time class="timeline__time" datetime="2026-06-10T10:30">10:30 AM</time>
+              </div>
+              <p class="timeline__description">Draft 01 rendering; claim-safe captions queued.</p>
+              <p class="timeline__meta">
+                <span class="timeline__meta-item">
+                  <span class="timeline__meta-dot"></span>
+                  Building now
+                </span>
+                <span class="timeline__meta-item">ETA 18m</span>
+              </p>
+            </div>
+          </article>
+
+          <article class="timeline__item timeline__item--scheduled">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <div class="timeline__head">
+                <h2 class="timeline__title">Caption variants</h2>
+                <time class="timeline__time" datetime="2026-06-10T11:15">11:15 AM</time>
+              </div>
+              <p class="timeline__description">Three hooks and one delivery-safe alternate.</p>
+            </div>
+          </article>
+
+          <article class="timeline__item timeline__item--waiting">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <div class="timeline__head">
+                <h2 class="timeline__title">Approve and schedule</h2>
+                <time class="timeline__time" datetime="2026-06-11T12:00">Jun 11</time>
+              </div>
+              <p class="timeline__description">Target slot: 12:00 PM.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Horizontal timeline slices">
+        <div class="section-title">
+          <span>TimelineHorizontal / compact rhythm</span>
+        </div>
+        <div class="timeline timeline--horizontal timeline--compact">
+          <article class="timeline__item timeline__item--complete">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <h2 class="timeline__title">Shot plan</h2>
+              <p class="timeline__description">Texture macro and fit cue locked.</p>
+            </div>
+          </article>
+          <article class="timeline__item timeline__item--current">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <h2 class="timeline__title">Rendering now</h2>
+              <p class="timeline__description">62% complete.</p>
+            </div>
+          </article>
+          <article class="timeline__item timeline__item--scheduled">
+            <span class="timeline__rail"><span class="timeline__marker"></span></span>
+            <div class="timeline__body">
+              <h2 class="timeline__title">Schedule</h2>
+              <p class="timeline__description">Jun 11, 12:00 PM.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

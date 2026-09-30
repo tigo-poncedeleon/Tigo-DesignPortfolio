@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WordCloud — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="WordCloud.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">WordCloud</h1>
+    <p class="handoff-sub">
+      Weighted keyword cloud for social listening. Terms flow in a centered wrap — never rotated or
+      scatter-placed — with five size/weight tiers carrying mention frequency down a brand-cyan
+      monochrome ladder (no gray in charts). Hover or focus a term for mentions + trend. Pair with
+      DataTable when exact counts must be scanned.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Keyword cloud · 5 weight tiers + read-out</span>
+        <div class="cloud">
+          <div class="cloud__head">
+            <div>
+              <h2 class="cloud__title">What People Are Saying</h2>
+              <p class="cloud__sub">keyword mentions across comments &amp; DMs · last 30 days</p>
+            </div>
+          </div>
+          <div
+            class="cloud__plot"
+            role="img"
+            aria-label="Keyword cloud of 21 terms. Restock and matcha lead mentions; packaging, gift set and tutorial follow."
+          >
+            <button
+              class="cloud__term cloud__term--w2"
+              type="button"
+              data-tip-value="86 mentions"
+              data-tip-label="shipping · ↑ +12%"
+            >
+              shipping
+            </button>
+            <button
+              class="cloud__term cloud__term--w3"
+              type="button"
+              data-tip-value="142 mentions"
+              data-tip-label="pistachio · ↑ +64%"
+            >
+              pistachio
+            </button>
+            <button
+              class="cloud__term cloud__term--w5"
+              type="button"
+              data-tip-value="312 mentions"
+              data-tip-label="restock · ↑ +38%"
+            >
+              restock
+            </button>
+            <button
+              class="cloud__term cloud__term--w2"
+              type="button"
+              data-tip-value="74 mentions"
+              data-tip-label="dupe · flat"
+            >
+              dupe
+            </button>
+            <button
+              class="cloud__term cloud__term--w4"
+              type="button"
+              data-tip-value="198 mentions"
+              data-tip-label="packaging · ↑ +22%"
+            >
+              packaging
+            </button>
+            <button
+              class="cloud__term cloud__term--w1"
+              type="button"
+              data-tip-value="38 mentions"
+              data-tip-label="refill · flat"
+            >
+              refill
+            </button>
+            <button
+              class="cloud__term cloud__term--w3"
+              type="button"
+              data-tip-value="128 mentions"
+              data-tip-label="gift set · ↑ +45%"
+            >
+              gift set
+            </button>
+            <button
+              class="cloud__term cloud__term--w5"
+              type="button"
+              data-tip-value="287 mentions"
+              data-tip-label="matcha · ↑ +51%"
+            >
+              matcha
+            </button>
+            <button
+              class="cloud__term cloud__term--w2"
+              type="button"
+              data-tip-value="79 mentions"
+              data-tip-label="texture · ↑ +8%"
+            >
+              texture
+            </button>
+            <button
+              class="cloud__term cloud__term--w4"
+              type="button"
+              data-tip-value="176 mentions"
+              data-tip-label="smells amazing · ↑ +19%"
+            >
+              smells amazing
+            </button>
+            <button
+              class="cloud__term cloud__term--w1"
+              type="button"
+              data-tip-value="34 mentions"
+              data-tip-label="sample · ↓ −6%"
+            >
+              sample
+            </button>
+            <button
+              class="cloud__term cloud__term--w3"
+              type="button"
+              data-tip-value="121 mentions"
+              data-tip-label="tutorial · ↑ +28%"
+            >
+              tutorial
+            </button>
+            <button
+              class="cloud__term cloud__term--w2"
+              type="button"
+              data-tip-value="68 mentions"
+              data-tip-label="price · ↓ −4%"
+            >
+              price
+            </button>
+            <button
+              class="cloud__term cloud__term--w3"
+              type="button"
+              data-tip-value="112 mentions"
+              data-tip-label="unboxing · ↑ +31%"
+            >
+              unboxing
+            </button>
+            <button
+              class="cloud__term cloud__term--w1"
+              type="button"
+              data-tip-value="29 mentions"
+              data-tip-label="collab · flat"
+            >
+              collab
+            </button>
+            <button
+              class="cloud__term cloud__term--w2"
+              type="button"
+              data-tip-value="83 mentions"
+              data-tip-label="glow · ↑ +14%"
+            >
+              glow
+            </button>
+            <button
+              class="cloud__term cloud__term--w4"
+              type="button"
+              data-tip-value="164 mentions"
+              data-tip-label="limited drop · ↑ +58%"
+            >
+              limited drop
+            </button>
+            <button
+              class="cloud__term cloud__term--w1"
+              type="button"
+              data-tip-value="31 mentions"
+              data-tip-label="routine · flat"
+            >
+              routine
+            </button>
+            <button
+              class="cloud__term cloud__term--w2"
+              type="button"
+              data-tip-value="71 mentions"
+              data-tip-label="bundle · ↑ +9%"
+            >
+              bundle
+            </button>
+            <button
+              class="cloud__term cloud__term--w3"
+              type="button"
+              data-tip-value="104 mentions"
+              data-tip-label="ingredients · ↑ +17%"
+            >
+              ingredients
+            </button>
+            <button
+              class="cloud__term cloud__term--w1"
+              type="button"
+              data-tip-value="27 mentions"
+              data-tip-label="restock alert · new"
+            >
+              restock alert
+            </button>
+            <div class="chart-tip" role="status"></div>
+          </div>
+          <div class="cloud__meta">
+            <span>2,304 mentions analyzed</span>
+            <span>size = mention frequency</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-term hover/focus readout.
+      document.querySelectorAll('.cloud__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        if (!tip) return;
+        const show = (term) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = term.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = term.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const termRect = term.getBoundingClientRect();
+          tip.style.left = termRect.left - plotRect.left + termRect.width / 2 + 'px';
+          tip.style.top = termRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.cloud__term').forEach((term) => {
+          term.addEventListener('pointerenter', () => show(term));
+          term.addEventListener('pointerleave', hide);
+          term.addEventListener('focus', () => show(term));
+          term.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

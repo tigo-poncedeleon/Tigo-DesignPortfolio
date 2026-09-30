@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MirroredBarChart — Pulse component handoff</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <link rel="stylesheet" href="MirroredBarChart.css" />
+    <style>
+      /* Page chrome only — does not style the component. */
+      body {
+        margin: 0;
+        padding: 48px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+      }
+      .handoff-title {
+        margin: 0 0 4px;
+        font-size: var(--fs-7);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--tracking-title);
+      }
+      .handoff-sub {
+        margin: 0 0 36px;
+        color: var(--text-3);
+        font-size: var(--fs-4);
+        max-width: 70ch;
+      }
+      .specimen {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1192px;
+      }
+      .specimen-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .specimen-label {
+        color: var(--text-4);
+        font-size: var(--fs-2);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="handoff-title">MirroredBarChart</h1>
+    <p class="handoff-sub">
+      Bipolar gained/lost bars mirrored around a center baseline (owner-approved adoption of the
+      reference income/outcome widget). Gains grow up in brand cyan, losses down in ink, with a stat
+      rail leading the story and a labeled bipolar y-axis. Hover or focus any bar for its exact
+      count.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-item">
+        <span class="specimen-label">Stat rail + bipolar bars + read-out</span>
+        <div class="mirror">
+          <div class="mirror__head">
+            <div>
+              <h2 class="mirror__title">Follower Change</h2>
+              <p class="mirror__sub">weekly gained vs lost · last 12 weeks · all platforms</p>
+            </div>
+          </div>
+          <div class="mirror__body">
+            <div class="mirror__rail">
+              <div class="mirror__stat">
+                <span class="mirror__stat-key mirror__stat-key--gain"></span>
+                <span class="mirror__stat-label">Gained</span>
+                <span class="mirror__stat-value">+6,590</span>
+              </div>
+              <div class="mirror__stat">
+                <span class="mirror__stat-key mirror__stat-key--loss"></span>
+                <span class="mirror__stat-label">Lost</span>
+                <span class="mirror__stat-value">−2,965</span>
+              </div>
+              <div class="mirror__stat mirror__stat--net">
+                <span class="mirror__stat-label">Net</span>
+                <span class="mirror__stat-value">+3,625</span>
+              </div>
+            </div>
+            <div class="mirror__yaxis" aria-hidden="true">
+              <span class="mirror__ytick" style="top: 11.8%">+800</span>
+              <span class="mirror__ytick" style="top: 32.7%">+400</span>
+              <span class="mirror__ytick" style="top: 54.5%">0</span>
+              <span class="mirror__ytick" style="top: 76.4%">−400</span>
+            </div>
+            <div
+              class="mirror__plot"
+              role="img"
+              aria-label="Mirrored bar chart of weekly followers gained (up, cyan) vs lost (down, indigo) over 12 weeks; gains grow from 330 to 800 a week."
+            >
+              <svg viewBox="0 0 1080 220" preserveAspectRatio="none" style="height: 240px">
+                <g class="mirror__grid">
+                  <line x1="8" y1="26" x2="1072" y2="26" />
+                  <line x1="8" y1="72" x2="1072" y2="72" />
+                  <line x1="8" y1="168" x2="1072" y2="168" />
+                </g>
+                <line class="mirror__baseline" x1="8" y1="120" x2="1072" y2="120" />
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M24,118 V90 Q24,80 34,80 H70 Q80,80 80,90 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+330 gained"
+                  data-tip-label="W1"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M24,122 H80 V128 Q80,138 70,138 H34 Q24,138 24,128 Z"
+                  tabindex="0"
+                  data-tip-value="−140 lost"
+                  data-tip-label="W1"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M112,118 V82 Q112,72 122,72 H158 Q168,72 168,82 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+400 gained"
+                  data-tip-label="W2"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M112,122 H168 V132 Q168,142 158,142 H122 Q112,142 112,132 Z"
+                  tabindex="0"
+                  data-tip-value="−175 lost"
+                  data-tip-label="W2"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M200,118 V86 Q200,76 210,76 H246 Q256,76 256,86 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+365 gained"
+                  data-tip-label="W3"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M200,122 H256 V130 Q256,140 246,140 H210 Q200,140 200,130 Z"
+                  tabindex="0"
+                  data-tip-value="−160 lost"
+                  data-tip-label="W3"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M288,118 V70 Q288,60 298,60 H334 Q344,60 344,70 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+505 gained"
+                  data-tip-label="W4"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M288,122 H344 V138 Q344,148 334,148 H298 Q288,148 288,138 Z"
+                  tabindex="0"
+                  data-tip-value="−230 lost"
+                  data-tip-label="W4"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M376,118 V76 Q376,66 386,66 H422 Q432,66 432,76 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+450 gained"
+                  data-tip-label="W5"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M376,122 H432 V134 Q432,144 422,144 H386 Q376,144 376,134 Z"
+                  tabindex="0"
+                  data-tip-value="−195 lost"
+                  data-tip-label="W5"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M464,118 V62 Q464,52 474,52 H510 Q520,52 520,62 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+575 gained"
+                  data-tip-label="W6"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M464,122 H520 V142 Q520,152 510,152 H474 Q464,152 464,142 Z"
+                  tabindex="0"
+                  data-tip-value="−265 lost"
+                  data-tip-label="W6"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M552,118 V68 Q552,58 562,58 H598 Q608,58 608,68 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+520 gained"
+                  data-tip-label="W7"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M552,122 H608 V138 Q608,148 598,148 H562 Q552,148 552,138 Z"
+                  tabindex="0"
+                  data-tip-value="−230 lost"
+                  data-tip-label="W7"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M640,118 V54 Q640,44 650,44 H686 Q696,44 696,54 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+645 gained"
+                  data-tip-label="W8"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M640,122 H696 V146 Q696,156 686,156 H650 Q640,156 640,146 Z"
+                  tabindex="0"
+                  data-tip-value="−300 lost"
+                  data-tip-label="W8"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M728,118 V60 Q728,50 738,50 H774 Q784,50 784,60 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+590 gained"
+                  data-tip-label="W9"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M728,122 H784 V142 Q784,152 774,152 H738 Q728,152 728,142 Z"
+                  tabindex="0"
+                  data-tip-value="−265 lost"
+                  data-tip-label="W9"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M816,118 V44 Q816,34 826,34 H862 Q872,34 872,44 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+730 gained"
+                  data-tip-label="W10"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M816,122 H872 V150 Q872,160 862,160 H826 Q816,160 816,150 Z"
+                  tabindex="0"
+                  data-tip-value="−335 lost"
+                  data-tip-label="W10"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M904,118 V50 Q904,40 914,40 H950 Q960,40 960,50 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+680 gained"
+                  data-tip-label="W11"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M904,122 H960 V146 Q960,156 950,156 H914 Q904,156 904,146 Z"
+                  tabindex="0"
+                  data-tip-value="−300 lost"
+                  data-tip-label="W11"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--gain"
+                  d="M992,118 V36 Q992,26 1002,26 H1038 Q1048,26 1048,36 V118 Z"
+                  tabindex="0"
+                  data-tip-value="+800 gained"
+                  data-tip-label="W12"
+                ></path>
+                <path
+                  class="mirror__bar mirror__bar--loss"
+                  d="M992,122 H1048 V154 Q1048,164 1038,164 H1002 Q992,164 992,154 Z"
+                  tabindex="0"
+                  data-tip-value="−370 lost"
+                  data-tip-label="W12"
+                ></path>
+              </svg>
+              <div class="mirror__xlabels" aria-hidden="true">
+                <span class="mirror__xlabel" style="left: 4.81%">W1</span>
+                <span class="mirror__xlabel" style="left: 12.96%">W2</span>
+                <span class="mirror__xlabel" style="left: 21.11%">W3</span>
+                <span class="mirror__xlabel" style="left: 29.26%">W4</span>
+                <span class="mirror__xlabel" style="left: 37.41%">W5</span>
+                <span class="mirror__xlabel" style="left: 45.56%">W6</span>
+                <span class="mirror__xlabel" style="left: 53.7%">W7</span>
+                <span class="mirror__xlabel" style="left: 61.85%">W8</span>
+                <span class="mirror__xlabel" style="left: 70%">W9</span>
+                <span class="mirror__xlabel" style="left: 78.15%">W10</span>
+                <span class="mirror__xlabel" style="left: 86.3%">W11</span>
+                <span class="mirror__xlabel" style="left: 94.44%">W12</span>
+              </div>
+              <div class="chart-tip" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Specimen interactivity only — per-bar hover/focus readout.
+      document.querySelectorAll('.mirror__plot').forEach((plot) => {
+        const tip = plot.querySelector('.chart-tip');
+        if (!tip) return;
+        const show = (bar) => {
+          tip.textContent = '';
+          const value = document.createElement('span');
+          value.className = 'chart-tip__value';
+          value.textContent = bar.dataset.tipValue;
+          const label = document.createElement('span');
+          label.className = 'chart-tip__label';
+          label.textContent = bar.dataset.tipLabel;
+          tip.append(value, label);
+          const plotRect = plot.getBoundingClientRect();
+          const barRect = bar.getBoundingClientRect();
+          tip.style.left = barRect.left - plotRect.left + barRect.width / 2 + 'px';
+          tip.style.top = barRect.top - plotRect.top + 'px';
+          tip.classList.add('is-visible');
+        };
+        const hide = () => tip.classList.remove('is-visible');
+        plot.querySelectorAll('.mirror__bar').forEach((bar) => {
+          bar.addEventListener('pointerenter', () => show(bar));
+          bar.addEventListener('pointerleave', hide);
+          bar.addEventListener('focus', () => show(bar));
+          bar.addEventListener('blur', hide);
+        });
+      });
+    </script>
+  </body>
+</html>

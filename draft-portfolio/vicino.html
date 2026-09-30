@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- A draft, kept on one Mac (README.md). -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Vicino AI — Tigo Ponce de León</title>
+  <meta name="theme-color" content="#fafafa" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <script>
+    // the index's entrance is Home's; a case study has only the page's rise
+    document.documentElement.classList.add('js', 'entered');
+  </script>
+  <!-- Carried across pages: a Work tile grows into its case study's opening
+       tile, and shrinks home again (css/work.css, css/case.css). The opt-in
+       is written here, in the page itself, not in those stylesheets: the
+       page's scripts read computed style as soon as they start (js/motion.js
+       u()), and a read that early can come before a linked stylesheet has
+       applied, which the browser takes as the page not having opted in, and
+       it drops the transition. -->
+  <style>
+    @view-transition { navigation: auto; types: case; }
+    @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+  </style>
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/nav.css" />
+  <link rel="stylesheet" href="css/case.css" />
+  <script type="module" src="js/case.js"></script>
+</head>
+<body>
+  <div class="frame cs" data-case="vicino">
+
+    <header class="masthead">
+      <div class="cs-head">
+        <a class="cs-back" href="index.html#work" aria-label="Back to Work">
+          <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </a>
+        <p class="cs-title" aria-hidden="true"><span class="cs-title-word">Vicino AI</span></p>
+      </div>
+      <nav class="menu" aria-label="Pages">
+        <button type="button" class="menu-button" aria-expanded="false" aria-controls="menu-list" aria-label="Menu">
+          <svg class="menu-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line pathLength="1" x1="1.5" x2="22.5" y1="4.5" y2="4.5" />
+            <line pathLength="1" x1="1.5" x2="22.5" y1="12" y2="12" />
+            <line pathLength="1" x1="1.5" x2="22.5" y1="19.5" y2="19.5" />
+          </svg>
+        </button>
+        <button type="button" class="menu-clear" aria-label="Clear the conversation" inert hidden></button>
+        <ul class="menu-list" id="menu-list" role="list" inert>
+          <li style="--i: 0"><a class="menu-item" href="index.html" data-route="home" style="--item-bg: var(--blue)"><svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg><span class="menu-item-word">home</span></a></li>
+          <li style="--i: 1"><a class="menu-item" href="index.html#work" data-route="work" style="--item-bg: var(--pink)"><svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /><rect width="20" height="14" x="2" y="6" rx="2" /></svg><span class="menu-item-word">work</span></a></li>
+          <li style="--i: 2"><a class="menu-item" href="index.html#play" data-route="play" style="--item-bg: var(--lavender)"><svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" x2="10" y1="11" y2="11" /><line x1="8" x2="8" y1="9" y2="13" /><line x1="15" x2="15.01" y1="12" y2="12" /><line x1="18" x2="18.01" y1="10" y2="10" /><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" /></svg><span class="menu-item-word">play</span></a></li>
+          <li style="--i: 3"><a class="menu-item" href="index.html#about" data-route="about" style="--item-bg: var(--green)"><svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg><span class="menu-item-word">about</span></a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="cs-main">
+
+      <!-- THE HERO: Vicino's Work tile, grown to the window, with Canvas
+           itself running in it (canvas.html?parked). -->
+      <section class="cs-hero" data-title="Vicino AI" aria-labelledby="cs-name">
+        <div class="cs-hero-tile cs-lit" style="--vt: case-vicino">
+          <div class="cs-hero-words">
+            <span class="ico"><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" /></span>
+            <h1 class="cs-hero-name" id="cs-name">Vicino AI</h1>
+            <p class="cs-hero-sub">a canvas built from the ground up</p>
+            <div class="cs-hero-links">
+              <button type="button" class="cs-pill" data-run=".cs-hero .cs-live iframe"><svg class="cs-run-go" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg><svg class="cs-run-busy" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56" /></svg><span>Run the board</span></button>
+              <a class="cs-pill" href="canvas.html" target="_blank" rel="noopener">Try Canvas<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (the working replica, opens in a new tab)</span></a>
+              <a class="cs-pill" href="https://vicino.ai/" target="_blank" rel="noopener">vicino.ai<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens in a new tab)</span></a>
+            </div>
+          </div>
+          <div class="cs-hero-art" aria-hidden="true">
+            <span class="cs-window cs-live" style="--live-w: 1100; --live-h: 875; background-image: url(assets/work/vicino-canvas.webp)">
+              <iframe src="canvas.html?parked" tabindex="-1" title="Canvas"></iframe>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="cs-sec" data-title="Overview" aria-label="Overview">
+        <div class="cs-split">
+          <div class="cs-text" data-rise>
+            <p>Vicino AI turns a marketing brief into <strong>a workflow you can see</strong>: an infinite canvas where every node is a generation step, an image, a video, a 3D model.</p>
+            <p>I helped build <strong>Canvas</strong> from the ground up, with <strong>the design system behind Pulse</strong> and <strong>the guide that teaches AI to design inside it</strong>.</p>
+          </div>
+          <dl class="cs-facts" data-rise>
+            <div><dt>role</dt><dd>UX Engineer Intern</dd></div>
+            <div><dt>when</dt><dd>Jun – Aug 2026</dd></div>
+            <div><dt>stack</dt><dd>Figma · React 19 · xyflow</dd></div>
+            <div><dt>place</dt><dd>Bellevue, WA</dd></div>
+          </dl>
+        </div>
+        <ol class="cs-milestones" style="--n: 4" data-rise aria-label="The story, in four parts">
+          <li><a href="#h-canvas"><span>first, the thing</span><b>Canvas</b></a></li>
+          <li><a href="#h-system"><span>then its language</span><b>System</b></a></li>
+          <li><a href="#h-guide"><span>then teach the machines</span><b>The AI guide</b></a></li>
+          <li><a href="#h-work"><span>then hand them the pen</span><b>At work</b></a></li>
+        </ol>
+      </section>
+
+      <!-- CANVAS: the sketchbook it was mapped in, a sheet at a time -->
+      <section class="cs-sec" data-title="Canvas" aria-labelledby="h-canvas">
+        <header class="cs-sec-head" data-rise><h2 id="h-canvas">Canvas</h2><p>a board where AI tools become nodes</p></header>
+        <div class="cs-split">
+          <p class="cs-text" data-rise>Every tool is a node: <strong>image, video, 3D, audio</strong>. But the idea was mapped in <strong>a sketchbook first</strong>, three sheets, one for each use case, drawn before the editor had a single pixel.</p>
+          <div class="cs-stack" data-rise>
+            <div class="cs-chips cs-paper" aria-label="Port types">
+              <span class="cs-chip" style="--dot: #9b9cf1"><i></i>text</span>
+              <span class="cs-chip" style="--dot: #8bd6d9"><i></i>image</span>
+              <span class="cs-chip" style="--dot: #ffb366"><i></i>video</span>
+              <span class="cs-chip" style="--dot: #7cc0e8"><i></i>3D</span>
+            </div>
+            <p class="cs-small cs-cap-ink">four of the seven port types; the wires between them run the redesign’s soft purple</p>
+          </div>
+        </div>
+        <div class="cs-tile cs-lit cs-sheets cs-after" data-stepper data-rise>
+          <ol class="cs-notes" role="tablist" aria-label="Sheets">
+            <li><button type="button" class="cs-note" role="tab" data-step="map" aria-selected="true"><span class="cs-note-num">1</span><span class="cs-note-body"><span>the map</span><span class="cs-note-more"><span><span>A prompt wired through to a picture and on to a movie, with 3D and sound branching off, and a small agent in the corner.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="ask"><span class="cs-note-num">2</span><span class="cs-note-body"><span>just ask</span><span class="cs-note-more"><span><span>Ask the chat for an ad for your bottle, and the board draws itself.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="studio"><span class="cs-note-num">3</span><span class="cs-note-body"><span>node = studio</span><span class="cs-note-more"><span><span>Open a node and it hands you a studio: a model, the sliders, and a Go button.</span></span></span></span></button></li>
+          </ol>
+          <div class="cs-stage">
+            <figure class="cs-well cs-sheet" data-panel="map" data-on><img src="assets/case/vicino/vi-sheet-1.webp" width="3724" height="2112" alt="Hand-drawn use-case map of Canvas on graph paper: a prompt box wired to a picture and on to a movie, branches to 3D and sound, a tool rail, and a little robot agent in the corner" loading="lazy" decoding="async" /></figure>
+            <figure class="cs-well cs-sheet" data-panel="ask"><img src="assets/case/vicino/vi-sheet-2.webp" width="3752" height="2160" alt="Sketch of the first use case, just ask it: a chat panel asking for an ad for a bottle, an arrow to a small node board that draws itself, and a check mark" loading="lazy" decoding="async" /></figure>
+            <figure class="cs-well cs-sheet" data-panel="studio"><img src="assets/case/vicino/vi-sheet-3.webp" width="3756" height="2172" alt="Sketch of the second use case: an image node wired to a panel of sliders, a model dropdown and a Go button, captioned every node is its own studio" loading="lazy" decoding="async" /></figure>
+          </div>
+        </div>
+        <div class="cs-after" data-rise>
+          <p class="cs-small cs-cap-ink cs-label">what a node can be, today</p>
+          <div class="cs-chips cs-paper">
+            <span class="cs-chip">Image</span><span class="cs-chip">Video</span><span class="cs-chip">3D Model</span><span class="cs-chip">Audio</span><span class="cs-chip">Text / Prompt</span><span class="cs-chip">Sketch to Image</span><span class="cs-chip">Image Editor</span><span class="cs-chip">Shooting Studio</span><span class="cs-chip">Storyboard</span><span class="cs-chip">3D Refine</span><span class="cs-chip">Multi-View</span><span class="cs-chip">Video Merge</span><span class="cs-chip">Lipsync</span><span class="cs-chip">Motion Transfer</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TWO WAYS: the agent's hand and your own, on one board -->
+      <section class="cs-sec" data-title="Two ways" aria-labelledby="h-ways">
+        <header class="cs-sec-head" data-rise><h2 id="h-ways">Two ways to build</h2><p>describe it, or wire it</p></header>
+        <p class="cs-text" data-rise>Same board, two hands on it. <strong>Tell the agent</strong> what you want and watch the graph assemble, or <strong>place every node and pull every wire</strong> yourself. Most real work is both.</p>
+        <div class="cs-grid cs-grid-2 cs-ways cs-after" data-play>
+          <div class="cs-tile cs-lit cs-way" data-rise>
+            <p class="cs-tile-name">with the agent</p>
+            <p class="cs-tile-meta">Vicino AI Copilot</p>
+            <div class="cs-bubbles cs-way-chat">
+              <p class="cs-bubble is-q">a launch post for the new colorway</p>
+              <p class="cs-bubble is-a cs-typing" aria-hidden="true"><i></i><i></i><i></i></p>
+              <div class="cs-bubble is-a cs-plan">
+                <span>Here’s the plan</span>
+                <ol class="cs-plan-steps">
+                  <li style="--k: 0"><span>1</span>plan the shot</li>
+                  <li style="--k: 1"><span>2</span>pick the models</li>
+                  <li style="--k: 2"><span>3</span>wire &amp; run</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <div class="cs-tile cs-lit cs-way" data-rise>
+            <p class="cs-tile-name">by hand</p>
+            <p class="cs-tile-meta">drag a node, pull a wire, press run</p>
+            <div class="cs-mini" aria-hidden="true">
+              <svg class="cs-mini-wires" viewBox="0 0 528 190" preserveAspectRatio="none"><path pathLength="1" d="M150 95 C 170 95, 169 65, 189 65" /><path pathLength="1" d="M339 65 C 359 65, 358 95, 378 95" /></svg>
+              <span class="cs-node-card cs-mini-text"><b><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16" /></svg>Text Prompt</b><span class="cs-node-well is-text">“a launch post for the new colorway”</span><i class="port out" style="--p: #9b9cf1"></i></span>
+              <span class="cs-node-card cs-mini-image"><b><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" /></svg>Image</b><span class="cs-node-well"><img src="assets/case/vicino/vi-shot-still.webp" width="448" height="300" alt="" loading="lazy" /></span><i class="port in" style="--p: #9b9cf1"></i><i class="port out" style="--p: #8bd6d9"></i></span>
+              <span class="cs-node-card cs-mini-video"><b><svg viewBox="0 0 24 24"><path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11" /><rect x="2" y="6" width="14" height="12" rx="2" /></svg>Video</b><span class="cs-node-well"><img src="assets/case/vicino/vi-clip.webp" width="380" height="240" alt="" loading="lazy" /></span><i class="port in" style="--p: #8bd6d9"></i></span>
+            </div>
+          </div>
+          <button type="button" class="cs-pill cs-replay" data-replay><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>play both again</button>
+        </div>
+      </section>
+
+      <!-- ANATOMY: one node, read a part at a time -->
+      <section class="cs-sec" data-title="Anatomy" aria-labelledby="h-anatomy">
+        <header class="cs-sec-head" data-rise><h2 id="h-anatomy">Anatomy of a node</h2><p>one card, read closely</p></header>
+        <p class="cs-text" data-rise>Every node is the same small promise: <strong>inputs on the left, the work in the middle, an output on the right</strong>. Learn this card and you’ve read them all.</p>
+        <div class="cs-anatomy cs-after" data-stepper data-auto="4200" data-rise>
+          <figure class="cs-tile cs-lit cs-anatomy-fig">
+            <span class="cs-well cs-node-shot">
+              <img src="assets/case/vicino/node-image.webp" width="1542" height="1440" alt="An Image node from Canvas: its header with the flux-2-pro model badge and a check, two input ports on the left, the generated picture filling the card, and an output port on the right" loading="lazy" decoding="async" />
+              <span class="cs-mark" data-mark="head" style="--x: 17.6; --y: 13.4; --w: 17.8; --h: 7.6"></span>
+              <span class="cs-mark" data-mark="ports" style="--x: 13.6; --y: 22.2; --w: 4.8; --h: 17.2"></span>
+              <span class="cs-mark" data-mark="well" style="--x: 18.3; --y: 22.4; --w: 63.2; --h: 64.7"></span>
+              <span class="cs-mark" data-mark="model" style="--x: 34.2; --y: 14.4; --w: 15.2; --h: 5.8"></span>
+              <span class="cs-mark" data-mark="run" style="--x: 75; --y: 13.8; --w: 6.4; --h: 6.4"></span>
+              <span class="cs-mark" data-mark="out" style="--x: 81.8; --y: 22.2; --w: 4.4; --h: 9.2"></span>
+            </span>
+          </figure>
+          <ol class="cs-notes" role="tablist" aria-label="Parts of a node">
+            <li><button type="button" class="cs-note" role="tab" data-step="head" aria-selected="true"><span class="cs-note-num">1</span><span class="cs-note-body"><span>The header names the verb</span><span class="cs-note-more"><span><span>Image, Video, 3D, Audio: one card, one job, stated in a word.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="ports"><span class="cs-note-num">2</span><span class="cs-note-body"><span>Ports are coloured by cargo</span><span class="cs-note-more"><span><span>Purple is text, teal is image, apricot is video, blue is 3D. This card takes a prompt and a reference picture, and you can read that from across the room.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="well"><span class="cs-note-num">3</span><span class="cs-note-body"><span>The well is the work</span><span class="cs-note-more"><span><span>Results land full-bleed in the card itself. No preview button, no popup: the picture is the interface.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="model"><span class="cs-note-num">4</span><span class="cs-note-body"><span>The model is a visible choice</span><span class="cs-note-more"><span><span>flux-2-pro sits on the face of the card, never buried in settings, printed where you can question it.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="run"><span class="cs-note-num">5</span><span class="cs-note-body"><span>Run lives on the node</span><span class="cs-note-more"><span><span>Press play on the card, not in a global toolbar. Progress paints under the work, and a finished node earns its check.</span></span></span></span></button></li>
+            <li><button type="button" class="cs-note" role="tab" data-step="out"><span class="cs-note-num">6</span><span class="cs-note-body"><span>The output hands it on</span><span class="cs-note-more"><span><span>Whatever this card makes becomes the next one’s input the moment a wire leaves this port. Small promises, chained into a pipeline.</span></span></span></span></button></li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- SYSTEM: the language behind Pulse, in one tile -->
+      <section class="cs-sec" data-title="System" aria-labelledby="h-system">
+        <header class="cs-sec-head" data-rise><h2 id="h-system">System</h2><p>the design language behind Pulse</p></header>
+        <p class="cs-text" data-rise>With my colleagues I helped create <strong>the design system behind Pulse</strong>, Vicino’s marketing-analytics side: <strong>356 tokens in one truth-source file</strong>, and a brand book that ships as a website, because the best handoff is the real thing.</p>
+        <div class="cs-tile cs-lit cs-wide cs-system cs-after" data-rise>
+          <div class="cs-wide-words">
+            <p class="cs-tile-name">Pulse / Post</p>
+            <p class="cs-tile-meta"><span class="cs-live-dot" aria-hidden="true"></span>live · vicino-ds / brand.html</p>
+            <p class="cs-small cs-system-label">four principles</p>
+            <div class="cs-chips">
+              <span class="cs-chip">command, not clutter</span>
+              <span class="cs-chip">cyan earns attention</span>
+              <span class="cs-chip">readable at speed</span>
+              <span class="cs-chip">one strong anchor</span>
+            </div>
+            <p class="cs-small cs-system-label">the palette, straight from tokens.css</p>
+            <div class="cs-swatches cs-swatches-sm">
+              <span class="cs-swatch" style="--c: #eef3f3"><i></i><span><b>stage</b>#eef3f3</span></span>
+              <span class="cs-swatch" style="--c: #ffffff"><i></i><span><b>surface</b>#ffffff</span></span>
+              <span class="cs-swatch" style="--c: #1d1d1f"><i></i><span><b>ink-800</b>#1d1d1f</span></span>
+              <span class="cs-swatch" style="--c: #49e0f5"><i></i><span><b>cyan-500</b>#49e0f5</span></span>
+              <span class="cs-swatch" style="--c: #0d7685"><i></i><span><b>cyan-700</b>#0d7685</span></span>
+              <span class="cs-swatch" style="--c: #43ba51"><i></i><span><b>green</b>#43ba51</span></span>
+              <span class="cs-swatch" style="--c: #3987f3"><i></i><span><b>blue</b>#3987f3</span></span>
+              <span class="cs-swatch" style="--c: #f19a08"><i></i><span><b>amber</b>#f19a08</span></span>
+              <span class="cs-swatch" style="--c: #ef4444"><i></i><span><b>red</b>#ef4444</span></span>
+              <span class="cs-swatch" style="--c: #6366f1"><i></i><span><b>purple</b>#6366f1</span></span>
+            </div>
+          </div>
+          <a class="cs-window cs-doc cs-live-doc cs-wide-art" href="vicino-ds/brand.html" target="_blank" rel="noopener" data-live="vicino-ds/brand.html" data-live-w="1180" data-live-scroll><img src="assets/case/vicino/vi-brand-book.webp" width="1188" height="1244" alt="The Pulse / Post design system’s brand book, a web page of brand foundations" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the brand book<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+        </div>
+      </section>
+
+      <!-- DECISIONS: the two real files the language was argued with -->
+      <section class="cs-sec" data-title="Decisions" aria-labelledby="h-decisions">
+        <header class="cs-sec-head" data-rise><h2 id="h-decisions">Decisions, shown</h2><p>how the language got chosen</p></header>
+        <p class="cs-text" data-rise>Design systems are <strong>arguments settled with evidence</strong>: four candidate accents on identical dashboards, where cyan won, and one whole screen pushed to the edge of too much cyan.</p>
+        <div class="cs-grid cs-decision-docs cs-after">
+          <figure class="cs-tile cs-lit" data-rise>
+            <p class="cs-tile-name">Accent study</p>
+            <p class="cs-tile-meta">four accents, one dashboard</p>
+            <a class="cs-window cs-doc" href="vicino-ds/accent-study.html" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-accent-study.webp" width="1512" height="900" alt="The accent study: identical dashboards in cyan, green, yellow and violet" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the accent study<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+            <figcaption class="cs-cap">design-system / comparisons / dashboard-accent-comparison.html</figcaption>
+          </figure>
+          <figure class="cs-tile cs-lit" data-rise>
+            <p class="cs-tile-name">Home experiment</p>
+            <p class="cs-tile-meta">how far the cyan can go</p>
+            <a class="cs-window cs-doc" href="vicino-ds/home-experiment.html" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-home-experiment.webp" width="1512" height="900" alt="The home cyan experiment: a whole home screen testing how far the accent can go" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the experiment<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+            <figcaption class="cs-cap">design-system / experiments / home-cyan-experiment.html</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- COMPONENTS: the library, a view at a time -->
+      <section class="cs-sec" data-title="Components" aria-labelledby="h-components">
+        <header class="cs-sec-head" data-rise><h2 id="h-components">Components</h2><p>62 components, one truth source</p></header>
+        <p class="cs-text" data-rise>Each one <strong>a plain HTML and CSS pair</strong> behind the same 356 tokens, with its states, and <strong>drift-checked in CI</strong>.</p>
+        <div class="cs-tile cs-lit cs-components cs-breakout cs-after" data-stepper data-rise>
+          <div class="cs-idea-head">
+            <div class="cs-chips" role="tablist" aria-label="Views of the library">
+              <button type="button" class="cs-chip" role="tab" data-step="browser" aria-selected="true">browser</button>
+              <button type="button" class="cs-chip" role="tab" data-step="specimens">specimens</button>
+              <button type="button" class="cs-chip" role="tab" data-step="charts">charts</button>
+            </div>
+            <div class="cs-stage cs-small cs-components-path">
+              <a data-panel="browser" data-on href="vicino-ds/components/html-component-preview.html" target="_blank" rel="noopener"><span class="cs-live-dot" aria-hidden="true"></span>live, pick any one · html-component-preview.html<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens the component browser in a new tab)</span></a>
+              <span data-panel="specimens">vicino-ds / library.html</span>
+              <span data-panel="charts">vicino-ds / components / charts-preview.html</span>
+            </div>
+          </div>
+          <div class="cs-stage cs-components-stage">
+            <div class="cs-window cs-doc cs-live-doc" data-panel="browser" data-on data-live="vicino-ds/components/html-component-preview.html" data-live-w="1512" data-live-use data-live-title="The component browser: pick any of the 62 components to see it live"><img src="assets/case/vicino/vi-components-browser.webp" width="1512" height="801" alt="The component browser, listing 62 components with live specimens" loading="lazy" decoding="async" /></div>
+            <a class="cs-window cs-doc" data-panel="specimens" href="vicino-ds/library.html" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-figma-library.webp" width="1512" height="801" alt="The Figma component library’s specimen board" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the specimens<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+            <a class="cs-window cs-doc" data-panel="charts" href="vicino-ds/components/charts-preview.html" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-charts.webp" width="1512" height="801" alt="The chart family: mono-cyan and ink bar charts with legends" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the charts<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- THE AI GUIDE: the system, written for machines -->
+      <section class="cs-sec" data-title="The AI guide" aria-labelledby="h-guide">
+        <header class="cs-sec-head" data-rise><h2 id="h-guide">The AI guide</h2><p>a design system machines can read</p></header>
+        <div class="cs-split">
+          <div class="cs-text" data-rise>
+            <p>A design system starts to drift the moment a machine starts drawing. So we wrote it down as <strong>a generation contract</strong>: a skill an AI agent loads before it touches a screen.</p>
+            <p>Reuse before inventing, one truth source, and <strong>a list of things it must never do</strong>.</p>
+          </div>
+          <figure class="cs-tile cs-lit cs-guide-doc" data-rise>
+            <a class="cs-window cs-doc cs-live-doc" href="vicino-ds/guide.html" target="_blank" rel="noopener" data-live="vicino-ds/guide.html" data-live-w="1040" data-live-scroll><img src="assets/case/vicino/vi-guide.webp" width="1140" height="1080" alt="The AI generation guide, rendered as a document" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the guide<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+            <figcaption class="cs-cap"><span class="cs-live-dot" aria-hidden="true"></span>live · design-system / ai-generation-guide.md</figcaption>
+          </figure>
+        </div>
+        <ul class="cs-grid cs-grid-3 cs-rules cs-after" role="list">
+          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No painted-on cyan</p><p class="cs-tile-meta">The brand lives in the page’s wash; it goes flat the moment a second card does it.</p></li>
+          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No fake premium</p><p class="cs-tile-meta">No neon shadows, no mystery blobs, no generic purple AI styling.</p></li>
+          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">One layer of glass</p><p class="cs-tile-meta">The outer bento is glass, the content inside is solid: never glass on glass.</p></li>
+          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">One action surface</p><p class="cs-tile-meta">Zero or one saturated action card. Two means the page lost its anchor.</p></li>
+          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No border scaffolding</p><p class="cs-tile-meta">Structure comes from tone and spacing, not boxes drawn around boxes.</p></li>
+          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No heavy type</p><p class="cs-tile-meta">Hierarchy by size, spacing and colour, never bold body copy.</p></li>
+        </ul>
+        <p class="cs-small cs-cap-ink cs-after" data-rise>and fail the output if text clips, colours don’t explain state, card shadows form square artifacts, cards nest, or you can’t tell the next action</p>
+      </section>
+
+      <!-- AT WORK: eighteen screens, drawn by the machine holding the guide -->
+      <section class="cs-sec" data-title="At work" aria-labelledby="h-work">
+        <header class="cs-sec-head" data-rise><h2 id="h-work">The guide, at work</h2><p>eighteen screens, redrawn on-system</p></header>
+        <p class="cs-text" data-rise>Its first big job was <strong>Pulse’s onboarding</strong>, eighteen screens from landing page to first Daily Report. I handed Claude Code the guide and the system and let the machine do most of the drawing, <strong>every screen built live from the real tokens</strong>.</p>
+        <div class="cs-stats is-tally cs-after" data-rise>
+          <p class="cs-stat cs-lit"><b data-count="11">11</b><span>blockers</span></p>
+          <p class="cs-stat cs-lit"><b data-count="47">47</b><span>friction</span></p>
+          <p class="cs-stat cs-lit"><b data-count="32">32</b><span>polish</span></p>
+          <p class="cs-stat cs-lit"><b data-count="90">90</b><span>findings in all, on Pulse’s severity ladder</span></p>
+        </div>
+        <div class="cs-tile cs-lit cs-wide cs-review cs-after" data-rise>
+          <div class="cs-wide-words">
+            <p class="cs-tile-name">The review, as a website</p>
+            <p class="cs-tile-meta">each screen as it ships beside its redesign, defect by defect</p>
+            <a class="cs-pill" href="https://pulse-onboarding-design-review.vercel.app/" target="_blank" rel="noopener">see the review<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens in a new tab)</span></a>
+          </div>
+          <a class="cs-window cs-doc cs-wide-art" href="https://pulse-onboarding-design-review.vercel.app/" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-pulse-review.webp" width="1188" height="1244" alt="The Pulse onboarding design review: eighteen screens, each shown as it ships today beside its proposed redesign" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the review<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <section class="cs-sec" data-title="Results" aria-labelledby="h-results">
+        <header class="cs-sec-head" data-rise><h2 id="h-results">Results</h2><p>what shipped</p></header>
+        <div class="cs-stats" data-rise>
+          <p class="cs-stat cs-lit"><b data-count="24">24</b><span>node types on Canvas, image to audio and every tool between</span></p>
+          <p class="cs-stat cs-lit"><b data-count="62">62</b><span>components, each an HTML and CSS pair with its states</span></p>
+          <p class="cs-stat cs-lit"><b data-count="356">356</b><span>tokens in one truth-source file</span></p>
+          <p class="cs-stat cs-lit"><b data-count="14">14</b><span>charts in one data-display family</span></p>
+          <p class="cs-stat cs-lit"><b data-count="18">18</b><span>onboarding screens redrawn on-system</span></p>
+        </div>
+        <ol class="cs-lessons cs-after" data-rise>
+          <li><strong>Build the thing first.</strong> Canvas taught us what the language needed.</li>
+          <li><strong>Then build the language.</strong> Tokens linked, never copied, turn drift into a design decision.</li>
+          <li><strong>Then teach the machines.</strong> A system an AI can read is a system that holds.</li>
+          <li><strong>Then hand them the pen.</strong> Eighteen screens later, the system held.</li>
+        </ol>
+      </section>
+
+      <footer class="cs-end" data-title="Next" aria-label="Next">
+        <header class="cs-sec-head" data-rise><h2>Next</h2><p>an AI cooking partner</p></header>
+        <a class="cs-next cs-lit cs-lift" data-case="pantrypal" href="pantrypal.html" data-rise>
+          <span class="cs-hero-words">
+            <span class="ico"><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" /></span>
+            <span class="cs-hero-name">PantryPal</span>
+            <span class="cs-tile-meta">Product Designer</span><span class="cs-tile-meta">Nov 2025 – Present</span>
+            <span class="cs-pill cs-next-go">Read the case study<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></span>
+          </span>
+          <span class="cs-hero-art cs-next-phones" aria-hidden="true">
+            <img class="cs-phone" src="assets/work/pantrypal-signup.webp" width="800" height="1636" alt="" loading="lazy" />
+            <img class="cs-phone" src="assets/work/pantrypal-home.webp" width="800" height="1636" alt="" loading="lazy" />
+          </span>
+        </a>
+        <nav class="cs-contact" aria-label="Elsewhere" data-rise>
+          <a href="index.html#work"><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>all work</a>
+          <a href="mailto:tigoponcedeleon@gmail.com">email</a>
+          <a href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener">linkedin</a>
+          <a href="https://tigoponcedeleon.com/PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">résumé</a>
+        </nav>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
