@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- interactive-widget: the chat docks its composer to the foot of the
+       screen, and the default (resizes-visual) leaves that dock UNDER the
+       software keyboard the moment you tap into it. Resizing the CONTENT
+       instead means the viewport units the phone's screens are measured in
+       (100svh) shrink with the keyboard, so the composer rides up above it.
+
+       It is a REQUEST, and iOS Safari does not grant it: there the keyboard
+       leaves the layout viewport alone, so 100svh never moves. js/mobile.js
+       answers by reading the visible window off visualViewport and sizing
+       the phone's home screen to it directly (--win-h / --doc-top), which
+       is what actually holds the composer up. This line still earns its
+       place — where it IS honoured the browser does the work before any
+       script runs, and the measured window simply agrees with the layout
+       instead of correcting it. -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+  <title>Tigo Ponce de León</title>
+
+  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
+  <meta name="description" content="Product design engineer studying Media Arts & Design and Computer Science at the University of Chicago. Selected work, playable games, and an AI to ask about him." />
+  <meta name="theme-color" content="#f6f6f6" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tigo Ponce de León" />
+  <meta property="og:title" content="Tigo Ponce de León" />
+  <meta property="og:description" content="Product design engineer studying Media Arts & Design and Computer Science at the University of Chicago. Selected work, playable games, and an AI to ask about him." />
+  <meta property="og:url" content="https://tigoponcedeleon.com/" />
+  <meta property="og:image" content="https://tigoponcedeleon.com/Media/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
+  <link rel="stylesheet" href="css/styles.css?v=115" />
+  <!-- the four other palettes; which one is worn is set on <html> below,
+       before first paint (js/palette.js, the rail's foot) -->
+  <link rel="stylesheet" href="css/palettes.css?v=5" />
+  <link rel="stylesheet" href="css/shell.css?v=135" />
+  <link rel="stylesheet" href="css/ai.css?v=66" />
+  <link rel="stylesheet" href="css/about.css?v=83" />
+  <link rel="stylesheet" href="css/work.css?v=136" />
+  <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
+       of the document below 700px), so its 26KB of court geometry is 26KB
+       a phone would parse and render-block on for nothing. `media` says so:
+       above 700 this is exactly the sheet it always was; below it the
+       browser fetches at low priority and never applies it. -->
+  <link rel="stylesheet" href="css/play.css?v=128" media="(min-width: 701px)" />
+  <link rel="stylesheet" href="css/case-overlay.css?v=18" />
+  <!-- LAST: the phone re-casts the one document as three tapped screens, so
+       its overrides answer for the blocks in every sheet above -->
+  <link rel="stylesheet" href="css/mobile.css?v=32" />
+  <!-- the phone's whole navigation: one button in the corner and the
+       panel it opens (js/drawer.js). Phone-only — every rule inside is in
+       one @media block, and above 700px the rail is still the nav. -->
+  <link rel="stylesheet" href="css/drawer.css?v=16" />
+  <!-- set before first paint so the chrome and sidebar are already held at
+       opacity 0 when they are built — the intro has no flash to hide.
+       `is-phone` goes on in the same breath: css/mobile.css cuts the phone's
+       whole layout off that class — the hero held to one screen, Play held
+       out of the document — and it has to be true on the FIRST frame, or
+       the court flashes up in the moment before js/mobile.js removes it. -->
+  <script>
+    document.documentElement.className += ' js' +
+      (sessionStorage.getItem('shell.intro') ? '' : ' intro-pending') +
+      (matchMedia('(max-width: 700px)').matches ? ' is-phone' : '');
+    // the palette you chose last time, worn before the first paint
+    (function () {
+      try {
+        var t = localStorage.getItem('shell.theme');
+        if (t) {
+          document.documentElement.dataset.theme = t;
+          var m = document.querySelector('meta[name="theme-color"]');
+          var bg = { ink: '#161616', red: '#eb7770', coral: '#e87c52', orange: '#f19446', apricot: '#f5ae42', amber: '#efc64a', yellow: '#d6d054', lime: '#b9da69', chartreuse: '#97e184', green: '#71e6a2', emerald: '#46e9c0', mint: '#09e8dd', teal: '#00e5f7', cyan: '#03cefc', sky: '#34b3f7', azure: '#5aa1f6', blue: '#7c98f8', indigo: '#998ef3', violet: '#b186e8', purple: '#c57fd6', magenta: '#d579c1', pink: '#e175a7', rose: '#e8748c' }[t];
+          if (m && bg) m.setAttribute('content', bg);
+        }
+      } catch (e) { /* private mode — Paper */ }
+    })();
+  </script>
+  <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
+  <link rel="stylesheet" href="css/color-lab.css?v=11" />
+  <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
+       sends, and drops it outright when that hook returns null — so this is a
+       real opt-out, not a send-then-discard: nothing leaves the browser.
+       Load ?va-ignore=1 once on a machine to go quiet on it, ?va-ignore=0 to
+       start counting again. The flag is localStorage, so it is per browser
+       profile — each browser you read this site in needs its own visit, and
+       clearing site data forgets it. The param strips itself so the URL you
+       are left holding is the ordinary one. -->
+  <script>
+    (() => {
+      try {
+        const q = new URLSearchParams(location.search);
+        if (q.has('va-ignore')) {
+          const on = q.get('va-ignore') !== '0';
+          if (on) localStorage.setItem('va.ignore', '1');
+          else localStorage.removeItem('va.ignore');
+          q.delete('va-ignore');
+          const rest = q.toString();
+          history.replaceState(null, '',
+            location.pathname + (rest ? '?' + rest : '') + location.hash);
+          console.log('[analytics] this browser is now ' + (on ? 'IGNORED' : 'counted'));
+        }
+        if (localStorage.getItem('va.ignore')) {
+          (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
+        }
+      } catch (e) { /* private mode, blocked storage: just count normally */ }
+    })();
+  </script>
+  <!-- Vercel Web Analytics. First-party and cookieless: the script is served
+       from this same origin at deploy time, so there is no third party in the
+       page, nothing for a blocker to catch, and no consent banner owed. -->
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body>
+  <!-- The mini browser: chrome strip + sidebar + content card. The six
+       wrapper elements are the ONLY shell markup that lives in this file;
+       everything inside them is generated by js/shell.js, so there is one
+       source of truth across the nine pages. -->
+  <div class="shell" id="shell" data-page="home" data-title="Home">
+    <div class="shell-body">
+      <aside class="shell-side" id="shell-side"></aside>
+      <div class="shell-card" id="shell-card">
+  <main>
+    <!-- ONE PAGE. Home, Work, Play and About are sections of a single
+         document — you scroll straight through them. The two case
+         studies are still their own pages, opened from Work.
+         about.html / work.html / play.html / ai.html survive as redirects
+         so every link that already exists in the world keeps working.
+         The AI has no section of its own because it does not need one:
+         it IS Home. -->
+    <!-- The home card holds the name pair and the chat, and the order is
+         the point — the name writes itself first (js/typewriter.js), and
+         only then does the field arrive underneath it (js/shell.js
+         lightUp). Ask something and the pair leaves as the composer
+         travels to the foot of the screen: two states, one class.
+
+         Each line is a grid: a hidden ghost copy reserves the full width
+         from frame one, so the centred header cannot drift while it types.
+         The .sr-only copy is what assistive tech reads; the animated span
+         is decoration. -->
+    <section id="home" class="stage">
+      <header class="frame-top" id="type-head">
+        <h1 class="frame-name tw-line">
+          <span class="sr-only">Tigo Ponce de León</span>
+          <span class="tw-ghost" aria-hidden="true">Tigo Ponce de León</span>
+          <span class="tw" data-text="Tigo Ponce de León" aria-hidden="true"
+            ><i class="tw-caret" id="tw-caret"></i></span>
+        </h1>
+        <p class="frame-role tw-line">
+          <span class="sr-only">product design engineer</span>
+          <span class="tw-ghost" aria-hidden="true">product design engineer</span>
+          <span class="tw" data-text="product design engineer" aria-hidden="true"></span>
+        </p>
+      </header>
+
+      <!-- ============================================================
+           THE CHAT, on the home screen.
+
+           It was a sheet built by js/shell.js and floated over whatever
+           page you were on. That template lived there because chrome
+           must be identical across nine documents — and the chat is on
+           ONE document now, so the reason is spent and the markup comes
+           home. Three things it buys: the composer paints WITH the hero
+           instead of appearing after the second <script>; it rides the
+           typewriter's FLIP (js/typewriter.js) for free rather than
+           risking a landing mid-flight; and js/stage-fit.js measures the
+           real stage on its first pass.
+
+           Two states, one class, on #home — see css/ai.css. Idle, the
+           composer sits under the name pair; ask something and the name
+           leaves as the composer travels to the foot of the screen, on
+           one curve, because #home is the parent of both.
+
+           No empty-state spark here: the name pair IS the empty state,
+           and two of those on one screen is an echo. The code that drew
+           it went with it (ai-chat.js dismissEmpty/restoreEmpty).
+           ============================================================ -->
+      <div class="ai-stage is-hero" id="ai-stage">
+        <div class="ai-panel" id="ai-panel">
+          <!-- back to the opening. It lives in the band of air above the
+               transcript (--scroll-top), at the right edge of the chat's
+               own measure — the corner the sheet's close button used to
+               hold, which is where a visitor already looks for the way out
+               of a conversation. It exists only while there IS one. -->
+          <button class="ai-reset" id="ai-reset" type="button"
+                  aria-label="Start over" title="Start over">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <path d="M1 4 V10 H7" />
+              <path d="M3.51 15 a9 9 0 1 0 2.13-9.36 L1 10" />
+            </svg>
+          </button>
+          <div class="ai-scroll" id="ai-scroll"></div>
+          <!-- answers are announced here once complete — the word-by-word
+               visual reveal stays quiet for screen readers -->
+          <p class="sr-only" id="ai-live" aria-live="polite"></p>
+
+          <!-- ONE group, and that is the point: everything that travels
+               between the two states moves as a single transform. The
+               mood menu and the attach row are positioned against this
+               box, so lifting the bar alone would strand them. -->
+          <div class="ai-composer">
+            <!-- (GONE: four suggested-question chips in a row under the bar.
+                 They were the sheet's furniture — a 520px window with an
+                 empty transcript needed something to press — and the hero
+                 is not that: the field is already the invitation, and the
+                 chips put a menu of four sentences between the name and
+                 the one thing there is to do. The conversation still
+                 offers its own follow-ups AFTER an answer (.fu-chip), which
+                 is where a suggestion is actually worth having. Deleted
+                 with them: .ai-prompts/.prompt-chip and the chip→bubble
+                 fly, in css/ai.css and js/ai-chat.js.) -->
+            <!-- a chosen photo waits here, above the bar, until the next send -->
+            <div class="ai-attach-row" id="ai-attach-row" hidden></div>
+            <!-- the persona menu rises from the toggle that opens it -->
+            <div class="ai-persona-menu" id="ai-persona-menu" hidden>
+              <button class="persona-row" type="button" data-persona="friendly">
+                <span class="persona-name">friendly</span>
+                <span class="persona-desc">warm &amp; to the point</span>
+                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
+              </button>
+              <button class="persona-row" type="button" data-persona="whimsical">
+                <span class="persona-name">whimsical</span>
+                <span class="persona-desc">answers with a wink</span>
+                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
+              </button>
+              <button class="persona-row" type="button" data-persona="suspicious">
+                <span class="persona-name">suspicious</span>
+                <span class="persona-desc">trusts no question</span>
+                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
+              </button>
+            </div>
+            <form class="ai-inputbar" id="ai-inputbar">
+              <!-- a photo for context, at the HEAD of the bar: it is what you
+                   bring BEFORE writing, and the cluster at the other end is
+                   what you press after. Both references seat it here. -->
+              <button class="ai-tool ai-add" id="ai-add" type="button" aria-label="Add a photo">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg>
+              </button>
+              <input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo" placeholder="ask me anything!" autocomplete="off" />
+              <div class="ai-tools">
+                <!-- how it answers: friendly is the house voice, the other two are moods -->
+                <button class="ai-tool ai-persona" id="ai-persona" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Choose a mood">
+                  <span class="persona-label" id="ai-persona-label">friendly</span>
+                  <svg class="persona-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 L12 15.5 L18 10" /></svg>
+                </button>
+                <!-- dictation — ai-chat.js hides this button when the browser cannot listen -->
+                <button class="ai-tool ai-mic" id="ai-mic" type="button" hidden aria-label="Ask out loud" aria-pressed="false">
+                  <svg class="mic-glyph" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3 a3 3 0 0 1 3 3 V12 a3 3 0 0 1-6 0 V6 a3 3 0 0 1 3-3 z" />
+                    <path d="M18.5 11.5 a6.5 6.5 0 0 1-13 0" /><path d="M12 18 V21" />
+                  </svg>
+                  <span class="mic-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+                </button>
+              </div>
+              <!-- the send: quiet until there is something to send, then
+                   filled with the accent (ai-chat.js flips .is-ready) -->
+              <button class="ai-send" type="submit" aria-label="Send">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19 V5.5" /><path d="M6 11.5 L12 5.5 L18 11.5" /></svg>
+              </button>
+              <input type="file" id="ai-file" accept="image/*" hidden />
+            </form>
+            <!-- Empty, and it starts empty: the sheet's head used to carry
+                 "powered by Claude Haiku 4.5" and the composer carried it
+                 after — a model's name under a field the visitor has not
+                 used yet. The element stays because setSubtitle() in
+                 ai-chat.js still has ONE thing to say here: that the
+                 assistant could not be reached and the answers are canned. -->
+            <p id="ai-sub"></p>
+          </div>
+        </div>
+      </div>
+      <!-- the rest of the site waits below — say so, quietly, once the
+           name has finished typing (js/main.js arms it). It is a real link,
+           not a caption: clicking it glides to Work through the shell's own
+           anchor delegate (js/shell.js), so it rests exactly where the rail
+           would have put it. -->
+      <a class="scroll-hint" href="#work" aria-label="Scroll to Work">
+        <span>scroll</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4 L6 8.5 L10 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </section>
+
+    <section class="work-stage">
+      <h1 class="sr-only">Work</h1>
+
+
+      <!-- ONE SCREEN. An index of three projects, the one you are on shown
+           large beside it, and its note on the right; the rows keep the old
+           slide ids so every #vicino/#pantrypal/#drone link that exists in
+           the world still lands here. -->
+      <div class="work-scroll" id="work-scroll">
+        <section class="work-slide" id="work" aria-label="Selected work">
+          <header class="work-title">
+            <h2>Work</h2>
+            <p>selected projects</p>
+          </header>
+
+          <!-- The stepper. Three columns: the projects as an index of
+               cards on the left, the one you are on shown large in the
+               middle, and what the job was — role, when, and a line about
+               it — on the right. Hover or arrow through to browse; click
+               either the name or the picture to open — the names are real
+               links to the studies, so the browser owns the navigation.
+
+               The .work-img-* classes are LOAD-BEARING: js/case-overlay.js
+               keys its CASES map off them to know which thumbnail a case
+               flies from. They live on the stage figures now. -->
+          <div class="work-pick" id="work-pick">
+            <ol class="pick-list" aria-label="Selected work">
+              <li>
+                <a class="pick-row is-current" href="vicino.html"
+                   id="vicino" data-case="vicino" aria-current="true">
+                  <span class="pick-ico" aria-hidden="true">
+                    <img src="Media/icon-vicino.webp" alt="" width="256" height="256"
+                         loading="lazy" decoding="async" />
+                  </span>
+                  <span class="pick-name">Vicino AI</span>
+                </a>
+              </li>
+              <li>
+                <a class="pick-row" href="pantrypal.html"
+                   id="pantrypal" data-case="pantrypal" aria-current="false">
+                  <span class="pick-ico" aria-hidden="true">
+                    <img src="Media/icon-pantrypal.webp" alt="" width="256" height="256"
+                         loading="lazy" decoding="async" />
+                  </span>
+                  <span class="pick-name">PantryPal</span>
+                </a>
+              </li>
+              <li>
+                <a class="pick-row" href="nextlevel.html"
+                   id="drone" data-case="nextlevel" aria-current="false">
+                  <span class="pick-ico" aria-hidden="true">
+                    <img src="Media/icon-nextlevel.webp" alt="" width="256" height="256"
+                         loading="lazy" decoding="async" />
+                  </span>
+                  <span class="pick-name">Next Level</span>
+                </a>
+              </li>
+            </ol>
+
+            <div class="pick-stage">
+              <figure class="pick-shot work-img-vicino is-current" data-case="vicino"
+                      aria-label="Open the Vicino AI case study" tabindex="0" role="button">
+                <img loading="lazy" decoding="async" src="Media/Vicino-Laptop.webp"
+                     alt="Vicino AI canvas — Pulse redesign shown on a studio display"
+                     width="2048" height="1706" />
+              </figure>
+              <figure class="pick-shot work-img-pantry" data-case="pantrypal"
+                      aria-label="Open the PantryPal case study" tabindex="-1" role="button">
+                <img loading="lazy" decoding="async" src="Media/pantry-login.webp"
+                     alt="PantryPal login screen on an iPhone" width="954" height="1908" />
+              </figure>
+              <figure class="pick-shot work-img-drone" data-case="nextlevel"
+                      aria-label="Open the Next Level Drone Cleaning case study"
+                      tabindex="-1" role="button">
+                <img loading="lazy" decoding="async" src="Media/NextLevelIcon.webp"
+                     alt="Next Level Drone Cleaning logo" width="1401" height="1406" />
+              </figure>
+              <span class="pick-open" aria-hidden="true">
+                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+            </div>
+
+            <div class="pick-note">
+              <div class="pick-card is-current" data-case="vicino">
+                <p class="pick-role">UX Engineer Intern</p>
+                <p class="pick-when">Summer 2026</p>
+              </div>
+              <div class="pick-card" data-case="pantrypal">
+                <p class="pick-role">Product Designer</p>
+                <p class="pick-when">Winter 2026</p>
+                <!-- One of the three shipped, and this is the only place
+                     on the site where all three stand side by side — so the
+                     ledger that says what the job was gets one more line
+                     under it, saying where the work ended up. It sits IN
+                     the card rather than hanging off it; see css/work.css
+                     for why that is the whole of the layout. -->
+                <a class="pick-store" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028"
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="Download PantryPal on the App Store — opens the App Store in a new tab">
+                  <img src="Media/appstore-badge.svg" alt="" width="120" height="40"
+                       loading="lazy" decoding="async" />
+                </a>
+              </div>
+              <div class="pick-card" data-case="nextlevel">
+                <p class="pick-role">Founding Designer</p>
+                <p class="pick-when">Summer 2025</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="play-stage" class="play-stage">
+      <h1 class="sr-only">Play</h1>
+
+
+      <!-- ONE SCREEN. The three games idle LIVE inside their tiles — each
+           court below is the real board, scaled down with zoom, so snake's
+           attract mode wiggles right in the grid. Clicking a tile lifts
+           its court into the fullscreen theater (js/theater.js); in the
+           tiles the games ignore the keyboard entirely. -->
+      <div class="play-scroll" id="play-scroll">
+        <section class="play-slide" id="play" aria-label="Games">
+          <header class="play-title">
+            <h2>Play</h2>
+            <p>three arcade classics, rebuilt by hand</p>
+          </header>
+
+          <div class="play-grid">
+            <div class="play-card" id="pong" data-game="pong" role="button"
+                 tabindex="0" style="--n:1" aria-label="Play Pong fullscreen">
+              <div class="play-holder">
+              <div class="board" id="board">
+                <div class="board-wall" id="board-wall" aria-hidden="true"></div>
+                <div class="paddle" id="paddle-left"></div>
+                <div class="paddle" id="paddle-right"></div>
+                <div class="ball" id="ball" hidden></div>
+
+                <div class="board-overlay scoreboard" id="scoreboard">
+                  <div class="score-col score-computer">
+                    <p class="score-label">Computer</p>
+                    <p class="score-num" id="score-computer">0</p>
+                  </div>
+                  <div class="score-col score-player">
+                    <p class="score-label">Player</p>
+                    <p class="score-num" id="score-player">0</p>
+                  </div>
+                </div>
+
+                <div class="board-overlay countdown" id="countdown" hidden>3</div>
+
+                <button class="board-btn" id="replay" type="button" aria-label="Replay" hidden tabindex="-1">
+                  <span class="glyph glyph-replay"></span>
+                </button>
+
+                <button class="board-btn" id="play-btn" type="button" aria-label="Start game" tabindex="-1">
+                  <span class="glyph glyph-play"></span>
+                </button>
+              </div>
+              </div>
+              <span class="play-card-go" aria-hidden="true">
+                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <div class="play-card-meta">
+                <h3>Pong</h3>
+                <p>Atari &middot; 1972</p>
+                <div class="record-row" aria-live="polite">
+                  <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
+                  <p class="record-chip" id="record-pong"><span class="record-label">longest rally</span><span class="record-val">&hellip;</span></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="play-card" id="snake" data-game="snake" role="button"
+                 tabindex="0" style="--n:2" aria-label="Play Snake fullscreen">
+              <div class="play-holder">
+              <div class="board" id="snake-board">
+                <div class="board-wall" id="snake-wall" aria-hidden="true"></div>
+
+                <div class="board-overlay scoreboard" id="snake-scoreboard">
+                  <div class="score-col score-computer">
+                    <p class="score-label">Score</p>
+                    <p class="score-num" id="snake-score">0</p>
+                  </div>
+                  <div class="score-col score-player">
+                    <p class="score-label">Best</p>
+                    <p class="score-num" id="snake-best">0</p>
+                  </div>
+                </div>
+
+                <div class="board-overlay countdown" id="snake-countdown" hidden>3</div>
+
+                <button class="board-btn" id="snake-replay" type="button" aria-label="Replay" hidden tabindex="-1">
+                  <span class="glyph glyph-replay"></span>
+                </button>
+
+                <button class="board-btn" id="snake-play" type="button" aria-label="Start game" tabindex="-1">
+                  <span class="glyph glyph-play"></span>
+                </button>
+              </div>
+              </div>
+              <span class="play-card-go" aria-hidden="true">
+                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <div class="play-card-meta">
+                <h3>Snake</h3>
+                <p>Nokia &middot; 1997</p>
+                <div class="record-row" aria-live="polite">
+                  <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
+                  <p class="record-chip" id="record-snake"><span class="record-label">longest snake</span><span class="record-val">&hellip;</span></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="play-card" id="flappy" data-game="flappy" role="button"
+                 tabindex="0" style="--n:3" aria-label="Play Flappy Bird fullscreen">
+              <div class="play-holder">
+              <div class="board" id="flappy-board">
+                <div class="board-wall" id="flappy-wall" aria-hidden="true"></div>
+                <div class="flappy-clip" id="flappy-clip" aria-hidden="true"></div>
+
+                <div class="board-overlay scoreboard" id="flappy-scoreboard" hidden>
+                  <div class="score-col score-computer">
+                    <p class="score-label">Score</p>
+                    <p class="score-num" id="flappy-score">0</p>
+                  </div>
+                  <div class="score-col score-player">
+                    <p class="score-label">Best</p>
+                    <p class="score-num" id="flappy-best">0</p>
+                  </div>
+                </div>
+
+                <div class="board-overlay countdown" id="flappy-countdown" hidden>3</div>
+
+                <button class="board-btn" id="flappy-replay" type="button" aria-label="Replay" hidden tabindex="-1">
+                  <span class="glyph glyph-replay"></span>
+                </button>
+
+                <button class="board-btn" id="flappy-play" type="button" aria-label="Start game" tabindex="-1">
+                  <span class="glyph glyph-play"></span>
+                </button>
+              </div>
+              </div>
+              <span class="play-card-go" aria-hidden="true">
+                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </span>
+              <div class="play-card-meta">
+                <h3>Flappy Bird</h3>
+                <p>dotGears &middot; 2013</p>
+                <div class="record-row" aria-live="polite">
+                  <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
+                  <p class="record-chip" id="record-flappy"><span class="record-label">longest run</span><span class="record-val">&hellip;</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- phones get a courtesy note instead of the games (the boards want a
+           keyboard + a wider court); shown only ≤700px via css/play.css -->
+      <div class="play-mobile" aria-label="Play — desktop only">
+        <p class="play-mobile-eyebrow">Play</p>
+        <h2 class="play-mobile-title">best on a bigger screen</h2>
+        <p class="play-mobile-copy">Pong, Snake, and Flappy want a keyboard and
+          a wider court. Swing by on a laptop to play &mdash; for now, here&rsquo;s
+          the rest of the site.</p>
+        <a class="play-mobile-link" href="index.html#home">&larr; back home</a>
+      </div>
+    </section>
+
+    <section class="about-stage">
+      <h1 class="sr-only">About Tigo Ponce de León</h1>
+
+
+
+      <!-- Four chapters, one per viewport, scrolling DOWN — the sidebar
+           menu (Figma 1436:260) tracks the current section in orange.
+           Each slide: title pair + ONE artifact on the content axis. -->
+      <div class="about-scroll" id="about-scroll">
+
+        <!-- 01 · the STORY: a spread. Left, the years run down their own
+             scroll region: a posting rises in, falls DOWN the frame at half
+             the scroll until its foot lands on the rule below, then rides up
+             and out locked to it (css .tl-item height + .tl-body
+             position:sticky is the pin; js/timeline.js lays the fall on top).
+             Right, the letter, with the hedcut set into it. The two columns
+             are cut to the same height on purpose. -->
+        <section class="about-slide" id="bio" aria-label="Bio and experience">
+          <header class="about-title">
+            <h2>Hello</h2>
+            <p>nice to meet you</p>
+          </header>
+
+          <div class="story-cols">
+
+            <!-- ---- left: the year column ---- -->
+            <div class="tl-col">
+              <!-- the column's masthead: its name, and on the same line the
+                   one door out of it — the paper version (set in the site's
+                   own type and rules, see resume-src/) -->
+              <div class="col-head">
+                <p class="col-cap">experience</p>
+                <a class="slide-link" href="PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">download the pdf &darr;</a>
+              </div>
+              <div class="tl" id="tl" tabindex="0" role="region"
+                   aria-label="Experience, most recent first">
+                  <div class="tl-track" id="tl-track">
+                    <div class="tl-axis" aria-hidden="true"></div>
+                    <!-- one numeral per year, each its own text, each pinned
+                         to the axis at the middle of its own run of postings.
+                         They ride the track: they travel up the screen with
+                         everything else rather than hanging in the frame. -->
+                    <div class="tl-years" id="tl-years" aria-hidden="true">
+                      <span class="tl-year" data-year="2026">2026</span>
+                      <span class="tl-year" data-year="2025">2025</span>
+                    </div>
+                    <ol class="tl-list">
+                      <li class="tl-item" style="--n:2" data-start="2026-06" data-end="now">
+                        <div class="tl-rule" aria-hidden="true"></div>
+                        <div class="tl-body">
+                          <p class="tl-role">UX Engineer Intern</p>
+                          <p class="tl-co">Vicino, Inc.</p>
+                          <p class="tl-meta">Bellevue, Washington &middot; Jun 2026 &ndash; Present</p>
+                          <p class="tl-sum">Agentic generation and analytics for an AI marketing platform; a Figma-to-React component library.</p>
+                        </div>
+                      </li>
+                      <li class="tl-item" style="--n:3" data-start="2025-11" data-end="2026-02">
+                        <div class="tl-rule" aria-hidden="true"></div>
+                        <div class="tl-body">
+                          <p class="tl-role">Product Designer &amp; Developer</p>
+                          <p class="tl-co">PantryPal</p>
+                          <p class="tl-meta">Chicago, Illinois &middot; Nov 2025 &ndash; Feb 2026</p>
+                          <p class="tl-sum">End-to-end AI recipe app; task completion up 40% across testing rounds.</p>
+                        </div>
+                      </li>
+                      <li class="tl-item" style="--n:4" data-start="2025-11" data-end="2025-12">
+                        <div class="tl-rule" aria-hidden="true"></div>
+                        <div class="tl-body">
+                          <p class="tl-role">UX Researcher</p>
+                          <p class="tl-co">University of Chicago</p>
+                          <p class="tl-meta">Chicago, Illinois &middot; Nov &ndash; Dec 2025</p>
+                          <p class="tl-sum">Studied interface homogenization across six AI-generated web apps.</p>
+                        </div>
+                      </li>
+                      <li class="tl-item" style="--n:5" data-start="2025-08" data-end="2025-09">
+                        <div class="tl-rule" aria-hidden="true"></div>
+                        <div class="tl-body">
+                          <p class="tl-role">Founding Visual Designer</p>
+                          <p class="tl-co">Next Level Drone Cleaning</p>
+                          <p class="tl-meta">Kortrijk, Belgium &middot; Aug &ndash; Sep 2025</p>
+                          <p class="tl-sum">Complete brand identity and marketing site for a drone-tech startup.</p>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+              </div>
+            </div>
+
+            <!-- ---- right: the letter ---- -->
+            <div class="letter-col" id="letter-col">
+              <div class="col-head"><p class="col-cap">bio</p></div>
+              <div class="letter-body">
+                <!-- the live hedcut (js/about.js bakes Media/face_cutout.webp
+                     with the working-portfolio engraving pipeline) is set INTO
+                     the letter — floated, so the first paragraph runs around
+                     it. It still watches the cursor, at a gentler range so it
+                     never turns across the words. -->
+                <figure class="about-portrait">
+                  <canvas id="about-face" aria-label="Stipple portrait of Tigo Ponce de León"></canvas>
+                  <img src="Media/about-portrait.webp" alt="Stipple portrait of Tigo Ponce de León" width="658" height="796" />
+                </figure>
+                <!-- the key phrases are emphasised by INK, not by weight and
+                     not by a marker sweep — the only device left in here -->
+                <div class="story-bio">
+                  <p>Tigo Ponce de León is a <strong>product design engineer</strong>
+                  from Portland, Oregon. He now resides in the Midwest, studying
+                  <strong>Media Arts &amp; Design and Computer Science</strong> at
+                  the University of Chicago, where he&rsquo;ll graduate in Spring 2027.</p>
+                  <p>He believes that software should be both <strong>useful and
+                  pleasurable</strong> and that all design decisions should act in
+                  service of that fundamental aspiration. He also considers
+                  <strong>artificial intelligence</strong> as the defining
+                  technology of this age and is eager to contribute to its
+                  evolution over the coming years.</p>
+                  <p>When not busy designing prototypes in Figma or translating
+                  ideas to code, you can find him going on bike rides along Lake
+                  Michigan, watching Real Madrid matches, or hanging out with
+                  friends.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- two more chapters wait below — say so, quietly, until the
+               first scroll -->
+          <div class="scroll-hint" aria-hidden="true">
+            <span>scroll</span>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 4 L6 8.5 L10 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </div>
+        </section>
+
+
+        <section class="about-slide" id="contact" aria-label="Contact">
+          <header class="about-title">
+            <h2>Contact</h2>
+            <p>always happy to talk</p>
+          </header>
+
+          <!-- a small letter: write here, leave your address on the from
+               line, and send delivers it straight to Tigo's inbox
+               (FormSubmit relay; mailto only as the failure fallback) -->
+          <form class="compose" id="compose" novalidate>
+            <div class="compose-to">
+              <span class="to-label">to</span>
+              <!-- the one place on the site that prints the address in full,
+                   so it is the one place a visitor will try to click to take
+                   it: the chip copies itself (js/shell.js). A real button
+                   because that is what it does now — type="button" so it can
+                   sit inside the letter without ever sending it. -->
+              <button class="to-chip" type="button" title="Copy address"
+                      data-copy="tigoponcedeleon@gmail.com">tigoponcedeleon@gmail.com</button>
+            </div>
+            <div class="compose-from">
+              <span class="to-label">from</span>
+              <input class="from-input" id="compose-from" type="email" aria-label="Your email address"
+                     placeholder="your email address" autocomplete="email"
+                     spellcheck="false" />
+            </div>
+            <div class="compose-rule" aria-hidden="true"></div>
+            <textarea class="compose-body" id="compose-body" rows="5" aria-label="Your message"
+                      placeholder="write me a message&hellip;"></textarea>
+            <div class="compose-foot">
+              <span class="compose-hint" id="compose-status">sends straight to my inbox</span>
+              <button class="compose-send" type="submit">
+                <svg width="15" height="15" viewBox="0 0 34 34" aria-hidden="true">
+                  <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+                    <path d="M17 29 V8" />
+                    <path d="M7.5 16.5 L17 7 L26.5 16.5" />
+                  </g>
+                </svg>
+                send
+              </button>
+            </div>
+          </form>
+
+          <!-- elsewhere on the internet — grey marks that go black on hover -->
+          <div class="social-row" aria-label="Elsewhere">
+            <a class="social social-li" href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener" aria-label="linkedin">
+              <svg width="26" height="26" viewBox="0 0 24 24"><path fill="currentColor" d="M22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z"/></svg>
+            </a>
+            <a class="social social-gh" href="https://github.com/tigo-poncedeleon" target="_blank" rel="noopener" aria-label="github">
+              <svg width="27" height="27" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3z"/></svg>
+            </a>
+            <a class="social social-lb" href="https://letterboxd.com/tigomiamigo/" target="_blank" rel="noopener" aria-label="letterboxd">
+              <svg width="30" height="20" viewBox="0 0 36 22"><g fill="currentColor"><circle class="lb-a" cx="7" cy="11" r="6.5"/><circle class="lb-b" cx="18" cy="11" r="6.5"/><circle class="lb-c" cx="29" cy="11" r="6.5"/></g></svg>
+            </a>
+            <a class="social social-gr" href="https://www.goodreads.com/user/show/98420895-tigo" target="_blank" rel="noopener" aria-label="goodreads">
+              <svg width="26" height="26" viewBox="0 0 24 24"><text x="12" y="19" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="bold" fill="currentColor">g</text></svg>
+            </a>
+          </div>
+
+        </section>
+      </div>
+
+    </section>
+
+    <!-- (ai.html survives as a redirect for the OG card and every external
+         link that already exists in the world. It lands on #home, which is
+         the chat; ?q=… still asks its question on arrival — js/ai-chat.js.) -->
+  </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- (GONE 2026-08-30: the site-nav BOTTOM BAR, and with it the last of the
+       1380:150 top-left nav it was made from. It was a floating pill of three
+       words at the foot of every phone screen, and three words is all it could
+       ever be: the case studies, the resume, the email and the four profiles
+       — every one of them already listed in the rail — had no way onto a
+       phone at all. On these three case pages it was worse than empty, since
+       its links still pointed at the about.html / work.html / play.html
+       redirect stubs and it marked the wrong one as the current page.
+
+       What replaced it is a DRAWER, built by js/drawer.js off the same TREE
+       the rail is built from (js/shell.js), opened by one button in the
+       top-left corner. One source for the site's shape, and a nav that can
+       hold the whole of it. js/nav-touch.js — which existed only to draw
+       icons into this bar's tabs — went with it; its glyphs live on in G,
+       in js/shell.js, which is where they were copied from.) -->
+
+  <script src="js/portrait.js?v=12"></script>
+  <script src="js/shell.js?v=121"></script>
+  <script src="js/palette.js?v=22"></script>
+  <script src="js/drawer.js?v=7"></script>
+  <!-- ≤700px only, and the position in this list is load-bearing: AFTER
+       shell.js (whose rail it reads), BEFORE every file below that would
+       otherwise wire itself to the stepper or the game boards it takes
+       away. -->
+  <script src="js/mobile.js?v=42"></script>
+  <script src="js/globe.js?v=8"></script>
+  <script src="js/stage-fit.js?v=17"></script>
+  <script src="js/frame-clock.js?v=4"></script>
+  <script src="js/typewriter.js?v=19"></script>
+  <script src="js/main.js?v=100"></script>
+  <script src="js/timeline.js?v=21"></script>
+  <script src="js/about.js?v=16"></script>
+  <script src="js/work.js?v=113"></script>
+  <script src="js/work-pick.js?v=10"></script>
+  <script src="js/records.js?v=3"></script>
+  <script src="js/pong.js?v=7"></script>
+  <script src="js/snake.js?v=102"></script>
+  <script src="js/flappy.js?v=5"></script>
+  <script src="js/play-pager.js?v=106"></script>
+  <script src="js/case-overlay.js?v=101"></script>
+  <script src="js/theater.js?v=9"></script>
+  <script src="js/ai-chat.js?v=21"></script>
+  <script src="js/color-lab.js?v=3"></script>
+</body>
+</html>

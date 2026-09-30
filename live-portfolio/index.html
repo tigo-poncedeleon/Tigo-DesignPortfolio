@@ -1,810 +1,680 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <!-- interactive-widget: the chat docks its composer to the foot of the
-       screen, and the default (resizes-visual) leaves that dock UNDER the
-       software keyboard the moment you tap into it. Resizing the CONTENT
-       instead means the viewport units the phone's screens are measured in
-       (100svh) shrink with the keyboard, so the composer rides up above it.
-
-       It is a REQUEST, and iOS Safari does not grant it: there the keyboard
-       leaves the layout viewport alone, so 100svh never moves. js/mobile.js
-       answers by reading the visible window off visualViewport and sizing
-       the phone's home screen to it directly (--win-h / --doc-top), which
-       is what actually holds the composer up. This line still earns its
-       place — where it IS honoured the browser does the work before any
-       script runs, and the measured window simply agrees with the layout
-       instead of correcting it. -->
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- A draft, kept on one Mac. It is not deployed (see README.md), and if it
+       ever were served somewhere by accident it asks not to be indexed. -->
+  <meta name="robots" content="noindex, nofollow" />
   <title>Tigo Ponce de León</title>
-
-  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
-  <meta name="description" content="Product design engineer studying Media Arts & Design and Computer Science at the University of Chicago. Selected work, playable games, and an AI to ask about him." />
-  <meta name="theme-color" content="#f6f6f6" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Tigo Ponce de León" />
-  <meta property="og:title" content="Tigo Ponce de León" />
-  <meta property="og:description" content="Product design engineer studying Media Arts & Design and Computer Science at the University of Chicago. Selected work, playable games, and an AI to ask about him." />
-  <meta property="og:url" content="https://tigoponcedeleon.com/" />
-  <meta property="og:image" content="https://tigoponcedeleon.com/Media/og-card.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/styles.css?v=115" />
-  <!-- the four other palettes; which one is worn is set on <html> below,
-       before first paint (js/palette.js, the rail's foot) -->
-  <link rel="stylesheet" href="css/palettes.css?v=5" />
-  <link rel="stylesheet" href="css/shell.css?v=135" />
-  <link rel="stylesheet" href="css/ai.css?v=66" />
-  <link rel="stylesheet" href="css/about.css?v=83" />
-  <link rel="stylesheet" href="css/work.css?v=136" />
-  <!-- Play has no phone at all now (js/mobile.js takes the whole stage out
-       of the document below 700px), so its 26KB of court geometry is 26KB
-       a phone would parse and render-block on for nothing. `media` says so:
-       above 700 this is exactly the sheet it always was; below it the
-       browser fetches at low priority and never applies it. -->
-  <link rel="stylesheet" href="css/play.css?v=128" media="(min-width: 701px)" />
-  <link rel="stylesheet" href="css/case-overlay.css?v=18" />
-  <!-- LAST: the phone re-casts the one document as three tapped screens, so
-       its overrides answer for the blocks in every sheet above -->
-  <link rel="stylesheet" href="css/mobile.css?v=32" />
-  <!-- the phone's whole navigation: one button in the corner and the
-       panel it opens (js/drawer.js). Phone-only — every rule inside is in
-       one @media block, and above 700px the rail is still the nav. -->
-  <link rel="stylesheet" href="css/drawer.css?v=16" />
-  <!-- set before first paint so the chrome and sidebar are already held at
-       opacity 0 when they are built — the intro has no flash to hide.
-       `is-phone` goes on in the same breath: css/mobile.css cuts the phone's
-       whole layout off that class — the hero held to one screen, Play held
-       out of the document — and it has to be true on the FIRST frame, or
-       the court flashes up in the moment before js/mobile.js removes it. -->
+  <meta name="theme-color" content="#fafafa" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <script>
-    document.documentElement.className += ' js' +
-      (sessionStorage.getItem('shell.intro') ? '' : ' intro-pending') +
-      (matchMedia('(max-width: 700px)').matches ? ' is-phone' : '');
-    // the palette you chose last time, worn before the first paint
-    (function () {
-      try {
-        var t = localStorage.getItem('shell.theme');
-        if (t) {
-          document.documentElement.dataset.theme = t;
-          var m = document.querySelector('meta[name="theme-color"]');
-          var bg = { ink: '#161616', red: '#eb7770', coral: '#e87c52', orange: '#f19446', apricot: '#f5ae42', amber: '#efc64a', yellow: '#d6d054', lime: '#b9da69', chartreuse: '#97e184', green: '#71e6a2', emerald: '#46e9c0', mint: '#09e8dd', teal: '#00e5f7', cyan: '#03cefc', sky: '#34b3f7', azure: '#5aa1f6', blue: '#7c98f8', indigo: '#998ef3', violet: '#b186e8', purple: '#c57fd6', magenta: '#d579c1', pink: '#e175a7', rose: '#e8748c' }[t];
-          if (m && bg) m.setAttribute('content', bg);
-        }
-      } catch (e) { /* private mode — Paper */ }
-    })();
+    document.documentElement.classList.add('js');
   </script>
-  <!-- colour lab: inert unless ?lab is in the URL or you press Ctrl+Shift+L -->
-  <link rel="stylesheet" href="css/color-lab.css?v=11" />
-  <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
-       sends, and drops it outright when that hook returns null — so this is a
-       real opt-out, not a send-then-discard: nothing leaves the browser.
-       Load ?va-ignore=1 once on a machine to go quiet on it, ?va-ignore=0 to
-       start counting again. The flag is localStorage, so it is per browser
-       profile — each browser you read this site in needs its own visit, and
-       clearing site data forgets it. The param strips itself so the URL you
-       are left holding is the ordinary one. -->
-  <script>
-    (() => {
-      try {
-        const q = new URLSearchParams(location.search);
-        if (q.has('va-ignore')) {
-          const on = q.get('va-ignore') !== '0';
-          if (on) localStorage.setItem('va.ignore', '1');
-          else localStorage.removeItem('va.ignore');
-          q.delete('va-ignore');
-          const rest = q.toString();
-          history.replaceState(null, '',
-            location.pathname + (rest ? '?' + rest : '') + location.hash);
-          console.log('[analytics] this browser is now ' + (on ? 'IGNORED' : 'counted'));
-        }
-        if (localStorage.getItem('va.ignore')) {
-          (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
-        }
-      } catch (e) { /* private mode, blocked storage: just count normally */ }
-    })();
-  </script>
-  <!-- Vercel Web Analytics. First-party and cookieless: the script is served
-       from this same origin at deploy time, so there is no third party in the
-       page, nothing for a blocker to catch, and no consent banner owed. -->
-  <script defer src="/_vercel/insights/script.js"></script>
+  <!-- Carried across pages: a Work tile grows into its case study's opening
+       tile, and shrinks home again (css/work.css, css/case.css). The opt-in
+       is written here, in the page itself, not in those stylesheets: the
+       page's scripts read computed style as soon as they start (js/motion.js
+       u()), and a read that early can come before a linked stylesheet has
+       applied, which the browser takes as the page not having opted in, and
+       it drops the transition. -->
+  <style>
+    @view-transition { navigation: auto; types: case; }
+    @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+  </style>
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/nav.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/work.css" />
+  <link rel="stylesheet" href="css/about.css" />
+  <link rel="stylesheet" href="css/play.css" />
+  <script type="module" src="js/main.js"></script>
 </head>
-
 <body>
-  <!-- The mini browser: chrome strip + sidebar + content card. The six
-       wrapper elements are the ONLY shell markup that lives in this file;
-       everything inside them is generated by js/shell.js, so there is one
-       source of truth across the nine pages. -->
-  <div class="shell" id="shell" data-page="home" data-title="Home">
-    <div class="shell-body">
-      <aside class="shell-side" id="shell-side"></aside>
-      <div class="shell-card" id="shell-card">
-  <main>
-    <!-- ONE PAGE. Home, Work, Play and About are sections of a single
-         document — you scroll straight through them. The two case
-         studies are still their own pages, opened from Work.
-         about.html / work.html / play.html / ai.html survive as redirects
-         so every link that already exists in the world keeps working.
-         The AI has no section of its own because it does not need one:
-         it IS Home. -->
-    <!-- The home card holds the name pair and the chat, and the order is
-         the point — the name writes itself first (js/typewriter.js), and
-         only then does the field arrive underneath it (js/shell.js
-         lightUp). Ask something and the pair leaves as the composer
-         travels to the foot of the screen: two states, one class.
+  <div class="frame">
 
-         Each line is a grid: a hidden ghost copy reserves the full width
-         from frame one, so the centred header cannot drift while it types.
-         The .sr-only copy is what assistive tech reads; the animated span
-         is decoration. -->
-    <section id="home" class="stage">
-      <header class="frame-top" id="type-head">
-        <h1 class="frame-name tw-line">
-          <span class="sr-only">Tigo Ponce de León</span>
-          <span class="tw-ghost" aria-hidden="true">Tigo Ponce de León</span>
-          <span class="tw" data-text="Tigo Ponce de León" aria-hidden="true"
-            ><i class="tw-caret" id="tw-caret"></i></span>
-        </h1>
-        <p class="frame-role tw-line">
-          <span class="sr-only">product design engineer</span>
-          <span class="tw-ghost" aria-hidden="true">product design engineer</span>
-          <span class="tw" data-text="product design engineer" aria-hidden="true"></span>
-        </p>
-      </header>
+    <header class="masthead">
+      <!-- The headline: the name on Home, and the name of the section you are
+           on everywhere else, swapped as the page scrolls past each one
+           (js/main.js). It is fixed at the top with the menu. -->
+      <div class="headline">
+        <span class="headline-pill" aria-hidden="true"></span>
+        <a class="name" href="#" data-for="home" data-enter="name">
+          <span class="name-line">Tigo Ponce de León</span>
+          <span class="name-line">Design + CS @ UChicago</span>
+        </a>
+        <p class="headline-title" data-for="work" aria-hidden="true">Work</p>
+        <p class="headline-title" data-for="play" aria-hidden="true">Play</p>
+        <p class="headline-title" data-for="about" aria-hidden="true">About</p>
+      </div>
 
-      <!-- ============================================================
-           THE CHAT, on the home screen.
+      <!-- The menu: one yellow square with three lines in it. Opened, it
+           slides left, its lines turn upright, and the four pages fan down
+           beside it as pills, each with its icon at the left and its word in
+           the middle (js/nav.js, css/nav.css).
+           The glyphs are Lucide's (ISC licence, lucide.dev): house,
+           briefcase, gamepad-2 and user-round, the same Feather family as the
+           Simple Design System icons in the Figma frame, drawn in a 28-unit
+           box around the usual 24 at a 1.75 stroke, 3px on screen. -->
+      <nav class="menu" aria-label="Pages">
+        <button type="button" class="menu-button" aria-expanded="false" aria-controls="menu-list" aria-label="Menu">
+          <svg class="menu-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line pathLength="1" x1="1.5" x2="22.5" y1="4.5" y2="4.5" />
+            <line pathLength="1" x1="1.5" x2="22.5" y1="12" y2="12" />
+            <line pathLength="1" x1="1.5" x2="22.5" y1="19.5" y2="19.5" />
+          </svg>
+        </button>
+        <!-- While a conversation is going on Home, this takes the menu
+             square's place: a soft red, with a red × in it. It clears the
+             conversation, and the menu comes back (js/nav.js). -->
+        <button type="button" class="menu-clear" aria-label="Clear the conversation" inert>
+          <svg class="menu-clear-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line pathLength="1" x1="5.5" x2="18.5" y1="5.5" y2="18.5" />
+            <line pathLength="1" x1="18.5" x2="5.5" y1="5.5" y2="18.5" />
+          </svg>
+        </button>
+        <ul class="menu-list" id="menu-list" role="list" inert>
+          <li style="--i: 0">
+            <a class="menu-item" href="#" data-route="home" style="--item-bg: var(--blue)">
+              <svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              </svg>
+              <span class="menu-item-word">home</span>
+            </a>
+          </li>
+          <li style="--i: 1">
+            <a class="menu-item" href="#work" data-route="work" style="--item-bg: var(--pink)">
+              <svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                <rect width="20" height="14" x="2" y="6" rx="2" />
+              </svg>
+              <span class="menu-item-word">work</span>
+            </a>
+          </li>
+          <li style="--i: 2">
+            <a class="menu-item" href="#play" data-route="play" style="--item-bg: var(--lavender)">
+              <svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="6" x2="10" y1="11" y2="11" />
+                <line x1="8" x2="8" y1="9" y2="13" />
+                <line x1="15" x2="15.01" y1="12" y2="12" />
+                <line x1="18" x2="18.01" y1="10" y2="10" />
+                <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
+              </svg>
+              <span class="menu-item-word">play</span>
+            </a>
+          </li>
+          <li style="--i: 3">
+            <a class="menu-item" href="#about" data-route="about" style="--item-bg: var(--green)">
+              <svg class="menu-item-icon" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="5" />
+                <path d="M20 21a8 8 0 0 0-16 0" />
+              </svg>
+              <span class="menu-item-word">about</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-           It was a sheet built by js/shell.js and floated over whatever
-           page you were on. That template lived there because chrome
-           must be identical across nine documents — and the chat is on
-           ONE document now, so the reason is spent and the markup comes
-           home. Three things it buys: the composer paints WITH the hero
-           instead of appearing after the second <script>; it rides the
-           typewriter's FLIP (js/typewriter.js) for free rather than
-           risking a landing mid-flight; and js/stage-fit.js measures the
-           real stage on its first pass.
+    <!-- The site is one page, four screens down it: Home, Work, Play,
+         About, in the menu's order. Each screen is the height of the window
+         and holds what one page used to: its content in the band, and its
+         one line at the bottom-left (on Home, the composer). The masthead
+         stays put above them, its headline saying where you are
+         (js/main.js, css/base.css). -->
+    <main class="screens">
 
-           Two states, one class, on #home — see css/ai.css. Idle, the
-           composer sits under the name pair; ask something and the name
-           leaves as the composer travels to the foot of the screen, on
-           one curve, because #home is the parent of both.
-
-           No empty-state spark here: the name pair IS the empty state,
-           and two of those on one screen is an echo. The code that drew
-           it went with it (ai-chat.js dismissEmpty/restoreEmpty).
-           ============================================================ -->
-      <div class="ai-stage is-hero" id="ai-stage">
-        <div class="ai-panel" id="ai-panel">
-          <!-- back to the opening. It lives in the band of air above the
-               transcript (--scroll-top), at the right edge of the chat's
-               own measure — the corner the sheet's close button used to
-               hold, which is where a visitor already looks for the way out
-               of a conversation. It exists only while there IS one. -->
-          <button class="ai-reset" id="ai-reset" type="button"
-                  aria-label="Start over" title="Start over">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round">
-              <path d="M1 4 V10 H7" />
-              <path d="M3.51 15 a9 9 0 1 0 2.13-9.36 L1 10" />
-            </svg>
-          </button>
-          <div class="ai-scroll" id="ai-scroll"></div>
-          <!-- answers are announced here once complete — the word-by-word
-               visual reveal stays quiet for screen readers -->
-          <p class="sr-only" id="ai-live" aria-live="polite"></p>
-
-          <!-- ONE group, and that is the point: everything that travels
-               between the two states moves as a single transform. The
-               mood menu and the attach row are positioned against this
-               box, so lifting the bar alone would strand them. -->
-          <div class="ai-composer">
-            <!-- (GONE: four suggested-question chips in a row under the bar.
-                 They were the sheet's furniture — a 520px window with an
-                 empty transcript needed something to press — and the hero
-                 is not that: the field is already the invitation, and the
-                 chips put a menu of four sentences between the name and
-                 the one thing there is to do. The conversation still
-                 offers its own follow-ups AFTER an answer (.fu-chip), which
-                 is where a suggestion is actually worth having. Deleted
-                 with them: .ai-prompts/.prompt-chip and the chip→bubble
-                 fly, in css/ai.css and js/ai-chat.js.) -->
-            <!-- a chosen photo waits here, above the bar, until the next send -->
-            <div class="ai-attach-row" id="ai-attach-row" hidden></div>
-            <!-- the persona menu rises from the toggle that opens it -->
-            <div class="ai-persona-menu" id="ai-persona-menu" hidden>
-              <button class="persona-row" type="button" data-persona="friendly">
-                <span class="persona-name">friendly</span>
-                <span class="persona-desc">warm &amp; to the point</span>
-                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
-              </button>
-              <button class="persona-row" type="button" data-persona="whimsical">
-                <span class="persona-name">whimsical</span>
-                <span class="persona-desc">answers with a wink</span>
-                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
-              </button>
-              <button class="persona-row" type="button" data-persona="suspicious">
-                <span class="persona-name">suspicious</span>
-                <span class="persona-desc">trusts no question</span>
-                <svg class="persona-check" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 L9 17 L4 12" /></svg>
-              </button>
-            </div>
-            <form class="ai-inputbar" id="ai-inputbar">
-              <!-- a photo for context, at the HEAD of the bar: it is what you
-                   bring BEFORE writing, and the cluster at the other end is
-                   what you press after. Both references seat it here. -->
-              <button class="ai-tool ai-add" id="ai-add" type="button" aria-label="Add a photo">
-                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5 V19" /><path d="M5 12 H19" /></svg>
-              </button>
-              <input class="ai-input" id="ai-input" type="text" aria-label="Ask about Tigo" placeholder="ask me anything!" autocomplete="off" />
-              <div class="ai-tools">
-                <!-- how it answers: friendly is the house voice, the other two are moods -->
-                <button class="ai-tool ai-persona" id="ai-persona" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Choose a mood">
-                  <span class="persona-label" id="ai-persona-label">friendly</span>
-                  <svg class="persona-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 L12 15.5 L18 10" /></svg>
-                </button>
-                <!-- dictation — ai-chat.js hides this button when the browser cannot listen -->
-                <button class="ai-tool ai-mic" id="ai-mic" type="button" hidden aria-label="Ask out loud" aria-pressed="false">
-                  <svg class="mic-glyph" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3 a3 3 0 0 1 3 3 V12 a3 3 0 0 1-6 0 V6 a3 3 0 0 1 3-3 z" />
-                    <path d="M18.5 11.5 a6.5 6.5 0 0 1-13 0" /><path d="M12 18 V21" />
-                  </svg>
-                  <span class="mic-eq" aria-hidden="true"><i></i><i></i><i></i></span>
-                </button>
-              </div>
-              <!-- the send: quiet until there is something to send, then
-                   filled with the accent (ai-chat.js flips .is-ready) -->
-              <button class="ai-send" type="submit" aria-label="Send">
-                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19 V5.5" /><path d="M6 11.5 L12 5.5 L18 11.5" /></svg>
-              </button>
-              <input type="file" id="ai-file" accept="image/*" hidden />
-            </form>
-            <!-- Empty, and it starts empty: the sheet's head used to carry
-                 "powered by Claude Haiku 4.5" and the composer carried it
-                 after — a model's name under a field the visitor has not
-                 used yet. The element stays because setSubtitle() in
-                 ai-chat.js still has ONE thing to say here: that the
-                 assistant could not be reached and the answers are canned. -->
-            <p id="ai-sub"></p>
+      <!-- HOME: the name and the prompt, until you ask something. Then the
+           band holds the conversation: your questions in blue bubbles on the
+           right, the answers in grey ones on the left. The name steps aside
+           for it (js/main.js). -->
+      <section class="screen screen-home" id="home" data-section="home" aria-labelledby="home-title">
+        <h1 class="sr-only" id="home-title" tabindex="-1">Tigo Ponce de León</h1>
+        <div class="view view-home">
+          <div class="thread" role="log" aria-label="Conversation" aria-live="off">
+            <div class="thread-inner"></div>
           </div>
         </div>
-      </div>
-      <!-- the rest of the site waits below — say so, quietly, once the
-           name has finished typing (js/main.js arms it). It is a real link,
-           not a caption: clicking it glides to Work through the shell's own
-           anchor delegate (js/shell.js), so it rests exactly where the rail
-           would have put it. -->
-      <a class="scroll-hint" href="#work" aria-label="Scroll to Work">
-        <span>scroll</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4 L6 8.5 L10 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-      </a>
-    </section>
-
-    <section class="work-stage">
-      <h1 class="sr-only">Work</h1>
-
-
-      <!-- ONE SCREEN. An index of three projects, the one you are on shown
-           large beside it, and its note on the right; the rows keep the old
-           slide ids so every #vicino/#pantrypal/#drone link that exists in
-           the world still lands here. -->
-      <div class="work-scroll" id="work-scroll">
-        <section class="work-slide" id="work" aria-label="Selected work">
-          <header class="work-title">
-            <h2>Work</h2>
-            <p>selected projects</p>
-          </header>
-
-          <!-- The stepper. Three columns: the projects as an index of
-               cards on the left, the one you are on shown large in the
-               middle, and what the job was — role, when, and a line about
-               it — on the right. Hover or arrow through to browse; click
-               either the name or the picture to open — the names are real
-               links to the studies, so the browser owns the navigation.
-
-               The .work-img-* classes are LOAD-BEARING: js/case-overlay.js
-               keys its CASES map off them to know which thumbnail a case
-               flies from. They live on the stage figures now. -->
-          <div class="work-pick" id="work-pick">
-            <ol class="pick-list" aria-label="Selected work">
-              <li>
-                <a class="pick-row is-current" href="vicino.html"
-                   id="vicino" data-case="vicino" aria-current="true">
-                  <span class="pick-ico" aria-hidden="true">
-                    <img src="Media/icon-vicino.webp" alt="" width="256" height="256"
-                         loading="lazy" decoding="async" />
-                  </span>
-                  <span class="pick-name">Vicino AI</span>
-                </a>
-              </li>
-              <li>
-                <a class="pick-row" href="pantrypal.html"
-                   id="pantrypal" data-case="pantrypal" aria-current="false">
-                  <span class="pick-ico" aria-hidden="true">
-                    <img src="Media/icon-pantrypal.webp" alt="" width="256" height="256"
-                         loading="lazy" decoding="async" />
-                  </span>
-                  <span class="pick-name">PantryPal</span>
-                </a>
-              </li>
-              <li>
-                <a class="pick-row" href="nextlevel.html"
-                   id="drone" data-case="nextlevel" aria-current="false">
-                  <span class="pick-ico" aria-hidden="true">
-                    <img src="Media/icon-nextlevel.webp" alt="" width="256" height="256"
-                         loading="lazy" decoding="async" />
-                  </span>
-                  <span class="pick-name">Next Level</span>
-                </a>
-              </li>
-            </ol>
-
-            <div class="pick-stage">
-              <figure class="pick-shot work-img-vicino is-current" data-case="vicino"
-                      aria-label="Open the Vicino AI case study" tabindex="0" role="button">
-                <img loading="lazy" decoding="async" src="Media/Vicino-Laptop.webp"
-                     alt="Vicino AI canvas — Pulse redesign shown on a studio display"
-                     width="2048" height="1706" />
-              </figure>
-              <figure class="pick-shot work-img-pantry" data-case="pantrypal"
-                      aria-label="Open the PantryPal case study" tabindex="-1" role="button">
-                <img loading="lazy" decoding="async" src="Media/pantry-login.webp"
-                     alt="PantryPal login screen on an iPhone" width="954" height="1908" />
-              </figure>
-              <figure class="pick-shot work-img-drone" data-case="nextlevel"
-                      aria-label="Open the Next Level Drone Cleaning case study"
-                      tabindex="-1" role="button">
-                <img loading="lazy" decoding="async" src="Media/NextLevelIcon.webp"
-                     alt="Next Level Drone Cleaning logo" width="1401" height="1406" />
-              </figure>
-              <span class="pick-open" aria-hidden="true">
-                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </span>
-            </div>
-
-            <div class="pick-note">
-              <div class="pick-card is-current" data-case="vicino">
-                <p class="pick-role">UX Engineer Intern</p>
-                <p class="pick-when">Summer 2026</p>
-              </div>
-              <div class="pick-card" data-case="pantrypal">
-                <p class="pick-role">Product Designer</p>
-                <p class="pick-when">Winter 2026</p>
-                <!-- One of the three shipped, and this is the only place
-                     on the site where all three stand side by side — so the
-                     ledger that says what the job was gets one more line
-                     under it, saying where the work ended up. It sits IN
-                     the card rather than hanging off it; see css/work.css
-                     for why that is the whole of the layout. -->
-                <a class="pick-store" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028"
-                   target="_blank" rel="noopener noreferrer"
-                   aria-label="Download PantryPal on the App Store — opens the App Store in a new tab">
-                  <img src="Media/appstore-badge.svg" alt="" width="120" height="40"
-                       loading="lazy" decoding="async" />
-                </a>
-              </div>
-              <div class="pick-card" data-case="nextlevel">
-                <p class="pick-role">Founding Designer</p>
-                <p class="pick-when">Summer 2025</p>
-              </div>
-            </div>
-
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <section id="play-stage" class="play-stage">
-      <h1 class="sr-only">Play</h1>
-
-
-      <!-- ONE SCREEN. The three games idle LIVE inside their tiles — each
-           court below is the real board, scaled down with zoom, so snake's
-           attract mode wiggles right in the grid. Clicking a tile lifts
-           its court into the fullscreen theater (js/theater.js); in the
-           tiles the games ignore the keyboard entirely. -->
-      <div class="play-scroll" id="play-scroll">
-        <section class="play-slide" id="play" aria-label="Games">
-          <header class="play-title">
-            <h2>Play</h2>
-            <p>three arcade classics, rebuilt by hand</p>
-          </header>
-
-          <div class="play-grid">
-            <div class="play-card" id="pong" data-game="pong" role="button"
-                 tabindex="0" style="--n:1" aria-label="Play Pong fullscreen">
-              <div class="play-holder">
-              <div class="board" id="board">
-                <div class="board-wall" id="board-wall" aria-hidden="true"></div>
-                <div class="paddle" id="paddle-left"></div>
-                <div class="paddle" id="paddle-right"></div>
-                <div class="ball" id="ball" hidden></div>
-
-                <div class="board-overlay scoreboard" id="scoreboard">
-                  <div class="score-col score-computer">
-                    <p class="score-label">Computer</p>
-                    <p class="score-num" id="score-computer">0</p>
-                  </div>
-                  <div class="score-col score-player">
-                    <p class="score-label">Player</p>
-                    <p class="score-num" id="score-player">0</p>
-                  </div>
-                </div>
-
-                <div class="board-overlay countdown" id="countdown" hidden>3</div>
-
-                <button class="board-btn" id="replay" type="button" aria-label="Replay" hidden tabindex="-1">
-                  <span class="glyph glyph-replay"></span>
-                </button>
-
-                <button class="board-btn" id="play-btn" type="button" aria-label="Start game" tabindex="-1">
-                  <span class="glyph glyph-play"></span>
+        <footer class="status">
+          <div class="status-home" data-status="home">
+            <!-- The composer. At rest it is the block caret alone, blinking
+                 on the left axis; once there is something in it, or a pointer
+                 over it, a pill opens around it and the tools slide in at its
+                 right end: the chat's mood, the microphone, send
+                 (css/home.css). A photo still comes in by paste or by drop,
+                 and waits in the thumb. Icons are Lucide's (ISC). -->
+            <form class="composer prompt" autocomplete="off" aria-label="Ask me anything">
+              <div class="composer-thumb" hidden>
+                <img alt="The photo you are sending" />
+                <button type="button" class="composer-thumb-remove" aria-label="Remove the photo">
+                  <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
                 </button>
               </div>
+
+              <div class="prompt-field">
+                <textarea id="ask" class="prompt-input" rows="1" maxlength="300" enterkeyhint="send"
+                          spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+                          aria-label="Ask me anything" aria-describedby="ask-hint"
+                          data-greeting="Hey there, ask me anything!"></textarea>
+                <span class="prompt-caret" aria-hidden="true"></span>
+                <div class="prompt-mirror" aria-hidden="true"></div>
               </div>
-              <span class="play-card-go" aria-hidden="true">
-                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </span>
-              <div class="play-card-meta">
-                <h3>Pong</h3>
-                <p>Atari &middot; 1972</p>
-                <div class="record-row" aria-live="polite">
-                  <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
-                  <p class="record-chip" id="record-pong"><span class="record-label">longest rally</span><span class="record-val">&hellip;</span></p>
-                </div>
-              </div>
-            </div>
 
-            <div class="play-card" id="snake" data-game="snake" role="button"
-                 tabindex="0" style="--n:2" aria-label="Play Snake fullscreen">
-              <div class="play-holder">
-              <div class="board" id="snake-board">
-                <div class="board-wall" id="snake-wall" aria-hidden="true"></div>
-
-                <div class="board-overlay scoreboard" id="snake-scoreboard">
-                  <div class="score-col score-computer">
-                    <p class="score-label">Score</p>
-                    <p class="score-num" id="snake-score">0</p>
-                  </div>
-                  <div class="score-col score-player">
-                    <p class="score-label">Best</p>
-                    <p class="score-num" id="snake-best">0</p>
-                  </div>
-                </div>
-
-                <div class="board-overlay countdown" id="snake-countdown" hidden>3</div>
-
-                <button class="board-btn" id="snake-replay" type="button" aria-label="Replay" hidden tabindex="-1">
-                  <span class="glyph glyph-replay"></span>
+              <div class="composer-mood">
+                <button type="button" class="composer-chip" aria-haspopup="menu" aria-expanded="false" aria-controls="mood-menu">
+                  <span class="mood-dot" aria-hidden="true"></span>
+                  <span class="composer-chip-word">friendly</span>
+                  <svg class="composer-chip-caret" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                 </button>
-
-                <button class="board-btn" id="snake-play" type="button" aria-label="Start game" tabindex="-1">
-                  <span class="glyph glyph-play"></span>
-                </button>
-              </div>
-              </div>
-              <span class="play-card-go" aria-hidden="true">
-                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </span>
-              <div class="play-card-meta">
-                <h3>Snake</h3>
-                <p>Nokia &middot; 1997</p>
-                <div class="record-row" aria-live="polite">
-                  <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
-                  <p class="record-chip" id="record-snake"><span class="record-label">longest snake</span><span class="record-val">&hellip;</span></p>
+                <div class="mood-menu" id="mood-menu" role="menu" aria-label="How the chat answers">
+                  <button type="button" role="menuitemradio" aria-checked="true" data-mood="friendly">
+                    <span class="mood-dot" aria-hidden="true"></span>
+                    <span class="mood-name">friendly</span><span class="mood-note">warm &amp; to the point</span>
+                    <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  </button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-mood="whimsical">
+                    <span class="mood-dot" aria-hidden="true"></span>
+                    <span class="mood-name">whimsical</span><span class="mood-note">answers with a wink</span>
+                    <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  </button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-mood="suspicious">
+                    <span class="mood-dot" aria-hidden="true"></span>
+                    <span class="mood-name">suspicious</span><span class="mood-note">trusts no question</span>
+                    <svg class="mood-check" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                  </button>
                 </div>
               </div>
-            </div>
 
-            <div class="play-card" id="flappy" data-game="flappy" role="button"
-                 tabindex="0" style="--n:3" aria-label="Play Flappy Bird fullscreen">
-              <div class="play-holder">
-              <div class="board" id="flappy-board">
-                <div class="board-wall" id="flappy-wall" aria-hidden="true"></div>
-                <div class="flappy-clip" id="flappy-clip" aria-hidden="true"></div>
-
-                <div class="board-overlay scoreboard" id="flappy-scoreboard" hidden>
-                  <div class="score-col score-computer">
-                    <p class="score-label">Score</p>
-                    <p class="score-num" id="flappy-score">0</p>
-                  </div>
-                  <div class="score-col score-player">
-                    <p class="score-label">Best</p>
-                    <p class="score-num" id="flappy-best">0</p>
-                  </div>
-                </div>
-
-                <div class="board-overlay countdown" id="flappy-countdown" hidden>3</div>
-
-                <button class="board-btn" id="flappy-replay" type="button" aria-label="Replay" hidden tabindex="-1">
-                  <span class="glyph glyph-replay"></span>
-                </button>
-
-                <button class="board-btn" id="flappy-play" type="button" aria-label="Start game" tabindex="-1">
-                  <span class="glyph glyph-play"></span>
-                </button>
-              </div>
-              </div>
-              <span class="play-card-go" aria-hidden="true">
-                <svg viewBox="0 0 15 15" width="14" height="14"><path d="M4.5 10.5 L10.8 4.2 M5.7 4 H11 V9.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </span>
-              <div class="play-card-meta">
-                <h3>Flappy Bird</h3>
-                <p>dotGears &middot; 2013</p>
-                <div class="record-row" aria-live="polite">
-                  <svg class="record-crown" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 19 L4.5 9 L9.5 13 L13 5.5 L16.5 13 L21.5 9 L21.5 19 Z" /></svg>
-                  <p class="record-chip" id="record-flappy"><span class="record-label">longest run</span><span class="record-val">&hellip;</span></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- phones get a courtesy note instead of the games (the boards want a
-           keyboard + a wider court); shown only ≤700px via css/play.css -->
-      <div class="play-mobile" aria-label="Play — desktop only">
-        <p class="play-mobile-eyebrow">Play</p>
-        <h2 class="play-mobile-title">best on a bigger screen</h2>
-        <p class="play-mobile-copy">Pong, Snake, and Flappy want a keyboard and
-          a wider court. Swing by on a laptop to play &mdash; for now, here&rsquo;s
-          the rest of the site.</p>
-        <a class="play-mobile-link" href="index.html#home">&larr; back home</a>
-      </div>
-    </section>
-
-    <section class="about-stage">
-      <h1 class="sr-only">About Tigo Ponce de León</h1>
-
-
-
-      <!-- Four chapters, one per viewport, scrolling DOWN — the sidebar
-           menu (Figma 1436:260) tracks the current section in orange.
-           Each slide: title pair + ONE artifact on the content axis. -->
-      <div class="about-scroll" id="about-scroll">
-
-        <!-- 01 · the STORY: a spread. Left, the years run down their own
-             scroll region: a posting rises in, falls DOWN the frame at half
-             the scroll until its foot lands on the rule below, then rides up
-             and out locked to it (css .tl-item height + .tl-body
-             position:sticky is the pin; js/timeline.js lays the fall on top).
-             Right, the letter, with the hedcut set into it. The two columns
-             are cut to the same height on purpose. -->
-        <section class="about-slide" id="bio" aria-label="Bio and experience">
-          <header class="about-title">
-            <h2>Hello</h2>
-            <p>nice to meet you</p>
-          </header>
-
-          <div class="story-cols">
-
-            <!-- ---- left: the year column ---- -->
-            <div class="tl-col">
-              <!-- the column's masthead: its name, and on the same line the
-                   one door out of it — the paper version (set in the site's
-                   own type and rules, see resume-src/) -->
-              <div class="col-head">
-                <p class="col-cap">experience</p>
-                <a class="slide-link" href="PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">download the pdf &darr;</a>
-              </div>
-              <div class="tl" id="tl" tabindex="0" role="region"
-                   aria-label="Experience, most recent first">
-                  <div class="tl-track" id="tl-track">
-                    <div class="tl-axis" aria-hidden="true"></div>
-                    <!-- one numeral per year, each its own text, each pinned
-                         to the axis at the middle of its own run of postings.
-                         They ride the track: they travel up the screen with
-                         everything else rather than hanging in the frame. -->
-                    <div class="tl-years" id="tl-years" aria-hidden="true">
-                      <span class="tl-year" data-year="2026">2026</span>
-                      <span class="tl-year" data-year="2025">2025</span>
-                    </div>
-                    <ol class="tl-list">
-                      <li class="tl-item" style="--n:2" data-start="2026-06" data-end="now">
-                        <div class="tl-rule" aria-hidden="true"></div>
-                        <div class="tl-body">
-                          <p class="tl-role">UX Engineer Intern</p>
-                          <p class="tl-co">Vicino, Inc.</p>
-                          <p class="tl-meta">Bellevue, Washington &middot; Jun 2026 &ndash; Present</p>
-                          <p class="tl-sum">Agentic generation and analytics for an AI marketing platform; a Figma-to-React component library.</p>
-                        </div>
-                      </li>
-                      <li class="tl-item" style="--n:3" data-start="2025-11" data-end="2026-02">
-                        <div class="tl-rule" aria-hidden="true"></div>
-                        <div class="tl-body">
-                          <p class="tl-role">Product Designer &amp; Developer</p>
-                          <p class="tl-co">PantryPal</p>
-                          <p class="tl-meta">Chicago, Illinois &middot; Nov 2025 &ndash; Feb 2026</p>
-                          <p class="tl-sum">End-to-end AI recipe app; task completion up 40% across testing rounds.</p>
-                        </div>
-                      </li>
-                      <li class="tl-item" style="--n:4" data-start="2025-11" data-end="2025-12">
-                        <div class="tl-rule" aria-hidden="true"></div>
-                        <div class="tl-body">
-                          <p class="tl-role">UX Researcher</p>
-                          <p class="tl-co">University of Chicago</p>
-                          <p class="tl-meta">Chicago, Illinois &middot; Nov &ndash; Dec 2025</p>
-                          <p class="tl-sum">Studied interface homogenization across six AI-generated web apps.</p>
-                        </div>
-                      </li>
-                      <li class="tl-item" style="--n:5" data-start="2025-08" data-end="2025-09">
-                        <div class="tl-rule" aria-hidden="true"></div>
-                        <div class="tl-body">
-                          <p class="tl-role">Founding Visual Designer</p>
-                          <p class="tl-co">Next Level Drone Cleaning</p>
-                          <p class="tl-meta">Kortrijk, Belgium &middot; Aug &ndash; Sep 2025</p>
-                          <p class="tl-sum">Complete brand identity and marketing site for a drone-tech startup.</p>
-                        </div>
-                      </li>
-                    </ol>
-                  </div>
-              </div>
-            </div>
-
-            <!-- ---- right: the letter ---- -->
-            <div class="letter-col" id="letter-col">
-              <div class="col-head"><p class="col-cap">bio</p></div>
-              <div class="letter-body">
-                <!-- the live hedcut (js/about.js bakes Media/face_cutout.webp
-                     with the working-portfolio engraving pipeline) is set INTO
-                     the letter — floated, so the first paragraph runs around
-                     it. It still watches the cursor, at a gentler range so it
-                     never turns across the words. -->
-                <figure class="about-portrait">
-                  <canvas id="about-face" aria-label="Stipple portrait of Tigo Ponce de León"></canvas>
-                  <img src="Media/about-portrait.webp" alt="Stipple portrait of Tigo Ponce de León" width="658" height="796" />
-                </figure>
-                <!-- the key phrases are emphasised by INK, not by weight and
-                     not by a marker sweep — the only device left in here -->
-                <div class="story-bio">
-                  <p>Tigo Ponce de León is a <strong>product design engineer</strong>
-                  from Portland, Oregon. He now resides in the Midwest, studying
-                  <strong>Media Arts &amp; Design and Computer Science</strong> at
-                  the University of Chicago, where he&rsquo;ll graduate in Spring 2027.</p>
-                  <p>He believes that software should be both <strong>useful and
-                  pleasurable</strong> and that all design decisions should act in
-                  service of that fundamental aspiration. He also considers
-                  <strong>artificial intelligence</strong> as the defining
-                  technology of this age and is eager to contribute to its
-                  evolution over the coming years.</p>
-                  <p>When not busy designing prototypes in Figma or translating
-                  ideas to code, you can find him going on bike rides along Lake
-                  Michigan, watching Real Madrid matches, or hanging out with
-                  friends.</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- two more chapters wait below — say so, quietly, until the
-               first scroll -->
-          <div class="scroll-hint" aria-hidden="true">
-            <span>scroll</span>
-            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 4 L6 8.5 L10 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-          </div>
-        </section>
-
-
-        <section class="about-slide" id="contact" aria-label="Contact">
-          <header class="about-title">
-            <h2>Contact</h2>
-            <p>always happy to talk</p>
-          </header>
-
-          <!-- a small letter: write here, leave your address on the from
-               line, and send delivers it straight to Tigo's inbox
-               (FormSubmit relay; mailto only as the failure fallback) -->
-          <form class="compose" id="compose" novalidate>
-            <div class="compose-to">
-              <span class="to-label">to</span>
-              <!-- the one place on the site that prints the address in full,
-                   so it is the one place a visitor will try to click to take
-                   it: the chip copies itself (js/shell.js). A real button
-                   because that is what it does now — type="button" so it can
-                   sit inside the letter without ever sending it. -->
-              <button class="to-chip" type="button" title="Copy address"
-                      data-copy="tigoponcedeleon@gmail.com">tigoponcedeleon@gmail.com</button>
-            </div>
-            <div class="compose-from">
-              <span class="to-label">from</span>
-              <input class="from-input" id="compose-from" type="email" aria-label="Your email address"
-                     placeholder="your email address" autocomplete="email"
-                     spellcheck="false" />
-            </div>
-            <div class="compose-rule" aria-hidden="true"></div>
-            <textarea class="compose-body" id="compose-body" rows="5" aria-label="Your message"
-                      placeholder="write me a message&hellip;"></textarea>
-            <div class="compose-foot">
-              <span class="compose-hint" id="compose-status">sends straight to my inbox</span>
-              <button class="compose-send" type="submit">
-                <svg width="15" height="15" viewBox="0 0 34 34" aria-hidden="true">
-                  <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
-                    <path d="M17 29 V8" />
-                    <path d="M7.5 16.5 L17 7 L26.5 16.5" />
-                  </g>
-                </svg>
-                send
+              <button type="button" class="composer-btn composer-mic" aria-label="Ask out loud" aria-pressed="false" hidden>
+                <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><rect x="9" y="2" width="6" height="13" rx="3" /></svg>
               </button>
-            </div>
-          </form>
-
-          <!-- elsewhere on the internet — grey marks that go black on hover -->
-          <div class="social-row" aria-label="Elsewhere">
-            <a class="social social-li" href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener" aria-label="linkedin">
-              <svg width="26" height="26" viewBox="0 0 24 24"><path fill="currentColor" d="M22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z"/></svg>
-            </a>
-            <a class="social social-gh" href="https://github.com/tigo-poncedeleon" target="_blank" rel="noopener" aria-label="github">
-              <svg width="27" height="27" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3z"/></svg>
-            </a>
-            <a class="social social-lb" href="https://letterboxd.com/tigomiamigo/" target="_blank" rel="noopener" aria-label="letterboxd">
-              <svg width="30" height="20" viewBox="0 0 36 22"><g fill="currentColor"><circle class="lb-a" cx="7" cy="11" r="6.5"/><circle class="lb-b" cx="18" cy="11" r="6.5"/><circle class="lb-c" cx="29" cy="11" r="6.5"/></g></svg>
-            </a>
-            <a class="social social-gr" href="https://www.goodreads.com/user/show/98420895-tigo" target="_blank" rel="noopener" aria-label="goodreads">
-              <svg width="26" height="26" viewBox="0 0 24 24"><text x="12" y="19" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="bold" fill="currentColor">g</text></svg>
-            </a>
+              <button type="submit" class="composer-send" aria-label="Send" disabled>
+                <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
+              </button>
+              <span class="sr-only" id="ask-hint">Press Enter to send.</span>
+            </form>
           </div>
+        </footer>
+      </section>
 
-        </section>
-      </div>
+      <!-- WORK: the three places, side by side, each one tile in the app's own
+           colour: its icon and a pill to the product at the top, its name,
+           the role and when, and the work itself coming up out of the
+           tile's foot. The whole tile opens the case study; the pill goes to
+           the product (css/work.css). There is no line at the bottom: the
+           tiles say it all. -->
+      <section class="screen screen-work" id="work" data-section="work" aria-labelledby="work-title">
+        <h2 class="sr-only" id="work-title" tabindex="-1">Work</h2>
+        <div class="view view-work">
+          <ul class="cases" role="list">
+          <li class="case" data-case="vicino" data-rise>
+            <a class="case-open" href="vicino.html">
+              <span class="sr-only">The Vicino AI case study</span>
+            </a>
+            <div class="case-head">
+              <span class="case-icon"><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <a class="case-link" href="https://vicino.ai/" target="_blank" rel="noopener">vicino.ai<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (Vicino AI, opens in a new tab)</span></a>
+            </div>
+            <h3 class="case-name">Vicino AI</h3>
+            <p class="case-meta"><span>UX Engineer Intern</span><span>Jun – Aug 2026</span></p>
+            <div class="case-media" aria-hidden="true">
+              <img class="shot shot-window" src="assets/work/vicino-canvas.webp" width="2200" height="1750" alt="" decoding="async" />
+            </div>
+          </li>
+          <li class="case" data-case="pantrypal" data-rise>
+            <a class="case-open" href="pantrypal.html">
+              <span class="sr-only">The PantryPal case study</span>
+            </a>
+            <div class="case-head">
+              <span class="case-icon"><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <a class="case-link" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028" target="_blank" rel="noopener">App Store<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (PantryPal on the App Store, opens in a new tab)</span></a>
+            </div>
+            <h3 class="case-name">PantryPal</h3>
+            <p class="case-meta"><span>Product Designer</span><span>Nov 2025 – Present</span></p>
+            <div class="case-media" aria-hidden="true">
+              <img class="shot shot-phone" src="assets/work/pantrypal-signup.webp" width="800" height="1636" alt="" decoding="async" />
+              <img class="shot shot-phone shot-phone-2" src="assets/work/pantrypal-home.webp" width="800" height="1636" alt="" decoding="async" />
+            </div>
+          </li>
+          <li class="case" data-case="nextlevel" data-rise>
+            <a class="case-open" href="nextlevel.html">
+              <span class="sr-only">The Next Level Drone Cleaning case study</span>
+            </a>
+            <div class="case-head">
+              <span class="case-icon"><img src="assets/work/icon-nextlevel.webp" width="256" height="256" alt="" decoding="async" /></span>
+              <a class="case-link" href="https://www.nextleveldronecleaning.be/" target="_blank" rel="noopener">Website<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (nextleveldronecleaning.be, opens in a new tab)</span></a>
+            </div>
+            <h3 class="case-name">Next Level</h3>
+            <p class="case-meta"><span>Founding Designer</span><span>Jul – Sep 2025</span></p>
+            <div class="case-media" aria-hidden="true">
+              <img class="shot shot-window" src="assets/work/nextlevel-web.webp" width="2200" height="1750" alt="" decoding="async" />
+            </div>
+          </li>
+          </ul>
+        </div>
+      </section>
 
-    </section>
+      <!-- PLAY: three games, each a tile with its name and whose it was, and
+           a screen with the game playing itself on it until you pick it up
+           (css/play.css). -->
+      <section class="screen screen-play" id="play" data-section="play" aria-labelledby="play-title">
+        <h2 class="sr-only" id="play-title" tabindex="-1">Play</h2>
+        <div class="view view-play">
+          <ul class="games" role="list">
+            <li><a class="game-card" data-game="pong" href="#play/pong" data-rise>
+              <span class="game-head">
+                <span class="game-title">
+                  <span class="game-name">Pong</span>
+                  <span class="game-meta">Atari, 1972</span>
+                </span>
+                <span class="game-play" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Play</span>
+              </span>
+              <span class="game-screen"><canvas class="game-demo" aria-hidden="true"></canvas></span>
+            </a></li>
+            <li><a class="game-card" data-game="snake" href="#play/snake" data-rise>
+              <span class="game-head">
+                <span class="game-title">
+                  <span class="game-name">Snake</span>
+                  <span class="game-meta">Nokia, 1997</span>
+                </span>
+                <span class="game-play" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Play</span>
+              </span>
+              <span class="game-screen"><canvas class="game-demo" aria-hidden="true"></canvas></span>
+            </a></li>
+            <li><a class="game-card" data-game="flappy" href="#play/flappy" data-rise>
+              <span class="game-head">
+                <span class="game-title">
+                  <span class="game-name">Flappy Bird</span>
+                  <span class="game-meta">dotGears, 2013</span>
+                </span>
+                <span class="game-play" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Play</span>
+              </span>
+              <span class="game-screen"><canvas class="game-demo" aria-hidden="true"></canvas></span>
+            </a></li>
+          </ul>
 
-    <!-- (ai.html survives as a redirect for the OG card and every external
-         link that already exists in the world. It lands on #home, which is
-         the chat; ?q=… still asks its question on arrival — js/ai-chat.js.) -->
-  </main>
-      </div>
-    </div>
+          <!-- The stage: a tile grown into the court all three games are
+               played on. The same anatomy as the tile, made big: its name and
+               year at the top left, the score and a close button where the
+               Play pill was, and under them the court, the tile's screen
+               grown to 2:1. The court speaks only in its middle (3, 2, 1, and
+               how it ended) and at its foot (how to play), and says nothing
+               while you are playing (js/play/play.js). -->
+          <div class="stage" role="group" aria-roledescription="game" tabindex="-1" hidden>
+            <div class="stage-surface" aria-hidden="true"></div>
+            <div class="stage-head">
+              <span class="stage-title">
+                <span class="stage-name"></span>
+                <span class="stage-meta"></span>
+              </span>
+              <span class="stage-tools">
+                <span class="stage-score" aria-hidden="true">0</span>
+                <button type="button" class="stage-close" aria-label="Close the game">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7 7 17M7 7l10 10" /></svg>
+                </button>
+              </span>
+            </div>
+            <div class="stage-court">
+              <div class="court-well" aria-hidden="true"></div>
+              <div class="court-screen"><canvas class="stage-canvas" aria-hidden="true"></canvas></div>
+              <p class="court-call" aria-hidden="true"></p>
+              <p class="court-hint" aria-hidden="true"></p>
+            </div>
+            <p class="sr-only stage-live" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT: a sentence with pictures. One paragraph at the frame's one
+           size, the way Home speaks, with a small picture set into the words
+           after each thing they name, where an emoji would go: the photo,
+           Portland's flag, Figma's logo, a terminal, the UChicago shield, a
+           mortarboard, a switch, the two apps, a bike by the lake, Real
+           Madrid's crest, three friends. All of them sit in the superellipse
+           the app icons are cut to, lit and edged alike, and each does one
+           small thing when pointed at (css/about.css). The flag and
+           Figma's logo are drawn here; the shield and the crest are the
+           institutions' own marks, in assets/about/. At the bottom, where to
+           find him. -->
+      <section class="screen screen-about" id="about" data-section="about" aria-labelledby="about-title">
+        <h2 class="sr-only" id="about-title" tabindex="-1">About</h2>
+
+        <!-- What every picture shares: the app icon's outline (the same
+             superellipse as assets/squircle.svg), a clip cut to it, the light
+             from the top-left corner that the Work tiles have, and the
+             colours each scene is painted in. -->
+        <svg class="tk-defs" width="0" height="0" aria-hidden="true" focusable="false">
+          <defs>
+            <path id="tk-sq" d="M100.00 50.00 L99.99 61.64 L99.97 65.36 L99.94 68.06 L99.89 70.26 L99.83 72.14 L99.75 73.81 L99.66 75.31 L99.56 76.68 L99.44 77.94 L99.31 79.12 L99.17 80.22 L99.01 81.26 L98.83 82.24 L98.64 83.17 L98.44 84.05 L98.22 84.89 L97.99 85.69 L97.74 86.46 L97.48 87.19 L97.20 87.89 L96.91 88.57 L96.60 89.21 L96.28 89.83 L95.94 90.43 L95.58 91.00 L95.20 91.54 L94.81 92.07 L94.40 92.58 L93.97 93.06 L93.53 93.53 L93.06 93.97 L92.58 94.40 L92.07 94.81 L91.54 95.20 L91.00 95.58 L90.43 95.94 L89.83 96.28 L89.21 96.60 L88.57 96.91 L87.89 97.20 L87.19 97.48 L86.46 97.74 L85.69 97.99 L84.89 98.22 L84.05 98.44 L83.17 98.64 L82.24 98.83 L81.26 99.01 L80.22 99.17 L79.12 99.31 L77.94 99.44 L76.68 99.56 L75.31 99.66 L73.81 99.75 L72.14 99.83 L70.26 99.89 L68.06 99.94 L65.36 99.97 L61.64 99.99 L50.00 100.00 L38.36 99.99 L34.64 99.97 L31.94 99.94 L29.74 99.89 L27.86 99.83 L26.19 99.75 L24.69 99.66 L23.32 99.56 L22.06 99.44 L20.88 99.31 L19.78 99.17 L18.74 99.01 L17.76 98.83 L16.83 98.64 L15.95 98.44 L15.11 98.22 L14.31 97.99 L13.54 97.74 L12.81 97.48 L12.11 97.20 L11.43 96.91 L10.79 96.60 L10.17 96.28 L9.57 95.94 L9.00 95.58 L8.46 95.20 L7.93 94.81 L7.42 94.40 L6.94 93.97 L6.47 93.53 L6.03 93.06 L5.60 92.58 L5.19 92.07 L4.80 91.54 L4.42 91.00 L4.06 90.43 L3.72 89.83 L3.40 89.21 L3.09 88.57 L2.80 87.89 L2.52 87.19 L2.26 86.46 L2.01 85.69 L1.78 84.89 L1.56 84.05 L1.36 83.17 L1.17 82.24 L0.99 81.26 L0.83 80.22 L0.69 79.12 L0.56 77.94 L0.44 76.68 L0.34 75.31 L0.25 73.81 L0.17 72.14 L0.11 70.26 L0.06 68.06 L0.03 65.36 L0.01 61.64 L0.00 50.00 L0.01 38.36 L0.03 34.64 L0.06 31.94 L0.11 29.74 L0.17 27.86 L0.25 26.19 L0.34 24.69 L0.44 23.32 L0.56 22.06 L0.69 20.88 L0.83 19.78 L0.99 18.74 L1.17 17.76 L1.36 16.83 L1.56 15.95 L1.78 15.11 L2.01 14.31 L2.26 13.54 L2.52 12.81 L2.80 12.11 L3.09 11.43 L3.40 10.79 L3.72 10.17 L4.06 9.57 L4.42 9.00 L4.80 8.46 L5.19 7.93 L5.60 7.42 L6.03 6.94 L6.47 6.47 L6.94 6.03 L7.42 5.60 L7.93 5.19 L8.46 4.80 L9.00 4.42 L9.57 4.06 L10.17 3.72 L10.79 3.40 L11.43 3.09 L12.11 2.80 L12.81 2.52 L13.54 2.26 L14.31 2.01 L15.11 1.78 L15.95 1.56 L16.83 1.36 L17.76 1.17 L18.74 0.99 L19.78 0.83 L20.88 0.69 L22.06 0.56 L23.32 0.44 L24.69 0.34 L26.19 0.25 L27.86 0.17 L29.74 0.11 L31.94 0.06 L34.64 0.03 L38.36 0.01 L50.00 0.00 L61.64 0.01 L65.36 0.03 L68.06 0.06 L70.26 0.11 L72.14 0.17 L73.81 0.25 L75.31 0.34 L76.68 0.44 L77.94 0.56 L79.12 0.69 L80.22 0.83 L81.26 0.99 L82.24 1.17 L83.17 1.36 L84.05 1.56 L84.89 1.78 L85.69 2.01 L86.46 2.26 L87.19 2.52 L87.89 2.80 L88.57 3.09 L89.21 3.40 L89.83 3.72 L90.43 4.06 L91.00 4.42 L91.54 4.80 L92.07 5.19 L92.58 5.60 L93.06 6.03 L93.53 6.47 L93.97 6.94 L94.40 7.42 L94.81 7.93 L95.20 8.46 L95.58 9.00 L95.94 9.57 L96.28 10.17 L96.60 10.79 L96.91 11.43 L97.20 12.11 L97.48 12.81 L97.74 13.54 L97.99 14.31 L98.22 15.11 L98.44 15.95 L98.64 16.83 L98.83 17.76 L99.01 18.74 L99.17 19.78 L99.31 20.88 L99.44 22.06 L99.56 23.32 L99.66 24.69 L99.75 26.19 L99.83 27.86 L99.89 29.74 L99.94 31.94 L99.97 34.64 L99.99 38.36 Z" />
+            <clipPath id="tk-clip"><use href="#tk-sq" /></clipPath>
+            <clipPath id="tk-cvclip"><circle cx="39" cy="30" r="6" /></clipPath>
+            <radialGradient id="tk-shine" cx="0" cy="0" r="1">
+              <stop offset="0" stop-color="#fff" stop-opacity=".4" />
+              <stop offset=".62" stop-color="#fff" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="tk-g-term" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#343946" />
+              <stop offset="1" stop-color="#1f2229" />
+            </linearGradient>
+            <linearGradient id="tk-g-coral" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffcdb9" />
+              <stop offset="1" stop-color="#ff9f86" />
+            </linearGradient>
+            <linearGradient id="tk-g-linkedin" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#2a86dc" />
+              <stop offset="1" stop-color="#0a66c2" />
+            </linearGradient>
+            <linearGradient id="tk-g-github" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#3a4048" />
+              <stop offset="1" stop-color="#1b1f24" />
+            </linearGradient>
+            <linearGradient id="tk-g-goodreads" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f8f4ea" />
+              <stop offset="1" stop-color="#e8dfc8" />
+            </linearGradient>
+            <linearGradient id="tk-g-letterboxd" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#2c3440" />
+              <stop offset="1" stop-color="#14181c" />
+            </linearGradient>
+            <clipPath id="tk-lb-left"><circle cx="30" cy="50" r="12.5" /></clipPath>
+            <clipPath id="tk-lb-right"><circle cx="70" cy="50" r="12.5" /></clipPath>
+            <linearGradient id="tk-g-lav" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e8e6ff" />
+              <stop offset="1" stop-color="#c9c5fc" />
+            </linearGradient>
+            <linearGradient id="tk-g-cream" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fffdf9" />
+              <stop offset="1" stop-color="#f4ece3" />
+            </linearGradient>
+            <radialGradient id="tk-g-fire" cx=".5" cy="1" r=".75">
+              <stop offset="0" stop-color="#ffb24a" stop-opacity=".9" />
+              <stop offset=".5" stop-color="#ffcf73" stop-opacity=".45" />
+              <stop offset="1" stop-color="#ffe3a3" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="tk-g-sheen" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#fff" stop-opacity="0" />
+              <stop offset=".5" stop-color="#fff" stop-opacity=".6" />
+              <stop offset="1" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="tk-g-yellow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fffbd6" />
+              <stop offset="1" stop-color="#ffef9e" />
+            </linearGradient>
+            <linearGradient id="tk-g-mint" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e2fde9" />
+              <stop offset="1" stop-color="#bdf3cf" />
+            </linearGradient>
+            <linearGradient id="tk-g-sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f1faff" />
+              <stop offset="1" stop-color="#cdecfd" />
+            </linearGradient>
+            <linearGradient id="tk-g-lake" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#7fc6ec" />
+              <stop offset="1" stop-color="#a9dcf6" />
+            </linearGradient>
+            <linearGradient id="tk-g-white" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffffff" />
+              <stop offset="1" stop-color="#e9ecf5" />
+            </linearGradient>
+            <linearGradient id="tk-g-peach" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff0de" />
+              <stop offset="1" stop-color="#ffd8b0" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="view view-about">
+          <div class="about-text">
+            <p data-rise>Hi, I’m <span class="nw">Tigo<span class="tk tk-me" style="--n: 0" tabindex="0" role="img" aria-label="A photo of Tigo"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="#e3e3e3" />
+                  <image href="assets/me.jpg" x="-29" y="-11" width="144" height="144" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg><span class="tk-peek tk-peek-photo" aria-hidden="true"><img src="assets/me.jpg" alt="" loading="lazy" decoding="async" /></span></span>,</span>
+              a product design engineer from Portland, <span class="nw">Oregon<span class="tk tk-flag" style="--n: 1" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <g class="tk-cloth">
+                    <g transform="translate(50 50) scale(.31) translate(-265 -180)">
+                      <rect x="-60" y="-60" width="720" height="480" fill="#fff" />
+                      <path fill="#046a38" d="m350 215h250v145h-250zm-350 50h230v95h-230zm300-265h300v95h-300zm-300 0h180v145h-180z" />
+                      <path fill="none" stroke="#ffb81c" stroke-width="20" d="m200 0v165h-200m280-165v115h320m-600 130h250v115m350-165h-270v165" />
+                      <path fill="#418fde" d="m310 360v-175a40 40 0 0 0 -40 40v135zm-310-135h260a40 40 0 0 0 -40 -40h-220zm600-90h-330a40 40 0 0 0 40 40h290zm-380-135v175a40 40 0 0 0 40 -40v-135z" />
+                    </g>
+                  </g>
+                  <rect class="tk-sheen" x="-70" y="-10" width="46" height="120" fill="url(#tk-g-sheen)" transform="skewX(-18)" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>.</span>
+              I&nbsp;study Media Arts &amp; <span class="nw">Design<span class="tk tk-figma" style="--n: 2" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-white)" />
+                  <g transform="translate(28 17) scale(1.158)">
+                    <path class="tk-fig" style="--dx: -3px; --dy: -3px; --d: 0ms" d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E" />
+                    <path class="tk-fig" style="--dx: 3px; --dy: -3px; --d: 45ms" d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262" />
+                    <path class="tk-fig" style="--dx: -4px; --dy: 0px; --d: 90ms" d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF" />
+                    <path class="tk-fig" style="--dx: 4px; --dy: 0px; --d: 135ms" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="#1ABCFE" />
+                    <path class="tk-fig" style="--dx: -3px; --dy: 3px; --d: 180ms" d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#0ACF83" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span></span>
+              and Computer <span class="nw">Science<span class="tk tk-term" style="--n: 3" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-term)" />
+                  <circle cx="23" cy="23" r="4.4" fill="#ffc9c9" />
+                  <circle cx="36" cy="23" r="4.4" fill="#fffec9" />
+                  <circle cx="49" cy="23" r="4.4" fill="#c9fecb" />
+                  <path class="tk-chev" d="M29 45 L42 57.5 L29 70" fill="none" stroke="#c9f0ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+                  <rect class="tk-caret" x="50" y="63.5" width="23" height="7" rx="2" fill="#c9f0ff" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span></span>
+              at&nbsp;<span class="nw">UChicago<span class="tk tk-shield" style="--n: 4" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-cream)" />
+                  <rect class="tk-fire" width="100" height="100" fill="url(#tk-g-fire)" />
+                  <image class="tk-emblem" href="assets/about/uchicago.svg" x="18.4" y="9" width="63.2" height="80" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>,</span>
+              and I graduate in May <span class="nw">2027<span class="tk tk-grad" style="--n: 5" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-yellow)" />
+                  <ellipse class="tk-cap-shadow" cx="50" cy="85" rx="24" ry="3.6" fill="#8a7414" fill-opacity=".2" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+                <g class="tk-cap">
+                  <path d="M30 50 V62 C30 69 40 73 50 73 C60 73 70 69 70 62 V50 L50 58 Z" fill="#3b3b49" />
+                  <path d="M50 27 L89 42.5 L50 58 L11 42.5 Z" fill="#2b2b37" />
+                  <path d="M50 42.5 L79 47 V65" fill="none" stroke="#f1b72f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M75.5 63 H82.5 L84.5 76 H73.5 Z" fill="#f1b72f" />
+                  <circle cx="50" cy="42.5" r="3.2" fill="#f1b72f" />
+                </g>
+              </svg></span>.</span></p>
+
+            <p data-rise>I believe software should be useful and <span class="nw">pleasurable<span class="tk tk-switch" style="--n: 6" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-mint)" />
+                  <rect class="tk-track" x="13" y="33" width="74" height="34" rx="17" fill="#34c26b" />
+                  <g class="tk-knob">
+                    <circle cx="70" cy="52.5" r="13.5" fill="#0d4a25" fill-opacity=".18" />
+                    <circle cx="70" cy="50" r="13.5" fill="#fff" />
+                  </g>
+                  <path class="tk-spark" d="M83 12 L85.2 19 L92 21.2 L85.2 23.4 L83 30.4 L80.8 23.4 L74 21.2 L80.8 19 Z" fill="#fff" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>.</span>
+              Most recently I&nbsp;was a UX engineer intern at <a class="about-app" href="vicino.html" style="--hue: #7fd0d6"><span class="nw">Vicino AI<span class="tk tk-vicino" style="--n: 7" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <image href="assets/work/icon-vicino.webp" width="100" height="100" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg><span class="tk-peek tk-peek-note">UX Engineer Intern<span>Jun – Aug 2026</span></span></span></span><span class="sr-only"> (the case study)</span></a>.
+              <a class="about-app" href="pantrypal.html" style="--hue: #ffb89c"><span class="nw">PantryPal<span class="tk tk-pantry" style="--n: 8" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <image href="assets/work/icon-pantrypal.webp" x="-3.5" y="-3.5" width="107" height="107" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg><span class="tk-peek tk-peek-note">Product Designer<span>Nov 2025 – Present</span></span></span></span><span class="sr-only"> (the case study)</span></a>,
+              the recipe app I&nbsp;designed, is out on the App Store.</p>
+
+            <p data-rise>Off the clock you’ll find me on bike rides along Lake <span class="nw">Michigan<span class="tk tk-lake" style="--n: 9" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-sky)" />
+                  <circle cx="80" cy="24" r="8" fill="#fff" fill-opacity=".9" />
+                  <rect y="50" width="100" height="32" fill="url(#tk-g-lake)" />
+                  <g class="tk-waves" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2" stroke-linecap="round">
+                    <path d="M-20 59 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" />
+                    <path d="M-15 68 q5 -3 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" stroke-opacity=".5" />
+                  </g>
+                  <path d="M-2 79 C30 76 70 77 102 79 V102 H-2 Z" fill="#f3e4c4" />
+                  <g class="tk-bike" fill="none" stroke="#1d5e85" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+                    <g class="tk-wheel"><circle cx="29" cy="66" r="12" /><path d="M29 55 V77 M18 66 H40" stroke-width="1.8" /></g>
+                    <g class="tk-wheel"><circle cx="71" cy="66" r="12" /><path d="M71 55 V77 M60 66 H82" stroke-width="1.8" /></g>
+                    <path d="M29 66 H48 L41 44 Z M41 44 H63 L48 66 M63 44 L71 66 M41 44 V39 M36 39 H46 M63 44 L61 37 H68" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>,</span>
+              watching Real <span class="nw">Madrid<span class="tk tk-crest" style="--n: 10" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-white)" />
+                  <image class="tk-emblem" href="assets/about/real-madrid.svg" x="20.2" y="9" width="59.6" height="80" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>,</span>
+              or out with <span class="nw">friends<span class="tk tk-friends" style="--n: 11" aria-hidden="true"><svg viewBox="0 0 100 100">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-peach)" />
+                  <g class="tk-f1" fill="#94d0f2"><circle cx="27" cy="46" r="9" /><path d="M11 94 C11 71 18 61 27 61 C36 61 43 71 43 94 Z" /></g>
+                  <g class="tk-f3" fill="#98e0ae"><circle cx="73" cy="46" r="9" /><path d="M57 94 C57 71 64 61 73 61 C82 61 89 71 89 94 Z" /></g>
+                  <g class="tk-f2" fill="#b3acfa" stroke="#ffe3c6" stroke-width="4.5" paint-order="stroke"><circle cx="50" cy="42" r="10.5" /><path d="M31 98 C31 73 39 61 50 61 C61 61 69 73 69 98 Z" /></g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></span>.</span></p>
+          </div>
+        </div>
+        <!-- Where to find him: six icons in the same family as the
+             sentence's, a size up, and beside them the bottom line, which
+             says what the one pointed at does. Email copies the address;
+             the others open in a new tab (js/about.js). Glyphs: LinkedIn's
+             "in", GitHub's own mark, Goodreads' "g" and Letterboxd's three
+             dots; the envelope and the page are drawn here. -->
+        <footer class="status">
+          <div class="status-about" data-status="about">
+            <ul class="socials" role="list" aria-label="Find me">
+              <li><button type="button" class="soc soc-email" data-soc="email" data-copy="tigoponcedeleon@uchicago.edu" aria-label="Copy my email address, tigoponcedeleon@uchicago.edu"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-coral)" />
+                  <g class="soc-letter">
+                    <rect x="29" y="30" width="42" height="34" rx="3" fill="#fff" />
+                    <rect x="35" y="37" width="22" height="3.4" rx="1.7" fill="#f2a58f" />
+                    <rect x="35" y="44" width="30" height="3.4" rx="1.7" fill="#f7cfc2" />
+                    <rect x="35" y="51" width="26" height="3.4" rx="1.7" fill="#f7cfc2" />
+                  </g>
+                  <path d="M20 42 L50 60 L80 42 V70 A6 6 0 0 1 74 76 H26 A6 6 0 0 1 20 70 Z" fill="#fff" />
+                  <path d="M20 70 L42 55 M80 70 L58 55" fill="none" stroke="#f6c3b3" stroke-width="2.6" stroke-linecap="round" />
+                  <path d="M20 42 L50 60 L80 42" fill="none" stroke="#ee8a70" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></button><span class="soc-toast" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>copied</span></li>
+              <li><a class="soc soc-linkedin" data-soc="linkedin" href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener" aria-label="LinkedIn (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-linkedin)" />
+                  <g fill="#fff" transform="translate(-2 1)">
+                    <circle cx="31" cy="30" r="7" />
+                    <rect x="24.5" y="41" width="13" height="35" rx="1.5" />
+                    <path d="M43 41 H55.5 V46.5 C57.8 42.8 62 40 67.6 40 C75.6 40 79.5 45.2 79.5 54.8 V76 H67 V57.4 C67 52.8 65.3 50.4 61.7 50.4 C57.9 50.4 55.5 53.2 55.5 58 V76 H43 Z" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-github" data-soc="github" href="https://github.com/tigo-poncedeleon" target="_blank" rel="noopener" aria-label="GitHub (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-github)" />
+                  <path transform="translate(21.2 21.2) scale(3.6)" fill="#fff" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-resume" data-soc="resume" href="https://tigoponcedeleon.com/PoncedeLeon-Resume.pdf" target="_blank" rel="noopener" aria-label="My resume, a PDF (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-lav)" />
+                  <g class="soc-page">
+                    <path d="M31 19 H59 L71 31 V84 H31 Z" fill="#4a43b0" fill-opacity=".16" transform="translate(2 3)" />
+                    <path d="M29 17 H59 L71 29 V83 H29 Z" fill="#fff" />
+                    <path d="M59 17 V29 H71 Z" fill="#dedbfb" />
+                    <image href="assets/me.jpg" x="32.5" y="23.5" width="13" height="13" clip-path="url(#tk-cvclip)" />
+                    <rect x="48" y="26" width="13" height="3.4" rx="1.7" fill="#4a43b0" />
+                    <rect x="48" y="32" width="9" height="2.6" rx="1.3" fill="#b9b4f5" />
+                    <rect x="34" y="44" width="32" height="2.8" rx="1.4" fill="#d9d6fa" />
+                    <rect x="34" y="50" width="27" height="2.8" rx="1.4" fill="#d9d6fa" />
+                    <rect x="34" y="59" width="15" height="3.2" rx="1.6" fill="#8d86e8" />
+                    <rect x="34" y="65" width="32" height="2.8" rx="1.4" fill="#d9d6fa" />
+                    <rect x="34" y="71" width="24" height="2.8" rx="1.4" fill="#d9d6fa" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-goodreads" data-soc="goodreads" href="https://www.goodreads.com/user/show/98420895-tigo" target="_blank" rel="noopener" aria-label="Goodreads (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-goodreads)" />
+                  <text class="soc-g" x="50" y="63" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="74" fill="#3a2414">g</text>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+              <li><a class="soc soc-letterboxd" data-soc="letterboxd" href="https://letterboxd.com/tigomiamigo/" target="_blank" rel="noopener" aria-label="Letterboxd (opens in a new tab)"><svg viewBox="0 0 100 100" aria-hidden="true">
+                <g clip-path="url(#tk-clip)">
+                  <rect width="100" height="100" fill="url(#tk-g-letterboxd)" />
+                  <circle class="soc-dot" style="--d: 0ms" cx="30" cy="50" r="12.5" fill="#ff8000" />
+                  <circle class="soc-dot" style="--d: 140ms" cx="70" cy="50" r="12.5" fill="#40bcf4" />
+                  <g class="soc-dot" style="--d: 70ms">
+                    <circle cx="50" cy="50" r="12.5" fill="#00e054" />
+                    <circle cx="50" cy="50" r="12.5" fill="#5c7a14" clip-path="url(#tk-lb-left)" />
+                    <circle cx="50" cy="50" r="12.5" fill="#138a73" clip-path="url(#tk-lb-right)" />
+                  </g>
+                  <rect class="tk-glaze" width="100" height="100" fill="url(#tk-shine)" />
+                  <use class="tk-rim" href="#tk-sq" />
+                </g>
+              </svg></a></li>
+            </ul>
+            <p class="soc-says" aria-hidden="true">
+              <span class="sl sl-rest">say hi</span>
+              <span class="sl" data-for="email">copy tigoponcedeleon@uchicago.edu</span>
+              <span class="sl" data-for="copied">tigoponcedeleon@uchicago.edu</span>
+              <span class="sl" data-for="linkedin">linkedin.com/in/tigoponcedeleon</span>
+              <span class="sl" data-for="github">github.com/tigo-poncedeleon</span>
+              <span class="sl" data-for="resume">my resume, as a PDF</span>
+              <span class="sl" data-for="goodreads">what I’m reading, on goodreads</span>
+              <span class="sl" data-for="letterboxd">what I’ve been watching, on letterboxd</span>
+            </p>
+          </div>
+        </footer>
+      </section>
+
+    </main>
+
+    <p class="sr-only" id="announcer" aria-live="polite"></p>
   </div>
-
-  <!-- (GONE 2026-08-30: the site-nav BOTTOM BAR, and with it the last of the
-       1380:150 top-left nav it was made from. It was a floating pill of three
-       words at the foot of every phone screen, and three words is all it could
-       ever be: the case studies, the resume, the email and the four profiles
-       — every one of them already listed in the rail — had no way onto a
-       phone at all. On these three case pages it was worse than empty, since
-       its links still pointed at the about.html / work.html / play.html
-       redirect stubs and it marked the wrong one as the current page.
-
-       What replaced it is a DRAWER, built by js/drawer.js off the same TREE
-       the rail is built from (js/shell.js), opened by one button in the
-       top-left corner. One source for the site's shape, and a nav that can
-       hold the whole of it. js/nav-touch.js — which existed only to draw
-       icons into this bar's tabs — went with it; its glyphs live on in G,
-       in js/shell.js, which is where they were copied from.) -->
-
-  <script src="js/portrait.js?v=12"></script>
-  <script src="js/shell.js?v=121"></script>
-  <script src="js/palette.js?v=22"></script>
-  <script src="js/drawer.js?v=7"></script>
-  <!-- ≤700px only, and the position in this list is load-bearing: AFTER
-       shell.js (whose rail it reads), BEFORE every file below that would
-       otherwise wire itself to the stepper or the game boards it takes
-       away. -->
-  <script src="js/mobile.js?v=42"></script>
-  <script src="js/globe.js?v=8"></script>
-  <script src="js/stage-fit.js?v=17"></script>
-  <script src="js/frame-clock.js?v=4"></script>
-  <script src="js/typewriter.js?v=19"></script>
-  <script src="js/main.js?v=100"></script>
-  <script src="js/timeline.js?v=21"></script>
-  <script src="js/about.js?v=16"></script>
-  <script src="js/work.js?v=113"></script>
-  <script src="js/work-pick.js?v=10"></script>
-  <script src="js/records.js?v=3"></script>
-  <script src="js/pong.js?v=7"></script>
-  <script src="js/snake.js?v=102"></script>
-  <script src="js/flappy.js?v=5"></script>
-  <script src="js/play-pager.js?v=106"></script>
-  <script src="js/case-overlay.js?v=101"></script>
-  <script src="js/theater.js?v=9"></script>
-  <script src="js/ai-chat.js?v=21"></script>
-  <script src="js/color-lab.js?v=3"></script>
 </body>
 </html>

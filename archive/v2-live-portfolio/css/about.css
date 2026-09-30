@@ -1,0 +1,711 @@
+/* ============================================================
+   About — four chapters stacked VERTICALLY, one per card, scroll
+   down to move. The chapter menu used to live in a rail at left 31
+   beside a hairline at 247; the shell's sidebar owns that now, so the
+   chapters have the whole card and content centres on the CONTENT
+   AXIS --ax = the card's own midline.
+   ============================================================ */
+
+/* the stage fills the shell's content card, pinned to an exact
+   1280x832 — so every Figma offset lands where it was drawn instead
+   of stretching with the viewport (js/stage-fit.js) */
+/* No entrance. The chapters are simply THERE — see the note in styles.css. */
+.about-stage {
+  position: relative;
+  width: 100%;
+}
+
+
+
+/* ---- the chapter stack. The DOCUMENT is the scroller now, so the
+   chapters are just three card-height blocks in normal flow. ---- */
+.about-scroll {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.about-slide {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: var(--card-h, 832px);
+  /* the story chapter is the one that grows: the year column runs its full
+     length in the document and the letter pins beside it */
+  /* midline of the content area right of the 247px divider */
+  --ax: 50%;
+}
+
+/* ---- per-slide title pair (the site standard) ---- */
+.about-title {
+  position: absolute;
+  top: var(--title-top, 40px);
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+.about-title h2 {
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.about-title p {
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  color: rgba(var(--ink-rgb), 0.34);
+}
+
+/* The title, the portrait, the letter, the postings and the socials have no
+   arrival — they are on the page (styles.css). Their own hover and focus
+   transitions live with each of them further down. */
+
+/* ============================================================
+   01 · story — a SPREAD. Left, the years; right, the letter.
+   Group centred: 440 column + 80 gap + 480 letter = 1000.
+   Both halves are cut to the same height (js/timeline.js
+   measures the letter and writes it to --tl-h), so the graphic
+   is exactly as long as the words beside it.
+   ============================================================ */
+#bio.about-slide {
+  height: auto;
+  /* the chapter that sets the header rhythm the rest of the site follows */
+  padding: var(--content-top) 0 var(--stage-floor);
+}
+.story-cols {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 80px;
+  width: 1000px;
+}
+/* the letter holds still while the years run past it */
+.letter-col { position: sticky; top: 92px; }
+.tl-col     { width: 440px; }
+.letter-col { width: 480px; }
+
+/* each half is titled like a broadsheet column — quiet label over a
+   hairline that draws itself left → right, and the pair keeps both
+   bodies on the same baseline. Its rule sits directly on the content, so
+   it behaves exactly like the year rules further down the column. */
+.col-head {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+.col-cap {
+  font-size: 13.25px;
+  color: rgba(var(--ink-rgb), 0.48);
+}
+.col-head::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--g-150);
+  /* drawn, not drawing: the rule used to sweep out from the left as the
+     chapter arrived, and the chapter no longer arrives */
+  transform-origin: left;
+}
+
+/* ---- the year column: its own scrollport. Wheel over it and the axis
+   moves; the letter half still pages the chapter deck, so nothing is
+   hijacked. overscroll-behavior stops a trackpad flick from carrying
+   through into the next chapter halfway down someone's life. ---- */
+.letter-body { padding-top: 16px; }
+/* no scrollport: the DOCUMENT is the scroller, so the column simply runs
+   its full length and each posting pins against the page */
+.tl { position: relative; }
+.tl-track { position: relative; }
+.tl-list  { list-style: none; }
+
+.tl-axis {
+  position: absolute;
+  left: 62px;
+  top: 0;
+  width: 1px;
+  height: var(--tl-axis-h, 100%);
+  background: var(--g-150);
+}
+
+/* the RULER — one numeral per year, each its own text, each PINNED to the
+   axis at the middle of its own run of postings (js/timeline.js sets the
+   top). They ride the track, so they travel up the screen with everything
+   else instead of hanging in the frame while the postings pass underneath. */
+.tl-years { position: absolute; inset: 0; }
+.tl-year {
+  position: absolute;
+  left: 0;
+  width: 62px;
+  text-align: center;
+  z-index: 1;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--g-400);
+  font-variant-numeric: tabular-nums;
+}
+
+/* THE MECHANIC, in two rules: every posting owns a block of the axis as
+   tall as the time until the next one (--h, from js/timeline.js), and its
+   text pins to the top of that block. js/timeline.js lays the fall on top;
+   when the block runs out, the next posting's rule has it. */
+.tl-item { position: relative; height: var(--h, 280px); }
+.tl-body {
+  position: sticky;
+  top: 92px;                    /* clears the sticky chrome strip */
+  /* the SAME 16px on both sides of every rule: text arriving under one and
+     text being pushed up into one stop the same distance short of it */
+  padding: 16px 0 16px 96px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+/* only once JS is driving does the column single out its current
+   posting — with scripting off, every one stays fully present */
+.tl.is-live .tl-body             { opacity: 0.34; }
+.tl.is-live .is-current .tl-body { opacity: 1; }
+
+.tl-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--g-150);
+  transform-origin: left;
+  display: none;
+}
+/* a rule means a YEAR turned over, nothing else — two roles from the same
+   year run on together (js/timeline.js sets .is-year-start), and the
+   masthead hairline opens the first year. */
+.tl-item.is-year-start .tl-rule { display: block; }
+
+/* Four steps of ink and nothing else: the role in full ink, the employer
+   one step back, the summary one more, the where-and-when quietest. Sizes
+   fall on the site's own scale; weight never changes. */
+.tl-role {
+  font-size: 20px;
+  line-height: 26px;
+  letter-spacing: -0.15px;
+  color: var(--ink);
+}
+.tl-co {
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--g-700);
+}
+.tl-meta {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--g-400);
+}
+.tl-sum {
+  margin-top: 10px;
+  max-width: 316px;
+  font-size: 14.5px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+/* ---- the letter ---- */
+.story-bio {
+  font-size: 20px;
+  line-height: 30px;
+  color: var(--g-700);
+}
+.story-bio p + p { margin-top: 20px; }
+.story-bio strong {
+  font-weight: 400;                   /* emphasis by COLOUR, not by weight —
+                                         ember activates emphasis, Cursor's way */
+  color: var(--orange);
+}
+
+/* the hedcut is SET INTO the letter — floated out of the first paragraph,
+   which runs around it. js/about.js narrows its look-at range to match: at
+   330px it could turn to a near-profile over empty space, but in a 148px
+   box that same turn would swing across the words. */
+.about-portrait {
+  position: relative;
+  float: right;
+  width: 148px;
+  height: 190px;
+  margin: 6px 0 12px 26px;
+  cursor: pointer;                    /* click the face — it takes a spin */
+}
+.about-portrait.is-spun {
+  animation: face-spin 0.9s var(--ease-glide);
+}
+@keyframes face-spin {
+  from { transform: perspective(900px) rotateY(0turn); }
+  to   { transform: perspective(900px) rotateY(1turn); }
+}
+.about-portrait canvas,
+.about-portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+.about-portrait img { object-fit: contain; }
+
+/* a quiet cue that three more chapters wait below — fades in after the
+   bio has settled, bows out on the first scroll */
+.scroll-hint {
+  position: absolute;
+  bottom: var(--edge);
+  /* the middle of the 80px gutter between the two columns, not the card's
+     midline — on the midline its box grazes the letter */
+  left: calc(var(--ax) - 22px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 13.25px;
+  color: rgba(var(--ink-rgb), 0.48);
+  pointer-events: none;
+  /* on the page from the start, like everything else in the chapter; it
+     still bows out on the first scroll (.is-scrolled, below) */
+  opacity: 1;
+}
+.about-stage.is-scrolled .scroll-hint {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.scroll-hint svg { animation: hint-bob 2.2s ease-in-out infinite; }
+@keyframes hint-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 4px; }
+}
+
+.slide-link {
+  font-size: 13.25px;                  /* it rides the cap line */
+  color: var(--g-700);
+  text-decoration: none;
+  transition: color var(--t-micro) ease;
+}
+.slide-link:hover,
+.slide-link:focus-visible { color: var(--orange); }
+
+/* ============================================================
+   04 · contact — a small white LETTER: to-line, an open page to
+   write on, a send chip. Kept deliberately unlike the ai page's
+   grey chat panel.
+   ============================================================ */
+/* the chapter ends at the social row, so that is what its height is made
+   of: the row's own top, its 44px of marks, and the shared floor */
+#contact.about-slide {
+  height: calc(var(--social-top, 568px) + 44px + var(--stage-floor));
+}
+.compose {
+  position: absolute;
+  top: var(--content-top);
+  left: var(--ax);
+  margin-left: -320px;
+  width: 640px;
+  padding: 24px 28px;
+  background: var(--g-050);                /* letter paper — never pure white */
+  border: 1px solid rgba(var(--ink-rgb), 0.17);
+  border-radius: 20px;
+  transition: border-color var(--t-micro) ease;
+}
+.compose:focus-within {
+  border-color: rgba(var(--ink-rgb), 0.48);
+}
+.compose-to {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.to-label {
+  min-width: 38px;                    /* to/from share a column, pills align */
+  font-size: 16px;
+  color: rgba(var(--ink-rgb), 0.48);
+}
+/* The `to` line is a control now — it copies the address (js/shell.js) —
+   so it is a <button>, and these first three lines are the tax on that:
+   a button arrives with the platform's own font and its own idea of
+   alignment, and the chip has to keep the letter's. Everything below them
+   is the pill exactly as it was drawn when it was a span. */
+.to-chip {
+  font: inherit;
+  text-align: center;
+  appearance: none;
+  padding: 4px 10px;
+  font-size: 13.25px;
+  color: var(--g-700);
+  background: rgba(var(--ink-rgb), 0.04);
+  border: 0.663px solid var(--g-250);
+  border-radius: 6.625px;
+  cursor: pointer;
+  transition: border-color var(--t-micro) ease, background var(--t-micro) ease;
+}
+/* the one hint that it is a control at all: the pill firms up under the
+   pointer, the same move .compose and .from-input make on focus */
+.to-chip:hover {
+  background: rgba(var(--ink-rgb), 0.07);
+  border-color: rgba(var(--ink-rgb), 0.24);
+}
+.compose-from {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 8px;
+}
+.from-input {
+  width: 216px;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 13.25px;
+  color: var(--g-700);
+  background: rgba(var(--ink-rgb), 0.04);
+  border: 0.663px solid var(--g-250);
+  border-radius: 6.625px;
+  outline: none;
+  caret-color: var(--orange);
+  transition: border-color var(--t-micro) ease;
+}
+.from-input:focus { border-color: rgba(var(--ink-rgb), 0.24); }
+.from-input::placeholder { color: var(--muted); }
+/* letterhead rule — the line-art guides' dash rhythm (2 on, 5 off),
+   drawn in CSS so the header and the meat of the letter part ways */
+.compose-rule {
+  height: 1px;
+  margin-top: 18px;
+  background-image: repeating-linear-gradient(90deg,
+    var(--g-250) 0 2px, transparent 2px 7px);
+}
+.compose-body {
+  display: block;
+  width: 100%;
+  height: 190px;
+  margin-top: 16px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font: inherit;
+  font-size: 20px;
+  line-height: 30px;
+  color: var(--ink);
+  caret-color: var(--orange);
+}
+.compose-body::placeholder { color: var(--muted); }
+.compose-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--g-130);
+}
+.compose-hint {
+  font-size: 13.25px;
+  color: rgba(var(--ink-rgb), 0.48);
+  transition: color var(--t-micro) ease;
+}
+.compose-hint.is-sent { color: var(--orange); }
+.compose-hint.is-error { color: var(--error); }
+.compose-send {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 22px;
+  font: inherit;
+  font-size: 18.6px;
+  color: var(--g-700);
+  background: rgba(var(--line-rgb), 0.48);
+  border: 1px solid var(--g-250);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform var(--t-lift) var(--ease-lift),
+              background-color var(--t-micro) ease, color var(--t-micro) ease,
+              border-color var(--t-micro) ease;
+}
+.compose-send:hover:not([disabled]),
+.compose-send:focus-visible:not([disabled]) {
+  background: rgba(var(--ink-rgb), 0.06);   /* the sitewide grey hover wash */
+  border-color: rgba(var(--ink-rgb), 0.2);
+  color: var(--ink);
+  transform: translateY(-1.5px);
+}
+.compose-send[disabled] {
+  cursor: default;
+  color: rgba(var(--ink-rgb), 0.48);
+}
+/* on a successful send the little arrow LAUNCHES — up and out of the
+   chip, then slips back in from below (about.js flags the button) */
+.compose-send.is-sent-anim svg {
+  animation: send-fly 0.8s var(--ease-draw);
+}
+@keyframes send-fly {
+  0%   { translate: 0 0;     opacity: 1; }
+  42%  { translate: 0 -26px; opacity: 0; }
+  50%  { translate: 0 14px;  opacity: 0; }
+  100% { translate: 0 0;     opacity: 1; }
+}
+
+/* ---- elsewhere: bare grey marks that go black on hover ---- */
+.social-row {
+  position: absolute;
+  top: var(--social-top, 568px);   /* rides up with the letter, same 60px under it */
+  left: var(--ax);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.social {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--g-400);
+  transition: color var(--t-micro) ease,
+              translate var(--t-lift) var(--ease-lift);
+}
+/* the app's name whispers in under the mark while it's lit */
+.social::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: rgba(var(--ink-rgb), 0.48);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-micro) ease;
+}
+.social:hover::after,
+.social:focus-visible::after { opacity: 1; }
+.social:hover,
+.social:focus-visible {
+  translate: 0 -2px;
+}
+/* Each mark used to wake up in its own brand ink — LinkedIn blue, Goodreads
+   brown, Letterboxd's green and blue dots. On a page with no hue left in it
+   they wake up in the accent instead: the mark goes black and its name
+   whispers in underneath, which is the same "this one is live" sentence
+   every other link on the page says. Letterboxd keeps its three-ness as
+   three steps of grey rather than three colours. */
+.social-li:hover, .social-li:focus-visible,
+.social-gh:hover, .social-gh:focus-visible,
+.social-gr:hover, .social-gr:focus-visible { color: var(--orange); }
+.social-lb circle { transition: fill var(--t-micro) ease; }
+/* the gaps between the three reels are cut in the CANVAS colour — a token,
+   so they stay cut on every palette (an inline stroke="#f6f6f6" would be a
+   light hairline on a dark page) */
+.social-lb .lb-b,
+.social-lb .lb-c { stroke: var(--bg); stroke-width: 1.6; }
+.social-lb:hover .lb-a, .social-lb:focus-visible .lb-a { fill: var(--orange); }
+.social-lb:hover .lb-b, .social-lb:focus-visible .lb-b { fill: var(--g-700); }
+.social-lb:hover .lb-c, .social-lb:focus-visible .lb-c { fill: var(--g-500); }
+
+/* ============================================================
+   MOBILE (≤700px) — the chapter deck unrolls into one flowing
+   scroll: sidebar chrome retired, every slide becomes a stacked,
+   centred column at natural height. The desktop geometry above
+   is untouched. js/about.js swaps wheel-paging for a viewport
+   observer under the same breakpoint.
+   ============================================================ */
+@media (max-width: 700px) {
+  .about-stage {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  /* the desktop section sidebar retires on mobile; the shared site-nav
+     bottom bar (styles.css) is the mobile nav now */
+  .about-scroll {
+    position: static;
+    inset: auto;
+    display: block;
+    overflow: visible;
+  }
+  .about-slide {
+    height: auto;
+    padding: 30px 20px 40px;
+  }
+  /* the id beats the class, so the desktop rules have to be undone by name */
+  #contact.about-slide { height: auto; }
+  #bio.about-slide { padding: 56px 20px 40px; }   /* was keeping the desktop
+                                                     header rhythm on a phone */
+  .about-slide:first-of-type { padding-top: 56px; }
+  /* the foot of the letter, and nothing else — the 120 here used to be
+     clearing the site-nav bottom bar, which is deleted */
+  .about-slide:last-of-type {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .about-title {
+    position: static;
+    transform: none;
+    justify-content: center;
+    flex-wrap: wrap;
+    white-space: normal;
+    row-gap: 0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .about-title h2 { font-size: 22px; }
+  .about-title p { font-size: 16px; }
+  .scroll-hint { display: none; }
+
+  /* 01 · story — the spread unstacks: the letter first, then the years
+     beneath it.
+
+     THE PIN GOES AWAY HERE, all of it. On a laptop this column is a
+     mechanic: each posting owns a block of axis as tall as the months
+     until the next one and pins to the top of it while the letter holds
+     still beside it (js/timeline.js does the arithmetic). Stacked into a
+     single 375px column, that mechanic turns on itself — a sticky letter
+     hanging in the frame while a sticky chronology scrolls underneath it,
+     and the two overprint — and months-of-axis becomes screens of nothing
+     between two jobs.
+
+     So the phone gets what the column degrades to with scripting off: a
+     plain ruled chronology, newest first, each posting as tall as its own
+     words. js/timeline.js stands down below 700px to match, which is why
+     nothing here has to fight an inline height. */
+  .story-cols {
+    position: static;
+    transform: none;
+    display: flex;
+    flex-direction: column-reverse;    /* letter, then the years */
+    align-items: center;
+    gap: 40px;
+    width: auto;
+  }
+  .tl-col, .letter-col {
+    width: 100%;
+    max-width: 460px;
+  }
+  /* the letter kept the desktop's sticky and hung over the chronology */
+  .letter-col { position: static; top: auto; }
+  .tl {
+    height: auto;
+    overflow: visible;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .tl-track { padding-bottom: 0 !important; }
+  .tl-item {
+    height: auto;                      /* not a block of axis — just a job */
+    /* the SAME distance on both sides of every rule, the desktop column's
+       own courtesy (see .tl-body's 16px there) at a phone's scale */
+    padding: 26px 0;
+  }
+  .tl-item:first-child { padding-top: 22px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-body {
+    position: static;
+    top: auto;
+    padding: 0;
+    opacity: 1;
+  }
+  .tl.is-live .tl-body { opacity: 1; } /* no window to single one out inside */
+  /* the axis and its numerals were the gutter that mechanic ran in; every
+     posting already carries its own dates in .tl-meta */
+  .tl-axis, .tl-years { display: none; }
+  /* …so a hairline between postings is what keeps them apart, drawn on
+     every one rather than only where the year turns over */
+  .tl-item .tl-rule { display: block; }
+  .tl-item:first-child .tl-rule { display: none; }
+  .tl-role { font-size: 19px; line-height: 25px; }
+  .tl-sum  { font-size: 15px; max-width: none; }
+
+  .story-bio {
+    position: static;
+    width: auto;
+    margin: 0 auto;
+    font-size: 17px;
+    line-height: 26px;
+  }
+  .story-bio p + p { margin-top: 18px; }
+  /* THE FACE IS CUT HERE. It was floated into the letter on a laptop and
+     then set centred above the words on a phone, at 148x190 — which is a
+     third of the first screen of the bio spent on a portrait, before a
+     word of the letter has been read. On a laptop it earns that: it sits
+     in the margin of a wide column, the words run around it, and it costs
+     the reading nothing. Stacked into a single 375px column it is not in
+     the margin any more, it IS the top of the page, and the letter starts
+     below the fold.
+
+     js/about.js returns before the engine on this width to match, so the
+     canvas is never baked and js/portrait.js is never asked for a face —
+     the img underneath is a fallback for a bake that no longer happens,
+     so the whole figure goes rather than just the canvas. */
+  .about-portrait { display: none; }
+
+  .slide-link {
+    position: static;
+    display: block;
+    transform: none;
+    margin-top: 26px;
+    text-align: center;
+  }
+  /* 04 · contact — the letter fills the width, socials beneath */
+  .compose {
+    position: static;
+    margin: 0 auto;                    /* retires the -320px axis shift */
+    width: 100%;
+    max-width: 420px;
+    padding: 20px 22px;
+  }
+  .from-input {
+    width: min(216px, 100%);
+    font-size: 16px;                   /* ≥16px so iOS doesn't zoom the page */
+  }
+  .compose-body {
+    height: 160px;
+    font-size: 17px;
+    line-height: 26px;
+  }
+  .social-row {
+    position: static;
+    transform: none;
+    justify-content: center;
+    margin-top: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-scroll { scroll-behavior: auto; }
+  .about-title, .about-portrait, .story-bio,
+  .tl-item, .slide-link,
+  .compose, .social-row {
+    transition: opacity 0.25s ease;
+    translate: none;
+  }
+  /* the year column stops pinning and becomes what it always was
+     underneath: a plain ruled chronology, every rule already drawn,
+     nothing singled out */
+  .tl-body { position: static; opacity: 1; }
+  .tl.is-live .tl-body { opacity: 1; }
+  .tl { scroll-behavior: auto; }
+  .tl-rule { transition: none; transform: scaleX(1); }
+  .col-head::after { transition: none; transform: scaleX(1); }
+  .about-portrait { cursor: default; }
+  .about-portrait.is-spun { animation: none; }
+  .compose-send.is-sent-anim svg { animation: none; }
+  .compose-send:hover, .compose-send:focus-visible { transform: none; }
+  .social:hover, .social:focus-visible { translate: none; }
+  .scroll-hint { transition: opacity 0.25s ease; }
+  .scroll-hint svg { animation: none; }
+}

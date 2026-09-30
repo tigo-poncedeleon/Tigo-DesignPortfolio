@@ -1,498 +1,336 @@
-/* ============================================================
-   Work — one screen, three doors.
-   The projects sit side by side as quiet tiles in the courts'
-   own manner (the play boards' surface, radius and hover), each
-   opening its case study over the page (js/case-overlay.js).
-   Same conventions as styles.css: fixed px inside the 1280×832
-   stage, desktop only.
-   ============================================================ */
+/* ==========================================================================
+   work.css — the three case studies, as three tiles side by side.
 
-/* No entrance. The section is simply THERE — see the note in styles.css. */
-.work-stage {
-  position: relative;
-  width: 100%;
+   Each tile is one surface in the app's own colour, lit from its top-left
+   corner, where the words are, and deepening to the colour itself at its
+   foot, where the work is. On it, top to bottom: the app's icon, and at the
+   other end of that row a pill to the product itself; the name; the role
+   and when; and then the work, coming up out of the tile's foot and running
+   off its edges, as if the tile were a window onto a bigger picture:
+     Vicino    Canvas, the node editor, on a finished board: the prompt,
+               the two images it made, and the video and 3D model after
+               them (the case study's working replica, with its minimap
+               folded away; the Pulse home stood here before)
+     PantryPal the shipped app on two iPhones, signing up and then the
+               dinner it opens on, the second a step lower
+     Next Level its website, as it is live, with the site's drone parked
+               in the empty air beside the headline
+   The two screens are photographed the same way, so they sit as a pair:
+   at a desktop 1100 by 875, the shape of what a tile shows, and at twice
+   that in pixels, so they stay sharp on a Retina screen at the largest
+   the page draws them. The phones are the app's own simulator captures
+   (1179 wide, a real iPhone's pixels) seated in the iPhone 16 Pro frame
+   the App Store screenshots use (PantryPal/concepts/appstore-lab).
+   (Before, the website stood in a drawn browser, three dots and an
+   address bar over a 1000px screenshot shown wider than itself, and the
+   phones were the prototype's 480px mockups.)
+   The whole tile opens the case study; pointed at, it lifts a little and
+   the work comes up to meet you. (Before this the work sat on a smaller
+   panel inside each tile, and a line at the foot of the page named them
+   again.)
+
+   The tiles stand between the page's axes, their edges on the lines the
+   name and the square stand on. (They used to hang out past both axes by
+   their own padding, like the chat's bubbles and the composer, so the
+   icons stood on the axis instead; once the gutters were drawn out to 44
+   for the menu's row, that left them 16 from the window's edge. On a phone
+   they still hang, by the chat's own amount.)
+
+   THEY ALWAYS FIT. The band is a size container. A tile is a third of the
+   row, and as tall as the band lets it be, up to a portrait's proportions,
+   so the three are always on the page together, whole; the work in each is
+   sized by the tile's width, so it sits the same way in every size of
+   window, and what runs past the foot is simply cut by it.
+   ========================================================================== */
+
+.view-work {
+  container-type: size;
+  display: grid;
+  /* at the band's top, just under the masthead: the room a tall window
+     has to spare goes below the work, not above it */
+  align-content: start;
 }
 
-.work-scroll {
+.cases {
+  --gap: calc(24 * var(--u));
+  --pad: calc(28 * var(--u));
+  --out: 0px;   /* how far past the axes the tiles hang */
+  --card-w: calc((100cqw + 2 * var(--out) - 2 * var(--gap)) / 3);
+  --card-h: min(100cqh, var(--card-w) * 1.36);
+  display: grid;
+  grid-template-columns: repeat(3, var(--card-w));
+  gap: var(--gap);
+  margin: 0 calc(-1 * var(--out));
+  list-style: none;
+}
+
+/* Each tile's colour is one of the page's pastels (the #c9 floor every tile
+   and pill here is drawn from) turned toward the app's own: Vicino's teal
+   accent, PantryPal's tomato-and-peach, Next Level's blue. The deep colour
+   beside it is the same hue far darker, for the small words and the
+   shadows, so neither is ever a grey laid on a colour. */
+.case[data-case='vicino'] { --tint: #c9eff1; --deep: #1c6f78; }
+.case[data-case='pantrypal'] { --tint: #ffd9c9; --deep: #a9492a; }
+.case[data-case='nextlevel'] { --tint: #c9e3fd; --deep: #245f9e; }
+
+.case {
   position: relative;
   display: flex;
   flex-direction: column;
-}
-.work-slide {
-  position: relative;
-  flex: none;
-  width: 100%;
-  /* The picture row's height, shared with .pick-stage below so the panel
-     cannot drift out of step with what it holds. It used to be a flat 380 —
-     what the tallest shot needed back when the note column squeezed the
-     stage to 528px wide and the monitor was width-bound at 455x379.
-
-     The note is gone, so the picture is height-bound now and the row's
-     height is the whole of how big it gets. Rather than guess a number,
-     take the screen: --hero-h is one screen of card, in card px, published
-     on :root by js/main.js (which names this file as the reason it lives on
-     the root rather than on #home) and re-measured on every resize. Minus
-     everything in the panel that is not the picture — the header step, the
-     row of names, the gap under it, the shared floor — that is exactly the
-     room the shot has, so the panel lands on one screen at any window and
-     the shot is always as large as that window allows. */
-  /* Three columns, so the picture is WIDTH-bound by the middle track and
-     extra height stops buying anything past the point where the widest
-     shot fills its column: Vicino is 1.2:1, so a 640px track caps it at
-     533 tall. The clamp still tracks the window — the panel owns exactly
-     one screen, the way it did when the note column was last here — and
-     the ceiling is set where the width cap bites. --hero-h is one screen of
-     card in card px, published on :root by js/main.js. */
-  --pick-h: clamp(400px, calc(var(--hero-h, 832px) - 272px), 720px);
-  /* as tall as its contents and no taller: header rhythm + the names + the
-     stepper + the shared floor (styles.css). Work and Play were built from
-     the same sum so the two read as siblings; Work's is now driven by the
-     window instead of a constant, but it still resolves to one screen, and
-     one screen is what Play's 680 was always approximating.
-
-     It used to carry `min-height: var(--hero-h)` as well, to own a whole
-     screen: a section shorter than the window is CENTRED when you navigate
-     to it (js/shell.js restY), and that hung a band of empty page over the
-     title. The clamp above makes the min-height moot — the panel IS one
-     screen now, by construction, rather than being padded up to one. */
-  height: calc(var(--content-top) + var(--pick-h) + var(--stage-floor));
-}
-
-/* ---- title pair, the site's header manner ---- */
-.work-title {
-  position: absolute;
-  top: var(--title-top, 40px);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  white-space: nowrap;
-}
-.work-title h2 {
-  font-size: 28px;
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  color: var(--ink);
-}
-.work-title p {
-  font-size: 28px;
-  letter-spacing: -0.015em;
-  color: rgba(var(--ink-rgb), 0.34);
-}
-
-/* ---- the bento: one hero tile and two companions, centred in the
-   frame. Vicino is desktop work — its display earns the big window;
-   the phone and the badge sit beside it as compact rows. ---- */
-/* ============================================================
-   The stepper — an index of the work, one shown large, its note
-   beside it. The case studies present their own screens exactly
-   this way; Work is the same instrument pointed at the studies.
-   ============================================================ */
-.work-pick {
-  position: absolute;
-  /* hung from the title, not centred in the panel — the air under the
-     header is the same here as it is under About's (styles.css) */
-  top: var(--content-top);
-  left: 50%;
-  transform: translateX(-50%);
-  width: var(--measure);
-  /* Index, picture, note. The tracks are tighter than the 232/1fr/268 and
-     48px gutters this started life with: the left column only carries a
-     mark and a name now, so it does not need the 232 it started with, and
-     every pixel taken off the sides is a pixel the middle track — and
-     therefore the picture — gets back. 1124 − 190 − 190 − 104 leaves the
-     stage 640 wide, against the 528 it used to have. 190 is what the note
-     needs now that it sets no paragraph: two short lines, and the left
-     column's own pill wants 182.
-
-     The 52px gutters are the point of that arithmetic. At 30 the Vicino
-     shot — the widest of the three, and cropped hard to its own ink, so it
-     carries no margin of its own — came within a hair of both columns and
-     the row read as three things touching. Widening the gutters inside a
-     fixed measure has to come out of somewhere; taking it off the side
-     columns costs the picture 20px of width, taking it off the middle
-     would have cost 104.
-
-     The two side tracks MUST be equal. They were 180 and 244, which is a
-     perfectly good pair of columns and put the middle track's centre 32px
-     to the left of the container's — so the picture hung left of the title
-     centred above it, on a page where everything else shares one centre
-     line. Whatever these two are, they are the same number. */
-  display: grid;
-  grid-template-columns: 190px 1fr 190px;
-  /* all three columns on one line — the index and the note read as captions
-     to the picture, so they belong on its middle */
-  align-items: center;
-  gap: 52px;
-}
-
-/* ---- the index ---- */
-/* ---- the index. No card around each project — a bordered card here
-   competed with the picture it is only meant to label, and boxed three
-   items that were already legible as a list. What the lit row does carry
-   is a soft fill, because ink alone was not enough to say WHICH project
-   you are looking at: the name darkening from 0.40 to full is a difference
-   you have to go looking for, and the pill is one you cannot miss. Fill
-   and ink together, the way the rail marks the page you are on. ---- */
-.pick-list {
-  list-style: none;
-  display: grid;
-  gap: 4px;
-}
-.pick-row {
-  display: flex;
-  /* one line of text against a 40px tile, so the two centre on each other */
-  align-items: center;
-  gap: 14px;
-  /* the padding is the lit row's pill, so it is on every row whether or not
-     the fill is showing — otherwise the names would step sideways as you
-     browse */
-  padding: 11px 14px;
-  background: none;
-  border: 0;
-  border-radius: 10px;
-  font: inherit;
-  font-size: 19px;
-  line-height: 1.2;
-  text-align: left;
-  text-decoration: none;
-  color: rgba(var(--ink-rgb), 0.40);
-  cursor: pointer;
-  transition: color var(--t-micro) ease, background-color var(--t-micro) ease;
-}
-/* ---- the mark.
-
-   The three source icons are not a set: PantryPal is a flat App Store
-   export, the other two are 3D renders carrying gloss, a rim light and a
-   drop shadow, and all three baked DIFFERENT corner radii into the art
-   (26.5%, 28.5%, 23.8%). Left alone they read as three icons from three
-   places. Media/icon-*.webp are therefore pre-normalised to flat, fully
-   opaque SQUARES with no rounding of their own, and every edge you see
-   here is drawn by this rule — one radius, one hairline, one shadow.
-
-   The outer box-shadow is a deliberate, scoped exception to the site's
-   no-shadow rule (see css/vicino.css:219): these are product marks, not
-   the site's own surfaces, and an app icon that sits flat on the page
-   reads as a sticker. Do not spread this value to anything else.
-
-   ::after carries the hairline because an inset shadow paints BENEATH its
-   element's content, so on .pick-ico itself the <img> would cover it. */
-.pick-ico {
-  position: relative;
-  display: block;
-  flex: none;
-  /* an inner tile the row is built around, not a bullet beside a name */
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
+  min-width: 0;
+  height: var(--card-h);
+  padding: var(--pad) var(--pad) 0;
+  border-radius: calc(32 * var(--u));
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(var(--ink-rgb), 0.08);
-  transition: box-shadow var(--t-micro) ease;
+  isolation: isolate;
+  background:
+    radial-gradient(130% 75% at 0% 0%, color-mix(in oklab, var(--tint), #fff 70%), transparent 72%),
+    linear-gradient(to bottom, color-mix(in oklab, var(--tint), #fff 38%), var(--tint) 62%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent);
+  transition:
+    translate var(--t-settle) var(--spring-settle),
+    box-shadow 0.45s ease;
 }
-.pick-ico > img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.pick-ico::after {
-  content: '';
+
+/* The case study is the whole tile: its link is laid over all of it, and
+   only the pill to the product sits above that. */
+.case-open {
   position: absolute;
   inset: 0;
+  z-index: 1;
   border-radius: inherit;
-  box-shadow: inset 0 0 0 0.5px rgba(var(--ink-rgb), 0.12);
-  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
 }
+.case-open:focus-visible { outline: none; }
+.case:has(.case-open:focus-visible) { outline: 2px solid var(--fg); outline-offset: 3px; }
 
-.pick-row:hover { color: rgba(var(--ink-rgb), 0.70); }
-/* the one you are on darkens to full ink on the site's warm chip, and the
-   two you are not on stay ash — the list reads as one lit name among grey
-   ones, which is the same figure/ground the rail and the nav words use.
-   The accent used to do this job here, but the name is the loudest thing
-   in the column and orange on it made the index compete with the picture
-   it is only meant to label. Only the words change: see the note on the
-   marks below for why they hold full strength on every row. */
-.pick-row.is-current {
-  color: var(--ink);
-  background: rgba(var(--ink-rgb), 0.06);
-}
-/* the marks never dim with their names. Fading them was tried and it read
-   as broken rather than as quiet: a black tile at 0.62 is just a grey one,
-   so the two unlit projects lost the very thing the icon was added to give
-   them. The pill and the name carry the state; the products stay lit. */
-.pick-row.is-current .pick-ico { box-shadow: 0 1px 3px rgba(var(--ink-rgb), 0.10); }
-.pick-row:focus-visible { outline-offset: 1px; }
-
-/* ---- the words in a row. The name is the row; the role and the year are
-   the only thing the deleted note column kept, moved under the name where
-   they read as a subtitle to it rather than as a paragraph competing with
-   the picture. They stay a step quieter than the name on every row,
-   including the lit one — this is the label, not the headline. ---- */
-.pick-name { display: block; font-size: 18px; line-height: 1.25; white-space: nowrap; }
-
-/* ---- the stage: all three stacked, only the current one lit, so the swap
-   is a cross-fade in place rather than a reflow. The shots sit on the
-   stage's MIDDLE line, which is the line the index and the note already sit
-   on (the grid centres both columns). Hung from the top instead, each shot
-   left its own leftover under it — 61px for the monitor, 155 for the mark —
-   and the picture read as floating above the two blocks of words beside it.
-   The three now share one centre, whichever project is up. ---- */
-.pick-stage {
-  position: relative;
-  width: 100%;
-  height: var(--pick-h);
-  display: grid;
-  place-items: center;
-  /* the painted size of the shot that is up — the opening one's, until
-     js/work-pick.js measures. Only .pick-open reads it; see there. */
-  --shot-w: 640px;
-  --shot-h: 533px;
-}
-.pick-shot {
-  grid-area: 1 / 1;
-  width: 100%;
-  height: auto;
-  display: grid;
-  place-items: center;
-  margin: 0;
-  cursor: pointer;
-  opacity: 0;
-  scale: 0.97;
-  pointer-events: none;
-  transition: opacity var(--t-glide) ease, scale var(--t-lift) var(--ease-lift);
-}
-.pick-shot.is-current { opacity: 1; scale: 1; pointer-events: auto; }
-.pick-shot img {
-  max-width: 100%;
-  max-height: var(--pick-h);
-  object-fit: contain;
-  border-radius: 14px;
-  transition: scale var(--t-lift) var(--ease-lift);
-}
-/* Sized per piece rather than uniformly: these are three different KINDS of
-   picture — a screen, a device, a mark — and one shared ceiling makes the
-   logo loom and the monitor look timid. Each is set to the size it wants to
-   be looked at. */
-   These were flat px (379 / 380 / 285) while --pick-h was a flat 380. It
-   moves with the window now, so they are written as fractions of it —
-   left as constants they would have silently capped every shot at its old
-   size and the whole widening would have done nothing. */
-.work-img-vicino img { max-height: var(--pick-h); }  /* a whole screen; give it room */
-.work-img-pantry img { max-height: var(--pick-h); }  /* a phone, already tall */
-/* a mark, not a scene: the roundel is the only piece here that is a logo
-   rather than a thing that was designed to be looked at full size, and at
-   the full row height it stops being a mark and becomes a billboard. */
-.work-img-drone  img { max-height: calc(var(--pick-h) * 0.82); }
-/* ...and being a mark is also what breaks it on the dark palette. The badge
-   was drawn for paper: navy strokes, a black wordmark, and a drone body and
-   wave left open for the white underneath to fill in. On ink that white is
-   #161616, so the strokes and the wordmark land on a ground their own value
-   and go out, and only the blue quarters survive. The other two shots are
-   photographs that bring their own ground with them, which is why this is
-   the only one that feels it.
-
-   It takes the reverse lockup instead — the one any identity ships for dark
-   grounds. Lightness flipped, hue held: the black reads white, the navy
-   lifts to a pale blue, and the brand blue comes back out the far side as
-   itself (#0195E9 → #089DF0, which is the same blue to the eye). A plate
-   under the mark would have worked too, but it would have put a 526px sheet
-   of white on the quietest page of the site. */
-html[data-theme="ink"] .work-img-drone img { filter: invert(1) hue-rotate(180deg); }
-.pick-stage:hover .pick-shot.is-current img { scale: 1.015; }
-
-/* the corner glyph the work cards always wore, kept on the stage.
-
-   Pinned to the CURRENT PICTURE's corner, not the stage's. The three shots
-   are letterboxed inside one shared box (object-fit: contain), so the box
-   and the picture are only the same thing for a shot that happens to fill
-   it: the monitor paints 455 wide in a 528 box, which put a stage-corner
-   badge 1px ON its rounded corner, and the phone paints 190 wide, which
-   left the badge 130px adrift of it. js/work-pick.js measures the painted
-   box into --shot-w/--shot-h on every switch; the values below are the
-   opening shot's, so the badge is right before a line of script runs. */
-.pick-open {
-  position: absolute;
-  /* level with the picture's top edge, and clear of its right by 8 */
-  top: calc((100% - var(--shot-h)) / 2);
-  right: calc((100% - var(--shot-w)) / 2 - 38px);
-  z-index: 2;
+/* ---- the head: icon and pill, name, role and when ---- */
+.case-head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(var(--bg-rgb), 0.88);
-  border: 1px solid var(--g-150);
-  color: var(--muted);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease, color var(--t-micro) ease,
-              transform var(--t-snap) var(--ease-spring);
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
 }
-.pick-stage:hover .pick-open { opacity: 1; color: var(--ink); transform: translate(1px, -1px); }
+/* The icon is the app's own, in the superellipse an app icon has
+   (assets/squircle.svg). The mask is on the picture and the shadow on the
+   box around it, because a mask would cut its own shadow off. */
+.case-icon {
+  flex: none;
+  width: calc(60 * var(--u));
+  aspect-ratio: 1;
+  filter:
+    drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))
+    drop-shadow(0 calc(6 * var(--u)) calc(12 * var(--u)) color-mix(in oklab, var(--deep) 22%, transparent));
+}
+.case-icon img {
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
+  mask: url(../assets/squircle.svg) center / 100% 100% no-repeat;
+}
+/* PantryPal's artwork carries a faint rounded rim of its own, left over from
+   its original export; scaled up a hair inside the mask, it falls outside it. */
+.case[data-case='pantrypal'] .case-icon img { scale: 1.07; }
 
-/* ---- the note: what the job was. The name is the card on the left, so
-   this column never repeats it — it carries only the three things the left
-   column cannot: the role, when it ran, and a line about what the work was.
-   All three cards share one box and cross-fade in place, the way the shots
-   do, so switching projects never reflows the row. ---- */
-/* ---- the note sits STILL. It briefly hung off whichever row was lit, so
-   the role and the name you had clicked shared an axis — but that meant the
-   whole column stepped up and down the page as you browsed, and a block of
-   text that moves when you hover something else reads as a glitch, not as
-   an alignment. It is centred in place now: one position, the same for all
-   three, on the axis the index and the picture already share.
+.case-name {
+  margin-top: calc(22 * var(--u));
+  font-size: var(--fs);
+  font-weight: inherit;
+  line-height: var(--lh);
+  color: var(--pastel-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.case-meta {
+  display: grid;
+  margin-top: calc(4 * var(--u));
+  font-size: var(--pill-small);
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: color-mix(in oklab, var(--deep) 55%, var(--ink));
+}
+.case-meta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.case-meta span + span { color: color-mix(in oklab, var(--deep) 45%, var(--ink-3)); }
 
-   All three cards stack in one box and cross-fade, so switching never
-   reflows the row. ---- */
-.pick-note { position: relative; align-self: center; }
-.pick-card {
+/* The pill: where the product lives. Frosted white on the tile's colour,
+   the composer chip's size and type, with an arrow that says it leaves the
+   page and leans out further when pointed at. */
+.case-link {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  height: calc(40 * var(--u));
+  padding: 0 calc(12 * var(--u)) 0 calc(16 * var(--u));
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.7),
+    0 1px 2px color-mix(in oklab, var(--deep) 12%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: var(--pill-small);
+  letter-spacing: 0;
+  color: var(--pastel-ink);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+}
+.case-link svg {
+  width: calc(var(--pill-icon) * 0.62);
+  height: calc(var(--pill-icon) * 0.62);
+  transition: translate var(--t-snap) var(--spring-snap);
+}
+.case-link:active { scale: 0.96; transition-duration: 90ms; }
+
+/* ---- the work, coming up out of the foot ----
+   The media box is the tile's full width and the rest of its height; every
+   picture in it is placed and sized by that width, and runs off the tile's
+   foot (and, for the two screens, its right edge). */
+.case-media {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  /* the pictures are the tile's, not links of their own: a press on one
+     goes through to the case study laid over the tile. (The front phone
+     stands on z-index 1, level with that link and after it, so it used to
+     catch the press, and a click on PantryPal's phones did nothing.) */
+  pointer-events: none;
+  margin: calc(22 * var(--u)) calc(-1 * var(--pad)) 0;
+}
+.shot {
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  translate: 0 -50%;
-  opacity: 0;
-  transition: opacity var(--t-glide) ease, translate var(--t-glide) var(--ease-glide);
-  pointer-events: none;
-}
-.pick-card.is-current { opacity: 1; translate: 0 -50%; pointer-events: auto; }
-.pick-card:not(.is-current) { translate: 0 calc(-50% + 8px); }
-/* The note is a role and its dates — the sentence that used to sit under
-   them is gone, so this column is now the shortest thing in the row and
-   the picture is the only thing being read. What survives of the old
-   note's shape is the step between the two lines it still has: a heading
-   at 20 against a meta line at 13.25 and 0.46, which is the same big drop
-   that gave the old block a way in. */
-.pick-role {
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.pick-when {
-  margin-top: 6px;
-  font-size: 13.25px;
-  line-height: 1.35;
-  color: rgba(var(--ink-rgb), 0.46);
-}
-
-/* ---- one of the three shipped, and gets a way in under its ledger.
-
-   It sits IN the card, in flow, and that is the whole of the layout: the
-   three note cards stack in one box and each centres itself on the row's
-   middle line (top: 50%, translate: -50%), so a card with a badge under
-   it centres AS A BLOCK, on the same line the index and the picture
-   already share. Hung off the bottom instead — which is where this
-   started — the words stayed on the axis and the badge piled up below it,
-   and the column read as sinking off the middle of a row where nothing
-   else does.
-
-   The cost is that the role line no longer lands at one height on all
-   three projects: PantryPal's block is taller, so its first line starts
-   higher. That is paid on a CROSS-FADE, not a move — one block dissolves
-   into another, and neither is ever seen travelling — which is a trade
-   worth making for a row that is actually centred.
-
-   Apple's badge is used whole: their guidelines allow it to be scaled and
-   nothing else. It also needs nothing under it — it is already a black
-   pill with its own hairline and its own lettering, which is what carries
-   it across all of the site's canvases, the near-black one included, and
-   a plate would only have been a box in a box. ---- */
-.pick-store {
   display: block;
-  width: fit-content;
-  margin-top: var(--sp-24);
-  border-radius: 9px;        /* the badge's own corner, so the ring traces it */
-  filter: drop-shadow(0 4px 10px rgba(28, 22, 18, 0.2));
-  /* a faded card must not still be in the tab order, and opacity alone
-     leaves it there — so visibility carries the reachability, held open
-     until the fade has finished and switched on the instant it returns */
-  visibility: hidden;
-  transition: translate var(--t-snap) var(--ease-spring),
-              filter 0.28s ease,
-              visibility 0s linear var(--t-glide);
+  height: auto;
+  transition: translate 0.7s var(--ease-rise);
 }
-.pick-card.is-current .pick-store {
-  visibility: visible;
-  transition: translate var(--t-snap) var(--ease-spring),
-              filter 0.28s ease;
+/* A screen is a plain window: the picture itself, its corners rounded and
+   lifted on a shadow of the tile's colour, with no browser drawn round it,
+   so Canvas and the website read as one kind of thing. Both were taken in
+   the tile's own shape, so the window runs only 24 past the tile's edge.
+   (At 140% of the tile, as the Pulse home and the old website were drawn,
+   Canvas's video and 3D model fell off the right and the graph ended in
+   mid-air.) */
+.shot-window {
+  left: var(--pad);
+  top: calc(6 * var(--u));
+  width: calc(100% - var(--pad) + 24 * var(--u));
+  overflow: hidden;
+  border-radius: calc(14 * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
+    0 calc(2 * var(--u)) calc(4 * var(--u)) color-mix(in oklab, var(--deep) 8%, transparent),
+    0 calc(28 * var(--u)) calc(56 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent);
 }
-.pick-store img {
-  display: block;
-  height: 44px;              /* clears Apple's 40px floor */
-  width: auto;               /* the width/height attrs hold the ratio */
+.shot-phone {
+  left: 9%;
+  top: 0;
+  width: 42%;
+  z-index: 1;
+  filter:
+    drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) color-mix(in oklab, var(--deep) 14%, transparent))
+    drop-shadow(0 calc(20 * var(--u)) calc(26 * var(--u)) color-mix(in oklab, var(--deep) 30%, transparent));
 }
-/* it lifts off its shadow under the cursor and goes back down on a
-   press — the courts' own manner, in the smallest possible form */
-.pick-store:hover {
-  translate: 0 -2px;
-  filter: drop-shadow(0 9px 16px rgba(28, 22, 18, 0.28));
-}
-.pick-store:active {
-  translate: 0 0;
-  transition-duration: 0.09s;
-  filter: drop-shadow(0 2px 5px rgba(28, 22, 18, 0.24));
+.shot-phone-2 {
+  left: 49%;
+  top: calc(40 * var(--u));
+  z-index: 0;
+  transition-delay: 60ms;
 }
 
-/* No entrance — the title and the stepper are simply on the page when you
-   reach them (styles.css). The stepper's own hover and browse transitions
-   are untouched; only the arrival is gone. */
-.work-pick.is-plain * { transition: none !important; }
+/* Pointed at, the tile lifts a little onto a shadow of its own colour, and
+   the work comes up to meet you, the second phone a beat behind the first. */
+@media (hover: hover) {
+  .case:hover {
+    translate: 0 calc(-4 * var(--u));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent),
+      0 calc(26 * var(--u)) calc(48 * var(--u)) calc(-22 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
+  }
+  .case:hover .shot { translate: 0 calc(-10 * var(--u)); }
+  .case-link:hover { background: #fff; }
+  .case-link:hover svg { translate: calc(1.5 * var(--u)) calc(-1.5 * var(--u)); }
+}
 
-/* ============================================================
-   MOBILE (≤700px) — the grid unrolls into a single column; each
-   door is a full-width tile and rises in as it enters the
-   viewport (js/work.js). Desktop untouched above.
-   ============================================================ */
-@media (max-width: 700px) {
-  .work-stage {
-    height: auto;
-    min-height: 100dvh;
-    overflow: visible;
-  }
-  .work-scroll { display: block; }
-  .work-slide {
-    height: auto;
-    min-height: 0;                 /* the phone has no card to fill a screen of */
-    padding: 72px 20px 120px;      /* the last tile clears the bottom bar */
-  }
-  .work-title {
-    position: static;
-    transform: none;
-    justify-content: center;
-    white-space: normal;
-    text-align: center;
-  }
-  .work-title h2 { font-size: 24px; line-height: 30px; }
-  .work-title p { font-size: 15px; color: rgba(var(--ink-rgb), 0.48); }
+@media (prefers-reduced-motion: reduce) {
+  .case, .shot, .case-link, .case-link svg { transition-property: opacity, filter, background-color, box-shadow; }
+  .case:hover, .case:hover .shot { translate: 0 0; }
+  .case-link:hover svg { translate: 0 0; }
+}
 
-  /* the stepper unstacks and comes into FLOW — index, shot, note down the
-     column — so the section is as tall as what it holds. (It was still
-     hung off the desktop frame here, absolutely positioned, and spilled
-     past its own section into the one below.) The 20px under the title is
-     the phone's shared header gap, as About's. */
-  .work-pick {
-    position: static;
-    transform: none;
-    width: auto;
-    max-width: 420px;
-    margin: 20px auto 0;
-    grid-template-columns: 1fr;
-    gap: 20px;
+/* In a narrow window the three stack, one under another, and the Work
+   screen grows to hold them. Below 880 a third of the row is too narrow for
+   "Next Level" beside its pill, so this starts before the phone's own
+   layout does. A stacked tile keeps a tile's width, not the window's, so
+   the work in it is drawn the size it is meant to be. */
+@media (max-width: 880px) {
+  .screen-work { height: auto; min-height: 100svh; }
+  .view-work {
+    container-type: normal;
+    align-content: start;
   }
-  /* the names go back to a column: there is no room to sit three of them
-     side by side, and js/mobile.js has usually taken this whole stepper
-     away before it can matter (this block only ever fires in a narrow
-     DESKTOP-loaded window, which snapshots its width at load) */
-  .pick-list { width: 100%; }
-  .pick-row { width: 100%; }
-  .pick-note { min-height: 176px; }
-  .pick-stage { height: 300px; }
-  .pick-shot img,
-  .work-img-vicino img,
-  .work-img-pantry img,
-  .work-img-drone img { max-height: 300px; }
-  .pick-open { opacity: 0.9; }
-  .pick-row:active { background: rgba(var(--ink-rgb), 0.06); }
+  .cases {
+    grid-template-columns: minmax(0, 460px);
+    padding-bottom: var(--gap);
+  }
+  .case { height: auto; aspect-ratio: 4 / 5; }
+}
+@media (max-width: 760px) {
+  .cases { --gap: 16px; --pad: var(--hang); --out: var(--pad); }
+  .case { border-radius: 26px; }
+}
+
+/* ---- into a case study, and back ----
+   A tile opens its case study in this tab (vicino.html, pantrypal.html,
+   nextlevel.html), and where the browser can carry a view across pages
+   the tile itself grows into the case study's opening tile, which is the
+   same tile grown to the window (css/case.css), while the rest of the page
+   crossfades under it; coming back, it shrinks home. Each tile's name is
+   its case's, and the case page gives its opening tile the same one.
+   The page's own view transition, the colours spreading from a press
+   (js/theme.js, css/base.css), turns the root's crossfade off; this one is
+   told apart by its type, "case", so the two never meet. (The opt-in
+   itself is in index.html's head: see the note there.) */
+.case[data-case='vicino'] { view-transition-name: case-vicino; }
+.case[data-case='pantrypal'] { view-transition-name: case-pantrypal; }
+.case[data-case='nextlevel'] { view-transition-name: case-nextlevel; }
+html:active-view-transition-type(case)::view-transition-group(*) {
+  animation-duration: var(--t-settle);
+  animation-timing-function: var(--spring-settle);
+}
+html:active-view-transition-type(case)::view-transition-old(root) { animation: case-fade-out 0.24s ease both; }
+html:active-view-transition-type(case)::view-transition-new(root) { animation: case-fade-in 0.32s ease both; }
+@keyframes case-fade-out { to { opacity: 0; } }
+@keyframes case-fade-in { from { opacity: 0; } }
+
+/* The tile's two pictures, the Work tile's and the case study's opening
+   tile's, are not stretched to the tile as it grows (the browser's own way,
+   which blew the small tile's words up to three times their size): each
+   stays at its own size, pinned at the top left, where the icon and the
+   name are on both, and the growing tile clips them, so it reads as the
+   tile opening out onto the case study. The small one lets go quickly. */
+html:active-view-transition-type(case)::view-transition-image-pair(case-vicino),
+html:active-view-transition-type(case)::view-transition-image-pair(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-image-pair(case-nextlevel) {
+  overflow: clip;
+  border-radius: calc(36 * var(--u));
+}
+html:active-view-transition-type(case)::view-transition-old(case-vicino),
+html:active-view-transition-type(case)::view-transition-old(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-old(case-nextlevel),
+html:active-view-transition-type(case)::view-transition-new(case-vicino),
+html:active-view-transition-type(case)::view-transition-new(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-new(case-nextlevel) {
+  inset: 0 auto auto 0;
+  width: auto;
+  height: auto;
+  object-fit: none;
+}
+html:active-view-transition-type(case)::view-transition-old(case-vicino),
+html:active-view-transition-type(case)::view-transition-old(case-pantrypal),
+html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
+  animation-duration: 0.18s;
 }

@@ -1,120 +1,277 @@
-// Boot the landing frame: live clock, gentle fade-in, and the hero's
-// scroll hint. The pill's hover chip retired with the cover frame — the
-// sidebar is the nav now.
-(function () {
-  function boot() {
-    if (window.FrameClock) window.FrameClock.init();
+// main.js — boots the draft, and keeps track of where on the page you are.
+//
+// The site is one page, four screens down it in the menu's order: Home,
+// Work, Play, About (index.html). You move between them by scrolling, or with
+// the menu, whose pills are plain links to each screen, so the browser does
+// the going (css/base.css). Nothing here ever moves the page. It only
+// watches: whichever screen holds the middle of the window is the one you
+// are on, and everything that depends on that follows it as you scroll:
+//   the headline  the name on Home, and "Work", "Play" or "About" elsewhere,
+//                 the old one lifting away as the new one rises in, in the
+//                 direction you are scrolling;
+//   the menu      its pill for the screen is marked;
+//   the address   the hash is the screen's (#work), noted as you go, so a
+//                 reload or a shared link comes back to it (js/router.js);
+//   the screens   Home's conversation and composer, and Play's games, know
+//                 whether they are the one in the window.
+// Each screen's pieces rise into place the first time they come into view.
+// (It was four pages, each the whole window, swapped in place with a
+// crossfade that ran in the menu's direction.)
 
-    const stage = document.getElementById('home');
-    requestAnimationFrame(() => { if (stage) stage.classList.add('revealed'); });
-    if (!stage) return;
+import { createPrompt } from './prompt.js';
+import { createComposer } from './composer.js';
+import { createChat } from './chat.js';
+import { initNav } from './nav.js';
+import { startRouter, VIEWS } from './router.js';
+import { playEntrance } from './entrance.js';
+import { initAbout } from './about.js';
+import { SPRING, EASE, animate, rise, reduced, u } from './motion.js';
 
-    // ---- keep the hero centred in the CONTENT CARD — the page's own
-    // middle, so an open rail moves the name with it instead of leaving it
-    // sitting off-centre in the page it belongs to. The card already centres
-    // `main` on its own, so the only thing JS still owes the stage is its
-    // height: exactly one screen of visible card, measured, so the name's
-    // 50%/50% lands in the middle of what you can actually see.
-    //
-    // Written to the ROOT, not to #home: "one screen of card, in card px" is
-    // the measurement every full-bleed stage wants, and Work asks for it too
-    // (css/work.css) so its slide owns a whole screen rather than landing
-    // centred with a band of nothing above its title.
-    const fitHero = () => {
-      const root = document.documentElement;
-      if (window.matchMedia('(max-width: 700px)').matches) {
-        root.style.removeProperty('--hero-h');
-        return;
-      }
-      const s = (window.ShellFit && window.ShellFit.scaleOf)
-        ? (window.ShellFit.scaleOf(stage) || 1) : 1;
-      // clientHeight, NOT innerHeight: the visitor may run classic always-on
-      // scrollbars, and a viewport height that includes one is not the height
-      // of the card you can see
-      // the card runs the full height of the window now — the chrome strip
-      // that used to be subtracted here is gone
-      root.style.setProperty('--hero-h', (root.clientHeight / s).toFixed(2) + 'px');
-    };
-    fitHero();
-    window.addEventListener('shell:fit', fitHero);
-    window.addEventListener('resize', fitHero, { passive: true });
-    // The assembly used to be a layout animation, so the stage moved for a
-    // third of a second without the card ever resizing — nothing observes
-    // that, so this rode it frame by frame. It is a FLIP now
-    // (js/typewriter.js): the layout is final before the first frame of
-    // movement, and this one measurement is the whole of it. It is called
-    // during the dispatch, so it lands in the same frame as the layout.
-    window.addEventListener('shell:intro-done', fitHero);
+const NAME = 'Tigo Ponce de León';
+const TITLES = {
+  home: NAME,
+  work: 'Work — ' + NAME,
+  play: 'Play — ' + NAME,
+  about: 'About — ' + NAME,
+};
 
-    // ---- the scroll hint arms once the name has typed. For a returning
-    // visitor the typewriter has already settled (it runs BEFORE this file
-    // and fires shell:intro-done synchronously), so the event can only be
-    // waited on while intro-pending is still up — otherwise arm now.
-    const arm = () => stage.classList.add('hint-ready');
-    if (document.documentElement.classList.contains('intro-pending')) {
-      window.addEventListener('shell:intro-done', arm, { once: true });
-    } else {
-      arm();
-    }
+const screens = {};
+const views = {};
+for (const el of document.querySelectorAll('.screen')) {
+  screens[el.dataset.section] = el;
+  views[el.dataset.section] = el.querySelector('.view');
+}
 
-    // …and bows out the moment the visitor moves.
-    //
-    // ---- THE HERO DIMS AS IT LEAVES ----
-    // The chat sits at the FOOT of the hero once a question has been asked,
-    // and the hero is still ~190px of screen at the moment Work's own
-    // content reaches the middle of it — so the composer was still drawn,
-    // at full strength, across the top of a screen that belongs to Work.
-    // Nothing was overlapping wrongly; the hero was simply outstaying the
-    // screen it owns.
-    //
-    // So the hero's contents fade on the hero's own exit: `gone` is the
-    // share of it that has scrolled off the top, and everything in it is
-    // clear by OUT of that share — 0.7, which lands the last of the fade
-    // a comfortable margin before Work is centred. Published as one custom
-    // property and spent in css/ai.css and css/styles.css, so the name and
-    // the chat dim together on one clock rather than one of them going
-    // ghostly beside the other.
-    //
-    // Both numbers come from the SAME rect: `main` is scaled by `zoom`
-    // (js/stage-fit.js), so a visual top over a layout height would be
-    // wrong by the scale factor on every screen that is not 1280 wide.
-    //
-    // …AND NOT ON A PHONE. Below 700px the hero is not something you scroll
-    // past: it is one tapped screen with `overflow: hidden` and nothing
-    // under it (js/mobile.js, css/mobile.css), so the hand-over to Work
-    // this clock exists to make can never happen. What it did instead was
-    // fire on a scroll nobody asked for — iOS scrolls the document to
-    // reveal a focused field, and for the length of that scroll the whole
-    // composer was dimmed toward the background, mid-sentence, every time
-    // the keyboard opened. Same guard fitHero already carries above.
-    if (window.matchMedia('(max-width: 700px)').matches) {
-      stage.style.removeProperty('--hero-fade');
-      return;
-    }
+// While a conversation is up on Home, the menu square gives its place to a
+// clear button (the chat says when, below).
+const nav = initNav(document.querySelector('.menu'), {
+  onClear: () => chat.clear(),
+  // the row of pages keeps off the name
+  clearOf: document.querySelector('.headline .name'),
+});
 
-    const OUT = 0.7;
-    let raf = 0;
-    const track = () => {
-      raf = 0;
-      stage.classList.toggle('is-scrolled', window.scrollY > 40);
-      const r = stage.getBoundingClientRect();
-      const gone = r.height > 0
-        ? Math.min(Math.max(-r.top / r.height, 0), 1) : 0;
-      const fade = Math.max(0, 1 - gone / OUT);
-      stage.style.setProperty('--hero-fade', fade.toFixed(3));
-      // …and once it is clear it stops taking the pointer. Opacity alone
-      // would leave an invisible composer swallowing clicks on Work's title.
-      stage.classList.toggle('is-gone', fade <= 0.005);
-    };
-    window.addEventListener('scroll', () => {
-      if (!raf) raf = requestAnimationFrame(track);
-    }, { passive: true });
-    track();
+// ---- while there is a conversation ----
+// The conversation takes the whole page. The frame says so with data-chat,
+// and three things answer it: the menu square gives its place to the clear
+// square (js/nav.js), the composer's pill stays open (css/home.css), and the
+// name steps out of the way. It simply fades, and fades back in once the
+// conversation is cleared, or when you scroll away from Home, where the
+// headline is the other screens' names anyway. (It lifted off and went out of focus, a line at a time; the chat
+// is kept plain now, and so is this.) Before the first paint (a
+// conversation restored by a reload) nothing moves: the name is simply not
+// there, and the entrance leaves it out (js/entrance.js).
+const frame = document.querySelector('.frame');
+const nameLines = [...document.querySelectorAll('.name-line')];
+function setChatting(on) {
+  if (frame.hasAttribute('data-chat') === on) return;
+  frame.toggleAttribute('data-chat', on);
+  nav.setChat(on);
+  if (on) prompt.hush();
+  if (!document.documentElement.classList.contains('entered')) return;
+  for (const line of nameLines) {
+    for (const a of line.getAnimations()) a.cancel();
+    animate(line, on ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 1 }],
+      { duration: on ? 200 : 300, easing: 'ease-out', delay: on ? 0 : 120, fill: on ? 'forwards' : 'backwards' });
   }
+}
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
+// ---- Home: the composer and the conversation ----
+// The field (prompt.js) owns the text and the caret; the composer
+// (composer.js) owns everything around it and decides what a send is; the
+// chat (chat.js) sends it and plays the answer.
+const promptForm = document.querySelector('.prompt');
+const prompt = createPrompt(promptForm, {
+  onSubmit: () => composer.submit(),
+  onChange: () => composer?.paintSend(),
+});
+const chat = createChat({
+  prompt,
+  thread: document.querySelector('.thread'),
+  announcer: document.getElementById('announcer'),
+  onFail: (sent) => composer.restore(sent),
+  onLive: setChatting,
+});
+const composer = createComposer(promptForm, {
+  prompt,
+  onSend: (message) => chat.submit(message),
+});
+
+// A click on Home's empty canvas is a click on the prompt: the whole page is
+// the invitation. Not on the conversation's bubbles, though, which are there
+// to be read and selected.
+views.home.addEventListener('click', (e) => {
+  if (e.target.closest('.bubble, .turn-photo')) return;
+  if (!getSelection().isCollapsed) return;
+  prompt.focus();
+});
+
+// ---- per-screen hooks (Play fills this in when it loads) ----
+const hooks = {};
+
+// ---- the headline ----
+const headline = {};
+for (const el of document.querySelectorAll('.headline > [data-for]')) headline[el.dataset.for] = el;
+
+// The pill behind a screen's title is one for all three, as wide as
+// whichever is showing, in that screen's pastel (css/base.css), so it
+// stretches or draws in to the next word as the screens change. On Home it
+// keeps the width of the last title it held, out of sight. Fitted without
+// its spring when the page opens or the window changes size, so only a
+// change of screen moves it.
+const pill = document.querySelector('.headline-pill');
+function fitPill(name, { still = false } = {}) {
+  const title = headline[name];
+  if (!pill || !title || name === 'home') return;
+  if (still) pill.style.transition = 'none';
+  pill.style.setProperty('--pill-w', `${title.offsetWidth}px`);
+  if (still) { void pill.offsetWidth; pill.style.transition = ''; }
+}
+const fitPillStill = () => fitPill(section && section !== 'home' ? section : 'work', { still: true });
+function swapHeadline(to, from, dir) {
+  const k = u();
+  const leaving = headline[from];
+  const arriving = headline[to];
+  for (const el of [leaving, arriving]) for (const a of el.getAnimations()) a.cancel();
+  animate(leaving, [
+    { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
+    { opacity: 0, translate: `0 ${-dir * 10 * k}px`, filter: 'blur(3px)' },
+  ], { duration: 200, easing: EASE.exit, fill: 'forwards' });
+  // Home's headline is the name, which a conversation keeps out of the way
+  if (to === 'home' && frame.hasAttribute('data-chat')) return;
+  animate(arriving, [
+    { opacity: 0, translate: `0 ${dir * 10 * k}px`, filter: 'blur(3px)' },
+    { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
+  ], { ...SPRING.settle, delay: 90, fill: 'backwards' });
+}
+
+// ---- where you are ----
+// The screen you are on is the one that holds the middle of the window.
+// Everything that depends on it is told here, once, as it changes.
+let section = null;
+function setSection(name, { initial = false } = {}) {
+  if (name === section) return;
+  const prev = section;
+  section = name;
+  // the frame first: the chat below hides the name for a conversation, and
+  // must find the headline already turned to the new screen
+  frame.dataset.section = name;
+  fitPill(name, { still: initial });
+  document.title = TITLES[name];
+  nav.setCurrent(name);
+  nav.close();
+  prompt.setTypeAnywhere(name === 'home');
+  chat.setVisible(name === 'home');
+  // The first time Home is in view, the caret types its greeting out and
+  // takes it back (js/prompt.js): on a first load once the entrance has set
+  // it blinking (at 700ms) and it has blinked once; arriving later, a beat
+  // after the scroll lands. Not over a conversation, which has said hello
+  // already.
+  if (name === 'home' && !frame.hasAttribute('data-chat')) prompt.greet({ delay: initial ? 1250 : 500 });
+  if (prev) hooks[prev]?.leave?.();
+  hooks[name]?.enter?.(router.current?.view === name ? router.current : { view: name, game: null });
+  if (prev && !initial) swapHeadline(name, prev, Math.sign(VIEWS.indexOf(name) - VIEWS.indexOf(prev)));
+  router.note({ view: name, game: null });
+}
+
+function whereAmI() {
+  const middle = innerHeight / 2;
+  let name = VIEWS[0];
+  for (const v of VIEWS) if (screens[v].getBoundingClientRect().top <= middle) name = v;
+  return name;
+}
+// The page is scrolled at all: the composer's blinking caret goes quiet
+// (css/home.css), so nothing keeps asking for attention at the foot of Home
+// while you read on down.
+let spying = 0;
+function onScroll() {
+  spying = 0;
+  frame.toggleAttribute('data-scrolled', scrollY > 4);
+  setSection(whereAmI());
+}
+addEventListener('scroll', () => {
+  if (!spying) spying = requestAnimationFrame(onScroll);
+}, { passive: true });
+frame.toggleAttribute('data-scrolled', scrollY > 4);
+addEventListener('resize', () => { setSection(whereAmI()); fitPillStill(); });
+document.fonts?.ready.then(fitPillStill);
+
+// A change of the hash itself: a game opened or closed is Play's to handle.
+// A link to another screen (a pill, the name, an address typed in) needs
+// nothing from here: the browser has already gone there, and the page
+// watching itself, above, follows.
+function show(next, prev, { initial }) {
+  if (initial) return;
+  if (prev && prev.view === next.view) hooks[next.view]?.update?.(next, prev);
+}
+
+// ---- arriving ----
+// Each screen's pieces (everything marked data-rise) rise into place by the
+// page's one entrance the first time they come into view, a beat apart. They
+// are held unseen until then (css/base.css, under html.rises), so none is
+// caught standing there first; without script, nothing is held.
+document.documentElement.classList.add('rises');
+let booting = true;
+const riser = new IntersectionObserver((entries) => {
+  const now = entries.filter((e) => e.isIntersecting).map((e) => e.target);
+  if (!now.length) return;
+  for (const el of now) {
+    riser.unobserve(el);
+    el.classList.add('is-risen');
   }
-})();
+  rise(now, { delay: booting ? 380 : 40, stagger: 50 });
+}, { threshold: 0.12 });
+for (const el of document.querySelectorAll('[data-rise]')) riser.observe(el);
+
+// ---- boot ----
+// The page opens where the address says (the browser takes a link to #work
+// to the Work screen itself, and a reload back to wherever you were), and
+// the first scroll the browser makes to get there puts everything else
+// right.
+const router = startRouter((next, prev, info) => show(next, prev, info));
+// A game's address (#play/pong) names no element on the page, so the browser
+// leaves a link to one at the top, on Home; take it to the Play screen, where
+// the game opens (js/play/play.js).
+if (router.current.game) screens[router.current.view].scrollIntoView({ block: 'start', behavior: 'instant' });
+fitPillStill();
+setSection(router.current.view, { initial: true });
+// Once the page has loaded and the browser has put it back where it was, the
+// window has the last word over the address: a reload restores the scroll,
+// and if that disagrees with the hash, what you can see is where you are.
+addEventListener('load', () => requestAnimationFrame(() => setSection(whereAmI())), { once: true });
+
+playEntrance({ caret: prompt.caret, section }).then(() => {
+  booting = false;
+  if (section === 'home') prompt.focusIfDesk();
+});
+
+// Play's engine is the heaviest thing here, and nothing needs it until the
+// Play screen comes into view. It is fetched when the browser is next idle
+// (within two seconds, however busy it is), or the moment the Play screen
+// comes within a screen of the window, whichever is first, and wired in when
+// it arrives. (It waited for idle alone, which on a busy page can be never,
+// and left the courts blank for whoever scrolled down to them.)
+let playing = null;
+function loadPlay() {
+  if (playing) return playing;
+  return (playing = import('./play/play.js').then(({ initPlay }) => {
+    hooks.play = initPlay(views.play, { router });
+    if (section === 'play') hooks.play.enter(router.current.view === 'play' ? router.current : { view: 'play', game: null }, null, { initial: true });
+  }).catch((err) => console.warn('play did not load', err)));
+}
+if (router.current.view === 'play') loadPlay();
+else {
+  if (window.requestIdleCallback) requestIdleCallback(loadPlay, { timeout: 2000 });
+  else setTimeout(loadPlay, 1200);
+  const near = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) { near.disconnect(); loadPlay(); }
+  }, { rootMargin: '100% 0px' });
+  near.observe(screens.play);
+}
+
+// About's foot: the icons that say where they go, and the email that copies
+// itself (js/about.js).
+initAbout(screens.about, { announcer: document.getElementById('announcer') });
+
+if (new URLSearchParams(location.search).has('overlay')) {
+  import('../tools/overlay.js');
+}

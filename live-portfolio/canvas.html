@@ -1,27 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Canvas — Vicino AI</title>
-  <meta name="description" content="A working, dependency-free replica of Canvas — the node editor I helped build at Vicino AI. Pan, zoom, wire nodes, run the graph. Generation is simulated; no backend, no credits." />
-  <meta name="robots" content="noindex" />
-
-  <link rel="icon" type="image/png" href="Media/darkcircle.png" />
   <meta name="theme-color" content="#eef3f3" />
-  <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
-  <!-- the board's design IS Manrope (pulse-overrides.css) -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <!-- Canvas, the node editor Tigo helped build at Vicino AI, as the live
+       case study's working replica runs it (live-portfolio/canvas.html and
+       js/vicino-canvas.js). Two ways in, off one page:
+         canvas.html          the instrument: the board fills the window and
+                              owns the input, to pan, zoom, wire and run
+         canvas.html?parked   a picture that runs: a finished board, the clip
+                              looping and the mesh turning, taking no input,
+                              for vicino.html to hold in a frame
+       The live page's analytics beacon is left out on purpose: nothing here
+       talks to the live site. The board's own face is Manrope, as shipped. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap" />
-  <link rel="stylesheet" href="css/vicino-canvas.css?v=16" />
+  <link rel="stylesheet" href="assets/case/vicino/canvas/vicino-canvas.css" />
   <style>
-    /* THE APP, NOT A PICTURE OF IT. On the case study the board is a
-       1920×1080 object scaled into a tile; here it simply IS the window:
-       fixed to all four edges, no frame, no radius, no shadow, no page
-       around it. That also makes the rendered scale exactly 1, which is
-       the scale the shipped editor's own pointer math assumes — nothing
-       is inferred, nothing is compensated for. */
+    /* The board simply is the window: fixed to all four edges, no frame,
+       no radius, no shadow, so it renders at a scale of exactly 1, the scale
+       the editor's own pointer math assumes. */
     html, body {
       height: 100%;
       margin: 0;
@@ -39,65 +42,32 @@
       box-shadow: none;
     }
   </style>
-  <!-- "Not me." Vercel hands every beacon to a beforeSend hook before it
-       sends, and drops it outright when that hook returns null — so this is a
-       real opt-out, not a send-then-discard: nothing leaves the browser.
-       Load ?va-ignore=1 once on a machine to go quiet on it, ?va-ignore=0 to
-       start counting again. The flag is localStorage, so it is per browser
-       profile — each browser you read this site in needs its own visit, and
-       clearing site data forgets it. The param strips itself so the URL you
-       are left holding is the ordinary one. -->
-  <script>
-    (() => {
-      try {
-        const q = new URLSearchParams(location.search);
-        if (q.has('va-ignore')) {
-          const on = q.get('va-ignore') !== '0';
-          if (on) localStorage.setItem('va.ignore', '1');
-          else localStorage.removeItem('va.ignore');
-          q.delete('va-ignore');
-          const rest = q.toString();
-          history.replaceState(null, '',
-            location.pathname + (rest ? '?' + rest : '') + location.hash);
-          console.log('[analytics] this browser is now ' + (on ? 'IGNORED' : 'counted'));
-        }
-        if (localStorage.getItem('va.ignore')) {
-          (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
-        }
-      } catch (e) { /* private mode, blocked storage: just count normally */ }
-    })();
-  </script>
-  <!-- Vercel Web Analytics. First-party and cookieless: the script is served
-       from this same origin at deploy time, so there is no third party in the
-       page, nothing for a blocker to catch, and no consent banner owed. -->
-  <script defer src="/_vercel/insights/script.js"></script>
 </head>
-
 <body>
-  <div class="vc" id="vc" role="application"
-       aria-label="Canvas — a working replica of Vicino AI's node editor"></div>
-
-  <script src="js/vicino-canvas.js?v=30"></script>
+  <div class="vc" id="vc" role="application" aria-label="Canvas — a working replica of Vicino AI's node editor"></div>
+  <script src="assets/case/vicino/canvas/vicino-canvas.js"></script>
   <script>
     (() => {
-      if (!window.VicinoCanvas) return;
-      // the board renders at 1:1 in a window it fills — say so outright,
-      // so the engine's pointer math never has to infer a scale
-      window.VicinoCanvas.setStageScale(1);
-      // this tab IS the instrument: the board owns the input from the
-      // first frame, and attract mode never runs here
-      window.VicinoCanvas.setTheater(true);
-      // the framing follows the window, since the window is the board now
-      window.addEventListener('resize', () => window.VicinoCanvas.fit(), { passive: true });
-      // a tab that opened in the background had no box to frame against
-      window.addEventListener('load', () => window.VicinoCanvas.fit());
-
-      // Escape walks inward-out through the board's own layers (menus,
-      // chat, selection). There is nothing outside it to close.
-      document.addEventListener('keydown', (e) => {
-        if (e.key !== 'Escape') return;
-        if (window.VicinoCanvas.handleEscape()) e.preventDefault();
-      }, true);
+      const board = window.VicinoCanvas;
+      if (!board) return;
+      const parked = new URLSearchParams(location.search).has('parked');
+      board.setStageScale(1);
+      if (parked) {
+        // held in a frame, the board is a picture: its minimap folded away
+        // (its own control), so the frame's edge does not cut it in half
+        document.getElementById('vc').setAttribute('aria-hidden', 'true');
+        document.getElementById('vc-map-hide')?.click();
+      } else {
+        // this tab IS the instrument: the board owns the input from the
+        // first frame
+        board.setTheater(true);
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== 'Escape') return;
+          if (board.handleEscape()) e.preventDefault();
+        }, true);
+      }
+      addEventListener('resize', () => board.fit(), { passive: true });
+      addEventListener('load', () => board.fit());
     })();
   </script>
 </body>
