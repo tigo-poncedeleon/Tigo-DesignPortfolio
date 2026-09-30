@@ -1,10 +1,12 @@
 // chat.js — the conversation on Home.
 //
-// It talks to the live site's own proxy, the same Claude Haiku behind the
-// same system prompt, and nothing is deployed for it: that proxy answers any
-// origin, and its CORS comment expects a draft on localhost to call it
-// directly (live-portfolio/api/chat.js:71-74). window.AI_ENDPOINT overrides it
-// for testing, as it does on the live site.
+// It talks to the site's own proxy, api/chat.js: Claude Haiku behind the
+// system prompt written there. On the site that is the page's own /api/chat.
+// A copy of the site on this machine (tools/serve.py) has no /api of its own,
+// so it asks production's, which lets localhost in and no other origin. That
+// is the www address, not the bare domain: the bare domain redirects to www,
+// and a preflight cannot follow a redirect. window.AI_ENDPOINT overrides
+// either, for testing.
 //
 // The conversation is a thread down the page from its top, as in Messenger:
 // each question in a light blue bubble on the right, each answer in a grey
@@ -26,7 +28,8 @@
 
 import { EASE, animate, reduced, u } from './motion.js';
 
-const ENDPOINT = window.AI_ENDPOINT || 'https://tigo-design-portfolio.vercel.app/api/chat';
+const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+const ENDPOINT = window.AI_ENDPOINT || (LOCAL ? 'https://www.tigoponcedeleon.com/api/chat' : '/api/chat');
 const STORE = 'draft.chat';
 const TIMEOUT = 20000;
 
@@ -56,9 +59,10 @@ export function createChat({ prompt, thread, announcer, onFail, onLive }) {
 
   // ---- the request ----
   // The payload is the last nine pairs and the new question: nineteen
-  // messages at most, and always starting on a question. (The live client
-  // takes the last twenty messages, which from the eleventh question on
-  // starts the window on an answer.)
+  // messages at most, and always starting on a question. (The old site's
+  // client took the last twenty messages, which from the eleventh question
+  // on started the window on an answer, and a window has to start on a
+  // question: api/chat.js turns one away that doesn't.)
   // A photo goes only with the question it was sent with, as an image block
   // ahead of the words; earlier ones are remembered in words, so a follow-up
   // still knows there was one without sending it again.

@@ -1,6 +1,13 @@
 {
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
       "source": "/(.*).html",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
@@ -12,5 +19,16 @@
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
     }
-  ]
+  ],
+  "redirects": [
+    { "source": "/work.html", "destination": "/#work", "permanent": true },
+    { "source": "/about.html", "destination": "/#about", "permanent": true },
+    { "source": "/play.html", "destination": "/#play", "permanent": true },
+    { "source": "/ai.html", "destination": "/", "permanent": true },
+    { "source": "/Media/og-card.png", "destination": "/assets/og/home.png", "permanent": true },
+    { "source": "/Media/apple-touch-icon.png", "destination": "/apple-touch-icon.png", "permanent": true }
+  ],
+  "functions": {
+    "api/chat.js": { "maxDuration": 30 }
+  }
 }

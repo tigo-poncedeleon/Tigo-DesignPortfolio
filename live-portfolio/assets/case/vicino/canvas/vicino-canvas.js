@@ -1,7 +1,7 @@
-// (draft-portfolio) This is live-portfolio/js/vicino-canvas.js, copied
-// unchanged but for one thing: the board's four media files are looked for
-// under assets/case/vicino/canvas/ rather than the live site's Media/, so the
-// draft's canvas.html, which sits at the draft's root, finds them.
+// This is the old site's js/vicino-canvas.js (archive/v2-live-portfolio/js/vicino-canvas.js),
+// copied unchanged but for one thing: the board's four media files are looked
+// for under assets/case/vicino/canvas/ rather than the old site's Media/, so
+// canvas.html, which sits at the site's root, finds them.
 // The Vicino canvas, in miniature — a working model of the node editor I
 // redesigned and shipped, rebuilt dependency-free and dressed in the SAME
 // design: every color, radius, and shadow below is read off the shipped

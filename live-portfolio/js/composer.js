@@ -3,17 +3,17 @@
 //   (photo)     no button: a photo comes in by pasting it into the field
 //               or dropping it onto the pill, and waits beside the words. It
 //               is shrunk to 1200px on its longest side and sent as a JPEG,
-//               the live client's recipe (live-portfolio/js/ai-chat.js:
-//               305-316): the proxy passes it straight to Claude, which can
-//               see it. (A + at the head of the tools opened the file
+//               the old site's recipe (archive/v2-live-portfolio/js/ai-chat.js:
+//               305-316): the proxy (api/chat.js) passes it on to Claude,
+//               which can see it. (A + at the head of the tools opened the file
 //               picker; Tigo took it out, and the row is the lighter for it.)
 //   friendly ⌄  the chat's mood: friendly, whimsical or suspicious, the three
-//               the live proxy knows (live-portfolio/api/chat.js:55-68). The
+//               the proxy knows (api/chat.js, PERSONAS). The
 //               choice is kept in this browser.
 //   mic         ask out loud, where the browser can listen (its own speech
 //               recognition; the button is not shown where there is none).
 //               What you say is written into the field and waits for you to
-//               send it, as on the live site: speech is often a little wrong.
+//               send it, as on the old site: speech is often a little wrong.
 //   send        pale until there is something to send, then ink.
 
 const MOODS = ['friendly', 'whimsical', 'suspicious'];

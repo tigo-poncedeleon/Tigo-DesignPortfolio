@@ -4,22 +4,31 @@
     {
       "name": "portfolio",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "python3 -m http.server ${PORT:-8791} --directory live-portfolio"],
+      "runtimeArgs": [
+        "-c",
+        "python3 live-portfolio/tools/serve.py ${PORT:-8793}"
+      ],
+      "port": 8793,
+      "autoPort": true
+    },
+    {
+      "name": "v2-live-portfolio",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "python3 -m http.server ${PORT:-8791} --bind 127.0.0.1 --directory archive/v2-live-portfolio"
+      ],
       "port": 8791,
       "autoPort": true
     },
     {
-      "name": "old-portfolio",
+      "name": "v1-old-portfolio",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "python3 -m http.server ${PORT:-8792} --directory old-portfolio"],
+      "runtimeArgs": [
+        "-c",
+        "python3 -m http.server ${PORT:-8792} --bind 127.0.0.1 --directory archive/v1-old-portfolio"
+      ],
       "port": 8792,
-      "autoPort": true
-    },
-    {
-      "name": "draft-portfolio",
-      "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "python3 draft-portfolio/tools/serve.py ${PORT:-8793}"],
-      "port": 8793,
       "autoPort": true
     }
   ]

@@ -1,7 +1,8 @@
 {
   "name": "tigo-design-portfolio",
   "private": true,
+  "description": "tigoponcedeleon.com: a static site, and one serverless function (api/chat.js) for the chat on Home",
   "dependencies": {
-    "@vercel/blob": "^2.6.1"
+    "@anthropic-ai/sdk": "0.128.0"
   }
 }

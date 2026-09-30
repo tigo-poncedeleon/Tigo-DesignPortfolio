@@ -5,8 +5,9 @@
 //   #work  #play  #about
 //   #play/pong  #play/snake  #play/flappy   a game, open on its stage
 //
-// Hash routes, because the draft is served by a plain static server that
-// knows nothing of paths, and a reload of /work there would be a 404.
+// Hash routes, because the site is also served by a plain static server
+// (tools/serve.py) that knows nothing of paths, and a reload of /work there
+// would be a 404.
 //
 // Two things write it. Scrolling the page notes the screen you have come to
 // (note(), below): the address changes, but with no history entry and no
@@ -18,11 +19,25 @@
 export const VIEWS = ['home', 'work', 'play', 'about'];
 export const GAMES = ['pong', 'snake', 'flappy'];
 
+// The site this one replaced (archive/v2-live-portfolio) named its places
+// differently, and those names are out in the world, in shared links and
+// old bookmarks: each lands on the screen that holds the same thing now,
+// and the address is tidied to the new name. A game's old name opens Play,
+// not the game, as the old one did.
+const FORMER = {
+  home: 'home',
+  vicino: 'work', pantrypal: 'work', drone: 'work', nextlevel: 'work',
+  pong: 'play', snake: 'play', flappy: 'play',
+  bio: 'about', resume: 'about', contact: 'about',
+};
+
 export function parse(hash) {
   const h = (hash || '').replace(/^#\/?/, '');
   if (!h) return { view: 'home', game: null };
   const [view, game] = h.split('/');
-  if (!VIEWS.includes(view)) return null;
+  if (!VIEWS.includes(view)) {
+    return view in FORMER ? { view: FORMER[view], game: null, former: true } : null;
+  }
   if (view === 'play' && GAMES.includes(game)) return { view, game };
   return { view, game: null };
 }
@@ -45,7 +60,12 @@ export function startRouter(onRoute) {
       next = { view: 'home', game: null };
     }
     // home is #, which leaves a bare "#" in the address bar; tidy it away
-    if (next.view === 'home' && location.hash === '#') {
+    // (and #home, the old site's name for it), and a former name gives way
+    // to the one it has now
+    if (next.former) {
+      delete next.former;
+      history.replaceState(null, '', location.pathname + location.search + (next.view === 'home' ? '' : href(next)));
+    } else if (next.view === 'home' && (location.hash === '#' || location.hash === '#home')) {
       history.replaceState(null, '', location.pathname + location.search);
     }
     if (current && routeKey(next) === routeKey(current)) return;

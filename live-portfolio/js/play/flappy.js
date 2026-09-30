@@ -1,6 +1,6 @@
 // play/flappy.js — dotGears, 2013, in ink on sky.
 //
-// The live game's physics (live-portfolio/js/flappy.js:10-19, 159-203):
+// The old site's physics (archive/v2-live-portfolio/js/flappy.js:10-19, 159-203):
 //   the bird is 21px and flies at x 200; gravity is 1500px/s², and a flap
 //     SETS the fall to −430 rather than adding to it (an apex of about 62px)
 //   pipes are 42 wide with a 147 gap, travel at 150px/s, one pair every 210px,

@@ -1,6 +1,6 @@
 // play/pong.js — Atari, 1972, in ink on pink.
 //
-// The rules and every number are the live game's (live-portfolio/js/pong.js
+// The rules and every number are the old site's (archive/v2-live-portfolio/js/pong.js
 // :11-20 and :110-164). They were tuned there and are only redrawn here.
 //   paddles 21 × 81, 31 in from the court's edge; the ball is 21
 //   you: 460px/s on the keys, or drag the paddle directly
@@ -11,7 +11,7 @@
 //   serve 420 at up to ±20°; every hit ×1.045, up to 900
 //   where the ball meets the paddle sets its angle, up to 55° at the tips
 //   collisions are swept along x, so a fast ball cannot pass through a face
-// One point per game, as on the live site; the record is the RALLY, the hits
+// One point per game, as on the old site; the record is the RALLY, the hits
 // by both paddles in that point.
 //
 // On the stage the court is 840 × 420, the one all three games share, and

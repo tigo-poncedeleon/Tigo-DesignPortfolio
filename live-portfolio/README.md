@@ -1,33 +1,41 @@
-# draft-portfolio
+# live-portfolio
 
-A trial of a new direction for the portfolio, built from the Figma file
+The portfolio at <https://www.tigoponcedeleon.com>, live since 30 September
+2026. It began as a draft beside the site before it, built from the Figma file
 `MGcQ5N2Mo7NzXIOaaDWPYn`: first the frame "AI-Opening-Screen" (node
-`1579:306`), then Home's frame (node `1595:527`). It lives on this Mac only.
-It is **not** the live site, and nothing here is deployed.
+`1579:306`), then Home's frame (node `1595:527`). The sites it replaced are in
+`../archive/` (its README says which was which).
 
-## Why it cannot go live
+## How it goes live
 
-- Vercel builds only `live-portfolio/`, which is the project's Root
-  Directory. This folder is a sibling of it, so Vercel never serves it.
-- It is also listed in the root `.vercelignore`, so a CLI deploy run from the
-  repo root does not even upload it.
-- Its commits stay on local `main` and are not pushed.
-- The page carries `noindex, nofollow`, in case it is ever served somewhere
-  by mistake.
-
-Nothing under `live-portfolio/` is changed by this work. Making the draft live
-is a decision to take on purpose, later.
+- This folder is the Vercel project's Root Directory (the project is
+  `tigo-design-portfolio`). A push to `main` on GitHub is a production
+  deploy; there is no build step, only `npm install` for the chat's one
+  dependency.
+- The bare domain redirects to `www.tigoponcedeleon.com`, which is the
+  canonical address: every page's `<link rel="canonical">`, `og:url` and the
+  sitemap name it.
+- The root `.vercelignore` keeps the archive, the résumé's source, this
+  README and `tools/` out of the upload; nothing in them is served.
+- `vercel.json` sends the old site's addresses on (`work.html`,
+  `about.html`, `play.html`, `ai.html`, and its card and icon under `Media/`),
+  keeps HTML from being cached stale, and gives the chat 30 seconds.
+- Old links into the page itself (`#vicino`, `#bio`, `#pong` and the rest)
+  are translated by `js/router.js` into the screens that hold the same thing
+  now.
 
 ## Running it
 
 ```sh
-python3 draft-portfolio/tools/serve.py
+python3 live-portfolio/tools/serve.py
 ```
 
 Then open <http://localhost:8793>. The server listens on this machine only
 (127.0.0.1) and turns caching off, so every reload shows what is on disk.
-In Claude Code the same server is the `draft-portfolio` entry in
-`.claude/launch.json`.
+In Claude Code the same server is the `portfolio` entry in
+`.claude/launch.json`. It serves files and nothing else: there is no
+`/api` locally, so the chat asks production's (below), and Vercel's redirects
+and 404 page only happen there.
 
 Add `?overlay` to the address to lay the Figma render over Home. Press **O**
 to show or hide it, and **D** for difference mode, where anything that matches
@@ -36,18 +44,36 @@ The render in `tools/figma-home.png` is the first frame's (`1579:306`).
 
 ## What it talks to
 
-- **The chat** posts to the live site's own proxy,
-  `https://tigo-design-portfolio.vercel.app/api/chat`: the same Claude Haiku,
-  with the same system prompt. The proxy answers any origin; its CORS comment
-  expects a draft on localhost to call it directly. Each question is one
-  model call on the live key, as a visitor's would be. The composer's mood
-  (friendly, whimsical or suspicious) is the proxy's own `persona` field. A
-  photo goes up as an image block, shrunk to 1200px, which Claude can see.
-  The microphone uses the browser's own speech recognition; in Chrome that
-  sends the audio to Google, and Safari transcribes on the Mac.
-- **The games** talk to nothing. They keep no scores past the one on screen,
-  and never call the live `/api/scores`, because a post from here would
-  change the live site's records.
+- **The chat** posts to `api/chat.js`, a Vercel function that calls Claude
+  Haiku 4.5 through the Anthropic SDK with the system prompt written there.
+  The key is the `ANTHROPIC_API_KEY` environment variable on the Vercel
+  project (Production and Preview) and never reaches the browser. The page
+  calls its own `/api/chat`; a copy of the site on localhost calls
+  production's, which lets localhost in and no other origin. The proxy takes
+  only what the chat sends (twenty messages at most, one photo, with the
+  newest question) and rebuilds every message before it goes on. The
+  composer's mood (friendly, whimsical or suspicious) is its `persona`
+  field. A photo goes up as an image block, shrunk to 1200px, which Claude
+  can see. The microphone uses the browser's own speech recognition; in
+  Chrome that sends the audio to Google, and Safari transcribes on the Mac.
+  The facts the chat knows are in the system prompt: change them there.
+- **Vercel Web Analytics** counts page views, first-party and cookieless
+  (`/_vercel/insights/script.js`, in each page's head). Load any page with
+  `?va-ignore=1` once in a browser to stop it counting your own visits, and
+  `?va-ignore=0` to start again.
+- **The games** talk to nothing. They keep no scores past the one on screen.
+  (The site before kept site-wide records in Vercel Blob through
+  `api/scores.js`; that is in the archive, and its blob store is still on the
+  project, unused.)
+
+## The link previews
+
+Each page's `og:image` is its own card in `assets/og/`: Home itself, and each
+case study's opening tile, shot by `tools/og-cards.mjs` from a local server.
+Unfurlers cache a card by its address for about a week, so when the art
+changes for good, rename the files and the `og:image` tags together.
+`apple-touch-icon.png` is the favicon's ink disc on the paper, opaque,
+because iOS fills a clear corner with black.
 
 ## The pieces
 
@@ -86,7 +112,7 @@ The render in `tools/figma-home.png` is the first frame's (`1579:306`).
 
 A Work tile opens its case study in the same tab: `vicino.html`,
 `pantrypal.html` and `nextlevel.html`, each one long page, retold from the
-live site's case study in the draft's own language (the one size, the lit
+old site's case study in the site's own language (the one size, the lit
 tiles, the frosted pills, the chat's bubbles). Each opens on its Work tile
 grown to the window, and where the browser can carry a view across pages
 the tile itself grows into it, and shrinks home on the way back.
@@ -133,27 +159,27 @@ the tile itself grows into it, and shrinks home on the way back.
   not in a stylesheet: the scripts read computed style as soon as they
   start, and a read before a linked stylesheet has applied made the
   browser drop the transition.
-- `canvas.html` is Canvas, the live site's working replica of Vicino's
-  node editor (`assets/case/vicino/canvas/`, copied from `live-portfolio`,
-  with only its media paths changed). Opened plain, it is the instrument;
+- `canvas.html` is Canvas, the old site's working replica of Vicino's
+  node editor (`assets/case/vicino/canvas/`, copied from
+  `archive/v2-live-portfolio`, with only its media paths changed). Opened plain, it is the instrument;
   `canvas.html?parked` is the finished board that runs in Vicino's opening
   tile. The board loads Manrope from Google Fonts.
 - `vicino-ds/` is the Pulse design system's own documents (the brand book,
   the accent study, the home experiment, the component browser and
   library, the charts, the AI guide), copied unchanged from
-  `live-portfolio/vicino-ds/`. Every document window on `vicino.html`
+  `archive/v2-live-portfolio/vicino-ds/`. Every document window on `vicino.html`
   opens its real file in a new tab, and three of them run it in place
   (above). A few pictures inside them point outside the folder and are
-  missing, as they are on the live site.
-- `assets/case/` holds each case's pictures, copied from the live site's
+  missing, as they were on the old site.
+- `assets/case/` holds each case's pictures, copied from the old site's
   `Media/` and from the work's own repositories. PantryPal's phones are the
   app's latest layout-sweep captures in the iPhone 16 Pro frame from the
   PantryPal repo's App Store lab, and its UX Lab pictures are the lab's
   own prototypes. Next Level's nine versions of the mark come from the
-  first portfolio (`old-portfolio/Drone-Media/`), and its long website is
-  the live site, captured top to bottom.
+  first portfolio (`archive/v1-old-portfolio/Drone-Media/`), and its long
+  website is the brand's site as it is live, captured top to bottom.
 - The links to vicino.ai, the App Store, the website and the Pulse review
-  go to the real places; nothing on these pages posts anywhere.
+  go to the real places; nothing on these pages posts anywhere but the chat.
 
 ## The photo
 

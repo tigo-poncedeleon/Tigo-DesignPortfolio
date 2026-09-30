@@ -3,9 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <!-- A draft, kept on one Mac (README.md). -->
-  <meta name="robots" content="noindex, nofollow" />
   <title>Next Level Drone Cleaning — Tigo Ponce de León</title>
+  <meta name="description" content="Next Level Drone Cleaning: a brand identity case study by Tigo Ponce de León. Five essential questions, nine versions of a mark, three colorways, and a rollout across web, socials and apparel." />
+  <link rel="canonical" href="https://www.tigoponcedeleon.com/nextlevel.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Tigo Ponce de León" />
+  <meta property="og:title" content="Next Level Drone Cleaning — Tigo Ponce de León" />
+  <meta property="og:description" content="Next Level Drone Cleaning: a brand identity case study by Tigo Ponce de León. Five essential questions, nine versions of a mark, three colorways, and a rollout across web, socials and apparel." />
+  <meta property="og:url" content="https://www.tigoponcedeleon.com/nextlevel.html" />
+  <meta property="og:image" content="https://www.tigoponcedeleon.com/assets/og/nextlevel.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Next Level Drone Cleaning’s opening tile: the brand’s website as it is live" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" content="#fafafa" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <script>
@@ -28,6 +39,27 @@
   <link rel="stylesheet" href="css/nav.css" />
   <link rel="stylesheet" href="css/case.css" />
   <script type="module" src="js/case.js"></script>
+  <!-- Vercel Web Analytics, and ?va-ignore=1 to stop it counting you
+       (index.html says how) -->
+  <script>
+    (() => {
+      try {
+        const q = new URLSearchParams(location.search);
+        if (q.has('va-ignore')) {
+          const on = q.get('va-ignore') !== '0';
+          if (on) localStorage.setItem('va.ignore', '1');
+          else localStorage.removeItem('va.ignore');
+          q.delete('va-ignore');
+          const rest = q.toString();
+          history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+        }
+        if (localStorage.getItem('va.ignore')) {
+          (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
+        }
+      } catch (e) { /* private mode, blocked storage: just count normally */ }
+    })();
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <div class="frame cs" data-case="nextlevel">
@@ -302,7 +334,7 @@
           <a href="index.html#work"><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>all work</a>
           <a href="mailto:tigoponcedeleon@gmail.com">email</a>
           <a href="https://www.linkedin.com/in/tigoponcedeleon/" target="_blank" rel="noopener">linkedin</a>
-          <a href="https://tigoponcedeleon.com/PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">résumé</a>
+          <a href="PoncedeLeon-Resume.pdf" target="_blank" rel="noopener">résumé</a>
         </nav>
       </footer>
     </main>

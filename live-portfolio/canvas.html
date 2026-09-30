@@ -3,20 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="noindex" />
   <title>Canvas — Vicino AI</title>
+  <meta name="description" content="A working, dependency-free replica of Canvas, the node editor Tigo Ponce de León helped build at Vicino AI. Pan, zoom, wire nodes and run the graph; generation is simulated, with no backend." />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" content="#eef3f3" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <!-- Canvas, the node editor Tigo helped build at Vicino AI, as the live
-       case study's working replica runs it (live-portfolio/canvas.html and
-       js/vicino-canvas.js). Two ways in, off one page:
+  <!-- Canvas, the node editor Tigo helped build at Vicino AI, as the old
+       site's case study ran its working replica
+       (archive/v2-live-portfolio/canvas.html and js/vicino-canvas.js). Two
+       ways in, off one page:
          canvas.html          the instrument: the board fills the window and
                               owns the input, to pan, zoom, wire and run
          canvas.html?parked   a picture that runs: a finished board, the clip
                               looping and the mesh turning, taking no input,
                               for vicino.html to hold in a frame
-       The live page's analytics beacon is left out on purpose: nothing here
-       talks to the live site. The board's own face is Manrope, as shipped. -->
+       Analytics counts the instrument only: parked, the board is a picture
+       inside vicino.html, which has already counted the visit. The board's
+       own face is Manrope, as shipped. -->
+  <script>
+    if (!new URLSearchParams(location.search).has('parked')) {
+      try {
+        if (localStorage.getItem('va.ignore')) (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
+      } catch (e) { /* blocked storage: count normally */ }
+      const va = document.createElement('script');
+      va.defer = true;
+      va.src = '/_vercel/insights/script.js';
+      document.head.append(va);
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap" />

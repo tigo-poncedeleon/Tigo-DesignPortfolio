@@ -24,7 +24,7 @@
 //
 // Every tile holds a demo instance of its game, and the stage makes a fresh
 // one when it opens. Two instances, not one board carried between two
-// places: the carrying is where the live site's games got tangled up with
+// places: the carrying is where the old site's games got tangled up with
 // their shell.
 //
 // The URL is #play/<game> while one is open, so Back closes it, a reload

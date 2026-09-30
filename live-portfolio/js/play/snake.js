@@ -1,6 +1,6 @@
 // play/snake.js — Nokia, 1997, in ink on mint.
 //
-// The rules are the live game's (live-portfolio/js/snake.js:9-13, 165-232):
+// The rules are the old site's (archive/v2-live-portfolio/js/snake.js:9-13, 165-232):
 //   a step every 110ms, 3ms quicker per food, never quicker than 65ms; four
 //   long at the centre, heading right
 //   a turn straight back into yourself is ignored

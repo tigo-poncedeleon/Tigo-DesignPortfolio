@@ -1,6 +1,11 @@
-old-portfolio
-.claude
-node_modules
+# Only live-portfolio/ is built (the project's Root Directory), but a deploy
+# uploads the repository first, so everything else is kept out of it here:
+# the archived sites, the résumé's source, and editor settings. Inside the
+# site, its development tools and its notes are not pages, and are not served.
+archive
 resume-src
-og-src
-draft-portfolio
+.claude
+.vscode
+node_modules
+/live-portfolio/tools
+/live-portfolio/README.md

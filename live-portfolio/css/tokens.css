@@ -98,7 +98,7 @@
   --mint: #c9ffe2;
 
   /* ---- type. One size, like the frame: everything is 36 Figma px. SF Pro
-     comes from the system (-apple-system), as on the live site; naming it
+     comes from the system (-apple-system), as on the old site; naming it
      directly finds nothing on a Mac, because the system face is not
      installed as "SF Pro". Line height is pinned to the frame's 43/36 rather
      than left as `normal`, which each engine resolves from the font's own
@@ -184,8 +184,8 @@
   --caret-h: 0.7046em;
   --caret-top: 0.2676em;
 
-  /* ---- motion. The two springs the live site's rail runs on, taken over
-     verbatim (live-portfolio/css/styles.css:163-180), because they are
+  /* ---- motion. The two springs the old site's rail ran on, taken over
+     verbatim (archive/v2-live-portfolio/css/styles.css:163-180), because they are
      already tuned to read as weight rather than wobble:
        settle  ζ=0.745, 3% over, peak at 0.35s, 0.56s: things ARRIVING
        out     ζ=1, critically damped, 0.44s: things LEAVING. Nothing is
@@ -282,7 +282,7 @@ html[data-theme='sage'] {
   --pill: rgb(255 255 255 / 0.72);
 }
 
-/* A browser too old for linear() gets the live site's nearest cubics: a mild
+/* A browser too old for linear() gets the old site's nearest cubics: a mild
    back-ease for arrivals and a soft ease-out for leaving. Neither lands the way
    a sampled spring does, but neither is jerky, and that is what matters. */
 @supports not (transition-timing-function: linear(0, 1)) {

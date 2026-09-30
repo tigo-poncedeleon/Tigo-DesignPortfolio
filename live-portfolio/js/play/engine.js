@@ -1,8 +1,8 @@
 // play/engine.js — what the three games share: one clock, a canvas fitted
 // to a playfield, and the life of a game.
 //
-// The live site's games are DOM boards: divs moved with translate3d, sized
-// by CSS zoom, and they know the shell they live in. These are canvas. The
+// The old site's games were DOM boards: divs moved with translate3d, sized
+// by CSS zoom, knowing the shell they lived in. These are canvas. The
 // new look is ink line art: a snake drawn as one round-jointed stroke that
 // glides between cells, capsule paddles, outlined pillars, a bird that tilts.
 // Canvas draws those natively. Each game also keeps its playfield in its own
@@ -129,7 +129,7 @@ export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 //   idle       on the stage, waiting for you
 //   countdown  3, 2, 1, three quarters of a second each (timed in the tick,
 //              so it pauses with everything else; a whole second each, the
-//              live site's, was three seconds of waiting to play)
+//              old site's, was three seconds of waiting to play)
 //   playing
 //   paused
 //   ended      a short lock (600ms, the live Flappy's) so the key that ended

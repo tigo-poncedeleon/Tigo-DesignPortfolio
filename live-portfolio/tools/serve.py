@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Serve the draft on this Mac, and only this Mac.
+"""Serve the site on this Mac, and only this Mac.
 
-    python3 draft-portfolio/tools/serve.py          # http://localhost:8793
-    python3 draft-portfolio/tools/serve.py 9000     # or any port
+    python3 live-portfolio/tools/serve.py          # http://localhost:8793
+    python3 live-portfolio/tools/serve.py 9000     # or any port
 
 Two differences from `python3 -m http.server`, both on purpose:
 
@@ -45,7 +45,7 @@ def main():
     port = int(os.environ.get("PORT") or (sys.argv[1] if len(sys.argv) > 1 else 8793))
     handler = functools.partial(NoStore, directory=ROOT)
     server = Server(("127.0.0.1", port), handler)
-    print(f"draft-portfolio on http://localhost:{port}  (this Mac only; Ctrl-C stops it)", flush=True)
+    print(f"live-portfolio on http://localhost:{port}  (this Mac only; Ctrl-C stops it)", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

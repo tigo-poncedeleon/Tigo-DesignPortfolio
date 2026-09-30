@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex" />
+  <title>Not here — Tigo Ponce de León</title>
+  <meta name="theme-color" content="#fafafa" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <!-- Vercel serves this page for any address it has nothing at, however deep,
+       so everything it links is from the site's root, not beside it. It is
+       the page's own type and nothing else: the name where Home has it, and
+       the way back in, the menu's four places as white capsules, the ones the
+       case studies end on. -->
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <style>
+    body { min-height: 100vh; min-height: 100svh; padding: var(--top) var(--gutter-r) var(--bottom) var(--gutter-l); }
+    .name-line + .name-line { color: var(--ink-2); }
+    .lost { margin-top: calc(180 * var(--u)); max-width: 21em; }
+    .lost h1 + p { margin-top: 0.4em; color: var(--ink-2); text-wrap: pretty; }
+    .ways { display: flex; flex-wrap: wrap; gap: calc(10 * var(--u)); margin-top: calc(40 * var(--u)); list-style: none; }
+    .ways a {
+      display: flex;
+      align-items: center;
+      height: var(--title-h);
+      padding: 0 var(--title-pad);
+      border-radius: var(--title-r);
+      background: var(--surface);
+      color: var(--ink);
+      white-space: nowrap;
+      transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop);
+    }
+    .ways li:nth-child(1) a:hover { background: var(--blue); }
+    .ways li:nth-child(2) a:hover { background: var(--pink); }
+    .ways li:nth-child(3) a:hover { background: var(--lavender); }
+    .ways li:nth-child(4) a:hover { background: var(--green); }
+    .ways a:hover { color: var(--pastel-ink); }
+    .ways a:active { scale: 0.96; transition-duration: 90ms; }
+    @media (max-width: 760px) { .lost { margin-top: 96px; } }
+  </style>
+  <script>
+    (() => {
+      try {
+        if (localStorage.getItem('va.ignore')) (window.vaq = window.vaq || []).push(['beforeSend', () => null]);
+      } catch (e) { /* blocked storage: count normally */ }
+    })();
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+  <a class="name" href="/" aria-label="Tigo Ponce de León, home">
+    <span class="name-line">Tigo Ponce de León</span>
+    <span class="name-line">Design + CS @ UChicago</span>
+  </a>
+  <main class="lost">
+    <h1 style="font: inherit">This page isn’t here.</h1>
+    <p>It may have moved when the site did. Everything is still one of these four places away.</p>
+    <ul class="ways" role="list">
+      <li><a href="/">home</a></li>
+      <li><a href="/#work">work</a></li>
+      <li><a href="/#play">play</a></li>
+      <li><a href="/#about">about</a></li>
+    </ul>
+  </main>
+</body>
+</html>

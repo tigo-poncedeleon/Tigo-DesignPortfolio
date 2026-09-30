@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # pantry-app.sh — rebuild what PantryPal's case study takes from the app.
 #
-#     draft-portfolio/tools/pantry-app.sh              # from ~/Developer/PantryPal
-#     PANTRYPAL=/path/to/PantryPal draft-portfolio/tools/pantry-app.sh
+#     live-portfolio/tools/pantry-app.sh              # from ~/Developer/PantryPal
+#     PANTRYPAL=/path/to/PantryPal live-portfolio/tools/pantry-app.sh
 #
 # The case study runs the app's Home and Recipe screens on the page
 # (assets/case/pantrypal/app/pantry-app.js), and shows the app on phones.
