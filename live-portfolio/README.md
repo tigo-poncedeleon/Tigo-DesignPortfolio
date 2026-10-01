@@ -128,6 +128,26 @@ the tile itself grows into it, its icon travelling on its own to its new
 place, and shrinks home on the way back. The masthead carries only the back
 button and the menu square: there is no title beside the back button.
 
+The opening tile's words keep to a column on the left: who it is at the
+top (the icon, the name, what it is), and at the column's foot the role
+and when, and the ways in, the first of them filled with the case's deep
+colour. PantryPal's first is Apple's own Download on the App Store badge
+(`assets/case/pantrypal/app-store-badge.svg`, the old site's copy of
+Apple's file), drawn as Apple draws it. The role and when are dressed in
+the case's own product, as the chapters' numbers are: Vicino's are a node
+as Canvas draws one, standing on the board's dot grid and wired across
+into the board, a spark running the wire (fast while the board runs);
+PantryPal's are the app's own Kitchen Pass, its sign-up card, in the
+app's two faces; Next Level's stand on a ruled construction line, on the
+badge's blue grid, the icon drawn over its rings as the badge is in the
+brand book. The work stands beside the words. Canvas runs off the tile's
+right edge and its foot, as on the Work tile; the website ends at the
+menu square's right edge and runs off the foot; PantryPal's three phones
+stand one in front and two behind, and pressing one at the back brings
+it to the front (`[data-fan]` in `js/case.js`). Canvas and the website
+are ways in as well, and pointed at, a chip trails the pointer across
+them saying where they go.
+
 - `css/case.css` is every piece the three pages are built from, and
   `js/case.js` runs them: the menu (the index's own `js/nav.js`), the rise,
   the ring round the back button that fills as the page is read, the rail

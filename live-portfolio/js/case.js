@@ -28,6 +28,10 @@
 //                 reads itself (data-live-scroll), one to use takes the
 //                 pointer (data-live-use)
 //   the run       [data-run]: presses the board's own Run in the hero
+//   the way in    .cs-hero-go: the hero's work is a link to it, and a chip
+//                 trails the pointer over it saying where it goes
+//   the fan       [data-fan]: PantryPal's phones; one at the back, pressed,
+//                 comes to the front
 //   playback      [data-play]: plays its piece out once it is in view, and
 //                 again from its replay button
 //   scale         [data-scale]: one slider shrinks the pictures in it together
@@ -270,10 +274,18 @@ for (const stepper of document.querySelectorAll('[data-stepper]')) {
 }
 
 // ---- live boards ----
+// Drawn at the board's own width and scaled to the window, and as tall as
+// the window is at that scale: the hero's window is taller than the
+// board's own shape wherever the window is, and the board frames itself
+// in whatever it is given.
 for (const box of document.querySelectorAll('.cs-live')) {
   const frame = box.querySelector('iframe');
   const w = parseFloat(getComputedStyle(box).getPropertyValue('--live-w')) || 1100;
-  const fit = () => { frame.style.scale = String(box.clientWidth / w); };
+  const fit = () => {
+    const k = box.clientWidth / w;
+    frame.style.scale = String(k);
+    frame.style.height = `${box.clientHeight / k}px`;
+  };
   new ResizeObserver(fit).observe(box);
   fit();
   // the board frames itself a beat after it loads; it is shown once it has
@@ -392,6 +404,72 @@ for (const pill of document.querySelectorAll('[data-run]')) {
       word.textContent = 'Run it again';
     };
     setTimeout(check, 150);
+  });
+}
+
+// ---- the way in ----
+// The hero's work is a link to the work itself (.cs-hero-go). Pointed at,
+// a chip saying where it goes trails the pointer across it, a little
+// behind, as the light does, and swings to the pointer's other side
+// rather than run off the tile; under reduced motion it keeps up exactly.
+// A phone cannot point, and has no chip (css/case.css).
+if (matchMedia('(hover: hover)').matches) {
+  for (const art of document.querySelectorAll('.cs-hero-go')) {
+    const cue = art.querySelector('.cs-hero-cue');
+    if (!cue) continue;
+    const tile = art.closest('.cs-hero-tile');
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0;
+    const step = () => {
+      const k = reduced() ? 1 : 0.2;
+      x += (tx - x) * k;
+      y += (ty - y) * k;
+      if (Math.abs(tx - x) + Math.abs(ty - y) < 0.4) { x = tx; y = ty; }
+      cue.style.translate = `${x}px ${y}px`;
+      raf = x === tx && y === ty ? 0 : requestAnimationFrame(step);
+    };
+    const follow = (e, jump) => {
+      const r = art.getBoundingClientRect();
+      const room = tile.getBoundingClientRect();
+      const px = e.clientX - r.left;
+      const py = e.clientY - r.top;
+      // below and to the right of the arrow, clear of it, unless that runs
+      // past the tile's edge or its foot
+      tx = e.clientX + 16 + cue.offsetWidth > room.right - 12 ? px - 12 - cue.offsetWidth : px + 16;
+      ty = e.clientY + 22 + cue.offsetHeight > room.bottom - 12 ? py - 14 - cue.offsetHeight : py + 22;
+      if (jump) { x = tx; y = ty; }
+      if (!raf) raf = requestAnimationFrame(step);
+    };
+    art.addEventListener('pointerenter', (e) => { follow(e, true); art.classList.add('is-pointed'); });
+    art.addEventListener('pointermove', (e) => follow(e, false));
+    art.addEventListener('pointerleave', () => art.classList.remove('is-pointed'));
+  }
+}
+
+// ---- the fan ----
+// PantryPal's three phones, in three slots: one in front and one either
+// side behind. Pressing one at the back turns the three round, keeping
+// their order, so it comes to the front, the one that was in front steps
+// back to the side it is going to, and the third goes round behind them
+// both (css/case.css places each by its slot, so a turn is one
+// transition).
+const SLOTS = ['left', 'front', 'right'];
+for (const fan of document.querySelectorAll('[data-fan]')) {
+  const phones = [...fan.querySelectorAll('[data-slot]')];
+  let settle = 0;
+  fan.addEventListener('click', (e) => {
+    const picked = e.target.closest('[data-slot]');
+    if (!picked || picked.dataset.slot === 'front') return;
+    // the one on the left comes forward by everyone moving one to the right
+    const step = picked.dataset.slot === 'left' ? 1 : -1;
+    clearTimeout(settle);
+    for (const phone of phones) {
+      const was = phone.dataset.slot;
+      const now = SLOTS[(SLOTS.indexOf(was) + step + SLOTS.length) % SLOTS.length];
+      phone.classList.toggle('was-front', was === 'front');
+      phone.dataset.slot = now;
+      phone.setAttribute('aria-pressed', String(now === 'front'));
+    }
+    settle = setTimeout(() => phones.forEach((p) => p.classList.remove('was-front')), 700);
   });
 }
 

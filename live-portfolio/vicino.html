@@ -91,25 +91,40 @@
     <main class="cs-main">
 
       <!-- THE HERO: Vicino's Work tile, grown to the window, with Canvas
-           itself running in it (canvas.html?parked). -->
+           itself running in it (canvas.html?parked). The board is a way in
+           too: pressed, it opens Canvas, as Try Canvas does (the pill is
+           the way in for a keyboard or a reader, so the board is not a
+           second stop for them). -->
       <section class="cs-hero" data-title="Vicino AI" aria-labelledby="cs-name">
         <div class="cs-hero-tile cs-lit" style="--vt: case-vicino">
           <div class="cs-hero-words">
             <span class="ico"><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" /></span>
             <h1 class="cs-hero-name" id="cs-name">Vicino AI</h1>
             <p class="cs-hero-sub">a canvas built from the ground up</p>
-            <p class="cs-hero-meta"><span>UX Engineer Intern</span><span>Jun – Aug 2026</span></p>
+            <!-- the label, as a node on the board: its output port wired
+                 across into the board itself, a spark running the wire -->
+            <div class="cs-hero-label">
+              <div class="cs-hero-node">
+                <span class="cs-hero-node-head" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3" /><path d="M9 20h6" /><path d="M12 4v16" /></svg>Credits<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></i></span>
+                <dl class="cs-hero-facts">
+                  <div><dt>role</dt><dd>UX Engineer Intern</dd></div>
+                  <div><dt>when</dt><dd>Jun – Aug 2026</dd></div>
+                </dl>
+              </div>
+              <span class="cs-hero-wire" aria-hidden="true"><i></i></span>
+            </div>
             <div class="cs-hero-links">
-              <button type="button" class="cs-pill" data-run=".cs-hero .cs-live iframe"><svg class="cs-run-go" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg><svg class="cs-run-busy" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56" /></svg><span>Run the board</span></button>
+              <button type="button" class="cs-pill is-primary" data-run=".cs-hero .cs-live iframe"><svg class="cs-run-go" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg><svg class="cs-run-busy" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56" /></svg><span>Run the board</span></button>
               <a class="cs-pill" href="canvas.html" target="_blank" rel="noopener">Try Canvas<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (the working replica, opens in a new tab)</span></a>
-              <a class="cs-pill" href="https://vicino.ai/" target="_blank" rel="noopener">vicino.ai<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens in a new tab)</span></a>
+              <a class="cs-pill is-quiet" href="https://vicino.ai/" target="_blank" rel="noopener">vicino.ai<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens in a new tab)</span></a>
             </div>
           </div>
-          <div class="cs-hero-art" aria-hidden="true">
+          <a class="cs-hero-art cs-hero-go" href="canvas.html" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
             <span class="cs-window cs-live" style="--live-w: 1100; --live-h: 875; background-image: url(assets/work/vicino-canvas.webp)">
               <iframe src="canvas.html?parked" tabindex="-1" title="Canvas"></iframe>
             </span>
-          </div>
+            <span class="cs-hero-cue">Open Canvas<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span>
+          </a>
         </div>
       </section>
 

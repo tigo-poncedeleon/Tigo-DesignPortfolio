@@ -40,6 +40,10 @@
   <link rel="stylesheet" href="css/case.css" />
   <!-- the app's own screens, fonts and all, for the demo and the type -->
   <link rel="stylesheet" href="assets/case/pantrypal/app/pantry-app.css" />
+  <!-- the opening tile's Kitchen Pass is in the app's two faces, so they
+       are asked for at once rather than when the app's stylesheet is read -->
+  <link rel="preload" href="assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="assets/case/pantrypal/app/fonts/Faustina.ttf" as="font" type="font/ttf" crossorigin />
   <script type="module" src="js/case.js"></script>
   <script type="module" src="js/pantry-demo.js"></script>
   <script type="module" src="js/pantry-story.js"></script>
@@ -103,16 +107,28 @@
             <span class="ico"><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" /></span>
             <h1 class="cs-hero-name" id="cs-name">PantryPal</h1>
             <p class="cs-hero-sub">an AI cooking partner, on the App Store</p>
-            <p class="cs-hero-meta"><span>Product Designer</span><span>Nov 2025 – Present</span></p>
+            <!-- the label, as the app's own Kitchen Pass (its sign-up card) -->
+            <div class="cs-hero-label cs-pass">
+              <span class="cs-pass-head" aria-hidden="true"><i></i>Kitchen pass</span>
+              <dl class="cs-hero-facts">
+                <div><dt>role</dt><dd>Product Designer</dd></div>
+                <div><dt>when</dt><dd>Nov 2025 – Present</dd></div>
+              </dl>
+              <span class="cs-pass-foot" aria-hidden="true">No. 001</span>
+            </div>
             <div class="cs-hero-links">
-              <a class="cs-pill" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028" target="_blank" rel="noopener">App Store<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens in a new tab)</span></a>
+              <!-- Apple's own badge, as Apple draws it (Download on the App
+                   Store, black, US-UK), never redrawn or recoloured -->
+              <a class="cs-badge" href="https://apps.apple.com/us/app/pantrypal-cook-what-you-have/id6805594028?itscg=30200&amp;itsct=apps_box_link&amp;mttnsubad=6805594028" target="_blank" rel="noopener"><img src="assets/case/pantrypal/app-store-badge.svg" width="120" height="40" alt="Download on the App Store" /><span class="sr-only"> (opens in a new tab)</span></a>
               <a class="cs-pill" href="#try">Try it here<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg></a>
             </div>
           </div>
-          <div class="cs-hero-art cs-hero-phones" aria-hidden="true">
-            <img class="cs-phone" src="assets/case/pantrypal/phones/signup.webp" width="800" height="1636" alt="" />
-            <img class="cs-phone" src="assets/case/pantrypal/phones/home.webp" width="800" height="1636" alt="" />
-            <img class="cs-phone" src="assets/case/pantrypal/phones/cook.webp" width="800" height="1636" alt="" />
+          <!-- the app on three phones; pressing one at the back brings it
+               to the front (js/case.js, the fan) -->
+          <div class="cs-hero-art cs-hero-phones" data-fan role="group" aria-label="Three of the app’s screens">
+            <button type="button" class="cs-fan-phone" data-slot="left" aria-pressed="false" aria-label="The sign-up screen"><img class="cs-phone" src="assets/case/pantrypal/phones/signup.webp" width="800" height="1636" alt="" /></button>
+            <button type="button" class="cs-fan-phone" data-slot="front" aria-pressed="true" aria-label="Tonight’s dinner"><img class="cs-phone" src="assets/case/pantrypal/phones/home.webp" width="800" height="1636" alt="" /></button>
+            <button type="button" class="cs-fan-phone" data-slot="right" aria-pressed="false" aria-label="The recipe, step by step"><img class="cs-phone" src="assets/case/pantrypal/phones/cook.webp" width="800" height="1636" alt="" /></button>
           </div>
         </div>
       </section>

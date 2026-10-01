@@ -386,22 +386,6 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   color: var(--tile-ink);
   text-wrap: balance;
 }
-.cs-hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 calc(14 * var(--u));
-  margin-top: calc(22 * var(--u));
-  font-size: var(--t-small);
-  line-height: 1.4;
-  color: var(--tile-ink-2);
-}
-.cs-hero-meta span:first-child { color: var(--tile-ink); }
-.cs-hero-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(8 * var(--u));
-  margin-top: auto;
-}
 .cs-hero-art {
   position: absolute;
   inset: 0 0 0 calc(420 * var(--u));
@@ -422,14 +406,24 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
    grown to the window rather than a band laid across it.
    The tile is a size container (hero), so what it holds is measured off
    the window it fills. In a landscape window its words stand in a column
-   on the left, on the back button's axis: the icon, the name, what it is,
-   the role and when, and at the column's foot the links. The product
-   comes in from the right, under the menu square's foot, running off the
-   tile's edge and foot as it does on the Work tile. In a window too narrow
-   or too tall for that, the words stand across the top and the product
-   fills everything under them. (It stood in the band from under the
-   masthead to 44 above the window's foot, 1192 at most and rounded all
-   round; then for a while in the lane, a poster when the lane was narrow.) */
+   on the left, on the back button's axis, in two parts held apart by the
+   room between them: at the top who it is (the icon, the name, what it
+   is), and at the foot the label a gallery would hang beside it (the role
+   and when, dressed in the case's own product) and the ways in, one of
+   them filled with the case's own deep colour as the one to press first.
+   The work stands to the right of them, from under the menu square's foot,
+   and runs off the tile's foot as it comes up out of the Work tile's:
+   Canvas runs off the tile's right edge too, a board going on past the
+   window; the website and the phones end at the square's own right edge.
+   Canvas and the website are ways in as well (.cs-hero-go): pointed at, a
+   chip trails the pointer across them and says where they go, and the
+   phones, pressed, come forward (js/case.js). In a window too narrow or
+   too tall for that, the words stand across the top and the work fills
+   everything under them. (It stood in the band from under the masthead
+   to 44 above the window's foot, 1192 at most and rounded all round; then
+   for a while in the lane, a poster when the lane was narrow; then all of
+   it ran off the right edge, until the website's own buttons were found
+   cut in half there.) */
 .cs-main > .cs-hero {
   width: 100vw;
   max-width: none;
@@ -441,7 +435,22 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   /* where the words begin, under the masthead's row; the work begins at
      the row's foot, a little higher, under the square */
   --hero-top: calc(var(--cs-top) + 20 * var(--u));
+  --hero-foot: calc(52 * var(--u));
+  /* how far the work runs past the foot */
+  --hero-bleed: calc(14 * var(--u));
+  /* the words' column and the room after it; these are read where they
+     are used, inside the tile, so cqw is the tile's width */
+  --words-w: min(34cqw, calc(520 * var(--u)));
+  --words-gap: min(5cqw, calc(72 * var(--u)));
+  --art-l: calc(var(--gutter-l) + var(--words-w) + var(--words-gap));
   position: relative;
+  /* a column, for the poster below, where the words and the work stand in
+     the flow; in a landscape window both are placed, and it is nothing.
+     (It is set here rather than in the poster's query because the tile is
+     the container that query asks, and a query never styles its own
+     container.) */
+  display: flex;
+  flex-direction: column;
   view-transition-name: var(--vt, none);
   container: hero / size;
   height: 100vh;
@@ -454,8 +463,8 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
 .cs-hero-tile .cs-hero-words {
   left: var(--gutter-l);
   top: var(--hero-top);
-  bottom: calc(52 * var(--u));
-  width: min(32cqw, calc(500 * var(--u)));
+  bottom: var(--hero-foot);
+  width: var(--words-w);
 }
 .cs-hero-tile .cs-hero-words .ico { --ico: calc(104 * var(--u)); }
 .cs-hero-tile .cs-hero-name {
@@ -464,76 +473,586 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   line-height: 0.98;
   letter-spacing: -0.04em;
 }
-.cs-hero-tile .cs-hero-sub { margin-top: calc(16 * var(--u)); font-size: max(19px, calc(28 * var(--u))); }
-.cs-hero-tile .cs-hero-meta { margin-top: calc(24 * var(--u)); }
-.cs-hero-tile .cs-hero-art {
-  inset: var(--cs-top) 0 0 calc(var(--gutter-l) + min(32cqw, calc(500 * var(--u))) + min(5cqw, calc(72 * var(--u))));
+/* Next Level's whole name is three words longer than the others, and at
+   their size it stood in three lines; at this one it is two, the company's
+   name and then what it does */
+.cs[data-case='nextlevel'] .cs-hero-tile .cs-hero-name { font-size: min(calc(66 * var(--u)), 4.5cqw); line-height: 1.02; }
+.cs-hero-tile .cs-hero-sub {
+  margin-top: calc(16 * var(--u));
+  margin-bottom: calc(36 * var(--u));
+  font-size: max(19px, calc(28 * var(--u)));
 }
-/* a window of the work (Canvas, the website): as wide as it needs to be
-   to run off both the tile's edge and its foot, whatever shape the window
-   is (both pictures are 1100 by 875) */
+
+/* ---- the label ----
+   What Tigo was and when, each under its own small caps, at the column's
+   foot over a hairline in the tile's own colour. Each case then dresses it
+   in its own product's hand, as the chapters' numbers are dressed (below,
+   "the chapters' numbers"): Vicino's is a node on Canvas's board, its
+   output wired across into the board itself; PantryPal's is the app's own
+   Kitchen Pass, its sign-up card; Next Level's stands on a line of the
+   brand book's construction, ticked like a ruler. */
+.cs-hero-label { margin-top: auto; }
+.cs-hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(10 * var(--u)) calc(44 * var(--u));
+  padding-top: calc(20 * var(--u));
+  border-top: 1px solid color-mix(in oklab, var(--deep) 18%, transparent);
+}
+.cs-hero-facts dt {
+  font-size: var(--t-micro);
+  line-height: 1.3;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--tile-ink-2);
+}
+.cs-hero-facts dd {
+  margin-top: calc(6 * var(--u));
+  font-size: max(15px, calc(17.5 * var(--u)));
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  font-variant-numeric: tabular-nums;
+  color: var(--pastel-ink);
+  white-space: nowrap;
+}
+
+/* Vicino: a node, as Canvas draws one beside it: a white card with its
+   header (the text node's glyph, its name, the done chip a node wears
+   after a run) and the label in its inset well, its output port on its
+   right edge, and the wire leaving it straight across the gap into the
+   board's own edge, where an input port takes it, in the colour words
+   travel the board in. A spark runs the wire every few seconds, as it
+   runs the chapters' wires, and runs it fast while the board is running. */
+.cs[data-case='vicino'] .cs-hero-label {
+  --port: #9b9cf1;
+  display: flex;
+  align-items: center;
+  /* out across the gap to the board's edge */
+  margin-right: calc(-1 * var(--words-gap));
+}
+.cs-hero-node {
+  position: relative;
+  flex: none;
+  padding: 0 calc(10 * var(--u)) calc(10 * var(--u));
+  border-radius: calc(18 * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(15 23 42 / 0.075),
+    inset 0 1px 0 rgb(255 255 255 / 0.88),
+    0 calc(16 * var(--u)) calc(32 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 55%, transparent);
+}
+.cs-hero-node-head {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  height: calc(44 * var(--u));
+  padding: 0 calc(4 * var(--u)) 0 calc(6 * var(--u));
+  font-size: max(13px, calc(14.5 * var(--u)));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+.cs-hero-node-head > svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); }
+.cs-hero-node-head i {
+  display: grid;
+  place-items: center;
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
+  margin-left: auto;
+  border-radius: calc(9 * var(--u));
+  background: #f0fdff;
+  color: #0d7685;
+}
+.cs-hero-node-head i svg { width: calc(12 * var(--u)); height: calc(12 * var(--u)); }
+.cs[data-case='vicino'] .cs-hero-facts {
+  flex-wrap: nowrap;
+  gap: calc(30 * var(--u));
+  padding: calc(12 * var(--u)) calc(16 * var(--u)) calc(13 * var(--u));
+  border: 0;
+  border-radius: calc(12 * var(--u));
+  background: #f7f9f9;
+}
+.cs-hero-node::after,
+.cs-hero-wire::after {
+  content: '';
+  position: absolute;
+  right: calc(-4 * var(--u));
+  top: 50%;
+  width: calc(8 * var(--u));
+  height: calc(22 * var(--u));
+  translate: 0 -50%;
+  border-radius: calc(4 * var(--u));
+  background: var(--port);
+  box-shadow: 0 0 0 calc(2 * var(--u)) #fff;
+}
+.cs[data-case='vicino'] .cs-hero-facts dt { color: #5f6369; }
+.cs[data-case='vicino'] .cs-hero-facts dd { margin-top: calc(4 * var(--u)); font-weight: 500; color: #1d1d1f; }
+.cs-hero-wire {
+  position: relative;
+  flex: 1;
+  min-width: calc(24 * var(--u));
+  height: calc(2 * var(--u));
+  margin-left: calc(4 * var(--u));
+  border-radius: 99px;
+  background: color-mix(in oklab, var(--port) 70%, #fff);
+}
+.cs-hero-wire i {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: var(--port);
+  box-shadow: 0 0 0 calc(4 * var(--u)) color-mix(in oklab, var(--port) 25%, transparent);
+  opacity: 0;
+  animation: cs-wire-spark 3.6s var(--ease-draw) 1.4s infinite;
+}
+.cs-hero-tile:has([data-run].is-running) .cs-hero-wire i { animation-duration: 0.9s; animation-delay: 0s; }
+
+/* PantryPal: the app's Kitchen Pass, as its sign-up card draws it, set
+   down a little askew as the app's stickers are, and straightened when it
+   is pointed at: the coral band with its ring and the chef's hat, the
+   label in the app's prose face on the white, and the pass's number on
+   its butter foot, all ringed and shadowed hard in the app's ink. */
+.cs-pass {
+  align-self: flex-start;
+  width: max-content;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: calc(18 * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 calc(2.5 * var(--u)) var(--mark),
+    0 calc(5 * var(--u)) 0 calc(2.5 * var(--u)) var(--mark);
+  rotate: -1.6deg;
+  transform-origin: 20% 100%;
+  transition: rotate var(--t-pop) var(--spring-pop), translate var(--t-pop) var(--spring-pop);
+}
+@media (hover: hover) {
+  .cs-pass:hover { rotate: 0deg; translate: 0 calc(-3 * var(--u)); }
+}
+.cs-pass-head {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  height: calc(42 * var(--u));
+  padding: 0 calc(14 * var(--u));
+  border-bottom: calc(2.5 * var(--u)) solid var(--mark);
+  background: #ff7e7d url(../assets/case/pantrypal/app/hat.webp) no-repeat right calc(12 * var(--u)) center / auto calc(30 * var(--u));
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  font-size: calc(19 * var(--u));
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  -webkit-text-stroke: calc(4 * var(--u)) var(--mark);
+  paint-order: stroke fill;
+}
+.cs-pass-head i {
+  flex: none;
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(2.5 * var(--u)) var(--mark);
+}
+.cs-pass .cs-hero-facts { gap: calc(8 * var(--u)) calc(34 * var(--u)); padding: calc(14 * var(--u)) calc(18 * var(--u)) calc(16 * var(--u)); border-top: 0; }
+.cs-pass .cs-hero-facts dt {
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  font-size: max(11px, calc(12 * var(--u)));
+  letter-spacing: 0.05em;
+  color: rgb(0 0 0 / 0.55);
+}
+.cs-pass .cs-hero-facts dd {
+  margin-top: calc(3 * var(--u));
+  font-family: 'PP Faustina', Georgia, serif;
+  font-weight: 600;
+  font-size: max(16px, calc(19 * var(--u)));
+  letter-spacing: 0;
+  color: var(--mark);
+}
+.cs-pass-foot {
+  display: flex;
+  align-items: center;
+  height: calc(32 * var(--u));
+  padding: 0 calc(18 * var(--u));
+  border-top: calc(2.5 * var(--u)) solid var(--mark);
+  background: #ffd67e;
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  font-size: calc(13 * var(--u));
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--mark);
+}
+
+/* Next Level: the brand book's construction. The icon is drawn over it as
+   the badge is in the book, a hairline circle of the badge's blue round it
+   and the badge's second ring arcing round its right side in the navy, and
+   the lines through its centre running on past it; the label's hairline is
+   a construction line, ticked like a ruler, a long tick every fourth. */
+.cs-hero-plan {
+  --plan: calc(104 * var(--u));
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: var(--plan);
+  height: var(--plan);
+  pointer-events: none;
+}
+.cs-hero-plan::before,
+.cs-hero-plan::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+.cs-hero-plan::before { inset: calc(var(--plan) * -0.22); border: 1px solid rgb(4 149 235 / 0.45); }
+.cs-hero-plan::after {
+  inset: calc(var(--plan) * -0.38);
+  border: calc(1.5 * var(--u)) solid transparent;
+  border-right-color: #0d2a4d;
+  rotate: -24deg;
+  opacity: 0.7;
+}
+.cs-hero-plan i::before,
+.cs-hero-plan i::after {
+  content: '';
+  position: absolute;
+  background: rgb(4 149 235 / 0.4);
+}
+/* across, from before the rings to past the name's width, fading */
+.cs-hero-plan i::before {
+  left: calc(var(--plan) * -0.5);
+  top: 50%;
+  width: calc(var(--words-w) + var(--plan) * 0.5);
+  height: 1px;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 55%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 10%, #000 55%, transparent);
+}
+/* and down, from above the rings to just short of the name */
+.cs-hero-plan i::after {
+  left: 50%;
+  top: calc(var(--plan) * -0.42);
+  width: 1px;
+  height: calc(var(--plan) * 1.67);
+  -webkit-mask: linear-gradient(transparent, #000 15%, #000 80%, transparent);
+  mask: linear-gradient(transparent, #000 15%, #000 80%, transparent);
+}
+.cs[data-case='nextlevel'] .cs-hero-facts {
+  padding-top: calc(22 * var(--u));
+  border-top: 0;
+  background:
+    linear-gradient(#0495eb, #0495eb) 0 0 / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgb(4 149 235 / 0.6) 0 1px, transparent 1px calc(48 * var(--u))) 0 0 / 100% calc(10 * var(--u)) no-repeat,
+    repeating-linear-gradient(90deg, rgb(4 149 235 / 0.4) 0 1px, transparent 1px calc(12 * var(--u))) 0 0 / 100% calc(5 * var(--u)) no-repeat;
+}
+.cs[data-case='nextlevel'] .cs-hero-facts dt { color: #0b6db0; }
+.cs[data-case='nextlevel'] .cs-hero-facts dd { font-weight: 500; color: #0d2a4d; }
+
+/* The paper each case's words stand on, under the words only and fading
+   out before the work: Canvas's own dot grid, so the board runs on under
+   the words, and the badge's blue grid, the brand book's plate, which the
+   flight plan in the rail is drawn on too. PantryPal's words stand on the
+   tile alone, beside the pass. */
+.cs[data-case='vicino'] .cs-hero-tile::after,
+.cs[data-case='nextlevel'] .cs-hero-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask: radial-gradient(ellipse 40% 62% at 15% 58%, #000 25%, transparent);
+  mask: radial-gradient(ellipse 40% 62% at 15% 58%, #000 25%, transparent);
+}
+.cs[data-case='vicino'] .cs-hero-tile::after {
+  background: radial-gradient(circle, color-mix(in oklab, var(--deep) 26%, transparent) calc(1.1 * var(--u)), transparent calc(1.6 * var(--u))) calc(var(--gutter-l) - 11 * var(--u)) 0 / calc(22 * var(--u)) calc(22 * var(--u));
+}
+.cs[data-case='nextlevel'] .cs-hero-tile::after {
+  background:
+    linear-gradient(rgb(4 149 235 / 0.1) 1px, transparent 1px) 0 0 / calc(24 * var(--u)) calc(24 * var(--u)),
+    linear-gradient(90deg, rgb(4 149 235 / 0.1) 1px, transparent 1px) var(--gutter-l) 0 / calc(24 * var(--u)) calc(24 * var(--u));
+}
+
+/* the ways in: the one to press first filled with the case's deep colour,
+   the next in the frosted pill, and a way out to the product's own site
+   quietest of all, its words alone */
+.cs-hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  margin-top: calc(26 * var(--u));
+}
+.cs-hero-links .cs-pill {
+  height: max(40px, calc(44 * var(--u)));
+  gap: calc(8 * var(--u));
+  padding: 0 calc(16 * var(--u)) 0 calc(20 * var(--u));
+  font-size: max(14px, calc(15.5 * var(--u)));
+  letter-spacing: -0.006em;
+}
+/* a pill that starts on its icon is padded the other way round */
+.cs-hero-links .cs-pill[data-run] { padding: 0 calc(20 * var(--u)) 0 calc(16 * var(--u)); }
+.cs-hero-links .cs-pill[data-run] svg { width: calc(18 * var(--u)); height: calc(18 * var(--u)); }
+.cs-pill.is-primary {
+  background: var(--deep);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    0 1px 2px color-mix(in oklab, var(--deep) 40%, transparent),
+    0 calc(10 * var(--u)) calc(22 * var(--u)) calc(-10 * var(--u)) color-mix(in oklab, var(--deep) 75%, transparent);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.cs-pill.is-quiet {
+  margin-left: calc(8 * var(--u));
+  padding: 0 !important;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: var(--tile-ink);
+}
+@media (hover: hover) {
+  .cs-pill.is-primary:hover { background: color-mix(in oklab, var(--deep) 86%, #000); }
+  .cs-pill.is-quiet:hover { background: transparent; color: var(--pastel-ink); }
+  /* an arrow down the page leans down, the run's triangle forward */
+  .cs-pill[href^='#']:hover svg { translate: 0 calc(2 * var(--u)); }
+  .cs-pill[data-run]:hover svg { translate: calc(1.5 * var(--u)) 0; }
+}
+.cs-pill:focus-visible, .cs-badge:focus-visible { outline: 2px solid var(--deep); outline-offset: 3px; }
+
+/* Apple's badge, at the pills' height, and otherwise exactly as Apple
+   draws it: nothing laid over it, no shadow, no colour of the case's */
+.cs-badge {
+  position: relative;
+  z-index: 3;
+  display: block;
+  flex: none;
+  height: max(40px, calc(44 * var(--u)));
+  border-radius: calc(max(40px, calc(44 * var(--u))) * 0.22);
+  -webkit-tap-highlight-color: transparent;
+  transition: scale var(--t-pop) var(--spring-pop);
+}
+.cs-badge img { display: block; width: auto; height: 100%; }
+.cs-badge:active { scale: 0.96; transition-duration: 90ms; }
+
+/* the work, from under the square's foot to its right edge */
+.cs-hero-tile .cs-hero-art {
+  display: block;
+  inset: var(--cs-top) var(--gutter-r) 0 var(--art-l);
+  -webkit-tap-highlight-color: transparent;
+}
+/* A window of the work (the website), as wide as the room and at least
+   tall enough to run off the foot: the website stands at the window's top
+   on its own white, its foot fading into it, so it reads as the page going
+   on. */
 .cs-hero-tile .cs-hero-art .cs-window {
   position: absolute;
   left: 0;
   top: 0;
+  width: 100%;
+  height: max(calc(100% + var(--hero-bleed)), calc((100cqw - var(--art-l) - var(--gutter-r)) / 1.2571));
+  aspect-ratio: auto;
+}
+.cs-hero-tile .cs-hero-art .cs-window > img {
+  -webkit-mask: linear-gradient(#000 82%, transparent);
+  mask: linear-gradient(#000 82%, transparent);
+}
+/* Canvas runs off the tile's right edge as well as its foot, as it does on
+   the Work tile, so what is in view is some of a board that goes on past
+   the window: as wide as it needs to be to run off both, whatever shape
+   the window is (the board is 1100 by 875) */
+.cs[data-case='vicino'] .cs-hero-tile .cs-hero-art { right: 0; }
+.cs[data-case='vicino'] .cs-hero-tile .cs-hero-art .cs-window {
   width: max(calc(100% + 40 * var(--u)), calc((100cqh - var(--cs-top) + 12 * var(--u)) * 1.2571));
+  height: auto;
+  aspect-ratio: var(--live-w) / var(--live-h);
 }
-/* PantryPal: the app on three phones, each a step lower, sized off the
-   window so the third runs off the edge and the foot */
-.cs-hero-tile .cs-hero-phones img { position: absolute; width: min(37%, 46cqh); }
-.cs-hero-tile .cs-hero-phones img:nth-child(1) { left: 0; top: 0; z-index: 3; }
-.cs-hero-tile .cs-hero-phones img:nth-child(2) { left: calc(0.9 * min(37%, 46cqh)); top: 8cqh; z-index: 2; }
-.cs-hero-tile .cs-hero-phones img:nth-child(3) { left: calc(1.8 * min(37%, 46cqh)); top: 16cqh; z-index: 1; }
+.cs-hero-tile .cs-live { background-color: #eff3f4; }
+
+/* PantryPal: the app on three phones, one in front and the other two
+   either side of it behind, in the order they are used. Pressing one at
+   the back brings it to the front, the one in front stepping back to its
+   side and the third going round behind them both (js/case.js, the fan):
+   each phone is placed by its slot alone, so the move between slots is
+   one transition. They are as large as the room allows with the front one
+   standing clear of the foot. */
+.cs-hero-tile .cs-hero-phones {
+  --phone: min(calc((100cqw - var(--art-l) - var(--gutter-r)) / 2.12), calc((100cqh - var(--cs-top) - var(--hero-foot)) / 2.045));
+  --side-x: 0.63;
+  --side-y: 0.2;
+  --side-s: 0.86;
+}
+.cs-fan-phone {
+  position: absolute;
+  left: calc(50% - var(--phone) / 2);
+  top: 0;
+  width: var(--phone);
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--phone) * 0.16);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transform-origin: 50% 0;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--t-settle) var(--spring-settle),
+    translate 0.9s var(--ease-rise);
+}
+.cs-fan-phone img { display: block; width: 100%; height: auto; }
+.cs-fan-phone[data-slot='front'] { z-index: 3; cursor: default; }
+.cs-fan-phone[data-slot='left'],
+.cs-fan-phone[data-slot='right'] { z-index: 1; }
+/* the one stepping back stays over the one going round behind */
+.cs-fan-phone.was-front { z-index: 2; }
+.cs-fan-phone[data-slot='left'] { transform: translate(calc(-1 * var(--side-x) * var(--phone)), calc(var(--side-y) * var(--phone))) scale(var(--side-s)); }
+.cs-fan-phone[data-slot='right'] { transform: translate(calc(var(--side-x) * var(--phone)), calc(var(--side-y) * var(--phone))) scale(var(--side-s)); }
+.cs-fan-phone:focus-visible { outline: 2px solid var(--deep); outline-offset: calc(4 * var(--u)); }
 @media (hover: hover) {
-  .cs-hero-tile .cs-hero-art > *, .cs-hero-phones img { transition: translate 0.9s var(--ease-rise); }
-  .cs-hero-tile:hover .cs-hero-art > *, .cs-hero-tile:hover .cs-hero-phones img { translate: 0 calc(-8 * var(--u)); }
-  .cs-hero-tile:hover .cs-hero-phones img:nth-child(2) { transition-delay: 60ms; }
-  .cs-hero-tile:hover .cs-hero-phones img:nth-child(3) { transition-delay: 120ms; }
+  .cs-hero-tile .cs-hero-art > :not(.cs-hero-cue, .cs-fan-phone) { transition: translate 0.9s var(--ease-rise); }
+  .cs-hero-tile:hover .cs-hero-art > :not(.cs-hero-cue) { translate: 0 calc(-8 * var(--u)); }
+  .cs-hero-tile:hover .cs-fan-phone[data-slot='left'] { transition-delay: 0s, 60ms; }
+  .cs-hero-tile:hover .cs-fan-phone[data-slot='right'] { transition-delay: 0s, 120ms; }
+  /* one at the back, pointed at, rises to be picked */
+  .cs-hero-tile .cs-hero-phones .cs-fan-phone:not([data-slot='front']):hover { translate: 0 calc(-18 * var(--u)); transition-delay: 0s; }
 }
-/* the poster: the words across the top, the icon beside them and the
-   links at the row's far end, and the work filling the rest */
+@media (prefers-reduced-motion: reduce) {
+  .cs-fan-phone { transition: none; }
+}
+
+/* The chip that trails the pointer over the work (js/case.js moves it):
+   the primary pill's deep colour, frosted, a little behind the hand. It
+   comes up as the pointer comes onto the work and goes as it leaves; a
+   phone, which cannot point, has the pills above instead. */
+.cs-hero-cue {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  height: max(34px, calc(40 * var(--u)));
+  padding: 0 calc(13 * var(--u)) 0 calc(16 * var(--u));
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--deep) 88%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    0 calc(12 * var(--u)) calc(28 * var(--u)) calc(-12 * var(--u)) color-mix(in oklab, var(--deep) 80%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  backdrop-filter: blur(10px) saturate(1.4);
+  font-size: var(--t-small);
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.86;
+  transform-origin: 0 0;
+  transition: opacity 0.18s ease, scale var(--t-out) var(--spring-out);
+}
+.cs-hero-cue svg { width: 1.1em; height: 1.1em; }
+.cs-hero-go.is-pointed .cs-hero-cue {
+  opacity: 1;
+  scale: 1;
+  transition: opacity 0.16s ease, scale var(--t-pop) var(--spring-pop);
+}
+@media (hover: none) {
+  .cs-hero-cue { display: none; }
+}
+/* where the column is too narrow for all three ways in, the quiet one
+   goes under the others, and starts on the column's edge */
+@container hero (max-width: 1100px) {
+  .cs-pill.is-quiet { margin-left: 0; }
+}
+/* A short window for its width has less room down the column than the
+   words and the label take at their full size: the icon comes down a size,
+   the space round the name closes up, and the pass loses its foot. Short
+   is under 770 frame pixels of height, which is any window wider than 5:3
+   (--u follows the width there, or the height at 700), except a big one
+   where --u has reached its ceiling and the frame pixels are counted off
+   the height alone, 962 and up. */
+@container hero (min-aspect-ratio: 5 / 3) and (max-height: 961px) {
+  .cs-hero-tile .cs-hero-words .ico { --ico: calc(84 * var(--u)); }
+  .cs-hero-tile .cs-hero-plan { --plan: calc(84 * var(--u)); }
+  .cs-hero-tile .cs-hero-name { margin-top: calc(24 * var(--u)); }
+  .cs-hero-tile .cs-hero-sub { margin-bottom: calc(24 * var(--u)); }
+  .cs-pass-foot { display: none; }
+}
+
+/* the poster: the words across the top, the label and the ways in on one
+   line under them, and the work filling the rest */
 @container hero (max-width: 860px) or (max-aspect-ratio: 11 / 10) {
-  .cs-hero-tile { display: flex; flex-direction: column; }
   .cs-hero-tile .cs-hero-words {
     position: relative;
     inset: auto;
     width: auto;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: 'ico name links' 'ico sub links' 'ico meta links';
+    grid-template-areas: 'ico name name' 'ico sub sub' 'label label links';
     align-items: start;
     column-gap: calc(28 * var(--u));
     padding: var(--hero-top) var(--gutter-r) 0 var(--gutter-l);
   }
   .cs-hero-tile .cs-hero-words .ico { grid-area: ico; --ico: calc(92 * var(--u)); }
-  .cs-hero-tile .cs-hero-name { grid-area: name; margin-top: calc(-6 * var(--u)); font-size: min(calc(72 * var(--u)), 8.4cqw); }
-  .cs-hero-tile .cs-hero-sub { grid-area: sub; margin-top: calc(10 * var(--u)); }
-  .cs-hero-tile .cs-hero-meta { grid-area: meta; margin-top: calc(14 * var(--u)); }
-  .cs-hero-tile .cs-hero-links { grid-area: links; justify-content: flex-end; max-width: calc(260 * var(--u)); margin-top: 0; }
-  .cs-hero-tile .cs-hero-art { position: relative; inset: auto; flex: 1; min-height: 0; margin-top: calc(36 * var(--u)); }
-  .cs-hero-tile .cs-hero-art .cs-window { left: var(--gutter-l); width: calc(100% - var(--gutter-l) + 40 * var(--u)); }
-  .cs-hero-tile .cs-hero-phones img { width: 30%; }
-  .cs-hero-tile .cs-hero-phones img:nth-child(1) { left: 5%; top: 0; }
-  .cs-hero-tile .cs-hero-phones img:nth-child(2) { left: 36%; top: 7%; }
-  .cs-hero-tile .cs-hero-phones img:nth-child(3) { left: 67%; top: 14%; }
+  .cs-hero-tile .cs-hero-name { grid-area: name; margin-top: calc(-4 * var(--u)); font-size: min(calc(72 * var(--u)), 8.4cqw); }
+  .cs[data-case='nextlevel'] .cs-hero-tile .cs-hero-name { font-size: min(calc(60 * var(--u)), 6.6cqw); }
+  .cs-hero-tile .cs-hero-sub { grid-area: sub; margin: calc(10 * var(--u)) 0 0; }
+  .cs-hero-tile .cs-hero-label { grid-area: label; align-self: end; margin: calc(32 * var(--u)) 0 0; }
+  .cs-hero-tile .cs-hero-links {
+    grid-area: links;
+    align-self: end;
+    justify-content: flex-end;
+    margin-top: calc(32 * var(--u));
+  }
+  /* no gap to cross here: the node stands on its own, and the
+     construction, whose lines would run through the name beside it, is
+     left to the landscape window and the phone */
+  .cs-hero-wire, .cs-hero-plan { display: none; }
+  .cs[data-case='vicino'] .cs-hero-label { margin-right: 0; }
+  .cs-hero-node::after { display: none; }
+  .cs[data-case='vicino'] .cs-hero-tile::after,
+  .cs[data-case='nextlevel'] .cs-hero-tile::after {
+    -webkit-mask: radial-gradient(ellipse 75% 28% at 25% 14%, #000 25%, transparent);
+    mask: radial-gradient(ellipse 75% 28% at 25% 14%, #000 25%, transparent);
+  }
+  .cs-pass-foot { display: flex; }
+  .cs-hero-tile .cs-hero-art {
+    position: relative;
+    inset: auto;
+    flex: 1;
+    min-height: 0;
+    margin: calc(36 * var(--u)) var(--gutter-r) 0 var(--gutter-l);
+  }
+  .cs-hero-tile .cs-hero-art .cs-window { height: max(calc(100% + var(--hero-bleed)), calc((100cqw - var(--gutter-l) - var(--gutter-r)) / 1.2571)); }
+  .cs[data-case='vicino'] .cs-hero-tile .cs-hero-art { margin-right: 0; }
+  .cs[data-case='vicino'] .cs-hero-tile .cs-hero-art .cs-window { width: calc(100% + 40 * var(--u)); height: auto; }
+  .cs-hero-tile .cs-hero-phones { --phone: min(calc((100cqw - var(--gutter-l) - var(--gutter-r)) / 2.12), 60cqh); }
 }
-/* and narrower again, a phone's: the words one over another, the links
-   under them, and two phones of the work */
+/* and narrower again, a phone's: the words one over another, the ways in
+   under them, and the three phones drawn closer together */
 @container hero (max-width: 560px) {
   .cs-hero-tile .cs-hero-words {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'ico' 'name' 'sub' 'meta' 'links';
+    grid-template-areas: 'ico' 'name' 'sub' 'label' 'links';
     padding-top: var(--hero-top);
   }
   .cs-hero-tile .cs-hero-words .ico { --ico: 64px; }
+  .cs-hero-tile .cs-hero-plan { --plan: 64px; display: block; left: var(--gutter-l); top: var(--hero-top); }
+  .cs-hero-tile .cs-hero-plan i::before { width: calc(100cqw - 2 * var(--gutter-l)); }
   .cs-hero-tile .cs-hero-name { margin-top: 22px; font-size: min(46px, 11.5cqw); }
+  .cs[data-case='nextlevel'] .cs-hero-tile .cs-hero-name { font-size: min(40px, 10cqw); }
   .cs-hero-tile .cs-hero-sub { font-size: 20px; }
-  .cs-hero-tile .cs-hero-links { justify-content: flex-start; max-width: none; margin-top: 22px; }
-  .cs-hero-tile .cs-hero-art { margin-top: 30px; }
-  .cs-hero-tile .cs-hero-phones img { width: 46%; }
-  .cs-hero-tile .cs-hero-phones img:nth-child(1) { left: 4%; top: 0; }
-  .cs-hero-tile .cs-hero-phones img:nth-child(2) { left: 52%; top: 9%; }
-  .cs-hero-tile .cs-hero-phones img:nth-child(3) { display: none; }
+  .cs-hero-tile .cs-hero-label { margin-top: 22px; }
+  .cs-hero-tile .cs-hero-facts { gap: 8px 28px; }
+  .cs-pass .cs-hero-facts dd { font-size: 16px; }
+  .cs-hero-tile .cs-hero-links { justify-content: flex-start; margin-top: 18px; }
+  .cs-hero-tile .cs-hero-art { margin-top: 28px; }
+  .cs-hero-tile .cs-hero-phones { --phone: calc((100cqw - var(--gutter-l) - var(--gutter-r)) / 1.86); --side-x: 0.52; --side-y: 0.14; --side-s: 0.82; }
 }
 
 /* ---- tiles ---- */
