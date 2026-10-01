@@ -53,6 +53,12 @@ export function createComposer(form, { prompt, onSend }) {
     const sent = onSend({ text, photo, mood: currentMood });
     if (sent === false) return; // the chat is still answering; nothing is lost
     setPhoto(null);
+    // On a touch screen the keyboard goes down once the question is away,
+    // whether it went by the send key or the keyboard's own, so the answer
+    // has the whole screen to arrive in rather than the strip above the
+    // keyboard; the composer rides down with it (js/keyboard.js), and a tap
+    // anywhere on Home brings it back for the next question.
+    if (touch.matches) prompt.blur();
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); submit(); });
 
@@ -195,7 +201,10 @@ export function createComposer(form, { prompt, onSend }) {
         listening = null;
         mic.setAttribute('aria-pressed', 'false');
         mic.setAttribute('aria-label', 'Ask out loud');
-        prompt.focus();
+        // back to the field on a laptop; a phone keeps its keyboard down,
+        // since what was said is there to be sent, and a focus from here
+        // (no tap behind it) would raise none anyway
+        prompt.focusIfDesk();
       };
       rec.onend = done;
       rec.onerror = done;

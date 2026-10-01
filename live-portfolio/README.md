@@ -92,6 +92,12 @@ because iOS fills a clear corner with black.
 - `js/composer.js` is the rest of the pill: mood, microphone, send, and a
   photo pasted or dropped in.
 - `js/chat.js` holds the conversation.
+- `js/keyboard.js` makes room for a phone's keyboard: while the composer
+  has it, Home fits what the keyboard leaves of the window, the composer
+  just over it, and the page holds still on Home. It is the old site's
+  keyboard lock (`archive/v2-live-portfolio/js/mobile.js`, whose notes say
+  what was tried on a phone first), cut down to this page. A tap anywhere
+  on Home, the composer's pill included, raises the keyboard.
 - `js/nav.js` is the yellow menu. Its pages open in a row to the left of
   the square, on the name's line, or under the square in a window too
   narrow for that (under 960px wide). On a phone it is back on the

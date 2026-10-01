@@ -183,7 +183,13 @@ export function createChat({ prompt, thread, announcer, onFail, onLive }) {
   // ---- keeping the newest turn in view ----
   // Whenever something comes in, the thread goes down to its foot, unless
   // you have scrolled up to read; scrolling back down to the foot takes hold
-  // again. A window that changes size keeps the foot in view too.
+  // again. A window that changes size keeps the foot in view too, and so
+  // does a phone's keyboard coming up, which is the thread getting shorter.
+  // On a touch screen it is a finger dragging the thread that lets go, not
+  // one landing on it: a tap on the thread (to raise the keyboard, say) let
+  // go too, and since nothing scrolled, nothing took hold again, so the
+  // keyboard coming up, or an answer landing, left the newest turn out of
+  // sight under the composer.
   function toFoot({ smooth = false } = {}) {
     if (!following || !onHome) return;
     thread.scrollTo({ top: thread.scrollHeight, behavior: smooth && !reduced() ? 'smooth' : 'auto' });
@@ -191,7 +197,7 @@ export function createChat({ prompt, thread, announcer, onFail, onLive }) {
   new ResizeObserver(() => toFoot()).observe(thread);
   const release = () => { following = false; };
   thread.addEventListener('wheel', (e) => { if (e.deltaY < 0) release(); }, { passive: true });
-  thread.addEventListener('touchstart', release, { passive: true });
+  thread.addEventListener('touchmove', release, { passive: true });
   thread.addEventListener('scroll', () => {
     if (thread.scrollHeight - thread.clientHeight - thread.scrollTop < 2) following = true;
   }, { passive: true });

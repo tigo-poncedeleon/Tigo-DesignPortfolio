@@ -682,6 +682,58 @@
   .bubble-text a:hover { text-decoration-color: var(--bubble-ink); }
 }
 
+/* ---- the keyboard ----
+   A press anywhere on Home that isn't on something of its own (a bubble, a
+   tool, a link) goes to the field (js/main.js), so on a phone the whole
+   screen raises the keyboard, and the pill does all the way to its edges.
+   (The field is one line tall in the middle of the pill, a 26px strip in a
+   52px pill on a phone, and a tap a little high or low, or out past the
+   words, landed on the pill itself and did nothing at all.) Without its
+   flash: iOS greys over whatever takes a tap, and here that was the whole
+   screen. */
+.screen-home { -webkit-tap-highlight-color: transparent; }
+
+/* While a phone's keyboard is up for the composer, Home fits what the
+   keyboard leaves of the window (js/keyboard.js). Its box stays the
+   window's height and where it is, so nothing below it moves; its padding
+   takes up whatever of it is out of sight, above (should the browser move
+   the window down) and below (the keyboard), so the masthead's room, the
+   conversation and the composer all stand in what can be seen. The
+   composer ends 16px off the keyboard, which is 10 of air under its pill
+   once the pill's own hang is taken off, and never sits lower than it
+   does without a keyboard, so the room's last frame and the page without
+   it are the same. Nothing transitions: the script follows the keyboard a
+   frame at a time, and that is the motion. */
+html[data-keyboard] .screen-home {
+  padding-top: calc(var(--screen-top) + var(--kb-above, 0px));
+  padding-bottom: max(var(--bottom), calc(var(--kb-below, 0px) + 16px));
+}
+/* And while the field has it, the page is held still: nothing scrolls it
+   (the browser would scroll it to show the field, which the room already
+   shows), a finger can't drag it, and only the conversation scrolls, inside
+   itself, without handing on to the page at its ends. The masthead is set
+   at the window's own place in the document, not fixed, because iOS
+   anchors a fixed box to a layout viewport that a keyboard can move out
+   from under what is seen. */
+html[data-keyboard='held'] {
+  overflow: hidden;
+  overscroll-behavior: none;
+  scroll-behavior: auto;
+}
+html[data-keyboard='held'] body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pinch-zoom;
+}
+html[data-keyboard='held'] .thread {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+html[data-keyboard='held'] .masthead {
+  position: absolute;
+  top: var(--kb-y, 0px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* the composer still opens, but by fading alone: no slide, no pop */
   .composer :is(.composer-btn, .composer-mood, .composer-send),

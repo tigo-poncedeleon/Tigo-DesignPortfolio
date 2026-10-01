@@ -241,8 +241,13 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     focus();
   });
 
-  function focus() {
+  // atEnd: a press beside the words rather than on them goes on from the
+  // end of them, unless the field had focus already, when the cursor (or a
+  // selection dragged out past the words) stays where it is
+  function focus({ atEnd = false } = {}) {
+    const had = document.activeElement === input;
     input.focus({ preventScroll: true });
+    if (atEnd && !had) input.setSelectionRange(input.value.length, input.value.length);
     schedule();
   }
 

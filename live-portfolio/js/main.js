@@ -21,6 +21,7 @@
 import { createPrompt } from './prompt.js';
 import { createComposer } from './composer.js';
 import { createChat } from './chat.js';
+import { watchKeyboard } from './keyboard.js';
 import { initNav } from './nav.js';
 import { startRouter, VIEWS } from './router.js';
 import { playEntrance } from './entrance.js';
@@ -97,13 +98,22 @@ const composer = createComposer(promptForm, {
 });
 
 // A click on Home's empty canvas is a click on the prompt: the whole page is
-// the invitation. Not on the conversation's bubbles, though, which are there
-// to be read and selected.
-views.home.addEventListener('click', (e) => {
-  if (e.target.closest('.bubble, .turn-photo')) return;
+// the invitation. That is the whole screen, the composer's pill and the
+// air around it as well as the band, so on a phone a tap anywhere raises
+// the keyboard, and the cursor goes to the end of whatever is there. (It was
+// the band alone, and the pill around the one-line field took a tap and did
+// nothing with it.) Not on the conversation's bubbles, though, which are
+// there to be read and selected, nor on anything with a job of its own.
+screens.home.addEventListener('click', (e) => {
+  if (e.target.closest('.bubble, .turn-photo, a, button, textarea, .composer-mood, .composer-thumb')) return;
   if (!getSelection().isCollapsed) return;
-  prompt.focus();
+  prompt.focus({ atEnd: true });
 });
+
+// A phone's keyboard comes up over the composer, so while it is up Home is
+// fitted into what is left of the window, and the page is held on Home
+// (js/keyboard.js).
+const keyboard = watchKeyboard({ input: prompt.input, home: screens.home });
 
 // ---- per-screen hooks (Play fills this in when it loads) ----
 const hooks = {};
@@ -174,6 +184,11 @@ function setSection(name, { initial = false } = {}) {
 }
 
 function whereAmI() {
+  // While a phone's keyboard is up for the composer, the page is Home,
+  // whatever the window says: the keyboard takes half of it, and a page
+  // nudged by the browser to show the field could read as Work, which took
+  // the field's focus away and the keyboard with it.
+  if (keyboard.held) return 'home';
   const middle = innerHeight / 2;
   let name = VIEWS[0];
   for (const v of VIEWS) if (screens[v].getBoundingClientRect().top <= middle) name = v;
