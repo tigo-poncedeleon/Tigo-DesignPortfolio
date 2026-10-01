@@ -118,26 +118,68 @@ because iOS fills a clear corner with black.
 
 A Work tile opens its case study in the same tab: `vicino.html`,
 `pantrypal.html` and `nextlevel.html`, each one long page, retold from the
-old site's case study in the site's own language (the one size, the lit
-tiles, the frosted pills, the chat's bubbles). Each opens on its Work tile
-grown to the window, and where the browser can carry a view across pages
-the tile itself grows into it, and shrinks home on the way back.
+old site's case study in the site's own language (the lit tiles, the
+frosted pills, the chat's bubbles), but not at its one size: a case study
+is read at a book's sizes, its words at 18.5 frame pixels and a chapter's
+first sentence at 26, under chapter titles at 84 (`--t-*` in
+`css/case.css`). Each opens on its Work tile grown to fill the whole
+window, edge to edge, and where the browser can carry a view across pages
+the tile itself grows into it, its icon travelling on its own to its new
+place, and shrinks home on the way back. The masthead carries only the back
+button and the menu square: there is no title beside the back button.
 
 - `css/case.css` is every piece the three pages are built from, and
   `js/case.js` runs them: the menu (the index's own `js/nav.js`), the rise,
-  the title pill that names the part you are reading, the ring round the
-  back button that fills as the page is read, the steppers, the numbers
-  that count up, and the living pieces below.
-- Each story is set in one reading column down the middle of the window
-  (880 frame pixels, `--col` in `css/case.css`), its words and its tiles
-  sharing the column's two edges. Only the opening tile and the two pieces
-  of software meant to be used in place (PantryPal's running app, Vicino's
-  component browser) step out onto the wider band (`.cs-breakout`).
-- Each story opens with its milestones, a row of dates under the
-  overview that are also links to their parts, and is told in their
-  order: PantryPal from the sketches to the App Store, Vicino from the
-  board to the machines drawing on its system, Next Level from Madrid to
-  the mark on every surface.
+  the ring round the back button that fills as the page is read, the rail
+  of chapters, the steppers, the numbers that roll up like an odometer, the
+  pictures that open out to the window, and the living pieces below. `js/pantry-story.js`
+  lays out the pictures PantryPal's story draws from the app's own
+  drawings: a hundred foods for the food thrown away, the fifty dishes on a
+  belt and on one plate.
+- Each story is told in chapters, and every chapter opens the same way:
+  its number and when it happened on a hairline, its title, and what it is
+  about (`.cs-chapter`); a part of a chapter has a smaller head numbered
+  within it (`.cs-part`, 2.1, 2.2). Each case numbers them in its own
+  product's hand: PantryPal in the app's sticker type, Vicino as nodes on a
+  board wired one into the next, Next Level in the badge's ring. A section
+  is a chapter when it has an `id` and a `.cs-chapter`, and names its
+  chapter in `data-chapter`; the rail (below) is built from them, so the
+  list is written once.
+- The rail is the page's one sign of where you are: every chapter, down the
+  lane's left margin under the back button, the one being read marked, the
+  ones before it done, and the count read in its head. It sits in the page
+  just after the opening tile, so it comes up from under the tile's foot
+  and then holds still (`position: sticky`). Each case dresses it in its
+  own product, named by the page's `data-rail`: PantryPal's is the app's
+  **Recipe**, its steps the app's own, ticked off, with the chef's hat in
+  the step being read; Vicino's is a **Story run** down a pipeline of
+  nodes, each queued, running or checked, a spark travelling the wire; Next
+  Level's is a **Flight plan** on the badge's blue grid, the badge's drone
+  flying it and spraying each chapter clean. On a phone there is no rail.
+- The overview ends on the story map, the chapters as a row of tiles each
+  holding its own chapter's picture, which are also links to them, and the
+  story is told in their order: PantryPal from the sketches to the App
+  Store, Vicino from the board to the machines drawing on its system, Next
+  Level from Madrid to the mark on every surface.
+- Below the opening tile nothing ever slides up under the masthead's
+  buttons: the story keeps to the lane between them (`--lane-l`,
+  `--lane-r`). On the left the lane starts past the rail (`--rail-w`); on
+  the right it ends short of the menu square. The lane is a size container,
+  and every piece that lays itself out by its room asks the lane
+  (`@container lane`), not the window. The opening tile is the one thing as
+  wide as the window, and it is a size container of its own (`hero`): its
+  words and its work stand clear of the buttons, beside each other in a
+  landscape window and as a poster, the words over the work, in a narrow
+  or tall one. A phone has no room for a lane, and keeps to the gutters.
+- Each story is set in one reading column down the middle of the lane
+  (880 frame pixels, `--col`), its words held to a reading measure inside
+  it (`--measure`). The rows meant to be read across
+  (PantryPal's prototype reel, its drawings, its four ways out, its shipped
+  screens and its store page, and Next Level's rollout) and
+  the two pieces of software meant to be used in place (PantryPal's running
+  app, Vicino's component browser) step out onto the wider band
+  (`.cs-breakout`), as wide as the lane allows; PantryPal's running app
+  stands in a card of the app's own kitchen, under its awning (`.cs-band`).
 - The work runs on the page wherever it can, instead of being pictured:
   - PantryPal's **"The chef, live"** is the app itself: its Home and
     Recipe screens in its own fonts, colours and drawings, ranking its
@@ -156,9 +198,13 @@ the tile itself grows into it, and shrinks home on the way back.
     component browser is the real one, to be used in place.
   - Next Level's interview answers as the chat does, after a beat. The
     nine versions of the mark are kept as a design tool keeps them, with
-    Sebastien's two notes where he left them, and a slider shrinks the
-    last two candidates together to show why the ninth won. The website
-    reads itself top to bottom in the rollout.
+    Sebastien's two notes where he left them; the badge that shipped is
+    drawn over its construction, measured off the shipped file; and a
+    slider shrinks the last two candidates together to show why the ninth
+    won. The website reads itself top to bottom in the rollout.
+  - PantryPal's prototype is a reel the page scrolls through sideways on a
+    wide window, and its six shipped screens turn over, one after another,
+    to the prototype's screen at the same step.
   - Under reduced motion none of it moves: everything stands in its
     finished state.
 - The opt-in to that transition is written inline in each page's head,

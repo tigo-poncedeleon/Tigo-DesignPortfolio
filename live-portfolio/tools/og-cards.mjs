@@ -10,8 +10,11 @@
 //               composer with its greeting typed out
 //   vicino, pantrypal, nextlevel
 //               the case study's opening tile, the Work tile grown to the
-//               window, in a window of 1280 × 797, where the tile comes out
-//               1192 × 626, the card's own shape to within a pixel
+//               whole window, in a window of 1280 × 672, the card's own
+//               shape, so the tile comes out the card exactly; for the shot
+//               the masthead's buttons are taken off it and its rounded
+//               foot squared, since a card is a picture of the page and not
+//               a page
 // Unfurlers cache a card by its address for about a week, so when the art
 // changes for good, rename the files and the og:image tags together
 // (archive/v2-og-src/README.md learned that the first time).
@@ -49,8 +52,9 @@ const halve = (file) => execFileSync('magick', [file, '-resize', '1200x630!', '-
 }
 
 for (const name of ['vicino', 'pantrypal', 'nextlevel']) {
-  const page = await browser.newPage({ viewport: { width: 1280, height: 797 }, deviceScaleFactor: 2 });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 672 }, deviceScaleFactor: 2 });
   await page.goto(`${base}/${name}.html`, { waitUntil: 'networkidle' });
+  await page.addStyleTag({ content: '.masthead { visibility: hidden !important; } .cs-hero-tile { border-radius: 0 !important; }' });
   // the Vicino board paints a beat after its frame loads (js/case.js)
   await page.waitForTimeout(name === 'vicino' ? 3500 : 1200);
   const tile = await page.$('.cs-hero-tile');

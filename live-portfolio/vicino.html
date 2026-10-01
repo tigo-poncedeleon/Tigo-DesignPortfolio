@@ -62,14 +62,13 @@
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
-  <div class="frame cs" data-case="vicino">
+  <div class="frame cs" data-case="vicino" data-rail="Story run">
 
     <header class="masthead">
       <div class="cs-head">
         <a class="cs-back" href="index.html#work" aria-label="Back to Work">
           <svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
         </a>
-        <p class="cs-title" aria-hidden="true"><span class="cs-title-word">Vicino AI</span></p>
       </div>
       <nav class="menu" aria-label="Pages">
         <button type="button" class="menu-button" aria-expanded="false" aria-controls="menu-list" aria-label="Menu">
@@ -99,6 +98,7 @@
             <span class="ico"><img src="assets/work/icon-vicino.webp" width="256" height="256" alt="" /></span>
             <h1 class="cs-hero-name" id="cs-name">Vicino AI</h1>
             <p class="cs-hero-sub">a canvas built from the ground up</p>
+            <p class="cs-hero-meta"><span>UX Engineer Intern</span><span>Jun – Aug 2026</span></p>
             <div class="cs-hero-links">
               <button type="button" class="cs-pill" data-run=".cs-hero .cs-live iframe"><svg class="cs-run-go" viewBox="-2 -2 28 28" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg><svg class="cs-run-busy" viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56" /></svg><span>Run the board</span></button>
               <a class="cs-pill" href="canvas.html" target="_blank" rel="noopener">Try Canvas<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (the working replica, opens in a new tab)</span></a>
@@ -113,70 +113,83 @@
         </div>
       </section>
 
-      <section class="cs-sec" data-title="Overview" aria-label="Overview">
-        <div class="cs-split">
-          <div class="cs-text" data-rise>
-            <p>Vicino AI turns a marketing brief into <strong>a workflow you can see</strong>: an infinite canvas where every node is a generation step, an image, a video, a 3D model.</p>
-            <p>I helped build <strong>Canvas</strong> from the ground up, with <strong>the design system behind Pulse</strong> and <strong>the guide that teaches AI to design inside it</strong>.</p>
-          </div>
-          <dl class="cs-facts" data-rise>
-            <div><dt>role</dt><dd>UX Engineer Intern</dd></div>
-            <div><dt>when</dt><dd>Jun – Aug 2026</dd></div>
-            <div><dt>stack</dt><dd>Figma · React 19 · xyflow</dd></div>
-            <div><dt>place</dt><dd>Bellevue, WA</dd></div>
-          </dl>
-        </div>
-        <ol class="cs-milestones" style="--n: 4" data-rise aria-label="The story, in four parts">
-          <li><a href="#h-canvas"><span>first, the thing</span><b>Canvas</b></a></li>
-          <li><a href="#h-system"><span>then its language</span><b>System</b></a></li>
-          <li><a href="#h-guide"><span>then teach the machines</span><b>The AI guide</b></a></li>
-          <li><a href="#h-work"><span>then hand them the pen</span><b>At work</b></a></li>
+      <!-- OVERVIEW: the work in a sentence, the facts, and the four chapters
+           as a map, each with its own picture -->
+      <section class="cs-sec cs-intro" data-title="Overview" aria-label="Overview">
+        <p class="cs-lead" data-rise>Vicino AI turns a marketing brief into <strong>a workflow you can see</strong>: an infinite canvas where every node is a generation step, an image, a video, a 3D model.</p>
+        <p class="cs-text cs-after" data-rise>I helped build <strong>Canvas</strong> from the ground up, with <strong>the design system behind Pulse</strong> and <strong>the guide that teaches AI to design inside it</strong>.</p>
+        <dl class="cs-facts cs-after-lg" data-rise>
+          <div><dt class="cs-eyebrow">role</dt><dd>UX Engineer Intern</dd></div>
+          <div><dt class="cs-eyebrow">when</dt><dd>Jun – Aug 2026</dd></div>
+          <div><dt class="cs-eyebrow">stack</dt><dd>Figma · React 19 · xyflow</dd></div>
+          <div><dt class="cs-eyebrow">place</dt><dd>Bellevue, WA</dd></div>
+        </dl>
+        <ol class="cs-storymap is-wired" style="--n: 4" data-rise aria-label="The story, in four chapters">
+          <li><a href="#canvas"><span class="cs-storymap-pic is-paper"><img src="assets/case/vicino/vi-sheet-1.webp" width="3724" height="2112" alt="" loading="lazy" /></span><span class="cs-storymap-when">01 · first, the thing</span><b>Canvas</b></a></li>
+          <li><a href="#system"><span class="cs-storymap-pic is-doc"><img src="assets/case/vicino/vi-brand-book.webp" width="1188" height="1244" alt="" loading="lazy" /></span><span class="cs-storymap-when">02 · then its language</span><b>System</b></a></li>
+          <li><a href="#guide"><span class="cs-storymap-pic is-doc"><img src="assets/case/vicino/vi-guide.webp" width="1140" height="1080" alt="" loading="lazy" /></span><span class="cs-storymap-when">03 · then the machines</span><b>The AI guide</b></a></li>
+          <li><a href="#at-work"><span class="cs-storymap-pic is-doc"><img src="assets/case/vicino/vi-pulse-review.webp" width="1188" height="1244" alt="" loading="lazy" /></span><span class="cs-storymap-when">04 · then the pen</span><b>At work</b></a></li>
         </ol>
       </section>
 
-      <!-- CANVAS: the sketchbook it was mapped in, a sheet at a time -->
-      <section class="cs-sec" data-title="Canvas" aria-labelledby="h-canvas">
-        <header class="cs-sec-head" data-rise><h2 id="h-canvas">Canvas</h2><p>a board where AI tools become nodes</p></header>
-        <div class="cs-split">
-          <p class="cs-text" data-rise>Every tool is a node: <strong>image, video, 3D, audio</strong>. But the idea was mapped in <strong>a sketchbook first</strong>, three sheets, one for each use case, drawn before the editor had a single pixel.</p>
-          <div class="cs-stack" data-rise>
-            <div class="cs-chips cs-paper" aria-label="Port types">
-              <span class="cs-chip" style="--dot: #9b9cf1"><i></i>text</span>
-              <span class="cs-chip" style="--dot: #8bd6d9"><i></i>image</span>
-              <span class="cs-chip" style="--dot: #ffb366"><i></i>video</span>
-              <span class="cs-chip" style="--dot: #7cc0e8"><i></i>3D</span>
-            </div>
-            <p class="cs-small cs-cap-ink">four of the seven port types; the wires between them run the redesign’s soft purple</p>
-          </div>
-        </div>
-        <div class="cs-tile cs-lit cs-sheets cs-after" data-stepper data-rise>
+      <!-- 01 CANVAS: the sketchbook it was mapped in, a sheet at a time, and
+           everything a node can be -->
+      <section class="cs-sec" id="canvas" data-title="Canvas" data-chapter="canvas" aria-labelledby="h-canvas" style="--port: #8bd6d9">
+        <header class="cs-chapter" data-rise>
+          <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true"><i></i>01</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">first, the thing</span></div>
+          <h2 class="cs-chapter-title" id="h-canvas"><span class="sr-only">Chapter 1: </span>Canvas</h2>
+          <p class="cs-chapter-deck">a board where AI tools become nodes</p>
+        </header>
+        <p class="cs-text" data-rise>Every tool is a node: <strong>image, video, 3D, audio</strong>. But the idea was mapped in <strong>a sketchbook first</strong>, three sheets, one for each use case, drawn before the editor had a single pixel.</p>
+        <div class="cs-tile cs-lit cs-sheets cs-after-lg" data-stepper data-rise>
           <ol class="cs-notes" role="tablist" aria-label="Sheets">
             <li><button type="button" class="cs-note" role="tab" data-step="map" aria-selected="true"><span class="cs-note-num">1</span><span class="cs-note-body"><span>the map</span><span class="cs-note-more"><span><span>A prompt wired through to a picture and on to a movie, with 3D and sound branching off, and a small agent in the corner.</span></span></span></span></button></li>
             <li><button type="button" class="cs-note" role="tab" data-step="ask"><span class="cs-note-num">2</span><span class="cs-note-body"><span>just ask</span><span class="cs-note-more"><span><span>Ask the chat for an ad for your bottle, and the board draws itself.</span></span></span></span></button></li>
             <li><button type="button" class="cs-note" role="tab" data-step="studio"><span class="cs-note-num">3</span><span class="cs-note-body"><span>node = studio</span><span class="cs-note-more"><span><span>Open a node and it hands you a studio: a model, the sliders, and a Go button.</span></span></span></span></button></li>
           </ol>
           <div class="cs-stage">
-            <figure class="cs-well cs-sheet" data-panel="map" data-on><img src="assets/case/vicino/vi-sheet-1.webp" width="3724" height="2112" alt="Hand-drawn use-case map of Canvas on graph paper: a prompt box wired to a picture and on to a movie, branches to 3D and sound, a tool rail, and a little robot agent in the corner" loading="lazy" decoding="async" /></figure>
-            <figure class="cs-well cs-sheet" data-panel="ask"><img src="assets/case/vicino/vi-sheet-2.webp" width="3752" height="2160" alt="Sketch of the first use case, just ask it: a chat panel asking for an ad for a bottle, an arrow to a small node board that draws itself, and a check mark" loading="lazy" decoding="async" /></figure>
-            <figure class="cs-well cs-sheet" data-panel="studio"><img src="assets/case/vicino/vi-sheet-3.webp" width="3756" height="2172" alt="Sketch of the second use case: an image node wired to a panel of sliders, a model dropdown and a Go button, captioned every node is its own studio" loading="lazy" decoding="async" /></figure>
+            <figure class="cs-well cs-sheet-well" data-panel="map" data-on><img src="assets/case/vicino/vi-sheet-1.webp" width="3724" height="2112" alt="Hand-drawn use-case map of Canvas on graph paper: a prompt box wired to a picture and on to a movie, branches to 3D and sound, a tool rail, and a little robot agent in the corner" loading="lazy" decoding="async" data-zoom /></figure>
+            <figure class="cs-well cs-sheet-well" data-panel="ask"><img src="assets/case/vicino/vi-sheet-2.webp" width="3752" height="2160" alt="Sketch of the first use case, just ask it: a chat panel asking for an ad for a bottle, an arrow to a small node board that draws itself, and a check mark" loading="lazy" decoding="async" data-zoom /></figure>
+            <figure class="cs-well cs-sheet-well" data-panel="studio"><img src="assets/case/vicino/vi-sheet-3.webp" width="3756" height="2172" alt="Sketch of the second use case: an image node wired to a panel of sliders, a model dropdown and a Go button, captioned every node is its own studio" loading="lazy" decoding="async" data-zoom /></figure>
           </div>
         </div>
-        <div class="cs-after" data-rise>
-          <p class="cs-small cs-cap-ink cs-label">what a node can be, today</p>
-          <div class="cs-chips cs-paper">
-            <span class="cs-chip">Image</span><span class="cs-chip">Video</span><span class="cs-chip">3D Model</span><span class="cs-chip">Audio</span><span class="cs-chip">Text / Prompt</span><span class="cs-chip">Sketch to Image</span><span class="cs-chip">Image Editor</span><span class="cs-chip">Shooting Studio</span><span class="cs-chip">Storyboard</span><span class="cs-chip">3D Refine</span><span class="cs-chip">Multi-View</span><span class="cs-chip">Video Merge</span><span class="cs-chip">Lipsync</span><span class="cs-chip">Motion Transfer</span>
+        <div class="cs-tile cs-sheet cs-palette cs-after" data-rise>
+          <div class="cs-palette-head">
+            <p class="cs-tile-name">What a node can be, today</p>
+            <div class="cs-wires" aria-label="Four of the seven port types, by the colour of their wires">
+              <span style="--dot: #9b9cf1"><i></i>text</span>
+              <span style="--dot: #8bd6d9"><i></i>image</span>
+              <span style="--dot: #ffb366"><i></i>video</span>
+              <span style="--dot: #7cc0e8"><i></i>3D</span>
+            </div>
           </div>
+          <ul class="cs-palette-grid" role="list">
+            <li style="--i: 0"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" /></svg></span>Image</li>
+            <li style="--i: 1"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11" /><rect x="2" y="6" width="14" height="12" rx="2" /></svg></span>Video</li>
+            <li style="--i: 2"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 21.7a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg></span>3D Model</li>
+            <li style="--i: 3"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 10v3" /><path d="M6 6v11" /><path d="M10 3v18" /><path d="M14 8v7" /><path d="M18 5v13" /><path d="M22 10v3" /></svg></span>Audio</li>
+            <li style="--i: 4"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3" /><path d="M9 20h6" /><path d="M12 4v16" /></svg></span>Text / Prompt</li>
+            <li style="--i: 5"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2a2 2 0 0 0-.5.8l-1.3 4.4a.5.5 0 0 0 .6.6l4.4-1.3a2 2 0 0 0 .8-.5z" /><path d="m15 5 4 4" /></svg></span>Sketch to Image</li>
+            <li style="--i: 6"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m21.6 11.6-9.2-9.2a2 2 0 0 0-1.4-.6H4a2 2 0 0 0-2 2v7a2 2 0 0 0 .6 1.4l9.2 9.2a2.4 2.4 0 0 0 3.4 0l6.4-6.4a2.4 2.4 0 0 0 0-3.4z" /><circle cx="7.5" cy="7.5" r="1.5" /></svg></span>Image Editor</li>
+            <li style="--i: 7"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z" /><circle cx="12" cy="13" r="3" /></svg></span>Shooting Studio</li>
+            <li style="--i: 8"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 12h18" /><path d="M12 3v18" /></svg></span>Storyboard</li>
+            <li style="--i: 9"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 21.7a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7z" /><path d="M9 12.5 11 14.5 15.5 10" /></svg></span>3D Refine</li>
+            <li style="--i: 10"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg></span>Multi-View</li>
+            <li style="--i: 11"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 6 4-4 4 4" /><path d="M12 2v10.3a4 4 0 0 1-1.2 2.8L6 20" /><path d="m18 20-3.3-3.3" /></svg></span>Video Merge</li>
+            <li style="--i: 12"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><path d="M12 19v3" /></svg></span>Lipsync</li>
+            <li style="--i: 13"><span class="cs-palette-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="14" cy="4" r="2" /><path d="m7 21 3-7 3 3v5" /><path d="m4 11 3-3 5 1 3 4 4 1" /></svg></span>Motion Transfer</li>
+          </ul>
         </div>
       </section>
 
-      <!-- TWO WAYS: the agent's hand and your own, on one board -->
-      <section class="cs-sec" data-title="Two ways" aria-labelledby="h-ways">
-        <header class="cs-sec-head" data-rise><h2 id="h-ways">Two ways to build</h2><p>describe it, or wire it</p></header>
+      <!-- 1.1 TWO WAYS: the agent's hand and your own, on one board -->
+      <section class="cs-sec is-part" data-title="Two ways" data-chapter="canvas" aria-labelledby="h-ways">
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">1.1</span><h3 id="h-ways">Two ways to build</h3><p>describe it, or wire it</p></header>
         <p class="cs-text" data-rise>Same board, two hands on it. <strong>Tell the agent</strong> what you want and watch the graph assemble, or <strong>place every node and pull every wire</strong> yourself. Most real work is both.</p>
-        <div class="cs-grid cs-grid-2 cs-ways cs-after" data-play>
+        <div class="cs-grid cs-grid-2 cs-ways cs-after-lg" data-play>
           <div class="cs-tile cs-lit cs-way" data-rise>
-            <p class="cs-tile-name">with the agent</p>
-            <p class="cs-tile-meta">Vicino AI Copilot</p>
+            <p class="cs-eyebrow">with the agent</p>
+            <p class="cs-tile-name">Vicino AI Copilot</p>
             <div class="cs-bubbles cs-way-chat">
               <p class="cs-bubble is-q">a launch post for the new colorway</p>
               <p class="cs-bubble is-a cs-typing" aria-hidden="true"><i></i><i></i><i></i></p>
@@ -191,8 +204,8 @@
             </div>
           </div>
           <div class="cs-tile cs-lit cs-way" data-rise>
-            <p class="cs-tile-name">by hand</p>
-            <p class="cs-tile-meta">drag a node, pull a wire, press run</p>
+            <p class="cs-eyebrow">by hand</p>
+            <p class="cs-tile-name">drag a node, pull a wire, press run</p>
             <div class="cs-mini" aria-hidden="true">
               <svg class="cs-mini-wires" viewBox="0 0 528 190" preserveAspectRatio="none"><path pathLength="1" d="M150 95 C 170 95, 169 65, 189 65" /><path pathLength="1" d="M339 65 C 359 65, 358 95, 378 95" /></svg>
               <span class="cs-node-card cs-mini-text"><b><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16" /></svg>Text Prompt</b><span class="cs-node-well is-text">“a launch post for the new colorway”</span><i class="port out" style="--p: #9b9cf1"></i></span>
@@ -204,11 +217,11 @@
         </div>
       </section>
 
-      <!-- ANATOMY: one node, read a part at a time -->
-      <section class="cs-sec" data-title="Anatomy" aria-labelledby="h-anatomy">
-        <header class="cs-sec-head" data-rise><h2 id="h-anatomy">Anatomy of a node</h2><p>one card, read closely</p></header>
+      <!-- 1.2 ANATOMY: one node, read a part at a time -->
+      <section class="cs-sec is-part" data-title="Anatomy" data-chapter="canvas" aria-labelledby="h-anatomy">
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">1.2</span><h3 id="h-anatomy">Anatomy of a node</h3><p>one card, read closely</p></header>
         <p class="cs-text" data-rise>Every node is the same small promise: <strong>inputs on the left, the work in the middle, an output on the right</strong>. Learn this card and you’ve read them all.</p>
-        <div class="cs-anatomy cs-after" data-stepper data-auto="4200" data-rise>
+        <div class="cs-anatomy cs-after-lg" data-stepper data-auto="4200" data-rise>
           <figure class="cs-tile cs-lit cs-anatomy-fig">
             <span class="cs-well cs-node-shot">
               <img src="assets/case/vicino/node-image.webp" width="1542" height="1440" alt="An Image node from Canvas: its header with the flux-2-pro model badge and a check, two input ports on the left, the generated picture filling the card, and an output port on the right" loading="lazy" decoding="async" />
@@ -231,64 +244,67 @@
         </div>
       </section>
 
-      <!-- SYSTEM: the language behind Pulse, in one tile -->
-      <section class="cs-sec" data-title="System" aria-labelledby="h-system">
-        <header class="cs-sec-head" data-rise><h2 id="h-system">System</h2><p>the design language behind Pulse</p></header>
+      <!-- 02 SYSTEM: the language behind Pulse, in one tile -->
+      <section class="cs-sec" id="system" data-title="System" data-chapter="system" aria-labelledby="h-system" style="--port: #9b9cf1">
+        <header class="cs-chapter" data-rise>
+          <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true"><i></i>02</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">then its language</span></div>
+          <h2 class="cs-chapter-title" id="h-system"><span class="sr-only">Chapter 2: </span>System</h2>
+          <p class="cs-chapter-deck">the design language behind Pulse</p>
+        </header>
         <p class="cs-text" data-rise>With my colleagues I helped create <strong>the design system behind Pulse</strong>, Vicino’s marketing-analytics side: <strong>356 tokens in one truth-source file</strong>, and a brand book that ships as a website, because the best handoff is the real thing.</p>
-        <div class="cs-tile cs-lit cs-wide cs-system cs-after" data-rise>
+        <div class="cs-tile cs-lit cs-wide cs-system cs-after-lg" data-rise>
           <div class="cs-wide-words">
+            <p class="cs-eyebrow"><span class="cs-live-dot" aria-hidden="true"></span>live · vicino-ds / brand.html</p>
             <p class="cs-tile-name">Pulse / Post</p>
-            <p class="cs-tile-meta"><span class="cs-live-dot" aria-hidden="true"></span>live · vicino-ds / brand.html</p>
-            <p class="cs-small cs-system-label">four principles</p>
-            <div class="cs-chips">
-              <span class="cs-chip">command, not clutter</span>
-              <span class="cs-chip">cyan earns attention</span>
-              <span class="cs-chip">readable at speed</span>
-              <span class="cs-chip">one strong anchor</span>
-            </div>
-            <p class="cs-small cs-system-label">the palette, straight from tokens.css</p>
-            <div class="cs-swatches cs-swatches-sm">
-              <span class="cs-swatch" style="--c: #eef3f3"><i></i><span><b>stage</b>#eef3f3</span></span>
-              <span class="cs-swatch" style="--c: #ffffff"><i></i><span><b>surface</b>#ffffff</span></span>
-              <span class="cs-swatch" style="--c: #1d1d1f"><i></i><span><b>ink-800</b>#1d1d1f</span></span>
-              <span class="cs-swatch" style="--c: #49e0f5"><i></i><span><b>cyan-500</b>#49e0f5</span></span>
-              <span class="cs-swatch" style="--c: #0d7685"><i></i><span><b>cyan-700</b>#0d7685</span></span>
-              <span class="cs-swatch" style="--c: #43ba51"><i></i><span><b>green</b>#43ba51</span></span>
-              <span class="cs-swatch" style="--c: #3987f3"><i></i><span><b>blue</b>#3987f3</span></span>
-              <span class="cs-swatch" style="--c: #f19a08"><i></i><span><b>amber</b>#f19a08</span></span>
-              <span class="cs-swatch" style="--c: #ef4444"><i></i><span><b>red</b>#ef4444</span></span>
-              <span class="cs-swatch" style="--c: #6366f1"><i></i><span><b>purple</b>#6366f1</span></span>
-            </div>
+            <ol class="cs-principles" role="list" aria-label="Four principles">
+              <li><b>01</b>command, not clutter</li>
+              <li><b>02</b>cyan earns attention</li>
+              <li><b>03</b>readable at speed</li>
+              <li><b>04</b>one strong anchor</li>
+            </ol>
+            <p class="cs-eyebrow cs-system-label">the palette, straight from tokens.css</p>
+            <ul class="cs-ramp" role="list">
+              <li style="--c: #eef3f3"><i></i><b>stage</b>#eef3f3</li>
+              <li style="--c: #ffffff"><i></i><b>surface</b>#ffffff</li>
+              <li style="--c: #1d1d1f"><i></i><b>ink-800</b>#1d1d1f</li>
+              <li style="--c: #49e0f5"><i></i><b>cyan-500</b>#49e0f5</li>
+              <li style="--c: #0d7685"><i></i><b>cyan-700</b>#0d7685</li>
+              <li style="--c: #43ba51"><i></i><b>green</b>#43ba51</li>
+              <li style="--c: #3987f3"><i></i><b>blue</b>#3987f3</li>
+              <li style="--c: #f19a08"><i></i><b>amber</b>#f19a08</li>
+              <li style="--c: #ef4444"><i></i><b>red</b>#ef4444</li>
+              <li style="--c: #6366f1"><i></i><b>purple</b>#6366f1</li>
+            </ul>
           </div>
           <a class="cs-window cs-doc cs-live-doc cs-wide-art" href="vicino-ds/brand.html" target="_blank" rel="noopener" data-live="vicino-ds/brand.html" data-live-w="1180" data-live-scroll><img src="assets/case/vicino/vi-brand-book.webp" width="1188" height="1244" alt="The Pulse / Post design system’s brand book, a web page of brand foundations" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the brand book<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
         </div>
       </section>
 
-      <!-- DECISIONS: the two real files the language was argued with -->
-      <section class="cs-sec" data-title="Decisions" aria-labelledby="h-decisions">
-        <header class="cs-sec-head" data-rise><h2 id="h-decisions">Decisions, shown</h2><p>how the language got chosen</p></header>
+      <!-- 2.1 DECISIONS: the two real files the language was argued with -->
+      <section class="cs-sec is-part" data-title="Decisions" data-chapter="system" aria-labelledby="h-decisions">
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">2.1</span><h3 id="h-decisions">Decisions, shown</h3><p>how the language got chosen</p></header>
         <p class="cs-text" data-rise>Design systems are <strong>arguments settled with evidence</strong>: four candidate accents on identical dashboards, where cyan won, and one whole screen pushed to the edge of too much cyan.</p>
-        <div class="cs-grid cs-decision-docs cs-after">
+        <div class="cs-grid cs-decision-docs cs-after-lg">
           <figure class="cs-tile cs-lit" data-rise>
-            <p class="cs-tile-name">Accent study</p>
+            <div class="cs-idea-head"><p class="cs-tile-name">Accent study</p><span class="cs-accents" aria-label="The four candidates; cyan won"><i style="--c: #49e0f5" class="is-won"></i><i style="--c: #75fb90"></i><i style="--c: #ead025"></i><i style="--c: #6648f6"></i></span></div>
             <p class="cs-tile-meta">four accents, one dashboard</p>
             <a class="cs-window cs-doc" href="vicino-ds/accent-study.html" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-accent-study.webp" width="1512" height="900" alt="The accent study: identical dashboards in cyan, green, yellow and violet" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the accent study<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
             <figcaption class="cs-cap">design-system / comparisons / dashboard-accent-comparison.html</figcaption>
           </figure>
           <figure class="cs-tile cs-lit" data-rise>
-            <p class="cs-tile-name">Home experiment</p>
-            <p class="cs-tile-meta">how far the cyan can go</p>
+            <div class="cs-idea-head"><p class="cs-tile-name">Home experiment</p><span class="cs-verdict">how far the cyan can go</span></div>
+            <p class="cs-tile-meta">one whole screen, at the edge of too much</p>
             <a class="cs-window cs-doc" href="vicino-ds/home-experiment.html" target="_blank" rel="noopener"><img src="assets/case/vicino/vi-home-experiment.webp" width="1512" height="900" alt="The home cyan experiment: a whole home screen testing how far the accent can go" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the experiment<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
             <figcaption class="cs-cap">design-system / experiments / home-cyan-experiment.html</figcaption>
           </figure>
         </div>
       </section>
 
-      <!-- COMPONENTS: the library, a view at a time -->
-      <section class="cs-sec" data-title="Components" aria-labelledby="h-components">
-        <header class="cs-sec-head" data-rise><h2 id="h-components">Components</h2><p>62 components, one truth source</p></header>
-        <p class="cs-text" data-rise>Each one <strong>a plain HTML and CSS pair</strong> behind the same 356 tokens, with its states, and <strong>drift-checked in CI</strong>.</p>
-        <div class="cs-tile cs-lit cs-components cs-breakout cs-after" data-stepper data-rise>
+      <!-- 2.2 COMPONENTS: the library, a view at a time -->
+      <section class="cs-sec is-part" data-title="Components" data-chapter="system" aria-labelledby="h-components">
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">2.2</span><h3 id="h-components">Components</h3><p>62 components, one truth source</p></header>
+        <p class="cs-text" data-rise>Each one <strong>a plain HTML and CSS pair</strong> behind the same 356 tokens, with its states, and <strong>drift-checked in CI</strong>. The browser below is the real one: pick any component.</p>
+        <div class="cs-tile cs-lit cs-components cs-breakout cs-after-lg" data-stepper data-rise>
           <div class="cs-idea-head">
             <div class="cs-chips" role="tablist" aria-label="Views of the library">
               <button type="button" class="cs-chip" role="tab" data-step="browser" aria-selected="true">browser</button>
@@ -309,42 +325,57 @@
         </div>
       </section>
 
-      <!-- THE AI GUIDE: the system, written for machines -->
-      <section class="cs-sec" data-title="The AI guide" aria-labelledby="h-guide">
-        <header class="cs-sec-head" data-rise><h2 id="h-guide">The AI guide</h2><p>a design system machines can read</p></header>
-        <div class="cs-split">
-          <div class="cs-text" data-rise>
-            <p>A design system starts to drift the moment a machine starts drawing. So we wrote it down as <strong>a generation contract</strong>: a skill an AI agent loads before it touches a screen.</p>
-            <p>Reuse before inventing, one truth source, and <strong>a list of things it must never do</strong>.</p>
-          </div>
+      <!-- 03 THE AI GUIDE: the system, written for machines, and the list of
+           what they must never do -->
+      <section class="cs-sec" id="guide" data-title="The AI guide" data-chapter="guide" aria-labelledby="h-guide" style="--port: #ffb366">
+        <header class="cs-chapter" data-rise>
+          <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true"><i></i>03</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">then teach the machines</span></div>
+          <h2 class="cs-chapter-title" id="h-guide"><span class="sr-only">Chapter 3: </span>The AI guide</h2>
+          <p class="cs-chapter-deck">a design system machines can read</p>
+        </header>
+        <div class="cs-text" data-rise>
+          <p>A design system starts to drift the moment a machine starts drawing. So we wrote it down as <strong>a generation contract</strong>: a skill an AI agent loads before it touches a screen. Reuse before inventing, one truth source, and <strong>a list of things it must never do</strong>.</p>
+        </div>
+        <div class="cs-guide-pair cs-after-lg">
           <figure class="cs-tile cs-lit cs-guide-doc" data-rise>
             <a class="cs-window cs-doc cs-live-doc" href="vicino-ds/guide.html" target="_blank" rel="noopener" data-live="vicino-ds/guide.html" data-live-w="1040" data-live-scroll><img src="assets/case/vicino/vi-guide.webp" width="1140" height="1080" alt="The AI generation guide, rendered as a document" loading="lazy" decoding="async" /><span class="cs-doc-open" aria-hidden="true">open the guide<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg></span><span class="sr-only"> (opens the real file in a new tab)</span></a>
             <figcaption class="cs-cap"><span class="cs-live-dot" aria-hidden="true"></span>live · design-system / ai-generation-guide.md</figcaption>
           </figure>
+          <figure class="cs-tile cs-lint" data-rise>
+            <figcaption class="cs-lint-head"><span class="cs-lint-lights" aria-hidden="true"><i></i><i></i><i></i></span><span>ai-generation-guide.md</span><b>never</b></figcaption>
+            <ol class="cs-lint-list" role="list">
+              <li style="--i: 0"><span class="cs-lint-x" aria-hidden="true">✕</span><b>No painted-on cyan</b><span>The brand lives in the page’s wash; it goes flat the moment a second card does it.</span></li>
+              <li style="--i: 1"><span class="cs-lint-x" aria-hidden="true">✕</span><b>No fake premium</b><span>No neon shadows, no mystery blobs, no generic purple AI styling.</span></li>
+              <li style="--i: 2"><span class="cs-lint-x" aria-hidden="true">✕</span><b>One layer of glass</b><span>The outer bento is glass, the content inside is solid: never glass on glass.</span></li>
+              <li style="--i: 3"><span class="cs-lint-x" aria-hidden="true">✕</span><b>One action surface</b><span>Zero or one saturated action card. Two means the page lost its anchor.</span></li>
+              <li style="--i: 4"><span class="cs-lint-x" aria-hidden="true">✕</span><b>No border scaffolding</b><span>Structure comes from tone and spacing, not boxes drawn around boxes.</span></li>
+              <li style="--i: 5"><span class="cs-lint-x" aria-hidden="true">✕</span><b>No heavy type</b><span>Hierarchy by size, spacing and colour, never bold body copy.</span></li>
+            </ol>
+            <p class="cs-lint-fail"><b>fail the output if</b> text clips, colours don’t explain state, card shadows form square artifacts, cards nest, or you can’t tell the next action</p>
+          </figure>
         </div>
-        <ul class="cs-grid cs-grid-3 cs-rules cs-after" role="list">
-          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No painted-on cyan</p><p class="cs-tile-meta">The brand lives in the page’s wash; it goes flat the moment a second card does it.</p></li>
-          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No fake premium</p><p class="cs-tile-meta">No neon shadows, no mystery blobs, no generic purple AI styling.</p></li>
-          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">One layer of glass</p><p class="cs-tile-meta">The outer bento is glass, the content inside is solid: never glass on glass.</p></li>
-          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">One action surface</p><p class="cs-tile-meta">Zero or one saturated action card. Two means the page lost its anchor.</p></li>
-          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No border scaffolding</p><p class="cs-tile-meta">Structure comes from tone and spacing, not boxes drawn around boxes.</p></li>
-          <li class="cs-tile cs-lit" data-rise><p class="cs-tile-name">No heavy type</p><p class="cs-tile-meta">Hierarchy by size, spacing and colour, never bold body copy.</p></li>
-        </ul>
-        <p class="cs-small cs-cap-ink cs-after" data-rise>and fail the output if text clips, colours don’t explain state, card shadows form square artifacts, cards nest, or you can’t tell the next action</p>
       </section>
 
-      <!-- AT WORK: eighteen screens, drawn by the machine holding the guide -->
-      <section class="cs-sec" data-title="At work" aria-labelledby="h-work">
-        <header class="cs-sec-head" data-rise><h2 id="h-work">The guide, at work</h2><p>eighteen screens, redrawn on-system</p></header>
+      <!-- 04 AT WORK: eighteen screens, drawn by the machine holding the guide -->
+      <section class="cs-sec" id="at-work" data-title="At work" data-chapter="at-work" aria-labelledby="h-work" style="--port: #7cc0e8">
+        <header class="cs-chapter" data-rise>
+          <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true"><i></i>04</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">then hand them the pen</span></div>
+          <h2 class="cs-chapter-title" id="h-work"><span class="sr-only">Chapter 4: </span>The guide, at work</h2>
+          <p class="cs-chapter-deck">eighteen screens, redrawn on-system</p>
+        </header>
         <p class="cs-text" data-rise>Its first big job was <strong>Pulse’s onboarding</strong>, eighteen screens from landing page to first Daily Report. I handed Claude Code the guide and the system and let the machine do most of the drawing, <strong>every screen built live from the real tokens</strong>.</p>
-        <div class="cs-stats is-tally cs-after" data-rise>
-          <p class="cs-stat cs-lit"><b data-count="11">11</b><span>blockers</span></p>
-          <p class="cs-stat cs-lit"><b data-count="47">47</b><span>friction</span></p>
-          <p class="cs-stat cs-lit"><b data-count="32">32</b><span>polish</span></p>
-          <p class="cs-stat cs-lit"><b data-count="90">90</b><span>findings in all, on Pulse’s severity ladder</span></p>
+        <div class="cs-tile cs-lit cs-severity cs-after-lg" data-rise>
+          <div class="cs-severity-total"><b data-odo>90</b><span>findings in all, across eighteen screens, on Pulse’s severity ladder</span></div>
+          <div class="cs-severity-bar" aria-hidden="true"><i class="is-block" style="--v: 11"></i><i class="is-friction" style="--v: 47"></i><i class="is-polish" style="--v: 32"></i></div>
+          <dl class="cs-severity-key">
+            <div class="is-block"><dt>blockers</dt><dd data-odo>11</dd></div>
+            <div class="is-friction"><dt>friction</dt><dd data-odo>47</dd></div>
+            <div class="is-polish"><dt>polish</dt><dd data-odo>32</dd></div>
+          </dl>
         </div>
         <div class="cs-tile cs-lit cs-wide cs-review cs-after" data-rise>
           <div class="cs-wide-words">
+            <p class="cs-eyebrow">pulse-onboarding-design-review.vercel.app</p>
             <p class="cs-tile-name">The review, as a website</p>
             <p class="cs-tile-meta">each screen as it ships beside its redesign, defect by defect</p>
             <a class="cs-pill" href="https://pulse-onboarding-design-review.vercel.app/" target="_blank" rel="noopener">see the review<svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg><span class="sr-only"> (opens in a new tab)</span></a>
@@ -353,17 +384,21 @@
         </div>
       </section>
 
-      <!-- RESULTS -->
-      <section class="cs-sec" data-title="Results" aria-labelledby="h-results">
-        <header class="cs-sec-head" data-rise><h2 id="h-results">Results</h2><p>what shipped</p></header>
-        <div class="cs-stats" data-rise>
-          <p class="cs-stat cs-lit"><b data-count="24">24</b><span>node types on Canvas, image to audio and every tool between</span></p>
-          <p class="cs-stat cs-lit"><b data-count="62">62</b><span>components, each an HTML and CSS pair with its states</span></p>
-          <p class="cs-stat cs-lit"><b data-count="356">356</b><span>tokens in one truth-source file</span></p>
-          <p class="cs-stat cs-lit"><b data-count="14">14</b><span>charts in one data-display family</span></p>
-          <p class="cs-stat cs-lit"><b data-count="18">18</b><span>onboarding screens redrawn on-system</span></p>
+      <!-- OUTCOME -->
+      <section class="cs-sec" id="results" data-title="Results" data-chapter="results" aria-labelledby="h-results" style="--port: #8bd6d9">
+        <header class="cs-chapter" data-rise>
+          <div class="cs-chapter-top"><span class="cs-chapter-num is-word" aria-hidden="true"><i></i>Output</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">by the end of August</span></div>
+          <h2 class="cs-chapter-title" id="h-results">Results</h2>
+          <p class="cs-chapter-deck">what shipped</p>
+        </header>
+        <div class="cs-stats is-five" data-rise>
+          <p class="cs-stat cs-lit"><b><span data-odo>24</span><small>node types</small></b><span>on Canvas, image to audio and every tool between</span></p>
+          <p class="cs-stat cs-lit"><b><span data-odo>62</span><small>components</small></b><span>each an HTML and CSS pair with its states</span></p>
+          <p class="cs-stat cs-lit"><b><span data-odo>356</span><small>tokens</small></b><span>in one truth-source file</span></p>
+          <p class="cs-stat cs-lit"><b><span data-odo>14</span><small>charts</small></b><span>in one data-display family</span></p>
+          <p class="cs-stat cs-lit"><b><span data-odo>18</span><small>screens</small></b><span>of onboarding, redrawn on-system</span></p>
         </div>
-        <ol class="cs-lessons cs-after" data-rise>
+        <ol class="cs-lessons is-chain cs-after-lg" data-rise>
           <li><strong>Build the thing first.</strong> Canvas taught us what the language needed.</li>
           <li><strong>Then build the language.</strong> Tokens linked, never copied, turn drift into a design decision.</li>
           <li><strong>Then teach the machines.</strong> A system an AI can read is a system that holds.</li>
@@ -372,7 +407,7 @@
       </section>
 
       <footer class="cs-end" data-title="Next" aria-label="Next">
-        <header class="cs-sec-head" data-rise><h2>Next</h2><p>an AI cooking partner</p></header>
+        <header class="cs-end-head" data-rise><h2>Next case study</h2><p>an AI cooking partner</p></header>
         <a class="cs-next cs-lit cs-lift" data-case="pantrypal" href="pantrypal.html" data-rise>
           <span class="cs-hero-words">
             <span class="ico"><img src="assets/work/icon-pantrypal.webp" width="256" height="256" alt="" /></span>

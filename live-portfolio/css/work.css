@@ -297,6 +297,11 @@
 .case[data-case='vicino'] { view-transition-name: case-vicino; }
 .case[data-case='pantrypal'] { view-transition-name: case-pantrypal; }
 .case[data-case='nextlevel'] { view-transition-name: case-nextlevel; }
+/* the icon travels on its own between its corner here and its place on
+   the case study's opening tile (css/case.css gives that one the same) */
+.case[data-case='vicino'] .case-icon { view-transition-name: case-vicino-icon; }
+.case[data-case='pantrypal'] .case-icon { view-transition-name: case-pantrypal-icon; }
+.case[data-case='nextlevel'] .case-icon { view-transition-name: case-nextlevel-icon; }
 html:active-view-transition-type(case)::view-transition-group(*) {
   animation-duration: var(--t-settle);
   animation-timing-function: var(--spring-settle);
@@ -316,8 +321,12 @@ html:active-view-transition-type(case)::view-transition-image-pair(case-vicino),
 html:active-view-transition-type(case)::view-transition-image-pair(case-pantrypal),
 html:active-view-transition-type(case)::view-transition-image-pair(case-nextlevel) {
   overflow: clip;
-  border-radius: calc(36 * var(--u));
+  border-radius: calc(32 * var(--u));
+  animation: case-tile-close var(--t-settle) var(--spring-settle) both;
 }
+/* coming home, the corners go from the opening tile's, which fills the
+   window square at the top and rounded at its foot, to the tile's own */
+@keyframes case-tile-close { from { border-radius: 0 0 calc(44 * var(--u)) calc(44 * var(--u)); } }
 html:active-view-transition-type(case)::view-transition-old(case-vicino),
 html:active-view-transition-type(case)::view-transition-old(case-pantrypal),
 html:active-view-transition-type(case)::view-transition-old(case-nextlevel),
