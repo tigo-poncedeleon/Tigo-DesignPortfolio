@@ -69,9 +69,13 @@ The render in `tools/figma-home.png` is the first frame's (`1579:306`).
 ## The link previews
 
 Each page's `og:image` is its own card in `assets/og/`: Home itself, and each
-case study's opening tile, shot by `tools/og-cards.mjs` from a local server.
-Unfurlers cache a card by its address for about a week, so when the art
-changes for good, rename the files and the `og:image` tags together.
+case study's opening tile, shot by `tools/og-cards.mjs` from a local server
+and written to the file the page's `og:image` names (name pages after the
+address to bake only those: `vicino pantrypal nextlevel`). Unfurlers cache a
+card by its address for about a week, so when the art changes for good, give
+the card a new name in its page's `og:image`, bake it, and delete the old
+file: the case studies' cards are `-2` since their opening tiles were
+redrawn in October 2026.
 `apple-touch-icon.png` is the favicon's ink disc on the paper, opaque,
 because iOS fills a clear corner with black.
 

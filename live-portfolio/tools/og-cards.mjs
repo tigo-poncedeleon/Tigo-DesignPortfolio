@@ -3,6 +3,9 @@
 //
 //     python3 live-portfolio/tools/serve.py 8796 &
 //     node live-portfolio/tools/og-cards.mjs http://127.0.0.1:8796
+//     node live-portfolio/tools/og-cards.mjs http://127.0.0.1:8796 vicino pantrypal
+//
+// Named after the address, only those cards are baked; with none, all four.
 //
 // Nothing on a card is drawn for it: each is the page's own opening, shot in
 // the system Chrome at twice the size and halved.
@@ -15,21 +18,37 @@
 //               the masthead's buttons are taken off it and its rounded
 //               foot squared, since a card is a picture of the page and not
 //               a page
-// Unfurlers cache a card by its address for about a week, so when the art
-// changes for good, rename the files and the og:image tags together
-// (archive/v2-og-src/README.md learned that the first time).
+// Each card is written to the file its own page's og:image names, read off
+// the page as it is served. Unfurlers cache a card by its address for about
+// a week, so when the art changes for good, give the card a new name in its
+// page's og:image and bake it again; the old file can then go
+// (archive/v2-og-src/README.md learned that the first time). The cards were
+// written to fixed names until October 2026, which made a rename two edits
+// that had to agree.
 //
-// Needs playwright-core where Node can find it (npm i playwright-core in any
-// folder, and run from there), and ImageMagick for the halving.
+// Needs playwright-core where Node can find it from the folder it is run in
+// (npm i playwright-core in any folder, and run from there: it is looked up
+// from there, since a module's own imports are looked up from the module's
+// folder, where it is not), and ImageMagick for the halving.
 
-import { chromium } from 'playwright-core';
+import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
+const { chromium } = createRequire(path.join(process.cwd(), 'og-cards.cjs'))('playwright-core');
 const base = process.argv[2] || 'http://127.0.0.1:8796';
-const out = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'og');
+const only = new Set(process.argv.slice(3));
+const wanted = (name) => !only.size || only.has(name);
+const site = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const baked = [];
+
+// where the page's og:image says its card is, as a file in the site
+const cardFor = async (page) => {
+  const url = await page.getAttribute('meta[property="og:image"]', 'content');
+  return path.join(site, new URL(url).pathname);
+};
 
 const browser = await chromium.launch({ executablePath: chrome, args: ['--hide-scrollbars'] });
 const halve = (file) => execFileSync('magick', [file, '-resize', '1200x630!', '-strip', file]);
@@ -37,7 +56,7 @@ const halve = (file) => execFileSync('magick', [file, '-resize', '1200x630!', '-
 // Home: the greeting types itself into the field's placeholder the first
 // time Home is seen, holds for 1.7 seconds and backspaces away (js/prompt.js
 // HOLD), so the shot is taken in the hold
-{
+if (wanted('home')) {
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 2 });
   await page.goto(base + '/', { waitUntil: 'networkidle' });
   await page.waitForFunction(() => {
@@ -45,24 +64,26 @@ const halve = (file) => execFileSync('magick', [file, '-resize', '1200x630!', '-
     return t && t.placeholder === t.dataset.greeting;
   }, null, { timeout: 10000, polling: 50 });
   await page.waitForTimeout(250);
-  const file = path.join(out, 'home.png');
+  const file = await cardFor(page);
   await page.screenshot({ path: file });
   halve(file);
+  baked.push(file);
   await page.close();
 }
 
-for (const name of ['vicino', 'pantrypal', 'nextlevel']) {
+for (const name of ['vicino', 'pantrypal', 'nextlevel'].filter(wanted)) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 672 }, deviceScaleFactor: 2 });
   await page.goto(`${base}/${name}.html`, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: '.masthead { visibility: hidden !important; } .cs-hero-tile { border-radius: 0 !important; }' });
   // the Vicino board paints a beat after its frame loads (js/case.js)
   await page.waitForTimeout(name === 'vicino' ? 3500 : 1200);
   const tile = await page.$('.cs-hero-tile');
-  const file = path.join(out, `${name}.png`);
+  const file = await cardFor(page);
   await tile.screenshot({ path: file });
   halve(file);
+  baked.push(file);
   await page.close();
 }
 
 await browser.close();
-console.log('baked', out);
+console.log('baked', baked.map((f) => path.relative(site, f)).join(', '));
