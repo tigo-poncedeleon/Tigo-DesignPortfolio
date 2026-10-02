@@ -74,8 +74,8 @@ and written to the file the page's `og:image` names (name pages after the
 address to bake only those: `vicino pantrypal nextlevel`). Unfurlers cache a
 card by its address for about a week, so when the art changes for good, give
 the card a new name in its page's `og:image`, bake it, and delete the old
-file: the case studies' cards are `-2` since their opening tiles were
-redrawn in October 2026.
+file: the case studies' cards are `-3` since their opening tiles were
+redrawn, and then regrouped, in October 2026.
 `apple-touch-icon.png` is the favicon's ink disc on the paper, opaque,
 because iOS fills a clear corner with black.
 
