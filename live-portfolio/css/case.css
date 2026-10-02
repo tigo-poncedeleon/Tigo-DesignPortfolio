@@ -406,11 +406,15 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
    grown to the window rather than a band laid across it.
    The tile is a size container (hero), so what it holds is measured off
    the window it fills. In a landscape window its words stand in a column
-   on the left, on the back button's axis, in two parts held apart by the
-   room between them: at the top who it is (the icon, the name, what it
-   is), and at the foot the label a gallery would hang beside it (the role
-   and when, dressed in the case's own product) and the ways in, one of
-   them filled with the case's own deep colour as the one to press first.
+   on the left, on the back button's axis, as one group a steady step
+   apart, standing a little above the middle of the room beside the work:
+   who it is (the icon, the name, what it is), then the label a gallery
+   would hang beside it (the role and when, dressed in the case's own
+   product), then the ways in, one of them filled with the case's own deep
+   colour as the one to press first. (For a day they stood in two parts,
+   who it is at the top and the label at the foot, held apart by whatever
+   room the window left, which on a tall window was a gulf between a line
+   and the label it led to.)
    The work stands to the right of them, from under the menu square's foot,
    and runs off the tile's foot as it comes up out of the Work tile's:
    Canvas runs off the tile's right edge too, a board going on past the
@@ -466,6 +470,13 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   bottom: var(--hero-foot);
   width: var(--words-w);
 }
+/* The room the group does not fill is shared out over and under it, two
+   parts to three, so it stands a little above the measured middle, where
+   the eye puts the middle; in a window with no room to spare, the group
+   simply starts under the masthead's row. */
+.cs-hero-tile .cs-hero-words::before,
+.cs-hero-tile .cs-hero-words::after { content: ''; flex: 2 1 0; }
+.cs-hero-tile .cs-hero-words::after { flex-grow: 3; }
 .cs-hero-tile .cs-hero-words .ico { --ico: calc(104 * var(--u)); }
 .cs-hero-tile .cs-hero-name {
   margin-top: calc(34 * var(--u));
@@ -479,19 +490,24 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
 .cs[data-case='nextlevel'] .cs-hero-tile .cs-hero-name { font-size: min(calc(66 * var(--u)), 4.5cqw); line-height: 1.02; }
 .cs-hero-tile .cs-hero-sub {
   margin-top: calc(16 * var(--u));
-  margin-bottom: calc(36 * var(--u));
   font-size: max(19px, calc(28 * var(--u)));
 }
 
 /* ---- the label ----
-   What Tigo was and when, each under its own small caps, at the column's
-   foot over a hairline in the tile's own colour. Each case then dresses it
+   What Tigo was and when, each under its own small caps, over a hairline
+   in the tile's own colour, standing in the middle of the room between
+   what it is and the ways in, the same step from each as the eye measures
+   it: the step over it is counted from the line the words above stand on,
+   not from the foot of their line, which is a further 7 down, so it is 6
+   shorter than the step under it. (It stood nearer the ways in, a wider
+   step under the words than over the pills, and read as the pills'
+   caption rather than a piece of its own.) Each case then dresses it
    in its own product's hand, as the chapters' numbers are dressed (below,
    "the chapters' numbers"): Vicino's is a node on Canvas's board, its
    output wired across into the board itself; PantryPal's is the app's own
    Kitchen Pass, its sign-up card; Next Level's stands on a line of the
    brand book's construction, ticked like a ruler. */
-.cs-hero-label { margin-top: auto; }
+.cs-hero-label { margin-top: calc(30 * var(--u)); }
 .cs-hero-facts {
   display: flex;
   flex-wrap: wrap;
@@ -626,8 +642,9 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   box-shadow:
     0 0 0 calc(2.5 * var(--u)) var(--mark),
     0 calc(5 * var(--u)) 0 calc(2.5 * var(--u)) var(--mark);
+  /* turned about its middle, so it leans as far over the words as under
+     the ways in */
   rotate: -1.6deg;
-  transform-origin: 20% 100%;
   transition: rotate var(--t-pop) var(--spring-pop), translate var(--t-pop) var(--spring-pop);
 }
 @media (hover: hover) {
@@ -692,14 +709,17 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
    and the badge's second ring arcing round its right side in the navy, and
    the lines through its centre running on past it; the label's hairline is
    a construction line, ticked like a ruler, a long tick every fourth. */
+/* (it stands in the column's flow just before the icon, as tall as the
+   icon and taken back again by its own margin, so it is always exactly
+   where the icon is, wherever the group stands) */
 .cs-hero-plan {
   --plan: calc(104 * var(--u));
-  position: absolute;
-  left: 0;
-  top: 0;
+  position: relative;
   z-index: -1;
+  flex: none;
   width: var(--plan);
   height: var(--plan);
+  margin-bottom: calc(-1 * var(--plan));
   pointer-events: none;
 }
 .cs-hero-plan::before,
@@ -783,8 +803,12 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   flex-wrap: wrap;
   align-items: center;
   gap: calc(8 * var(--u));
-  margin-top: calc(26 * var(--u));
+  margin-top: calc(36 * var(--u));
 }
+/* The pass's ink ring stands 2.5 outside it and its hard shadow 7.5 under
+   it, so the step to the ways in is counted from the shadow's foot, and the
+   pass still stands the same step from each, as the eye measures it */
+.cs-pass + .cs-hero-links { margin-top: calc(41 * var(--u)); }
 .cs-hero-links .cs-pill {
   height: max(40px, calc(44 * var(--u)));
   gap: calc(8 * var(--u));
@@ -980,7 +1004,9 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   .cs-hero-tile .cs-hero-words .ico { --ico: calc(84 * var(--u)); }
   .cs-hero-tile .cs-hero-plan { --plan: calc(84 * var(--u)); }
   .cs-hero-tile .cs-hero-name { margin-top: calc(24 * var(--u)); }
-  .cs-hero-tile .cs-hero-sub { margin-bottom: calc(24 * var(--u)); }
+  .cs-hero-tile .cs-hero-label { margin-top: calc(23 * var(--u)); }
+  .cs-hero-tile .cs-hero-links { margin-top: calc(28 * var(--u)); }
+  .cs-hero-tile .cs-pass + .cs-hero-links { margin-top: calc(33 * var(--u)); }
   .cs-pass-foot { display: none; }
 }
 
@@ -1013,6 +1039,8 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
      construction, whose lines would run through the name beside it, is
      left to the landscape window and the phone */
   .cs-hero-wire, .cs-hero-plan { display: none; }
+  .cs-hero-tile .cs-hero-words::before,
+  .cs-hero-tile .cs-hero-words::after { content: none; }
   .cs[data-case='vicino'] .cs-hero-label { margin-right: 0; }
   .cs-hero-node::after { display: none; }
   .cs[data-case='vicino'] .cs-hero-tile::after,
@@ -1042,15 +1070,16 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
     padding-top: var(--hero-top);
   }
   .cs-hero-tile .cs-hero-words .ico { --ico: 64px; }
-  .cs-hero-tile .cs-hero-plan { --plan: 64px; display: block; left: var(--gutter-l); top: var(--hero-top); }
+  .cs-hero-tile .cs-hero-plan { --plan: 64px; display: block; position: absolute; margin: 0; left: var(--gutter-l); top: var(--hero-top); }
   .cs-hero-tile .cs-hero-plan i::before { width: calc(100cqw - 2 * var(--gutter-l)); }
   .cs-hero-tile .cs-hero-name { margin-top: 22px; font-size: min(46px, 11.5cqw); }
   .cs[data-case='nextlevel'] .cs-hero-tile .cs-hero-name { font-size: min(40px, 10cqw); }
   .cs-hero-tile .cs-hero-sub { font-size: 20px; }
-  .cs-hero-tile .cs-hero-label { margin-top: 22px; }
+  .cs-hero-tile .cs-hero-label { margin-top: 17px; }
   .cs-hero-tile .cs-hero-facts { gap: 8px 28px; }
   .cs-pass .cs-hero-facts dd { font-size: 16px; }
-  .cs-hero-tile .cs-hero-links { justify-content: flex-start; margin-top: 18px; }
+  .cs-hero-tile .cs-hero-links { justify-content: flex-start; margin-top: 22px; }
+  .cs-hero-tile .cs-pass + .cs-hero-links { margin-top: 27px; }
   .cs-hero-tile .cs-hero-art { margin-top: 28px; }
   .cs-hero-tile .cs-hero-phones { --phone: calc((100cqw - var(--gutter-l) - var(--gutter-r)) / 1.86); --side-x: 0.52; --side-y: 0.14; --side-s: 0.82; }
 }

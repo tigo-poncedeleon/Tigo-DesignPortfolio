@@ -56,6 +56,14 @@
       border-radius: 0;
       box-shadow: none;
     }
+    /* Parked, the replica lays its dot grid on the ground, to read the
+       picture as a canvas (vicino-canvas.css). In Vicino's opening tile the
+       board stands beside words that stand on a dot grid of their own, and
+       two grids side by side read as one pattern rather than as a board;
+       so the board's ground is plain here, parked or not, as it already is
+       full-window. (Set here, not in the replica's own stylesheet, so the
+       replica stays as it was copied.) */
+    #vc .vc-viewport { background-image: none; }
   </style>
 </head>
 <body>
