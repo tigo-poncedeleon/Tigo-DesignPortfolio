@@ -125,8 +125,10 @@ A Work tile opens its case study in the same tab: `vicino.html`,
 old site's case study in the site's own language (the lit tiles, the
 frosted pills, the chat's bubbles), but not at its one size: a case study
 is read at a book's sizes, its words at 18.5 frame pixels and a chapter's
-first sentence at 26, under chapter titles at 84 (`--t-*` in
-`css/case.css`). Each opens on its Work tile grown to fill the whole
+first sentence at 26, under chapter titles at 64 and part titles at 36
+(`--t-*` in `css/case.css`), and spaced on a handful of distances, each
+kept for one meaning, from a caption's 12 to a chapter's 144 (`--air-*`).
+Each opens on its Work tile grown to fill the whole
 window, edge to edge, and where the browser can carry a view across pages
 the tile itself grows into it, its icon travelling on its own to its new
 place, and shrinks home on the way back. The masthead carries only the back
@@ -158,12 +160,40 @@ them saying where they go.
   of chapters, the steppers, the numbers that roll up like an odometer, the
   pictures that open out to the window, and the living pieces below. `js/pantry-story.js`
   lays out the pictures PantryPal's story draws from the app's own
-  drawings: a hundred foods for the food thrown away, the fifty dishes on a
-  belt and on one plate.
+  drawings: a hundred foods for the food thrown away, the last thirty
+  falling out of the waffle as it rises, and the fifty dishes on one
+  plate. PantryPal's brief tells its two facts in pictures (the falling
+  waffle, and three of the app's dinners read against a breakfast fridge,
+  the few things it holds on white plates and the rest dashed) and ends on
+  its question as a line of type, its last words marked in the app's
+  butter. Nothing on PantryPal's page is set as a chat: its quotes are a
+  house rule and a verdict, each on a rule of the case's colour. The same
+  script draws the leader lines that tie the rethink's three findings to
+  the places on the old hub they are about.
+- PantryPal's story map, the row of chapters under its overview, shows each
+  chapter's own artifact in one light, four of them rising out of the
+  tile's foot in one phone: the kept sheet as taped paper with its KEPT!
+  stamp, the Figma file's own frame, the design system's own parts (drawn
+  by PantryPalDS itself, `tools/pantry-parts`), the old hub counted, and
+  the scan of the fridge. `tools/pantry-story.sh` bakes all five.
+- PantryPal's ideas stand as paper: the Sketch chapter's three wireframes
+  and 4.1's four ways out are graph-paper sheets taped to a board, the
+  three judged with a rubber stamp and followed by the shelf that shipped,
+  the four drawn in the same ink and hand (`tools/pantry-ink.mjs` draws
+  them, from the app's own drawings with the colour taken out). The look
+  (2.1) is four cards of one make: the palette as a spec, the drawings,
+  and the two faces. The Ship chapter opens on the scan's moment, Tigo's
+  own fridge taped up behind the phone that took it, and runs the seven
+  screens from the front door to a plate in the app's own order, each
+  turning over to the prototype's screen at the same step.
 - Each story is told in chapters, and every chapter opens the same way:
   its number and when it happened on a hairline, its title, and what it is
   about (`.cs-chapter`); a part of a chapter has a smaller head numbered
-  within it (`.cs-part`, 2.1, 2.2). Each case numbers them in its own
+  within it (`.cs-part`, 2.1, 2.2). Every part of the story, its head, its
+  words and its work, is laid out to be seen together in about one window:
+  pictures stand beside the notes that explain them rather than over them.
+  The overview before them is named, in the small capitals a label is set
+  in, its facts beside its words. Each case numbers them in its own
   product's hand: PantryPal in the app's sticker type, Vicino as nodes on a
   board wired one into the next, Next Level in the badge's ring. A section
   is a chapter when it has an `id` and a `.cs-chapter`, and names its
@@ -179,7 +209,15 @@ them saying where they go.
   the step being read; Vicino's is a **Story run** down a pipeline of
   nodes, each queued, running or checked, a spark travelling the wire; Next
   Level's is a **Flight plan** on the badge's blue grid, the badge's drone
-  flying it and spraying each chapter clean. On a phone there is no rail.
+  flying it and spraying each chapter clean. Where a pointer can hover it
+  stands folded, as narrow as the back button over it: the count, and a
+  column of each chapter's mark in the same dress, the runner still going
+  from one to the next (the hat in the step's own cell, the spark on the
+  wire, the drone on the path). Pointed at, or tabbed into, it opens to its
+  names into a margin kept empty for it, so it never reaches the story, and
+  folds again a moment after the pointer leaves ("the rail, folded" in
+  `css/case.css`). A touch screen, with nothing to hover with, has it open
+  in the same margin. On a phone there is no rail.
 - The overview ends on the story map, the chapters as a row of tiles each
   holding its own chapter's picture, which are also links to them, and the
   story is told in their order: PantryPal from the sketches to the App
@@ -187,7 +225,8 @@ them saying where they go.
   Level from Madrid to the mark on every surface.
 - Below the opening tile nothing ever slides up under the masthead's
   buttons: the story keeps to the lane between them (`--lane-l`,
-  `--lane-r`). On the left the lane starts past the rail (`--rail-w`); on
+  `--lane-r`). On the left the lane starts past the open rail and 48 of air
+  (`--rail-open`, `--rail-gap`), whether the rail stands open or folded; on
   the right it ends short of the menu square. The lane is a size container,
   and every piece that lays itself out by its room asks the lane
   (`@container lane`), not the window. The opening tile is the one thing as
@@ -195,15 +234,27 @@ them saying where they go.
   words and its work stand clear of the buttons, beside each other in a
   landscape window and as a poster, the words over the work, in a narrow
   or tall one. A phone has no room for a lane, and keeps to the gutters.
-- Each story is set in one reading column down the middle of the lane
-  (880 frame pixels, `--col`), its words held to a reading measure inside
-  it (`--measure`). The rows meant to be read across
-  (PantryPal's prototype reel, its drawings, its four ways out, its shipped
-  screens and its store page, and Next Level's rollout) and
-  the two pieces of software meant to be used in place (PantryPal's running
-  app, Vicino's component browser) step out onto the wider band
-  (`.cs-breakout`), as wide as the lane allows; PantryPal's running app
-  stands in a card of the app's own kitchen, under its awning (`.cs-band`).
+- Each story is set in one column, a channel down the middle of the
+  window, 920 frame pixels at the most (`--col`); where centring it would
+  leave less than 760 (`--col-min`), it holds at 760 and moves right of the
+  middle, its left margin always wide enough for the open rail
+  (`--main-pad-r`). Everything in it keeps to the column's two edges: the
+  heads, the words, the tiles, the rows read across, the windows onto the
+  real files and the software meant to be used in place, on a phone as on
+  a desktop. Only the opening tile is wider. The words keep to a reading
+  measure by standing in their head (`.cs-chapter`, `.cs-part`), beside its
+  name where the column is 660 or wider, five twelfths for the name and
+  seven for the words, and under it where it is narrower; the overview,
+  the quote rows and the captions keep the same split, so one line runs
+  down the page. Each section is a size container (`lane`), so a piece lays
+  itself out by the column it stands in: the rows built for a wide column
+  step down from 1100 and again from 860, and under 500, a phone's column
+  or a window under about 1000, every piece stacks. (Until October 2026
+  the words had 640, the work 880, and a few pieces stepped out onto a
+  stage of 1192, `.cs-breakout`; then for a day everything kept to 640,
+  and for a day it ran the whole lane, up to 1192.)
+  PantryPal's running app stands in a card of the app's own kitchen, under
+  its awning (`.cs-band`).
 - The work runs on the page wherever it can, instead of being pictured:
   - PantryPal's **"The chef, live"** is the app itself: its Home and
     Recipe screens in its own fonts, colours and drawings, ranking its
@@ -213,8 +264,21 @@ them saying where they go.
     `ChefBook.swift`, rule for rule, and passes the app's own ChefBook
     tests; the screens are drawn from `DishCard.swift` and
     `CookScreen.swift`'s own numbers, and were laid over the app's
-    captures and measured to within a point. `tools/pantry-app.sh`
-    rebuilds everything the page takes from the app's repository.
+    captures and measured to within a point: the deck that slides and
+    springs back as the app's does, the welcome's falling pile, the
+    add-missing chip, the scan and the ticks. Beside it, the shelf is one
+    of the app's cards named on the app's own wood planks, its stickers in
+    balanced rows whose count stands the card level with the phone; the
+    three shelves to start from are words of the sentence that offers them.
+    On a phone, where the app has scrolled away above the shelf, what the
+    chef decided rides the window's foot while the shelf is read. The app
+    writes two dishes for every new shelf of three or more on its own
+    server and seats them first, "Made for your shelf"; with no server
+    here, the page seats two of the book's own in their place, ones the
+    shelf can cook whole, built on what was just added, so the first card
+    changes with nearly every change to the shelf, as the app's does.
+    `tools/pantry-app.sh` rebuilds everything the page takes from the
+    app's repository.
   - Vicino's hero board runs when **Run the board** is pressed (the
     replica's own Run). The two ways to build play out as they come into
     view. The brand book and the AI guide are the real pages, reading
@@ -248,10 +312,10 @@ them saying where they go.
   (above). A few pictures inside them point outside the folder and are
   missing, as they were on the old site.
 - `assets/case/` holds each case's pictures, copied from the old site's
-  `Media/` and from the work's own repositories. PantryPal's phones are the
-  app's latest layout-sweep captures in the iPhone 16 Pro frame from the
-  PantryPal repo's App Store lab, and its UX Lab pictures are the lab's
-  own prototypes. Next Level's nine versions of the mark come from the
+  `Media/` and from the work's own repositories. PantryPal's phones are a
+  layout sweep of the 1.3 build (October 2026) in the iPhone 16 Pro frame
+  from the PantryPal repo's App Store lab, and its UX Lab pictures are the
+  lab's own prototypes, drawn again in ink for 4.1. Next Level's nine versions of the mark come from the
   first portfolio (`archive/v1-old-portfolio/Drone-Media/`), and its long
   website is the brand's site as it is live, captured top to bottom.
 - The links to vicino.ai, the App Store, the website and the Pulse review

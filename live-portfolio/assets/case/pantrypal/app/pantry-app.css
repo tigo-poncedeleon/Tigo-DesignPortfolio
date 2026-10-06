@@ -203,7 +203,8 @@
   display: flex;
   align-items: center;
   gap: calc(6 * var(--pt));
-  height: calc(27 * var(--pt));
+  /* the chip's 13 in Fugaz One's own line, and 4 above and below */
+  height: calc(27.1 * var(--pt));
   padding: 0 calc(12 * var(--pt));
   border-radius: 99px;
   background: #fff;
@@ -215,13 +216,15 @@
 }
 .pp-rank img { width: calc(20 * var(--pt)); height: calc(18 * var(--pt)); object-fit: contain; }
 
-/* The deck: the card on top, and during a throw the one leaving it. */
+/* The deck: the card on top, and while it moves the one leaving it.
+   (Measured off the 1.3 build on an iPhone 16: the card's outer edge from
+   261 to 686.) */
 .pp-deck {
   position: absolute;
   left: calc(20 * var(--pt));
-  top: calc(261.3 * var(--pt));
+  top: calc(261 * var(--pt));
   width: calc(353 * var(--pt));
-  height: calc(424.3 * var(--pt));
+  height: calc(425 * var(--pt));
   touch-action: pan-y;
 }
 
@@ -239,7 +242,14 @@
   text-align: center;
   will-change: translate, rotate;
 }
-.pp-card:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(3 * var(--pt)); }
+.pp-card-open {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  border-radius: inherit;
+}
+.pp-card-open:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(3 * var(--pt)); }
 /* the plate takes whatever the words below it leave */
 .pp-hero {
   position: relative;
@@ -335,11 +345,16 @@
   display: grid;
   justify-items: center;
   gap: calc(10 * var(--pt));
-  /* the capture measures 10.5 under the pills, not the 12 the source asks */
-  padding: calc(14 * var(--pt)) calc(12 * var(--pt)) calc(10.5 * var(--pt));
+  /* the 1.3 build measures 10 under the last piece, not the 12 the source asks */
+  padding: calc(14 * var(--pt)) calc(12 * var(--pt)) calc(10 * var(--pt));
 }
 .pp-summary {
-  margin: 0 calc(-4 * var(--pt));
+  /* Faustina's own line at 16 is 20.15, with the source's 2 between lines:
+     a line every 22.15, and a point less above the first and below the
+     last than a CSS line box of that height leaves (42.3 for two lines, as
+     measured). The lines break as SwiftUI's do, as full as they will go
+     (balanced, "lettuce," went down a line the app keeps it on). */
+  margin: calc(-1 * var(--pt)) calc(-4 * var(--pt));
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -347,10 +362,8 @@
   font-family: 'PP Faustina', Georgia, serif;
   font-weight: 500;
   font-size: calc(16 * var(--pt));
-  line-height: calc(22 * var(--pt));
-  text-wrap: balance;
+  line-height: calc(22.15 * var(--pt));
 }
-.pp-card.is-short .pp-summary { -webkit-line-clamp: 2; }
 .pp-macros { display: flex; gap: calc(6 * var(--pt)); }
 .pp-macro {
   padding: calc(2.5 * var(--pt)) calc(8 * var(--pt));
@@ -358,24 +371,58 @@
   box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
   font-size: calc(12 * var(--pt));
   letter-spacing: calc(0.52 * var(--pt));
-  line-height: calc(15 * var(--pt));
+  line-height: calc(12 * var(--fugaz-lh) * var(--pt));
   white-space: nowrap;
+}
+/* On a card with the add-missing chip the card is a scroll-free screen's
+   worth, and the app gives the pills its shrink before anything else: they
+   come down to their floor, four fifths (19 points tall in the 1.3 build,
+   not 22.6), and the summary and the chip keep their size. */
+.pp-card.is-short .pp-macro {
+  font-size: calc(9.6 * var(--pt));
+  letter-spacing: calc(0.416 * var(--pt));
+  line-height: calc(9.6 * var(--fugaz-lh) * var(--pt));
 }
 .pp-macro:nth-child(1) { background: var(--butter); }
 .pp-macro:nth-child(2) { background: var(--lettuce); }
 .pp-macro:nth-child(3) { background: var(--sky); }
 
-/* what the shelf is short of, and the way to add it (DishCard coverageChip) */
+/* What the shelf is short of, and the one button that adds all of it
+   (DishCard coverageChip): the band's coral, on the dashed edge the design
+   system keeps for what is provisional, 6 on and 4 off, drawn as the app
+   strokes it, inside its own edge. It presses as the app's stickers do:
+   down two points and a shade darker. */
 .pp-missing {
+  position: relative;
+  z-index: 3;
   display: grid;
   justify-items: center;
   gap: calc(5 * var(--pt));
   padding: calc(8 * var(--pt)) calc(12 * var(--pt));
-  border: calc(2 * var(--pt)) dashed var(--ink);
   border-radius: calc(12 * var(--pt));
   background: var(--coral);
+  transition: translate 80ms ease-out, filter 80ms ease-out;
 }
-.pp-missing > span { font-size: calc(12 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); line-height: 1.2; }
+.pp-missing:active { translate: 0 calc(2 * var(--pt)); filter: brightness(0.94); }
+.pp-missing:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(2 * var(--pt)); }
+.pp-dash { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.pp-dash rect {
+  x: calc(1 * var(--pt));
+  y: calc(1 * var(--pt));
+  width: calc(100% - 2 * var(--pt));
+  height: calc(100% - 2 * var(--pt));
+  rx: calc(11 * var(--pt));
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: calc(2 * var(--pt));
+  stroke-dasharray: calc(6 * var(--pt)) calc(4 * var(--pt));
+}
+/* (a browser that cannot place a rect from CSS gets a dashed border) */
+@supports not (x: 1px) {
+  .pp-dash { display: none; }
+  .pp-missing { border: calc(2 * var(--pt)) dashed var(--ink); }
+}
+.pp-missing-word { font-size: calc(12 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); line-height: calc(12 * var(--fugaz-lh) * var(--pt)); }
 .pp-missing-row { display: flex; gap: calc(4 * var(--pt)); }
 .pp-missing-row > span {
   display: grid;
@@ -385,10 +432,14 @@
   width: calc(62 * var(--pt));
   height: calc(46 * var(--pt));
 }
+/* the overflow's column is the narrower 44 */
+.pp-missing-row > .is-more { width: calc(44 * var(--pt)); }
+/* a disc 32 across, which is what SwiftUI's Circle draws in the 34 × 32
+   frame the drawing and its padding make (it was an ellipse that wide) */
 .pp-missing-row i {
   display: grid;
   place-items: center;
-  width: calc(34 * var(--pt));
+  width: calc(32 * var(--pt));
   height: calc(32 * var(--pt));
   border-radius: 50%;
   background: #fff;
@@ -406,7 +457,7 @@
   text-overflow: clip;
 }
 .pp-missing-row .is-more b { color: var(--placeholder); }
-.pp-missing-row .is-more i { background: var(--offwhite); width: calc(34 * var(--pt)); }
+.pp-missing-row .is-more i { background: var(--offwhite); }
 
 /* ---- the two actions (DS PPPrimaryButtonStyle, PPSecondaryStickerStyle):
    a press sinks two points and darkens a tenth, in 80ms ---- */
@@ -434,27 +485,44 @@
 }
 .pp-btn:active, .pp-btn.is-pressed { translate: 0 calc(2 * var(--pt)); }
 .pp-btn:active::after, .pp-btn.is-pressed::after { opacity: 1; }
-.pp-btn svg { flex: none; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+/* the glyphs (pantry-app.js GLYPH): each one's box is its ink, in points,
+   and its strokes are its own, in the capture's pixels */
+.pp-g {
+  flex: none;
+  width: calc(var(--gw) * var(--pt));
+  height: calc(var(--gh) * var(--pt));
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pp-g .is-fill { fill: currentColor; stroke: none; }
+/* 11.3 from a leading glyph's ink to the words' and 10.7 from the words'
+   to a trailing arrow's, as measured: the HStack's 8 and the symbol's own
+   side bearings, less the font's, which the page sets the same */
+.pp-btn:has(> .pp-g:first-child) { gap: calc(10.6 * var(--pt)); }
+.pp-next { gap: calc(9.9 * var(--pt)); }
+/* the pan sits a point low, as SF Symbols' frying.pan does on its line */
+.pp-g.is-pan { translate: 0 calc(1 * var(--pt)); }
 .pp-go {
   position: absolute;
   left: calc(20 * var(--pt));
-  top: calc(698.3 * var(--pt));
+  top: calc(698 * var(--pt));
   width: calc(353 * var(--pt));
   background: var(--red);
   color: #fff;
   font-size: calc(20 * var(--pt));
 }
-.pp-go svg { width: calc(22 * var(--pt)); height: calc(22 * var(--pt)); stroke-width: 2.2; }
 .pp-row {
   position: absolute;
   left: calc(20 * var(--pt));
-  top: calc(754.3 * var(--pt));
+  top: calc(754 * var(--pt));
   width: calc(353 * var(--pt));
   display: flex;
   gap: calc(8 * var(--pt));
 }
 .pp-next { flex: 1; background: #fff; font-size: calc(16 * var(--pt)); }
-.pp-next svg { width: calc(17 * var(--pt)); height: calc(17 * var(--pt)); stroke-width: 3; }
 /* the way back to the dish before, once there is one */
 .pp-prev {
   flex: none;
@@ -462,24 +530,84 @@
   background: #fff;
   transition: translate 80ms ease-out, width 0.32s cubic-bezier(0.3, 1.25, 0.5, 1), margin 0.32s cubic-bezier(0.3, 1.25, 0.5, 1), opacity 0.2s ease, scale 0.32s cubic-bezier(0.3, 1.25, 0.5, 1);
 }
-.pp-prev svg { width: calc(20 * var(--pt)); height: calc(20 * var(--pt)); stroke-width: 3; }
 .pp-prev[hidden] { display: flex; width: 0; margin-right: calc(-8 * var(--pt)); opacity: 0; scale: 0.6; pointer-events: none; }
 
-/* The shelf with nothing on it: the app's own welcome, as it draws it. */
-.pp-welcome {
+/* The title and the wardrobe, both doors to the shelf: the chrome is the
+   app's pixels, so the door is laid over them, and a press shades it as
+   the app's pressed state does. The pill is 283 by 49 and the wardrobe 52
+   square, as measured. */
+.pp-door {
   position: absolute;
-  inset: 0;
-  z-index: 4;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
+  z-index: 3;
+  top: calc(144.7 * var(--pt));
+  border-radius: calc(10 * var(--pt));
+}
+.pp-door.is-title { left: calc(22.9 * var(--pt)); top: calc(146 * var(--pt)); width: calc(283.2 * var(--pt)); height: calc(49 * var(--pt)); border-radius: 99px; }
+.pp-door.is-door { left: calc(318 * var(--pt)); width: calc(52 * var(--pt)); height: calc(52 * var(--pt)); }
+.pp-door:active { background: rgb(0 0 0 / 0.1); }
+.pp-door:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(2 * var(--pt)); }
+
+/* ---- the welcome (HomeScreen emptyShelfWelcome, SpillStage) ----
+   An empty shelf trades the deck for the app's welcome, under its own
+   title band ("Hey, chef!", no wardrobe): the pile of food tipped onto the
+   counter, the question swung through it, and the two ways to fill a
+   shelf. The pile is the app's 393 × 424 canvas, scaled as the app scales
+   it to the room an iPhone 16 leaves (608.3 under the band, less the 188
+   the buttons and their air take: 0.9913), from 16 under the band; the
+   buttons stand at 662 and 718, as measured. (It was a still of the 1.2
+   build, its scan button wearing the chef's hat the app has since traded
+   for a camera, and its two buttons pressed nothing.) */
+.pp-chrome.is-welcome, .pp-welcome { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+.pp-home.is-empty :is(.pp-chrome.is-welcome, .pp-welcome) { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+.pp-home :is(.pp-chrome.is-deck, .pp-door, .pp-door-count, .pp-rank, .pp-deck, .pp-go, .pp-row) { transition: opacity 0.3s ease, visibility 0s; }
+.pp-home.is-empty :is(.pp-chrome.is-deck, .pp-door, .pp-door-count, .pp-rank, .pp-deck, .pp-go, .pp-row) {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
-.pp-home.is-empty .pp-welcome { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-.pp-home.is-empty .pp-chrome, .pp-home.is-empty .pp-door-count { opacity: 0; }
+.pp-welcome { position: absolute; inset: 0; z-index: 1; }
+.pp-spill {
+  position: absolute;
+  left: calc(1.7 * var(--pt));
+  top: calc(225.7 * var(--pt));
+  width: calc(393 * var(--pt));
+  height: calc(424 * var(--pt));
+  scale: 0.9913;
+  transform-origin: 0 0;
+}
+.pp-piece {
+  position: absolute;
+  left: calc(var(--x) * var(--pt));
+  top: calc(var(--y) * var(--pt));
+  width: calc(var(--w) * var(--pt));
+  height: calc(var(--w) / var(--a) * var(--pt));
+  rotate: calc(var(--t) * 1deg);
+  object-fit: contain;
+}
+/* opaque, so the pile tucks behind it and no letter sits on a drawing */
+.pp-band {
+  position: absolute;
+  left: calc(-22 * var(--pt));
+  top: calc(194 * var(--pt));
+  width: calc(437 * var(--pt));
+  height: calc(78 * var(--pt));
+  rotate: -3.5deg;
+  display: grid;
+  place-items: center;
+  padding: 0 calc(20 * var(--pt));
+  overflow: hidden;
+  border-block: calc(2 * var(--pt)) solid var(--ink);
+  background: var(--coral);
+}
+.pp-band .pp-outlined { font-size: calc(28 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-scan, .pp-type {
+  position: absolute;
+  left: calc(20 * var(--pt));
+  width: calc(353 * var(--pt));
+  font-size: calc(20 * var(--pt));
+}
+.pp-scan { top: calc(662 * var(--pt)); background: var(--red); color: #fff; }
+.pp-type { top: calc(718 * var(--pt)); background: #fff; }
 
 /* ======================================================================
    Recipe (Screens/CookScreen.swift)
@@ -621,18 +749,35 @@
   font-size: calc(20 * var(--pt));
   line-height: 1.1;
 }
+/* A step to do wears a dashed ring 28 across, a hairline dashed 6 on and
+   4 off; a step done, the app's check badge, 30 across (CookScreen). (The
+   ring was 30 and the badge the shelf's light green, where the app's is
+   its darker check green.) */
 .pp-step-tick {
   flex: none;
   display: grid;
   place-items: center;
-  width: calc(30 * var(--pt));
-  height: calc(30 * var(--pt));
+  width: calc(28 * var(--pt));
+  height: calc(28 * var(--pt));
   margin-right: calc(12 * var(--pt));
-  border-radius: 50%;
-  border: calc(1 * var(--pt)) dashed var(--ink);
-  transition: background-color 0.2s ease, border-color 0.2s ease, scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.pp-step-tick svg { width: 62%; height: 62%; fill: none; stroke: var(--ink); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.pp-step-tick > * { grid-area: 1 / 1; }
+.pp-ring { width: 100%; height: 100%; overflow: visible; }
+.pp-ring circle { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 6 4; }
+.pp-step-tick .pp-badge { display: none; }
+/* CheckBadge: the ink check on the check green, in an ellipse a tenth
+   shorter than it is wide, on a hairline */
+.pp-badge {
+  display: grid;
+  place-items: center;
+  width: calc(var(--bs) * var(--pt));
+  height: calc(var(--bs) * 0.9 * var(--pt));
+  border-radius: 50%;
+  background: #349e31;
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  color: var(--ink);
+}
+.pp-badge svg { width: calc(var(--bs) * 0.5 * var(--pt)); height: calc(var(--bs) * 0.5 * var(--pt)); }
 .pp-step-body {
   display: grid;
   grid-template-rows: 1fr;
@@ -648,8 +793,10 @@
 .pp-step.is-done { opacity: 0.62; }
 .pp-step.is-done .pp-step-head { border-bottom-color: transparent; background: var(--steel); }
 .pp-step.is-done .pp-step-num { background: var(--steel); }
-.pp-step.is-done .pp-step-tick { border: calc(1.5 * var(--pt)) solid var(--ink); background: var(--green); scale: 1.08; }
-.pp-step.is-done .pp-step-tick svg { opacity: 1; }
+.pp-step.is-done .pp-step-tick { width: calc(30 * var(--pt)); }
+.pp-step.is-done .pp-ring { display: none; }
+.pp-step.is-done .pp-step-tick .pp-badge { display: grid; animation: pp-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes pp-pop { from { scale: 0.6; opacity: 0; } }
 .pp-step.is-done .pp-step-body { grid-template-rows: 0fr; }
 
 .pp-finish {
@@ -660,16 +807,23 @@
   padding: calc(20 * var(--pt)) calc(24 * var(--pt)) calc(48 * var(--pt));
   text-align: center;
 }
-.pp-finish img { height: calc(84 * var(--pt)); width: auto; }
+/* the chef, 84 tall (the rule over the block is an image too, and a rule
+   for every image here stood it 84 tall, a black smear over the chef) */
+.pp-finish .pp-finish-chef { height: calc(84 * var(--pt)); width: auto; }
 .pp-finish .pp-outlined { font-size: calc(33 * var(--pt)); line-height: var(--fugaz-lh); }
 .pp-finish p { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.3; color: var(--placeholder); }
 .pp-finish .pp-btn { width: 100%; max-width: calc(260 * var(--pt)); }
 .pp-save { margin-top: calc(8 * var(--pt)); background: #fff; font-size: calc(16 * var(--pt)); }
-.pp-save svg { width: calc(18 * var(--pt)); height: calc(18 * var(--pt)); stroke-width: 2.4; }
+.pp-save-mark { flex: none; width: calc(17 * var(--pt)); height: calc(17 * var(--pt)); fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round; }
+/* kept: the badge where the bookmark was, on the accent green */
+.pp-save .pp-badge { display: none; }
 .pp-save.is-kept { background: var(--green); }
+.pp-save.is-kept .pp-save-mark { display: none; }
+.pp-save.is-kept .pp-badge { display: grid; }
 .pp-done { background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .pp-btn, .pp-prev, .pp-step, .pp-step-head, .pp-step-num, .pp-step-tick, .pp-step-body, .pp-count { transition-duration: 0.01s; }
+  .pp-btn, .pp-prev, .pp-step, .pp-step-head, .pp-step-num, .pp-step-tick, .pp-step-body, .pp-count, .pp-missing { transition-duration: 0.01s; }
+  .pp-step.is-done .pp-step-tick .pp-badge { animation: none; }
   .pp-door-count.is-bumped { animation: none; }
 }

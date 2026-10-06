@@ -135,21 +135,29 @@
 
       <!-- OVERVIEW: the story in a sentence, the facts, and the five
            chapters as a map, each with a picture of its own -->
-      <section class="cs-sec cs-intro" data-title="Overview" aria-label="Overview">
-        <p class="cs-lead" data-rise>PantryPal answers one question: <strong>what can I cook with what I already have?</strong> Scan a receipt or the fridge and it stocks a shelf. Then, instead of a menu, <strong>dinner is already on the screen</strong>: one dish, ranked against that shelf.</p>
-        <p class="cs-text cs-after" data-rise>I took it <strong>from sketches to the App Store</strong>: the wireframes, the Figma prototype, and then the real thing, <strong>a SwiftUI app</strong> with its own design system and the AI service behind it.</p>
+      <section class="cs-sec cs-intro" data-title="Overview" aria-labelledby="h-overview">
+        <h2 class="cs-intro-name" id="h-overview" data-rise>Overview</h2>
+        <div class="cs-intro-words">
+          <p class="cs-lead" data-rise>PantryPal answers one question: <strong>what can I cook with what I already have?</strong> Scan a receipt or the fridge and it stocks a shelf. Then, instead of a menu, <strong>dinner is already on the screen</strong>: one dish, ranked against that shelf.</p>
+          <p class="cs-text cs-after" data-rise>I took it <strong>from sketches to the App Store</strong>: the wireframes, the Figma prototype, and then the real thing, <strong>a SwiftUI app</strong> with its own design system and the AI service behind it.</p>
+        </div>
         <dl class="cs-facts cs-after-lg" data-rise>
           <div><dt class="cs-eyebrow">role</dt><dd>Product Designer</dd></div>
           <div><dt class="cs-eyebrow">when</dt><dd>Nov 2025 – Present</dd></div>
-          <div><dt class="cs-eyebrow">platform</dt><dd>iPhone · iOS 17</dd></div>
-          <div><dt class="cs-eyebrow">built with</dt><dd>Figma · SwiftUI · Gemini</dd></div>
+          <div><dt class="cs-eyebrow">platform</dt><dd class="cs-list"><span>iPhone</span><span>iOS&nbsp;17</span></dd></div>
+          <div><dt class="cs-eyebrow">built with</dt><dd class="cs-list"><span>Figma</span><span>SwiftUI</span><span>Gemini</span></dd></div>
         </dl>
+        <!-- the story in five pictures, one a chapter, each the chapter's
+             own artifact rising out of the tile's foot in one phone and one
+             light: the kept sheet as the paper it was, the Figma frame, the
+             design system's own parts, the old hub counted, and the scan of
+             a real fridge (assets/case/pantrypal/story/) -->
         <ol class="cs-storymap" data-rise aria-label="The story, in five chapters">
-          <li><a href="#sketch"><span class="cs-storymap-pic is-paper"><img src="assets/case/pantrypal/pantry-wire-3.webp" width="488" height="820" alt="" loading="lazy" /></span><span class="cs-storymap-when">01 · late 2025</span><b>Sketch</b></a></li>
-          <li><a href="#prototype"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/figma/figma-2.webp" width="459" height="912" alt="" loading="lazy" /></span><span class="cs-storymap-when">02 · Jan 2026</span><b>Prototype</b></a></li>
-          <li><a href="#build"><span class="cs-storymap-pic is-art"><img src="assets/case/pantrypal/app/chrome-home.webp" width="786" height="440" alt="" loading="lazy" /></span><span class="cs-storymap-when">03 · Jul 2026</span><b>Build</b></a></li>
-          <li><a href="#rethink"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/lab/hub-counted.webp" width="560" height="1206" alt="" loading="lazy" /></span><span class="cs-storymap-when">04 · Aug 2026</span><b>Rethink</b></a></li>
-          <li><a href="#ship"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/store/store-1.webp" width="520" height="1126" alt="" loading="lazy" /></span><span class="cs-storymap-when">05 · Sep 2026</span><b>Ship</b></a></li>
+          <li><a href="#sketch"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/sketch.webp" width="600" height="780" alt="" loading="lazy" /></span><span class="cs-storymap-when">01&nbsp;·&nbsp;late 2025</span><b>Sketch</b></a></li>
+          <li><a href="#prototype"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/prototype.webp" width="600" height="780" alt="" loading="lazy" /></span><span class="cs-storymap-when">02&nbsp;·&nbsp;Jan 2026</span><b>Prototype</b></a></li>
+          <li><a href="#build"><span class="cs-storymap-pic is-bench"><img src="assets/case/pantrypal/story/build.webp" width="800" height="640" alt="" loading="lazy" /></span><span class="cs-storymap-when">03&nbsp;·&nbsp;Jul 2026</span><b>Build</b></a></li>
+          <li><a href="#rethink"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/rethink.webp" width="600" height="780" alt="" loading="lazy" /></span><span class="cs-storymap-when">04&nbsp;·&nbsp;Aug 2026</span><b>Rethink</b></a></li>
+          <li><a href="#ship"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/ship.webp" width="600" height="780" alt="" loading="lazy" /></span><span class="cs-storymap-when">05&nbsp;·&nbsp;Sep 2026</span><b>Ship</b></a></li>
         </ol>
       </section>
 
@@ -160,6 +168,10 @@
           <h2 class="cs-chapter-title" id="h-problem">Problem</h2>
           <p class="cs-chapter-deck">good food, wasted, and recipes that never start from your shelf</p>
         </header>
+        <!-- the two facts: the food thrown away, falling out of a hundred
+             of the app's stickers, and the recipes that start from
+             themselves, three dinners read against a breakfast fridge -->
+        <div class="cs-problem">
         <figure class="cs-tile cs-lit cs-waste" data-rise>
           <div class="cs-waste-grid" data-waffle aria-hidden="true"></div>
           <figcaption class="cs-waste-words">
@@ -169,26 +181,46 @@
             <p class="cs-waste-key" aria-hidden="true"><span><i></i>eaten</span><span><i class="is-gone"></i>thrown away</span><span><i class="is-maybe"></i>within the range</span></p>
           </figcaption>
         </figure>
-        <figure class="cs-tile cs-lit cs-endless cs-after" data-rise>
+        <figure class="cs-tile cs-lit cs-endless" data-rise>
           <figcaption class="cs-endless-words">
             <p class="cs-eyebrow">recipes without a kitchen</p>
             <p class="cs-endless-num">millions</p>
             <p class="cs-tile-meta">of recipes online, and almost none of them start from what’s actually sitting on your shelf.</p>
           </figcaption>
-          <div class="cs-belt is-dishes" data-belt="dishes" aria-hidden="true"></div>
+          <div class="cs-dinners">
+            <p class="cs-dinners-name">three dinners, against a breakfast fridge</p>
+            <ol class="cs-dinners-list" role="list">
+              <li class="cs-dinner">
+                <img class="cs-dinner-art" src="assets/case/pantrypal/app/art/beef-bolognese-pasta.webp" width="96" height="96" alt="" loading="lazy" decoding="async" />
+                <p class="cs-dinner-name">Beef Bolognese Pasta <span>1 of 7 on the shelf</span></p>
+                <ul class="cs-dinner-needs" aria-hidden="true"><li class="is-out"><img src="assets/case/pantrypal/app/art/pasta.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/ground-beef.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-in"><img src="assets/case/pantrypal/app/art/tomato.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/onion.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/carrot.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/garlic.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/parmesan.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li></ul>
+              </li>
+              <li class="cs-dinner">
+                <img class="cs-dinner-art" src="assets/case/pantrypal/app/art/chicken-enchiladas.webp" width="96" height="96" alt="" loading="lazy" decoding="async" />
+                <p class="cs-dinner-name">Chicken Enchiladas <span>2 of 6 on the shelf</span></p>
+                <ul class="cs-dinner-needs" aria-hidden="true"><li class="is-out"><img src="assets/case/pantrypal/app/art/tortilla.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/chicken-breast.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-in"><img src="assets/case/pantrypal/app/art/tomato.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/onion.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/garlic.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-in"><img src="assets/case/pantrypal/app/art/cheddar-cheese.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li></ul>
+              </li>
+              <li class="cs-dinner">
+                <img class="cs-dinner-art" src="assets/case/pantrypal/app/art/shepherd-s-pie.webp" width="96" height="96" alt="" loading="lazy" decoding="async" />
+                <p class="cs-dinner-name">Shepherd’s Pie <span>2 of 6 on the shelf</span></p>
+                <ul class="cs-dinner-needs" aria-hidden="true"><li class="is-out"><img src="assets/case/pantrypal/app/art/ground-beef.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/potato.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/carrot.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-out"><img src="assets/case/pantrypal/app/art/onion.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-in"><img src="assets/case/pantrypal/app/art/butter.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li><li class="is-in"><img src="assets/case/pantrypal/app/art/milk.webp" width="96" height="96" alt="" loading="lazy" decoding="async" /></li></ul>
+              </li>
+            </ol>
+          </div>
         </figure>
-        <div class="cs-ask-row cs-after-lg">
-          <div data-rise>
-            <p class="cs-eyebrow cs-label">built for</p>
+        </div>
+        <!-- the question the two leave, the chapter's last word, and who
+             it was asked for -->
+        <div class="cs-hmw cs-after-lg" data-rise>
+          <p class="cs-eyebrow">the question they leave</p>
+          <p class="cs-hmw-q">How might dinner start from <mark>what’s already on the shelf</mark>?</p>
+          <div class="cs-hmw-for">
+            <p class="cs-small">built for</p>
             <div class="cs-chips cs-paper">
               <span class="cs-chip">first-apartment cooks</span>
               <span class="cs-chip">college students</span>
               <span class="cs-chip">busy families</span>
             </div>
-          </div>
-          <div class="cs-ask" data-rise>
-            <p class="cs-small">which raises the question</p>
-            <p class="cs-bubble is-q">How might dinner start from what’s already on the shelf?</p>
           </div>
         </div>
       </section>
@@ -203,29 +235,35 @@
               <h2 class="cs-chapter-title" id="h-try">The chef, live</h2>
               <p class="cs-chapter-deck">not a video: the app’s own ranking, over its own fifty-dish book</p>
             </header>
-            <div class="cs-tile cs-demo cs-breakout" data-rise>
-              <div class="cs-shelf" data-shelf>
-                <div>
-                  <p class="cs-tile-name">Your shelf</p>
-                  <p class="cs-tile-meta">tap a sticker to stock it or take it off, and the chef changes his mind</p>
+            <!-- the shelf on one of the app's cards, the app itself
+                 standing beside it on the band, and the chef's rules -->
+            <div class="cs-bench" data-rise>
+              <div class="cs-tile cs-demo">
+                <div class="cs-shelf" data-shelf>
+                  <div>
+                    <p class="cs-tile-name">Your shelf</p>
+                    <!-- the three shelves to start from are words in the
+                         sentence that offers them -->
+                    <p class="cs-tile-meta cs-shelf-how">tap a sticker to stock it or take it off, or start from <span role="group" aria-label="Start from"><button type="button" class="cs-preset" data-preset="store" aria-pressed="true">the App Store’s shelf</button>, <button type="button" class="cs-preset" data-preset="breakfast" aria-pressed="false">a breakfast fridge</button> or <button type="button" class="cs-preset" data-preset="empty" aria-pressed="false">nothing at all</button></span></p>
+                  </div>
+                  <div class="cs-shelf-groups"></div>
+                  <p class="cs-shelf-read" aria-live="polite"><span>13 on the shelf. The chef’s pick: <b>Cheddar Cheeseburger</b>, every ingredient on your shelf.</span></p>
                 </div>
-                <div class="cs-chips" role="group" aria-label="Start from">
-                  <button type="button" class="cs-chip" data-preset="store" aria-pressed="true">the App Store’s shelf</button>
-                  <button type="button" class="cs-chip" data-preset="breakfast" aria-pressed="false">a breakfast fridge</button>
-                  <button type="button" class="cs-chip" data-preset="empty" aria-pressed="false">nothing at all</button>
-                </div>
-                <div class="cs-shelf-groups"></div>
-                <p class="cs-shelf-read" aria-live="polite">13 on the shelf. The chef’s pick is <b>Cheddar Cheeseburger</b>: every ingredient on your shelf.</p>
               </div>
               <div class="cs-demo-phone" data-pantry-app role="group" aria-label="PantryPal, running" style="background-image: url(assets/case/pantrypal/phones/home.webp)"></div>
             </div>
-            <ol class="cs-rules-row cs-after" data-rise aria-label="The chef’s rules, straight from the app’s source">
-              <li><b>1</b>what the shelf can cook comes first</li>
-              <li><b>2</b>then the meal it is</li>
-              <li><b>3</b>then fewer gaps</li>
-              <li><b>4</b>salt, pepper, oil and water are assumed</li>
-              <li><b>5</b>a deck is ten dishes, never fifty</li>
-            </ol>
+            <div class="cs-rules" data-rise>
+              <p class="cs-rules-name">how the chef ranks, from the app’s source</p>
+              <ol class="cs-rules-row" aria-label="The chef’s rules, straight from the app’s source">
+                <li><b>1</b>two dishes made for your shelf lead</li>
+                <li><b>2</b>then what the shelf can cook</li>
+                <li><b>3</b>then the meal it is</li>
+                <li><b>4</b>then fewer gaps</li>
+                <li><b>5</b>salt, pepper, oil and water are assumed</li>
+                <li><b>6</b>a deck is ten dishes, never fifty</li>
+              </ol>
+              <p class="cs-rules-note">The app writes its two for every new shelf of three or more on its own server. With no server here, the page seats two of the book’s dishes in their place, ones your shelf can cook whole, built on what you just added.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -236,41 +274,34 @@
           <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true">01</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">late 2025</span></div>
           <h2 class="cs-chapter-title" id="h-sketch"><span class="sr-only">Chapter 1: </span>Sketch</h2>
           <p class="cs-chapter-deck">three ways to hold a shelf</p>
+          <p class="cs-text">Before a single pixel, <strong>three structures on graph paper</strong>. Two were set aside. The third settled the one thing that lasted: <strong>a single shelf, sorted by food type</strong>.</p>
         </header>
-        <p class="cs-text" data-rise>Before a single pixel, <strong>three structures on graph paper</strong>. Two were set aside. The third settled the one thing that lasted: <strong>a single shelf, sorted by food type</strong>.</p>
-        <ol class="cs-papers cs-after-lg" role="list">
-          <li class="cs-sheet-card" data-rise style="--r: -2.4deg">
-            <span class="cs-sheet-pic"><img src="assets/case/pantrypal/pantry-wire-1.webp" width="488" height="820" alt="Wireframe one: ingredients kept in fridge, freezer and pantry buckets" loading="lazy" data-zoom /></span>
-            <span class="cs-stamp" aria-hidden="true">set aside</span>
-            <p class="cs-tile-name">buckets</p>
-            <p class="cs-tile-meta">Fridge, freezer and pantry sounded tidy, and cost an extra tap at every turn.<span class="sr-only"> Set aside.</span></p>
-          </li>
-          <li class="cs-sheet-card" data-rise style="--r: 1.6deg">
-            <span class="cs-sheet-pic"><img src="assets/case/pantrypal/pantry-wire-2.webp" width="456" height="820" alt="Wireframe two: a portal to update and add ingredients" loading="lazy" data-zoom /></span>
-            <span class="cs-stamp" aria-hidden="true">set aside</span>
-            <p class="cs-tile-name">the portal</p>
-            <p class="cs-tile-meta">A separate add-then-select portal showed the same screen twice, with two slightly different jobs.<span class="sr-only"> Set aside.</span></p>
-          </li>
-          <li class="cs-sheet-card is-kept" data-rise style="--r: -0.8deg">
-            <span class="cs-sheet-pic"><img src="assets/case/pantrypal/pantry-wire-3.webp" width="488" height="820" alt="Wireframe three: one consolidated shelf, organized by food type" loading="lazy" data-zoom /></span>
-            <span class="cs-stamp" aria-hidden="true">kept!</span>
-            <p class="cs-tile-name">one shelf</p>
-            <p class="cs-tile-meta">Add, view and choose on one screen, sorted by food type, with nothing to learn twice.<span class="sr-only"> Kept.</span></p>
-          </li>
-        </ol>
-        <div class="cs-tile cs-lit cs-then-now cs-after-lg" data-rise>
-          <figure>
-            <span class="cs-well"><img src="assets/case/pantrypal/pantry-wire-3.webp" width="488" height="820" alt="The third wireframe’s grid of ingredients under category tabs" loading="lazy" data-zoom /></span>
-            <figcaption><b>the sketch</b>late 2025</figcaption>
-          </figure>
-          <span class="cs-then-now-arrow" aria-hidden="true">
-            <svg class="cs-then-now-path" viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M6 40 C 34 6, 78 6, 108 30" /><path pathLength="1" d="m96 20 13 11-16 5" /></svg>
-            <span>to the App Store</span>
-          </span>
-          <figure>
-            <img class="cs-phone" src="assets/case/pantrypal/phones/shelf.webp" width="800" height="1636" alt="The shipped My shelf screen: meat and produce in one grid of drawn stickers with counts" loading="lazy" data-zoom />
-            <figcaption><b>the shelf that shipped</b>September 2026</figcaption>
-          </figure>
+        <!-- the three sheets, taped to one board, judged with a stamp each,
+             and at the end of their row the shelf the kept one became -->
+        <div class="cs-tile cs-lit cs-pinboard cs-pinboard-papers cs-after-lg" data-rise>
+          <ol class="cs-pins is-papers" role="list">
+            <li class="cs-pin" style="--tape: -2.5deg; --k: 0">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/pantry-wire-1.webp" width="488" height="820" alt="Wireframe one: ingredients kept in fridge, freezer and pantry buckets" loading="lazy" data-zoom /><span class="cs-stamp" aria-hidden="true">set aside</span></span>
+              <p class="cs-tile-name">buckets</p>
+              <p class="cs-tile-meta">Fridge, freezer and pantry sounded tidy, and cost an extra tap at every turn.<span class="sr-only"> Set aside.</span></p>
+            </li>
+            <li class="cs-pin" style="--tape: 2deg; --k: 1">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/pantry-wire-2.webp" width="456" height="820" alt="Wireframe two: a portal to update and add ingredients" loading="lazy" data-zoom /><span class="cs-stamp" aria-hidden="true">set aside</span></span>
+              <p class="cs-tile-name">the portal</p>
+              <p class="cs-tile-meta">A separate add-then-select portal showed the same screen twice, with two slightly different jobs.<span class="sr-only"> Set aside.</span></p>
+            </li>
+            <li class="cs-pin is-kept" style="--tape: -1deg; --k: 2">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/pantry-wire-3.webp" width="474" height="838" alt="Wireframe three: one consolidated shelf, organized by food type" loading="lazy" data-zoom /><span class="cs-stamp" aria-hidden="true">kept!</span></span>
+              <p class="cs-tile-name">one shelf</p>
+              <p class="cs-tile-meta">Add, view and choose on one screen, sorted by food type, with nothing to learn twice.<span class="sr-only"> Kept.</span></p>
+            </li>
+            <li class="cs-pin is-now">
+              <svg class="cs-pin-arrow" viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path pathLength="1" d="M6 42 C 34 8, 76 6, 108 30" /><path pathLength="1" d="m95 20 14 11-16 6" /></svg>
+              <span class="cs-pin-phone"><img class="cs-phone" src="assets/case/pantrypal/phones/shelf.webp" width="800" height="1636" alt="The shipped My shelf screen: meat and produce in one grid of drawn stickers with counts" loading="lazy" data-zoom /></span>
+              <p class="cs-tile-name">the shelf that shipped</p>
+              <p class="cs-tile-meta">September 2026: the third sheet’s grid by food type, on the App Store</p>
+            </li>
+          </ol>
         </div>
         <p class="cs-small cs-cap-ink cs-after" data-rise>almost everything around it changed on the way to the App Store; the grid by food type never did</p>
       </section>
@@ -282,9 +313,9 @@
           <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true">02</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">Jan 2026</span></div>
           <h2 class="cs-chapter-title" id="h-prototype"><span class="sr-only">Chapter 2: </span>Prototype</h2>
           <p class="cs-chapter-deck">six screens in Figma</p>
+          <p class="cs-text">In Figma the app found its <strong>sticker-and-ink world</strong>: a butter-yellow kitchen, a chef, food drawn like stickers. The flow was the familiar one: <strong>pick ingredients into a basket, check out, choose from a list</strong>, then cook.</p>
         </header>
-        <p class="cs-text" data-rise>In Figma the app found its <strong>sticker-and-ink world</strong>: a butter-yellow kitchen, a chef, food drawn like stickers. The flow was the familiar one: <strong>pick ingredients into a basket, check out, choose from a list</strong>, then cook.</p>
-        <div class="cs-reel cs-breakout cs-after-lg" data-reel>
+        <div class="cs-reel cs-after-lg" data-reel>
           <div class="cs-reel-view">
             <div class="cs-reel-scroll">
             <ol class="cs-reel-track" aria-label="The Figma prototype, screen by screen">
@@ -302,42 +333,55 @@
       </section>
 
       <section class="cs-sec is-part" data-title="The look" data-chapter="prototype" aria-labelledby="h-look">
-        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">2.1</span><h3 id="h-look">The look</h3><p>a warm kitchen, and two faces for two jobs</p></header>
-        <div class="cs-text" data-rise>
-          <p><strong>Invitingly vibrant.</strong> A warm palette makes opening the app feel like a treat, something you want in your routine rather than one more chore. <strong>Two faces, two jobs</strong>: a bold, slanted display face for everything you tap, and a bookish serif kept for the recipes you read.</p>
-        </div>
-        <ul class="cs-paint cs-after-lg" data-rise role="list" aria-label="The palette">
-          <li style="--c: #ffd67e; --i: 0"><i></i><span><b>butter</b>#FFD67E</span></li>
-          <li style="--c: #ff7e7d; --i: 1"><i></i><span><b>coral</b>#FF7E7D</span></li>
-          <li style="--c: #b8edf8; --i: 2"><i></i><span><b>sky</b>#B8EDF8</span></li>
-          <li style="--c: #ff4b4b; --i: 3"><i></i><span><b>brand red</b>#FF4B4B</span></li>
-        </ul>
-        <div class="cs-type cs-after">
-          <div class="cs-tile cs-lit" data-rise>
-            <p class="cs-eyebrow">display · every label, button and title</p>
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">2.1</span><h3 id="h-look">The look</h3><p>a warm kitchen, and two faces for two jobs</p>
+          <div class="cs-text">
+            <p><strong>Invitingly vibrant.</strong> A warm palette makes opening the app feel like a treat, something you want in your routine rather than one more chore. <strong>Two faces, two jobs</strong>: a bold, slanted display face for everything you tap, and a bookish serif kept for the recipes you read.</p>
+          </div>
+        </header>
+        <!-- the look in four cards of one make, two by two: the palette and
+             the drawings, then the two faces; and under them the rule the
+             look keeps -->
+        <div class="cs-look cs-after-lg">
+          <div class="cs-tile cs-lit cs-look-card cs-look-paint" data-rise>
+            <p class="cs-eyebrow">palette · four colours, a job each</p>
+            <ul class="cs-swatches" role="list">
+              <li style="--c: #ffd67e"><i></i><b>butter</b><span>#FFD67E</span><em>the kitchen floor</em></li>
+              <li style="--c: #ff7e7d"><i></i><b>coral</b><span>#FF7E7D</span><em>every title band</em></li>
+              <li style="--c: #b8edf8"><i></i><b>sky</b><span>#B8EDF8</span><em>the sky over the header</em></li>
+              <li style="--c: #ff4b4b"><i></i><b>brand red</b><span>#FF4B4B</span><em>the one loud button</em></li>
+            </ul>
+          </div>
+          <div class="cs-tile cs-lit cs-look-card cs-kitchen" data-rise>
+            <p class="cs-eyebrow">drawings · a chef and his food</p>
+            <img class="cs-kitchen-chef" src="assets/case/pantrypal/mascot.webp" width="771" height="937" alt="PantryPal’s chef, giving a thumbs-up" loading="lazy" />
+            <ul class="cs-kitchen-food" role="list" aria-label="A few of the illustrations">
+              <li style="--i: 0"><img src="assets/case/pantrypal/pantry-food-burger.webp" width="300" height="300" alt="Cheeseburger" loading="lazy" /></li>
+              <li style="--i: 1"><img src="assets/case/pantrypal/pantry-food-steak.webp" width="300" height="300" alt="Steak" loading="lazy" /></li>
+              <li style="--i: 2"><img src="assets/case/pantrypal/pantry-food-salad.webp" width="300" height="300" alt="Salad" loading="lazy" /></li>
+              <li style="--i: 3"><img src="assets/case/pantrypal/pantry-food-tuna.webp" width="300" height="300" alt="Tuna" loading="lazy" /></li>
+              <li style="--i: 4"><img src="assets/case/pantrypal/pantry-food-beef.webp" width="300" height="300" alt="Ground beef" loading="lazy" /></li>
+              <li style="--i: 5"><img src="assets/case/pantrypal/pantry-food-philly.webp" width="300" height="300" alt="Philly cheesesteak" loading="lazy" /></li>
+            </ul>
+          </div>
+          <div class="cs-tile cs-lit cs-look-card cs-face" data-rise>
+            <p class="cs-eyebrow">display · everything you tap</p>
             <p class="cs-type-aa cs-type-display" aria-hidden="true">Aa</p>
             <p class="cs-tile-name">Fugaz One</p>
-            <p class="cs-type-sample cs-type-display is-word" aria-hidden="true">Dinner!</p>
+            <p class="cs-face-spec">13 to 40 points, every label, button and title</p>
+            <p class="cs-face-sample is-display" aria-hidden="true"><span class="cs-type-display">Dinner!</span></p>
           </div>
-          <div class="cs-tile cs-lit" data-rise>
-            <p class="cs-eyebrow">prose · only the words you read at the stove</p>
+          <div class="cs-tile cs-lit cs-look-card cs-face" data-rise>
+            <p class="cs-eyebrow">prose · what you read at the stove</p>
             <p class="cs-type-aa cs-type-prose" aria-hidden="true">Aa</p>
             <p class="cs-tile-name">Faustina</p>
-            <p class="cs-type-sample cs-type-prose" aria-hidden="true">A seared beef patty under melted cheddar, with crisp lettuce and tomato on a toasted bun.</p>
+            <p class="cs-face-spec">15 and 18 points, the recipes and nothing else</p>
+            <p class="cs-face-sample is-prose cs-type-prose" aria-hidden="true">A seared beef patty under melted cheddar, with crisp lettuce and tomato on a toasted bun.</p>
           </div>
         </div>
-        <div class="cs-tile cs-lit cs-kitchen cs-after" data-rise>
-          <img class="cs-kitchen-chef" src="assets/case/pantrypal/mascot.webp" width="771" height="937" alt="PantryPal’s chef, giving a thumbs-up" loading="lazy" />
-          <ul class="cs-kitchen-food" role="list" aria-label="A few of the illustrations">
-            <li style="--i: 0"><img src="assets/case/pantrypal/pantry-food-burger.webp" width="300" height="300" alt="Cheeseburger" loading="lazy" /></li>
-            <li style="--i: 1"><img src="assets/case/pantrypal/pantry-food-steak.webp" width="300" height="300" alt="Steak" loading="lazy" /></li>
-            <li style="--i: 2"><img src="assets/case/pantrypal/pantry-food-salad.webp" width="300" height="300" alt="Salad" loading="lazy" /></li>
-            <li style="--i: 3"><img src="assets/case/pantrypal/pantry-food-tuna.webp" width="300" height="300" alt="Tuna" loading="lazy" /></li>
-            <li style="--i: 4"><img src="assets/case/pantrypal/pantry-food-beef.webp" width="300" height="300" alt="Ground beef" loading="lazy" /></li>
-            <li style="--i: 5"><img src="assets/case/pantrypal/pantry-food-philly.webp" width="300" height="300" alt="Philly cheesesteak" loading="lazy" /></li>
-          </ul>
-          <p class="cs-bubble is-a cs-kitchen-quote">“Simple is better: every step should make the next action obvious.”</p>
-        </div>
+        <figure class="cs-quote cs-look-rule cs-after" data-rise>
+          <blockquote><p>“Simple is better: every step should make the next action obvious.”</p></blockquote>
+          <figcaption class="cs-small">the rule the look keeps</figcaption>
+        </figure>
       </section>
 
       <!-- 03 BUILD: the system before the screens, the AI behind them, and
@@ -347,8 +391,8 @@
           <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true">03</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">Jul 2026</span></div>
           <h2 class="cs-chapter-title" id="h-build"><span class="sr-only">Chapter 3: </span>Build</h2>
           <p class="cs-chapter-deck">the Figma file becomes a phone</p>
+          <p class="cs-text">Then I built it for real, in SwiftUI, <strong>with Claude Code as a pair</strong>. The design system came first, <strong>lifted out of Figma into tokens and components</strong>, so every screen after it was built from the same parts, and checked against its Figma frame.</p>
         </header>
-        <p class="cs-text" data-rise>Then I built it for real, in SwiftUI, <strong>with Claude Code as a pair</strong>. The design system came first, <strong>lifted out of Figma into tokens and components</strong>, so every screen after it was built from the same parts, and checked against its Figma frame.</p>
         <div class="cs-tile cs-sheet cs-pipes cs-after-lg" data-rise>
           <div class="cs-pipe">
             <div class="cs-pipe-head"><p class="cs-tile-name">how it looks</p><span class="cs-verdict">one source of truth</span></div>
@@ -372,9 +416,10 @@
       </section>
 
       <section class="cs-sec is-part" data-title="The drawings" data-chapter="build" aria-labelledby="h-drawings">
-        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">3.1</span><h3 id="h-drawings">Every drawing, one contract</h3><p>one style, written down, for every food the app will ever meet</p></header>
-        <p class="cs-text" data-rise>A written style contract turns any food into one of the app’s stickers. <strong>Five style tests</strong> were judged against the Figma art before the first batch; then <strong>the fifty most-used foods were drawn in one run</strong>.</p>
-        <div class="cs-tile cs-lit cs-belts cs-breakout cs-after-lg" data-rise>
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">3.1</span><h3 id="h-drawings">Every drawing, one contract</h3><p>one style, written down, for every food the app will ever meet</p>
+          <p class="cs-text">A written style contract turns any food into one of the app’s stickers. <strong>Five style tests</strong> were judged against the Figma art before the first batch; then <strong>the fifty most-used foods were drawn in one run</strong>.</p>
+        </header>
+        <div class="cs-tile cs-lit cs-belts cs-after-lg" data-rise>
           <ul class="cs-belt-src" role="list" aria-label="Some of the 165 drawings the app ships with">
             <li><img src="assets/case/pantrypal/app/art/bacon.webp" width="96" height="96" alt="Bacon" loading="lazy" decoding="async" /></li>
             <li><img src="assets/case/pantrypal/app/art/chicken-breast.webp" width="96" height="96" alt="Chicken Breast" loading="lazy" decoding="async" /></li>
@@ -442,80 +487,93 @@
           <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true">04</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">Aug 2026</span></div>
           <h2 class="cs-chapter-title" id="h-rethink"><span class="sr-only">Chapter 4: </span>Rethink</h2>
           <p class="cs-chapter-deck">fourteen pots on one stove</p>
+          <p class="cs-text">Living with the real app showed what the prototype had hidden: <strong>its first screen was a control panel</strong>. Before anything delicious happened, it asked you to weigh fourteen things.</p>
         </header>
-        <p class="cs-text" data-rise>Living with the real app showed what the prototype had hidden: <strong>its first screen was a control panel</strong>. Before anything delicious happened, it asked you to weigh fourteen things.</p>
+        <!-- the old first screen, counted: fourteen things in three kinds,
+             and what was wrong with it, each pointed at the place it was -->
         <div class="cs-tile cs-lit cs-hub cs-after-lg" data-rise>
-          <figure>
-            <img src="assets/case/pantrypal/lab/hub-counted.webp" width="560" height="1206" alt="The old ingredients hub with its fourteen tap targets numbered, from the tuna to My Basket" loading="lazy" data-zoom />
-          </figure>
           <div class="cs-hub-words">
             <p class="cs-eyebrow">the hub, counted</p>
-            <p class="cs-hub-count"><b data-odo>14</b><span>things to weigh before dinner: six foods, six tabs and two buttons, all shouting at once</span></p>
-            <div class="cs-pots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <ol class="cs-notes" role="list">
-              <li><p class="cs-note is-static"><span class="cs-note-num">1</span><span class="cs-note-body"><span>Fourteen pots on one stove</span><span class="cs-note-more is-open"><span><span>Every added option slows the decision, and when everything shouts, it reads as overwhelming, not full of features.</span></span></span></span></p></li>
-              <li><p class="cs-note is-static"><span class="cs-note-num">2</span><span class="cs-note-body"><span>Two different “+” jobs</span><span class="cs-note-more is-open"><span><span>One plus meant I own this; another meant cook with this tonight. Same symbol, two mental models.</span></span></span></span></p></li>
-              <li><p class="cs-note is-static"><span class="cs-note-num">3</span><span class="cs-note-body"><span>The magic hides three taps deep</span><span class="cs-note-more is-open"><span><span>The recipes were the whole show, and they sat behind a basket, a review and a confirm.</span></span></span></span></p></li>
-            </ol>
+            <p class="cs-hub-count"><b data-odo>14</b><span>things to weigh before dinner, all shouting at once</span></p>
+            <ul class="cs-hub-kinds" role="list">
+              <li class="is-food"><span class="cs-pots" aria-hidden="true"><i style="--k: 0"></i><i style="--k: 1"></i><i style="--k: 2"></i><i style="--k: 3"></i><i style="--k: 4"></i><i style="--k: 5"></i></span><b>6</b> foods</li>
+              <li class="is-tab"><span class="cs-pots" aria-hidden="true"><i style="--k: 6"></i><i style="--k: 7"></i><i style="--k: 8"></i><i style="--k: 9"></i><i style="--k: 10"></i><i style="--k: 11"></i></span><b>6</b> shelf tabs</li>
+              <li class="is-button"><span class="cs-pots" aria-hidden="true"><i style="--k: 12"></i><i style="--k: 13"></i></span><b>2</b> buttons</li>
+            </ul>
           </div>
+          <figure class="cs-hub-stage" data-leaders>
+            <span class="cs-hub-shot"><img src="assets/case/pantrypal/lab/hub-counted.webp" width="560" height="1206" alt="The old ingredients hub with its fourteen tap targets numbered: six foods, six shelf tabs, Add to Shelf and My Basket" loading="lazy" data-zoom /></span>
+            <ol class="cs-hub-finds" role="list">
+              <li data-at="0.89 0.215"><p class="cs-find-name">Fourteen pots on one stove</p><p class="cs-find-body">Every added option slows the decision, and when everything shouts, it reads as overwhelming, not full of features.</p></li>
+              <li data-at="0.877 0.44, 0.468 0.972"><p class="cs-find-name">Two different “+” jobs</p><p class="cs-find-body">One plus meant I own this; another meant cook with this tonight. Same symbol, two mental models.</p></li>
+              <li data-at="0.754 0.915"><p class="cs-find-name">The magic hides three taps deep</p><p class="cs-find-body">The recipes were the whole show, and they sat behind a basket, a review and a confirm.</p></li>
+            </ol>
+            <svg class="cs-hub-leaders" aria-hidden="true"></svg>
+          </figure>
         </div>
       </section>
 
       <section class="cs-sec is-part" data-title="Four ways out" data-chapter="rethink" aria-labelledby="h-ways-out">
-        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">4.1</span><h3 id="h-ways-out">Four ways out</h3><p>four working prototypes, every tap counted</p></header>
-        <p class="cs-text" data-rise>So I built <strong>four ways out as working prototypes</strong>, each running the same shelf to the same dinner, and <strong>counted every tap</strong>. Read the dots across: fewer is better.</p>
-        <ol class="cs-grid cs-concepts cs-breakout cs-after-lg" role="list">
-          <li class="cs-tile cs-lit" data-rise>
-            <p class="cs-tile-name">One Red Button</p>
-            <p class="cs-tile-meta">the same hub, with only one thing allowed to be loud</p>
-            <span class="cs-concept-shot"><img src="assets/case/pantrypal/lab/c1.webp" width="480" height="767" alt="Concept one: the hub with a single Scan your groceries button" loading="lazy" data-zoom /></span>
-            <dl class="cs-concept-nums">
-              <div><dt>choices at rest</dt><dd><span class="cs-dots" style="--n: 8"></span><b>8</b></dd></div>
-              <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 3"></span><b>3</b></dd></div>
-              <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 1"></span><b>1</b></dd></div>
-            </dl>
-            <span class="cs-verdict">set aside</span>
-          </li>
-          <li class="cs-tile cs-lit is-chosen" data-rise>
-            <p class="cs-tile-name">Chef’s Pick</p>
-            <p class="cs-tile-meta">don’t make them choose dinner: show them dinner</p>
-            <span class="cs-concept-shot"><img src="assets/case/pantrypal/lab/c2.webp" width="480" height="975" alt="Concept two: the app opens on one dish, with Cook it! and Show me another" loading="lazy" data-zoom /></span>
-            <dl class="cs-concept-nums">
-              <div><dt>choices at rest</dt><dd><span class="cs-dots" style="--n: 3"></span><b>3</b></dd></div>
-              <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 1"></span><b>1</b></dd></div>
-              <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 0"></span><b>none</b></dd></div>
-            </dl>
-            <span class="cs-verdict is-yes">shipped as Home</span>
-          </li>
-          <li class="cs-tile cs-lit" data-rise>
-            <p class="cs-tile-name">One Question</p>
-            <p class="cs-tile-meta">a short chat with the chef, never four choices at once</p>
-            <span class="cs-concept-shot"><img src="assets/case/pantrypal/lab/c3.webp" width="480" height="759" alt="Concept three: What’s the vibe? with four big answers" loading="lazy" data-zoom /></span>
-            <dl class="cs-concept-nums">
-              <div><dt>choices at rest</dt><dd><span class="cs-dots is-upto" style="--n: 4"></span><b>4 or fewer</b></dd></div>
-              <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 3"></span><b>3</b></dd></div>
-              <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 1"></span><b>1</b></dd></div>
-            </dl>
-            <span class="cs-verdict">set aside</span>
-          </li>
-          <li class="cs-tile cs-lit is-chosen" data-rise>
-            <p class="cs-tile-name">Card is the Button</p>
-            <p class="cs-tile-meta">no chrome at rest: the food is the interface</p>
-            <span class="cs-concept-shot"><img src="assets/case/pantrypal/lab/c4.webp" width="480" height="665" alt="Concept four: one continuous shelf of food with wooden headers" loading="lazy" data-zoom /></span>
-            <dl class="cs-concept-nums">
-              <div><dt>chrome at rest</dt><dd><span class="cs-dots" style="--n: 0"></span><b>none</b></dd></div>
-              <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 2"></span><b>2</b></dd></div>
-              <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 1"></span><b>1</b></dd></div>
-            </dl>
-            <span class="cs-verdict is-yes">shipped as the shelf</span>
-          </li>
-        </ol>
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">4.1</span><h3 id="h-ways-out">Four ways out</h3><p>four working prototypes, every tap counted</p>
+          <p class="cs-text">So I built <strong>four ways out as working prototypes</strong>, each running the same shelf to the same dinner, and <strong>counted every tap</strong>. Read the dots across: fewer is better.</p>
+        </header>
+        <!-- the four ways out as the ideas they were, drawn in ink on the
+             same graph paper as the first three sheets, taped to one board,
+             each with what it counted and what became of it -->
+        <div class="cs-tile cs-lit cs-pinboard cs-after-lg" data-rise>
+          <ol class="cs-pins is-four" role="list">
+            <li class="cs-pin" style="--tape: -3deg">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/lab/ink-1.webp" width="720" height="1230" alt="One Red Button, sketched in ink: the ingredients hub, its meat and its tabs, under one big Scan your groceries button" loading="lazy" data-zoom /></span>
+              <p class="cs-tile-name">One Red Button</p>
+              <p class="cs-tile-meta">the same hub, with only one thing allowed to be loud</p>
+              <dl class="cs-concept-nums">
+                <div><dt>choices at rest</dt><dd><span class="cs-dots" style="--n: 8"></span><b>8</b></dd></div>
+                <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 3"></span><b>3</b></dd></div>
+                <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 1"></span><b>1</b></dd></div>
+              </dl>
+              <span class="cs-verdict">set aside</span>
+            </li>
+            <li class="cs-pin is-chosen" style="--tape: 2.5deg">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/lab/ink-2.webp" width="720" height="1230" alt="Chef’s Pick, sketched in ink: Tonight, I’d make a Cheddar Cheeseburger, with Cook it! and Show me another" loading="lazy" data-zoom /></span>
+              <p class="cs-tile-name">Chef’s Pick</p>
+              <p class="cs-tile-meta">don’t make them choose dinner: show them dinner</p>
+              <dl class="cs-concept-nums">
+                <div><dt>choices at rest</dt><dd><span class="cs-dots" style="--n: 3"></span><b>3</b></dd></div>
+                <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 1"></span><b>1</b></dd></div>
+                <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 0"></span><b>none</b></dd></div>
+              </dl>
+              <span class="cs-verdict is-yes">shipped as Home</span>
+            </li>
+            <li class="cs-pin" style="--tape: -1.5deg">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/lab/ink-3.webp" width="720" height="1230" alt="One Question, sketched in ink: What’s the vibe?, with four big answers, Quick, Comfort, Fresh and Surprise me" loading="lazy" data-zoom /></span>
+              <p class="cs-tile-name">One Question</p>
+              <p class="cs-tile-meta">one question at a time, never four choices at once</p>
+              <dl class="cs-concept-nums">
+                <div><dt>choices at rest</dt><dd><span class="cs-dots is-upto" style="--n: 4"></span><b>4 or fewer</b></dd></div>
+                <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 3"></span><b>3</b></dd></div>
+                <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 1"></span><b>1</b></dd></div>
+              </dl>
+              <span class="cs-verdict">set aside</span>
+            </li>
+            <li class="cs-pin is-chosen" style="--tape: 3deg">
+              <span class="cs-pin-paper"><img src="assets/case/pantrypal/lab/ink-4.webp" width="720" height="1230" alt="Card is the Button, sketched in ink: one grid of food, each card its own button, with nothing else on the screen" loading="lazy" data-zoom /></span>
+              <p class="cs-tile-name">Card is the Button</p>
+              <p class="cs-tile-meta">no chrome at rest: the food is the interface</p>
+              <dl class="cs-concept-nums">
+                <div><dt>chrome at rest</dt><dd><span class="cs-dots" style="--n: 0"></span><b>none</b></dd></div>
+                <div><dt>taps to dinner</dt><dd><span class="cs-dots is-tap" style="--n: 2"></span><b>2</b></dd></div>
+                <div><dt>waits</dt><dd><span class="cs-dots is-wait" style="--n: 1"></span><b>1</b></dd></div>
+              </dl>
+              <span class="cs-verdict is-yes">shipped as the shelf</span>
+            </li>
+          </ol>
+        </div>
         <p class="cs-small cs-cap-ink cs-after" data-rise>taps counted on each working prototype from opening the app to the recipe, on buttons only: picking food costs the same in every route, so it is left out</p>
         <div class="cs-verdict-row cs-after-lg">
-          <div class="cs-said" data-rise>
-            <p class="cs-bubble is-a">“Journey 2 wins the average Tuesday — nothing else gets close to open → cooking in one tap with zero waits.”</p>
-            <p class="cs-small">the test kitchen’s verdict on Chef’s Pick, August 2026</p>
-          </div>
+          <figure class="cs-quote" data-rise>
+            <blockquote><p>“Journey 2 wins the average Tuesday — nothing else gets close to open → cooking in one tap with zero waits.”</p></blockquote>
+            <figcaption class="cs-small">the test kitchen’s verdict on Chef’s Pick, August 2026</figcaption>
+          </figure>
           <p class="cs-pull" data-rise>So the app flipped its premise. <strong>It opens on an answer, not a menu</strong>, and the shelf became a side door: always there, never required.</p>
         </div>
       </section>
@@ -539,9 +597,22 @@
           <div class="cs-chapter-top"><span class="cs-chapter-num" aria-hidden="true">05</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">Sep 2026</span></div>
           <h2 class="cs-chapter-title" id="h-ship"><span class="sr-only">Chapter 5: </span>Ship</h2>
           <p class="cs-chapter-deck">on the App Store</p>
+          <p class="cs-text">The app that shipped runs <strong>seven screens from the front door to a plate</strong>, and the one that does the work is a photo. The prototype’s basket and checkout are still there, folded into the shelf’s drawer, <strong>for the evenings you’d rather choose yourself</strong>.</p>
         </header>
-        <p class="cs-text" data-rise>The app that shipped runs <strong>six screens from the front door to a plate</strong>. The prototype’s basket and checkout are still there, folded into the shelf’s drawer, <strong>for the evenings you’d rather choose yourself</strong>.</p>
-        <div class="cs-tile cs-lit cs-flip cs-breakout cs-after-lg" data-flip data-rise>
+        <!-- the scan at its moment: my own fridge, taped up as the photo it
+             is, and the phone in front of it taking it in -->
+        <figure class="cs-tile cs-lit cs-fridge cs-after-lg" data-rise>
+          <figcaption class="cs-fridge-words">
+            <p class="cs-eyebrow">the scan</p>
+            <p class="cs-fridge-title">Just show it your fridge</p>
+            <p class="cs-fridge-text">A photo of the shelves, or of a receipt, and the chef reads it onto your shelf: <strong>each food named, drawn and counted</strong>, for you to keep or leave off. This is my own fridge, through the app.</p>
+          </figcaption>
+          <span class="cs-fridge-art">
+            <span class="cs-fridge-print" aria-hidden="true"><img src="assets/case/pantrypal/fridge.webp" width="760" height="1008" alt="" loading="lazy" /></span>
+            <span class="cs-fridge-phone"><img class="cs-phone" src="assets/case/pantrypal/phones/scanfridge.webp" width="800" height="1636" alt="Looks good?: my own fridge, photographed in the app, with Retake and Scan it" loading="lazy" data-zoom /></span>
+          </span>
+        </figure>
+        <div class="cs-tile cs-lit cs-flip cs-after-lg" data-flip data-rise>
           <div class="cs-flip-head">
             <p class="cs-tile-name">front door to plate</p>
             <div class="cs-seg" role="radiogroup" aria-label="Show the six screens as">
@@ -551,18 +622,20 @@
           </div>
           <ol class="cs-flip-row" aria-label="The app that shipped, screen by screen, each over the prototype’s screen at the same step">
             <li style="--i: 0"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/signup.webp" width="800" height="1636" alt="Join the kitchen: a kitchen pass that asks for one name" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-1.webp" width="454" height="907" alt="The prototype’s first step, log in: Let’s get cooking!, with an email and a password" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>1</i><b>join</b><em>then: log in</em></span></li>
-            <li style="--i: 1"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/scanner.webp" width="800" height="1636" alt="Scan it in: two doors, a receipt or the food itself" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-2.webp" width="459" height="912" alt="The prototype’s second step, pick: a grid of food under six category tabs, with Add to Shelf and My Basket" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>2</i><b>scan</b><em>then: pick</em></span></li>
-            <li style="--i: 2"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/scanreview.webp" width="800" height="1636" alt="Found these!: what the scan read, each item with its drawing, ready to shelve" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-3.webp" width="480" height="937" alt="The prototype’s third step, scan: a photographed receipt with a cross and a tick" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>3</i><b>check</b><em>then: scan</em></span></li>
-            <li style="--i: 3"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/shelf.webp" width="800" height="1636" alt="My shelf: everything on hand, by food type" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-4.webp" width="459" height="912" alt="The prototype’s fourth step, check out: the basket listed by category, with a Find recipes button" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>4</i><b>shelve</b><em>then: check out</em></span></li>
-            <li style="--i: 4"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/home.webp" width="800" height="1636" alt="Dinner!: the chef’s top pick, with Start cooking and Next dish" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-5.webp" width="459" height="912" alt="The prototype’s fifth step, choose: three generated dishes with calories and protein" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>5</i><b>dinner</b><em>then: choose</em></span></li>
-            <li style="--i: 5"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/cook.webp" width="800" height="1636" alt="The recipe: the ingredient strip, the dish and its steps" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-6.webp" width="442" height="892" alt="The prototype’s last step, cook: the ingredient strip, the dish, and numbered steps" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>6</i><b>cook</b><em>then: cook</em></span></li>
+            <li style="--i: 1"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/scanner.webp" width="800" height="1636" alt="Scan it in: two doors, a receipt or the food itself" loading="lazy" data-zoom /><span class="cs-flip-none is-back"><span>no step like it</span><em>the prototype only took receipts</em></span></span><span class="cs-flip-cap"><i>2</i><b>scan</b><em>new: no step like it</em></span></li>
+            <li style="--i: 2"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/scanfridge.webp" width="800" height="1636" alt="Looks good?: my own fridge, photographed in the app, with Retake and Scan it" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-3.webp" width="480" height="937" alt="The prototype’s scan: a photographed receipt with a cross and a tick" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>3</i><b>snap</b><em>then: scan</em></span></li>
+            <li style="--i: 3"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/scanreview.webp" width="800" height="1636" alt="Found these!: what the scan read, each food with its drawing and its count, ready to shelve" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-4.webp" width="459" height="912" alt="The prototype’s check out: the basket listed by category, with a Find recipes button" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>4</i><b>check</b><em>then: check out</em></span></li>
+            <li style="--i: 4"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/home.webp" width="800" height="1636" alt="Dinner!: the chef’s top pick, with Start cooking and Next dish" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-5.webp" width="459" height="912" alt="The prototype’s choose: three generated dishes with calories and protein" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>5</i><b>dinner</b><em>then: choose</em></span></li>
+            <li style="--i: 5"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/shelf.webp" width="800" height="1636" alt="My shelf: everything on hand, by food type" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-2.webp" width="459" height="912" alt="The prototype’s pick: a grid of food under six category tabs, with Add to Shelf and My Basket" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>6</i><b>shelf</b><em>then: pick</em></span></li>
+            <li style="--i: 6"><span class="cs-flip-card"><img class="cs-phone is-front" src="assets/case/pantrypal/phones/cook.webp" width="800" height="1636" alt="The recipe: the ingredient strip, the dish and its steps" loading="lazy" data-zoom /><img class="cs-phone is-back" src="assets/case/pantrypal/figma/figma-6.webp" width="442" height="892" alt="The prototype’s cook: the ingredient strip, the dish, and numbered steps" loading="lazy" data-zoom /></span><span class="cs-flip-cap"><i>7</i><b>cook</b><em>then: cook</em></span></li>
           </ol>
         </div>
       </section>
 
       <section class="cs-sec is-part" data-title="Every iPhone" data-chapter="ship" aria-labelledby="h-sizes">
-        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">5.1</span><h3 id="h-sizes">Every iPhone</h3><p>from the smallest to the largest, and the biggest text</p></header>
-        <p class="cs-text" data-rise>Shipping also meant holding its shape on any iPhone. <strong>Every screen is shot from the smallest iPhone to the largest</strong>, and again at the biggest text size, and <strong>a layout test fails</strong> if a single button leaves the screen.</p>
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">5.1</span><h3 id="h-sizes">Every iPhone</h3><p>from the smallest to the largest, and the biggest text</p>
+          <p class="cs-text">Shipping also meant holding its shape on any iPhone. <strong>Every screen is shot from the smallest iPhone to the largest</strong>, and again at the biggest text size, and <strong>a layout test fails</strong> if a single button leaves the screen.</p>
+        </header>
         <div class="cs-tile cs-lit cs-sweep cs-after-lg" data-stepper data-auto="3800" data-rise>
           <div class="cs-idea-head">
             <div class="cs-chips" role="tablist" aria-label="Screens across four iPhones">
@@ -584,9 +657,10 @@
       </section>
 
       <section class="cs-sec is-part" data-title="The store" data-chapter="ship" aria-labelledby="h-store">
-        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">5.2</span><h3 id="h-store">The store page</h3><p>drawn like the app, one headline a panel</p></header>
-        <p class="cs-text" data-rise>And the store page is drawn like the app. <strong>Five panels, one headline each</strong>, opening on a kitchen docket instead of a phone.</p>
-        <ol class="cs-tile cs-lit cs-store cs-breakout cs-after-lg" data-rise aria-label="The App Store screenshots">
+        <header class="cs-part" data-rise><span class="cs-part-num" aria-hidden="true">5.2</span><h3 id="h-store">The store page</h3><p>drawn like the app, one headline a panel</p>
+          <p class="cs-text">And the store page is drawn like the app. <strong>Five panels, one headline each</strong>, opening on a kitchen docket instead of a phone.</p>
+        </header>
+        <ol class="cs-tile cs-lit cs-store cs-after-lg" data-rise aria-label="The App Store screenshots">
           <li style="--i: 0"><img src="assets/case/pantrypal/store/store-1.webp" width="520" height="1126" alt="Order up: a kitchen docket reading You already have everything for this" loading="lazy" data-zoom /></li>
           <li style="--i: 1"><img src="assets/case/pantrypal/store/store-2.webp" width="520" height="1126" alt="Takes one name to start" loading="lazy" data-zoom /></li>
           <li style="--i: 2"><img src="assets/case/pantrypal/store/store-3.webp" width="520" height="1126" alt="Dinner, already decided" loading="lazy" data-zoom /></li>

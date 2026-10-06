@@ -7,12 +7,13 @@
 //                ten by ten, a sticker a percent of the U.S. food supply;
 //                the last thirty are marked thrown away and the ten before
 //                them the range up to forty (css/case.css .cs-waste), and
-//                they go off from the end backwards as the tile rises
-//   the recipes  [data-belt="dishes"] the fifty dishes of the app's book, on
-//                a belt that runs past greyed, because none of them started
-//                from your shelf
-//   the plate    [data-plate] the same fifty, full colour, ten to a row: the
-//                book the phone ranks, every time, with no network
+//                the thirty fall out of it, the last first, as the tile
+//                rises, each with a turn of its own
+//   the plate    [data-plate] the fifty dishes of the app's book, ten to a
+//                row: the book the phone ranks, every time, with no network
+//
+// (The three dinners in the brief are written into the page: they are
+// what the brief says, not a picture of it.)
 
 const ART = new URL('../assets/case/pantrypal/app/art/', import.meta.url).href;
 
@@ -41,7 +42,7 @@ const DISHES = [
 ];
 
 // every drawing waits until it is near the window, as the page's own
-// pictures do: there are two hundred and fifty of them here, drawn from
+// pictures do: there are a hundred and fifty of them here, drawn from
 // ninety-nine files, the foods shared with the app's own demo
 const pic = (slug) => {
   const img = document.createElement('img');
@@ -66,20 +67,61 @@ for (const grid of document.querySelectorAll('[data-waffle]')) {
     cell.append(pic(food));
     if (i >= 70) cell.className = 'is-gone';
     else if (i >= 60) cell.className = 'is-maybe';
-    // they go off from the last one backwards
+    // they go from the last one backwards
     if (i >= 60) cell.style.setProperty('--k', String(99 - i));
+    // a thrown one turns as it falls, this way or that, by eight to
+    // twenty-six degrees, and falls past the rows under it and off the tile
+    if (i >= 70) {
+      cell.style.setProperty('--tilt', `${(i % 2 ? 1 : -1) * (8 + ((i * 7) % 19))}deg`);
+      cell.style.setProperty('--drop', String(9 - Math.floor(i / 10) + 2));
+    }
     frag.append(cell);
   }
   grid.append(frag);
 }
 
-// The recipes, on a belt, doubled so it runs without a seam.
-for (const belt of document.querySelectorAll('[data-belt="dishes"]')) {
-  const row = document.createElement('div');
-  row.className = 'cs-belt-row';
-  row.style.setProperty('--dur', '120s');
-  for (const pass of [0, 1]) for (const d of DISHES) row.append(pic(d));
-  belt.append(row);
+// The hub's findings, each drawn to the place on the old screen it is
+// about: from the finding's name, out past the screen's edge and in to the
+// place (data-at: across and down the screen, in fractions of it; two
+// places for a finding about two). Drawn again whenever the stage changes
+// size, and only while the findings stand beside the screen, not under it.
+const SVG = 'http://www.w3.org/2000/svg';
+for (const stage of document.querySelectorAll('[data-leaders]')) {
+  const svg = stage.querySelector('.cs-hub-leaders');
+  const shot = stage.querySelector('.cs-hub-shot');
+  const draw = () => {
+    svg.replaceChildren();
+    const box = stage.getBoundingClientRect();
+    const s = shot.getBoundingClientRect();
+    const items = [...stage.querySelectorAll('[data-at]')];
+    if (!s.height || items.some((li) => li.getBoundingClientRect().left < s.right)) return;
+    svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+    const add = (name, attrs) => {
+      const el = document.createElementNS(SVG, name);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      svg.append(el);
+      return el;
+    };
+    items.forEach((li, i) => {
+      const name = li.querySelector('.cs-find-name');
+      const r = name.getBoundingClientRect();
+      const line = parseFloat(getComputedStyle(name).lineHeight) || 24;
+      const y0 = r.top - box.top + line / 2;
+      const x0 = r.left - box.left - 10;
+      const elbow = s.right - box.left + 18;
+      for (const at of li.dataset.at.split(',')) {
+        const [fx, fy] = at.trim().split(/\s+/).map(Number);
+        const tx = s.left - box.left + fx * s.width;
+        const ty = s.top - box.top + fy * s.height;
+        add('path', { d: `M${x0} ${y0} H${elbow} L${tx} ${ty}`, pathLength: '1', style: `--i: ${i}` });
+        add('circle', { class: 'is-ring', cx: tx, cy: ty, r: 8, style: `--i: ${i}` });
+        add('circle', { class: 'is-dot', cx: tx, cy: ty, r: 3, style: `--i: ${i}` });
+      }
+    });
+  };
+  new ResizeObserver(draw).observe(stage);
+  shot.querySelector('img')?.addEventListener('load', draw);
+  draw();
 }
 
 // The plate.

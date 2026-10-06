@@ -33,7 +33,8 @@
 //   the fan       [data-fan]: PantryPal's phones; one at the back, pressed,
 //                 comes to the front
 //   playback      [data-play]: plays its piece out once it is in view, and
-//                 again from its replay button
+//                 again from its replay button; a clip in it (video[data-clip])
+//                 rolls once its card has filled, its scrubber on its clock
 //   scale         [data-scale]: one slider shrinks the pictures in it together
 //
 // Nothing here moves the page: it scrolls the browser's own way.
@@ -245,7 +246,13 @@ for (const stepper of document.querySelectorAll('[data-stepper]')) {
     marks.forEach((m) => m.toggleAttribute('data-on', m.dataset.mark === key));
     if (focus) tabs[index].focus({ preventScroll: true });
   }
-  function takeOver() { handled = true; clearInterval(timer); }
+  // .is-walking says the walk is on, so a piece can show the wait (the
+  // anatomy's row of steps fills for as long as the walk stays on a step);
+  // .is-live, once the walk has started in view or a hand has taken over,
+  // says someone is there to see the part shown at work (so the first
+  // part's does not play out at the page's load, unseen)
+  function stop() { clearInterval(timer); stepper.classList.remove('is-walking'); }
+  function takeOver() { handled = true; stop(); stepper.classList.add('is-live'); }
   tabs.forEach((t, n) => {
     t.addEventListener('click', () => { takeOver(); choose(n); });
     t.addEventListener('keydown', (e) => {
@@ -257,17 +264,21 @@ for (const stepper of document.querySelectorAll('[data-stepper]')) {
     });
   });
   // a pointer on the stage stops the walk too: someone is looking
-  stepper.addEventListener('pointerenter', () => { if (stepper.hasAttribute('data-auto')) clearInterval(timer); });
+  stepper.addEventListener('pointerenter', () => { if (stepper.hasAttribute('data-auto')) stop(); });
   stepper.addEventListener('pointerleave', () => { if (!handled) walk(); });
   function walk() {
-    clearInterval(timer);
+    stop();
     if (handled || reduced() || !stepper.hasAttribute('data-auto')) return;
+    // the class comes off and on again across a style pass, so a wait
+    // drawn from it starts over with the walk
+    void stepper.offsetWidth;
+    stepper.classList.add('is-walking', 'is-live');
     timer = setInterval(() => choose(index + 1), Number(stepper.dataset.auto) || 3600);
   }
   if (stepper.hasAttribute('data-auto')) {
     new IntersectionObserver(([e]) => {
       if (e.isIntersecting) walk();
-      else clearInterval(timer);
+      else stop();
     }, { threshold: 0.35 }).observe(stepper);
   }
   choose(index);
@@ -474,8 +485,54 @@ for (const fan of document.querySelectorAll('[data-fan]')) {
 }
 
 // ---- playback ----
+// A clip in a played piece (video[data-clip], the board's Video card in
+// Vicino's two ways) waits on its first frame until its card has filled,
+// as a video node's result arrives, and then rolls, its player's scrubber
+// (--played on its well) and time kept by the clip's own clock. It rests
+// while it is out of view. Without motion the piece never plays, and the
+// clip stands on its poster.
+function clipOf(video) {
+  const well = video.parentElement;
+  const time = well.querySelector('.cs-clip-time');
+  let frame = 0;
+  let wanted = false;
+  let seen = false;
+  const paint = () => {
+    const d = video.duration || 0;
+    const t = video.currentTime;
+    well.style.setProperty('--played', d ? String(t / d) : '0');
+    if (time) time.textContent = `0:${String(Math.floor(t)).padStart(2, '0')}`;
+  };
+  const tick = () => { paint(); frame = video.paused ? 0 : requestAnimationFrame(tick); };
+  video.addEventListener('playing', () => { well.classList.add('is-rolling'); cancelAnimationFrame(frame); tick(); });
+  video.addEventListener('pause', () => { well.classList.remove('is-rolling'); paint(); });
+  // the card's fill is the last thing it does before it is a result
+  video.addEventListener('animationend', (e) => {
+    if (e.animationName !== 'cs-fill') return;
+    wanted = true;
+    if (seen) video.play().catch(() => {});
+  });
+  new IntersectionObserver(([e]) => {
+    seen = e.isIntersecting;
+    if (!seen) video.pause();
+    else if (wanted) video.play().catch(() => {});
+  }).observe(well);
+  return {
+    // back to its first frame, loaded now if it was not, to wait for its fill
+    reset() {
+      wanted = false;
+      video.pause();
+      if (video.preload !== 'auto') { video.preload = 'auto'; video.load(); }
+      else video.currentTime = 0;
+      paint();
+    },
+  };
+}
+
 for (const piece of document.querySelectorAll('[data-play]')) {
+  const clips = [...piece.querySelectorAll('video[data-clip]')].map(clipOf);
   const play = () => {
+    clips.forEach((c) => c.reset());
     piece.classList.remove('is-playing');
     void piece.offsetWidth;
     piece.classList.add('is-playing');
