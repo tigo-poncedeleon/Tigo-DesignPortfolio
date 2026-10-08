@@ -67,7 +67,7 @@ function setChatting(on) {
   if (frame.hasAttribute('data-chat') === on) return;
   frame.toggleAttribute('data-chat', on);
   nav.setChat(on);
-  if (on) prompt.hush();
+  prompt.setChatting(on);
   if (!document.documentElement.classList.contains('entered')) return;
   for (const line of nameLines) {
     for (const a of line.getAnimations()) a.cancel();
@@ -104,8 +104,13 @@ const composer = createComposer(promptForm, {
 // the band alone, and the pill around the one-line field took a tap and did
 // nothing with it.) Not on the conversation's bubbles, though, which are
 // there to be read and selected, nor on anything with a job of its own.
+// And once there is a conversation, only the composer itself: the screen is
+// the answers' then, and a press beside one, to read it or to drop a
+// selection, should not bring a blinking caret (and on a phone, a keyboard)
+// up over it.
 screens.home.addEventListener('click', (e) => {
   if (e.target.closest('.bubble, .turn-photo, a, button, textarea, .composer-mood, .composer-thumb')) return;
+  if (frame.hasAttribute('data-chat') && !e.target.closest('.composer')) return;
   if (!getSelection().isCollapsed) return;
   prompt.focus({ atEnd: true });
 });
@@ -256,7 +261,8 @@ addEventListener('load', () => requestAnimationFrame(() => setSection(whereAmI()
 
 playEntrance({ caret: prompt.caret, section }).then(() => {
   booting = false;
-  if (section === 'home') prompt.focusIfDesk();
+  // not over a conversation restored by a reload, which is there to be read
+  if (section === 'home' && !frame.hasAttribute('data-chat')) prompt.focusIfDesk();
 });
 
 // Play's engine is the heaviest thing here, and nothing needs it until the

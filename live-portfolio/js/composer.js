@@ -53,12 +53,15 @@ export function createComposer(form, { prompt, onSend }) {
     const sent = onSend({ text, photo, mood: currentMood });
     if (sent === false) return; // the chat is still answering; nothing is lost
     setPhoto(null);
-    // On a touch screen the keyboard goes down once the question is away,
-    // whether it went by the send key or the keyboard's own, so the answer
-    // has the whole screen to arrive in rather than the strip above the
-    // keyboard; the composer rides down with it (js/keyboard.js), and a tap
-    // anywhere on Home brings it back for the next question.
-    if (touch.matches) prompt.blur();
+    // The field lets go once the question is away, so nothing blinks under
+    // the answer while you read it. On a touch screen that also takes the
+    // keyboard down, whether the question went by the send key or the
+    // keyboard's own, so the answer has the whole screen to arrive in rather
+    // than the strip above the keyboard; the composer rides down with it
+    // (js/keyboard.js), and a tap on the composer brings it back for the next
+    // question. On a laptop the next question needs no click at all: the
+    // first key typed anywhere on Home goes into the field (js/prompt.js).
+    prompt.blur();
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); submit(); });
 

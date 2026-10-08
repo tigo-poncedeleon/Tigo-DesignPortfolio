@@ -30,7 +30,9 @@
    Tigo took the words out for the caret alone; the Home frame put them back
    for a while, as "Ask me anything:", and Tigo took them out again. (A
    small rainbow dot stood before the caret after that, turning the page's
-   colours when pressed; it is out for now too.)
+   colours when pressed; it is out for now too.) On a phone, where the
+   field never takes focus by itself, the words are back as a hint: "Ask me
+   anything!" in the grey under the name, until the first question.
 
    THE FIELD is a real <textarea>. It draws its own text, so clicking to
    place the cursor, dragging a selection, an IME's underline, paste and the
@@ -418,6 +420,15 @@
 /* the greeting the caret types out and takes back (js/prompt.js) is the
    placeholder, in the words' own ink, as if it had been typed there */
 .prompt-input::placeholder { color: var(--ink); opacity: 1; }
+/* Where the greeting does not play, the hint (js/prompt.js) is the
+   placeholder instead, in the grey of the line under the name: a label on
+   the field, not words in it. It gives way to the caret when the field
+   takes focus, and comes back when it lets go empty. */
+.composer.is-hinting .prompt-input::placeholder {
+  color: var(--ink-2);
+  transition: color 0.2s ease;
+}
+.composer.is-hinting .prompt-input:focus::placeholder { color: transparent; }
 /* the native selection is the only highlight; the block hides while there is one */
 .prompt-input::selection { background: var(--bubble); color: var(--bubble-ink); }
 
@@ -480,6 +491,17 @@
    Work is the page asking for something at the wrong moment. */
 .prompt-caret { transition: opacity 0.2s ease; }
 .frame[data-scrolled] .prompt-caret {
+  animation: none;
+  opacity: 0;
+}
+
+/* Once a question has gone, and wherever the hint stands in (a phone, a
+   touch screen), the caret is there only while the field has focus. A
+   block blinking under an answer, in a field nobody is typing in, pulls the
+   eye off what is being read. A click into the composer brings it back,
+   blinking from lit. */
+.frame[data-chat] .prompt-field:not(:focus-within) .prompt-caret,
+.composer.is-hinting .prompt-field:not(:focus-within) .prompt-caret {
   animation: none;
   opacity: 0;
 }

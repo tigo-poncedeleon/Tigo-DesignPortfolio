@@ -17,15 +17,27 @@
 // (greet, below), a key at a time at a person's uneven pace, lets it be
 // read, and backspaces it away again, leaving itself blinking where you
 // start: the textarea's data-greeting, "Hey there, ask me anything!". Not on
-// a phone, where the caret simply blinks: a line typing itself out while the
-// page is still settling under your thumb read as a message arriving, not
-// as an invitation. (It said "Hi, ask away!" there, which fit the pill's
-// one line; Tigo took it out.)
+// a phone, or any screen that is tapped rather than pointed at: a line typing
+// itself out while the page is still settling under your thumb read as a
+// message arriving, not as an invitation. (It said "Hi, ask away!" there,
+// which fit the pill's one line; Tigo took it out.) There the empty field
+// says "Ask me anything!" instead, still, in the name's softer grey (the
+// hint, below), until the first question.
+//
+// The caret blinks only where it is asked for. Before a conversation on a
+// laptop the field has focus from the start, and the blinking block is the
+// invitation. But once a question has gone, or on a phone at any time, the
+// block is there only while the field has focus (css/home.css): a caret
+// blinking under an answer you are reading, in a field nobody is typing in,
+// pulled the eye away from the answer.
 
 import { reduced } from './motion.js';
 
 const FINE_POINTER = matchMedia('(hover: hover) and (pointer: fine)');
 const PHONE = matchMedia('(max-width: 760px)');
+const TAP = matchMedia('(hover: none)');
+// where the greeting does not play, and the hint stands in for it
+const quiet = () => PHONE.matches || TAP.matches;
 
 export function createPrompt(form, { onSubmit, onChange } = {}) {
   const input = form.querySelector('.prompt-input');
@@ -37,6 +49,8 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   let line = -1;          // the caret's line last frame, to glide within a line and jump between
   let composing = false;
   let typeAnywhere = false;
+  let chatting = false;
+  let hinting = false;
 
   // ---- where the caret goes ----
   function place() {
@@ -47,8 +61,9 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     const at = input.selectionDirection === 'backward' ? start : end;
 
     // an empty field showing the greeting holds the caret at the greeting's
-    // end, where the typing left it
-    const greeting = value ? '' : input.placeholder;
+    // end, where the typing left it (the hint is not typed, so the caret
+    // stays at the start)
+    const greeting = value || hinting ? '' : input.placeholder;
     mirror.textContent = greeting || value.slice(0, at);
     const tail = document.createElement('span');
     // a zero-width space stands in for "the end", so the tail has a position
@@ -195,7 +210,7 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   }
   function greet({ delay = 0 } = {}) {
     const text = input.dataset.greeting;
-    if (greeted || !text || input.value || PHONE.matches) return;
+    if (greeted || !text || input.value || quiet()) return;
     greeted = true;
     if (reduced()) { input.placeholder = text; schedule(); return; }
     let i = 0;
@@ -216,8 +231,34 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     greeted = true;
     clearTimeout(greetTimer);
     greetTimer = 0;
-    if (input.placeholder) { input.placeholder = ''; schedule(); }
+    if (input.placeholder && !hinting) { input.placeholder = ''; schedule(); }
   }
+
+  // ---- the hint ----
+  // The textarea's data-hint, as its placeholder, in --ink-2 (the grey of
+  // the line under the name) rather than the words' own ink, so it reads as
+  // a label on the field and not as something already typed. It is there
+  // only while the caret is not: a tap into the field fades it out for the
+  // blinking block, and leaving the field empty brings it back, so the field
+  // always shows exactly one invitation. It goes for good with the first
+  // question, and comes back when the conversation is cleared.
+  function paintHint() {
+    const on = quiet() && !chatting && !!input.dataset.hint;
+    if (on === hinting) return;
+    hinting = on;
+    form.classList.toggle('is-hinting', on);
+    if (on) {
+      clearTimeout(greetTimer);
+      greetTimer = 0;
+      input.placeholder = input.dataset.hint;
+    } else if (input.placeholder === input.dataset.hint) {
+      input.placeholder = '';
+    }
+    schedule();
+  }
+  PHONE.addEventListener('change', paintHint);
+  TAP.addEventListener('change', paintHint);
+  paintHint();
 
   // Enter hands over to the composer, which knows whether there is a photo
   // too, and so whether an empty field still has something to send.
@@ -267,6 +308,13 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     clear() { input.value = ''; line = -1; schedule(); },
     greet,
     hush,
+    // the frame's data-chat (js/main.js): a conversation ends the greeting
+    // and the hint, and clearing it puts the hint back
+    setChatting(on) {
+      chatting = on;
+      paintHint();
+      if (on) hush();
+    },
     setTypeAnywhere(on) { typeAnywhere = on; if (!on && document.activeElement === input) input.blur(); },
   };
 }
