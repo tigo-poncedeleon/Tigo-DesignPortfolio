@@ -170,12 +170,13 @@ them saying where they go.
   house rule and a verdict, each on a rule of the case's colour. The same
   script draws the leader lines that tie the rethink's three findings to
   the places on the old hub they are about.
-- PantryPal's story map, the row of chapters under its overview, shows each
-  chapter's own artifact in one light, four of them rising out of the
-  tile's foot in one phone: the kept sheet as taped paper with its KEPT!
-  stamp, the Figma file's own frame, the design system's own parts (drawn
-  by PantryPalDS itself, `tools/pantry-parts`), the old hub counted, and
-  the scan of the fridge. `tools/pantry-story.sh` bakes all five.
+- PantryPal's story map, the row of chapters under its overview, is five
+  illustrations drawn by hand in the app's own manner (its ink line, its
+  flat colour, its palette and its Fugaz), each chapter told as a kitchen
+  would: the pad and its pencil, the Figma screen with a prototype's
+  noodle, the design system prepped in bowls with its buttons stacked like
+  pancakes, fourteen pots on one stove, and the app's own chef served
+  under a lifted cloche.
 - PantryPal's ideas stand as paper: the Sketch chapter's three wireframes
   and 4.1's four ways out are graph-paper sheets taped to a board, the
   three judged with a rubber stamp and followed by the shelf that shipped,
@@ -222,7 +223,15 @@ them saying where they go.
   holding its own chapter's picture, which are also links to them, and the
   story is told in their order: PantryPal from the sketches to the App
   Store, Vicino from the board to the machines drawing on its system, Next
-  Level from Madrid to the mark on every surface.
+  Level from Madrid to the mark on every surface. Every tile is an
+  illustration drawn for it in its own work's manner: PantryPal's in the
+  app's ink and colour (above), Vicino's in the pen of the sketchbook
+  Canvas was mapped in, on white nodes lit by each chapter's port colour,
+  with the agent from the first sheet going from the board to the guide to
+  the pen, and Next Level's in the mark's own navy line and blue, each
+  chapter one simple scene inside the badge's ring, borrowing its quarter,
+  its waves and its drone, until the fourth is the badge itself. They are SVG in `tools/story-art/<case>/`;
+  `tools/story-art.sh` bakes them into each case's `story/` folder.
 - Below the opening tile nothing ever slides up under the masthead's
   buttons: the story keeps to the lane between them (`--lane-l`,
   `--lane-r`). On the left the lane starts past the open rail and 48 of air

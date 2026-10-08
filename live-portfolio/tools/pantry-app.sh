@@ -55,8 +55,8 @@
 #       live-portfolio/tools/pantry-app.sh
 #
 # (The 4.1 ink sketches are drawn by tools/pantry-ink.mjs, from the drawings
-# this script lifts, and the story map's five pictures by
-# tools/pantry-story.sh, from the phones it makes.)
+# this script lifts. The story map's five pictures are drawn by hand, in
+# tools/story-art/pantrypal/.)
 #
 # Needs ImageMagick (magick) and cwebp, both from Homebrew.
 set -euo pipefail

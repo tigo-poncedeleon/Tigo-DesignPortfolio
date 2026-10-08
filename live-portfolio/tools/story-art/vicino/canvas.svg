@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 01 Canvas: the first sheet, come to life. A prompt wired to a
+       picture and a movie, the movie on to a sound, the agent hanging over
+       the board on its string, in the sketchbook's pen and the chapter's
+       teal -->
+  <style>
+    .p { stroke: #1d1d1f; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+    .q { stroke: #1d1d1f; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .q:not([fill]) { fill: none; }
+    .hand { font-family: 'Chalkboard SE', 'Noteworthy', cursive; fill: #1d1d1f; }
+    .port { fill: #8bd6d9; stroke: #1d1d1f; stroke-width: 4.5; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="7" />
+      <feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="10" /></filter>
+  </defs>
+
+  <!-- the nodes' shadows, soft, under the pen -->
+  <g fill="#1c6f78" opacity="0.18" filter="url(#lift)">
+    <rect x="66" y="268" width="190" height="150" rx="20" />
+    <rect x="320" y="150" width="190" height="160" rx="20" />
+    <rect x="320" y="388" width="190" height="150" rx="20" />
+    <rect x="586" y="404" width="150" height="120" rx="20" />
+  </g>
+
+  <g filter="url(#hand)">
+    <!-- the wires, under the nodes -->
+    <path d="M250 330 C 290 330, 280 222, 324 222 M250 330 C 300 330, 276 456, 326 456 M504 456 C 540 456, 548 456, 590 456" class="q" />
+
+    <!-- type it: the prompt -->
+    <rect x="60" y="254" width="190" height="150" rx="20" fill="#fff" class="p" />
+    <text x="84" y="292" class="hand" font-size="22" font-weight="700">TYPE IT!</text>
+    <path d="M84 318 c14 -5 24 5 38 0 s24 5 38 0 s20 4 46 0 M84 344 c14 -5 24 5 38 0 s24 5 54 0 M84 370 c14 -5 24 5 30 0" class="q" />
+    <circle cx="250" cy="330" r="9" class="port" />
+
+    <!-- the picture -->
+    <rect x="314" y="136" width="190" height="160" rx="20" fill="#fff" class="p" />
+    <text x="338" y="174" class="hand" font-size="22" font-weight="700">PICTURE</text>
+    <rect x="338" y="190" width="142" height="84" rx="10" fill="#e9f8f9" class="q" />
+    <path d="M342 266 l40 -42 l26 26 l18 -14 l50 30" class="q" />
+    <circle cx="446" cy="214" r="12" fill="#8bd6d9" class="q" />
+    <circle cx="314" cy="222" r="9" class="port" />
+    <!-- a wire being pulled out of it, to wherever it goes next -->
+    <path d="M504 222 C 548 222, 540 300, 584 304" class="q" stroke-dasharray="2 12" />
+    <circle cx="504" cy="222" r="9" class="port" />
+    <g transform="translate(580 300) rotate(-14)">
+      <path d="M0 0 L0 44 L11 34 L19 52 L28 48 L20 31 L35 31 Z" fill="#fff" class="q" />
+    </g>
+
+    <!-- the movie, and the sound it goes on to -->
+    <rect x="314" y="374" width="190" height="150" rx="20" fill="#fff" class="p" />
+    <text x="338" y="412" class="hand" font-size="22" font-weight="700">MOVIE!</text>
+    <g class="q"><rect x="340" y="426" width="12" height="12" /><rect x="372" y="426" width="12" height="12" /><rect x="404" y="426" width="12" height="12" /><rect x="436" y="426" width="12" height="12" /><rect x="468" y="426" width="12" height="12" /></g>
+    <path d="M394 452 v52 l42 -26 z" fill="#8bd6d9" class="q" />
+    <circle cx="314" cy="456" r="9" class="port" />
+    <circle cx="504" cy="456" r="9" class="port" />
+
+    <rect x="580" y="390" width="150" height="120" rx="20" fill="#fff" class="p" />
+    <text x="602" y="428" class="hand" font-size="22" font-weight="700">SOUND</text>
+    <path d="M626 486 v-40 l40 -10 v40 M626 454 l40 -10" class="q" />
+    <circle cx="616" cy="488" r="11" fill="#1d1d1f" /><circle cx="656" cy="478" r="11" fill="#1d1d1f" />
+    <circle cx="580" cy="456" r="9" class="port" />
+
+    <!-- the agent, on its string -->
+    <path d="M660 0 V64" class="q" />
+    <circle cx="660" cy="70" r="9" fill="#fff" class="q" />
+    <path d="M660 79 V96" class="q" />
+    <rect x="612" y="96" width="96" height="84" rx="18" fill="#fff" class="p" />
+    <circle cx="644" cy="132" r="6" fill="#1d1d1f" /><circle cx="676" cy="132" r="6" fill="#1d1d1f" />
+    <path d="M640 152 q20 16 40 0" class="q" />
+    <circle cx="630" cy="152" r="7" fill="#8bd6d9" opacity="0.8" /><circle cx="690" cy="152" r="7" fill="#8bd6d9" opacity="0.8" />
+    <text x="614" y="214" class="hand" font-size="19">the agent!</text>
+
+    <!-- the board's crosses -->
+    <path d="M150 150 h22 M161 139 v22 M232 520 h22 M243 509 v22 M748 300 h22 M759 289 v22" class="q" />
+  </g>
+</svg>

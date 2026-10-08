@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 04 At work: eighteen screens, redrawn on-system. The eighteen in the
+       back, eleven ticked; the twelfth's slot empty, because it is the one
+       on the desk, half inked; and the agent with the pen, in the
+       chapter's blue -->
+  <style>
+    .p { stroke: #1d1d1f; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+    .q { stroke: #1d1d1f; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .q:not([fill]) { fill: none; }
+    .hand { font-family: 'Chalkboard SE', 'Noteworthy', cursive; fill: #1d1d1f; }
+    .sans { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="37" />
+      <feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="10" /></filter>
+  </defs>
+
+  <g fill="#1c6f78" opacity="0.18" filter="url(#lift)">
+    <rect x="146" y="318" width="296" height="250" rx="22" />
+    <rect x="558" y="370" width="100" height="90" rx="18" />
+  </g>
+
+  <g filter="url(#hand)">
+    <!-- the eighteen -->
+      <g transform="translate(85 58)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H50 M12 30 H78 M12 42 H64" class="q" style="stroke-width:3.5" /></g>
+      <circle cx="171" cy="62" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M165 62 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(193 58)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H44" class="q" style="stroke-width:3.5" /><path d="M12 50 C 26 48, 30 34, 44 38 S 64 46, 78 28" stroke="#7cc0e8" style="stroke-width:4.5" stroke-linecap="round" fill="none" /></g>
+      <circle cx="279" cy="62" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M273 62 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(301 58)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H40" class="q" style="stroke-width:3.5" /><rect x="12" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /><rect x="48" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /></g>
+      <circle cx="387" cy="62" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M381 62 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(409 58)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 18 H78 M12 30 H78 M12 42 H78" class="q" style="stroke-width:3" /><path d="M36 12 V50" class="q" style="stroke-width:3" /></g>
+      <circle cx="495" cy="62" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M489 62 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(517 58)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H44" class="q" style="stroke-width:3.5" /><path d="M12 50 C 26 48, 30 34, 44 38 S 64 46, 78 28" stroke="#7cc0e8" style="stroke-width:4.5" stroke-linecap="round" fill="none" /></g>
+      <circle cx="603" cy="62" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M597 62 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(625 58)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H50 M12 30 H78 M12 42 H64" class="q" style="stroke-width:3.5" /></g>
+      <circle cx="711" cy="62" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M705 62 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(85 138)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H40" class="q" style="stroke-width:3.5" /><rect x="12" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /><rect x="48" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /></g>
+      <circle cx="171" cy="142" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M165 142 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(193 138)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H44" class="q" style="stroke-width:3.5" /><path d="M12 50 C 26 48, 30 34, 44 38 S 64 46, 78 28" stroke="#7cc0e8" style="stroke-width:4.5" stroke-linecap="round" fill="none" /></g>
+      <circle cx="279" cy="142" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M273 142 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(301 138)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 18 H78 M12 30 H78 M12 42 H78" class="q" style="stroke-width:3" /><path d="M36 12 V50" class="q" style="stroke-width:3" /></g>
+      <circle cx="387" cy="142" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M381 142 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(409 138)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H50 M12 30 H78 M12 42 H64" class="q" style="stroke-width:3.5" /></g>
+      <circle cx="495" cy="142" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M489 142 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <g transform="translate(517 138)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H40" class="q" style="stroke-width:3.5" /><rect x="12" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /><rect x="48" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /></g>
+      <circle cx="603" cy="142" r="11" fill="#7cc0e8" class="q" style="stroke-width:3.5" /><path d="M597 142 l4 5 l8 -9" stroke="#1d1d1f" style="stroke-width:3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <rect x="625" y="138" width="90" height="64" rx="10" fill="#fff" fill-opacity="0.5" class="q" stroke-dasharray="2 10" />
+      <g transform="translate(85 218)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 18 H78 M12 30 H78 M12 42 H78" class="q" style="stroke-width:3" /><path d="M36 12 V50" class="q" style="stroke-width:3" /></g>
+      <g transform="translate(193 218)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H44" class="q" style="stroke-width:3.5" /><path d="M12 50 C 26 48, 30 34, 44 38 S 64 46, 78 28" stroke="#7cc0e8" style="stroke-width:4.5" stroke-linecap="round" fill="none" /></g>
+      <g transform="translate(301 218)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H40" class="q" style="stroke-width:3.5" /><rect x="12" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /><rect x="48" y="26" width="30" height="26" rx="5" fill="#e2f1f8" class="q" style="stroke-width:3" /></g>
+      <g transform="translate(409 218)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H50 M12 30 H78 M12 42 H64" class="q" style="stroke-width:3.5" /></g>
+      <g transform="translate(517 218)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 18 H78 M12 30 H78 M12 42 H78" class="q" style="stroke-width:3" /><path d="M36 12 V50" class="q" style="stroke-width:3" /></g>
+      <g transform="translate(625 218)"><rect width="90" height="64" rx="10" fill="#fff" class="q" /><path d="M12 16 H44" class="q" style="stroke-width:3.5" /><path d="M12 50 C 26 48, 30 34, 44 38 S 64 46, 78 28" stroke="#7cc0e8" style="stroke-width:4.5" stroke-linecap="round" fill="none" /></g>
+
+    <!-- the twelfth, on the desk: inked to the chart, pencilled below -->
+    <rect x="140" y="304" width="296" height="250" rx="22" fill="#fff" class="p" />
+    <path d="M140 352 H436" class="q" />
+    <circle cx="166" cy="328" r="8" fill="#1d1d1f" />
+    <path d="M184 328 H250" class="q" />
+    <rect x="370" y="316" width="50" height="24" rx="12" fill="#1d1d1f" class="q" />
+    <text x="166" y="398" class="sans" font-size="34" font-weight="500" fill="#1d1d1f" letter-spacing="-1">128.6k</text>
+    <rect x="310" y="372" width="62" height="26" rx="13" fill="#d9eef9" class="q" />
+    <path d="M166 470 C 196 466, 206 440, 236 448 S 276 470, 300 446 S 344 416, 368 430" stroke="#7cc0e8" style="stroke-width:7" stroke-linecap="round" fill="none" />
+    <path d="M368 430 C 380 422, 392 418, 410 412" stroke="#7cc0e8" style="stroke-width:7" stroke-linecap="round" fill="none" />
+    <path d="M166 494 H410 M166 520 H300 M320 520 H410" stroke="#8a8a8a" style="stroke-width:3" stroke-linecap="round" stroke-dasharray="6 9" fill="none" />
+
+    <!-- the agent, and the pen -->
+    <path d="M556 420 Q 500 434 452 418" class="q" />
+    <rect x="552" y="356" width="100" height="90" rx="18" fill="#fff" class="p" />
+    <circle cx="586" cy="396" r="6" fill="#1d1d1f" /><circle cx="620" cy="396" r="6" fill="#1d1d1f" />
+    <path d="M590 418 q14 8 28 -2" class="q" />
+    <path d="M602 356 V332" class="q" /><circle cx="602" cy="324" r="8" fill="#7cc0e8" class="q" />
+    <path d="M652 410 Q 690 430 690 470" class="q" /><circle cx="690" cy="474" r="10" fill="#fff" class="q" />
+    <g transform="translate(412 412) rotate(-28)">
+      <path d="M0 0 L22 -10 H150 a12 12 0 0 1 12 12 v16 a12 12 0 0 1 -12 12 H22 Z" fill="#7cc0e8" class="p" />
+      <path d="M0 0 L22 -10 V30 Z" fill="#1d1d1f" />
+      <path d="M44 -2 H130" stroke="#fff" style="stroke-width:5" stroke-linecap="round" opacity="0.8" />
+      <rect x="112" y="-10" width="10" height="40" fill="#1d1d1f" />
+    </g>
+    <circle cx="452" cy="418" r="10" fill="#fff" class="q" />
+    <text x="566" y="500" class="hand" font-size="22" font-weight="700">12 / 18</text>
+  </g>
+</svg>

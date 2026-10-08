@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 05 Ship: served. The cloche just lifted, and on the plate the app's
+       own icon, the chef, with the version on a pick -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="51" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+    <filter id="drop" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter>
+    <clipPath id="icon"><rect x="0" y="0" width="200" height="200" rx="52" /></clipPath>
+    <path id="spark" d="M0 -22 Q4 -4 22 0 Q4 4 0 22 Q-4 4 -22 0 Q-4 -4 0 -22 Z" />
+  </defs>
+
+  <ellipse cx="384" cy="540" rx="270" ry="22" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the plate -->
+    <ellipse cx="382" cy="478" rx="262" ry="66" fill="#fff" class="k" />
+    <ellipse cx="382" cy="474" rx="232" ry="54" fill="none" stroke="#b8edf8" style="stroke-width:9" />
+    <ellipse cx="382" cy="478" rx="186" ry="40" fill="#f3efe6" class="t" />
+    <path d="M168 470 q20 -30 90 -40" class="hi" opacity="0.9" />
+
+    <!-- the icon, standing on it -->
+    <g transform="translate(266 262) scale(1.15) rotate(-3 100 196)">
+      <rect x="6" y="14" width="200" height="200" rx="52" fill="#a9492a" opacity="0.28" filter="url(#drop)" />
+      <g clip-path="url(#icon)">
+        <rect x="0" y="0" width="200" height="200" fill="#ff7e7d" />
+        <!-- the icon's chef, as close as it sits: his hat off the top and
+             tipped, his face turned a little, the ear and the hair on the
+             right, the nose a line, the moustache, the teeth, the collar -->
+        <g transform="translate(14 10) scale(0.31)" style="stroke-width:23">
+          <path d="M160 222 C 110 270, 66 350, 60 430 C 56 510, 76 570, 96 640 H 470 C 500 590, 530 520, 540 470 L 480 290 Z" fill="#efa57e" stroke="#16191d" stroke-linejoin="round" />
+          <path d="M466 284 C 520 318, 548 366, 548 420 L 500 452 C 490 400, 470 350, 432 296 Z" fill="#16191d" />
+          <circle cx="528" cy="448" r="50" fill="#efa57e" stroke="#16191d" />
+          <path d="M510 428 q26 -8 32 16 q-2 18 -22 16" fill="none" stroke="#16191d" stroke-linecap="round" style="stroke-width:16" />
+          <path d="M154 230 L 164 150 C 118 150, 78 120, 70 80 C 62 40, 72 8, 92 -30 H 640 V 196 C 612 228, 576 234, 554 222 L 522 302 C 400 272, 272 246, 154 230 Z" fill="#fff" stroke="#16191d" stroke-linejoin="round" />
+          <path d="M190 52 C 200 100, 240 114, 290 112 C 320 110, 336 102, 344 92 M468 104 C 500 120, 522 152, 542 196" fill="none" stroke="#16191d" stroke-linecap="round" style="stroke-width:20" />
+          <path d="M158 290 Q 192 254 228 282 M320 306 Q 358 276 398 306" fill="none" stroke="#16191d" stroke-linecap="round" style="stroke-width:24" />
+          <ellipse cx="192" cy="354" rx="16" ry="24" fill="#16191d" />
+          <ellipse cx="348" cy="386" rx="16" ry="23" fill="#16191d" />
+          <path d="M252 322 C 242 360, 200 370, 174 390 C 138 416, 140 466, 186 476 C 216 482, 246 470, 264 452" fill="#efa57e" stroke="#16191d" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M90 450 C 90 418, 140 410, 182 424 C 206 432, 226 440, 242 446 C 272 432, 322 424, 362 446 C 390 462, 388 494, 360 498 C 350 486, 338 482, 318 484 C 290 486, 264 492, 240 494 C 200 502, 148 502, 118 490 C 102 482, 90 468, 90 450 Z" fill="#16191d" stroke="#16191d" stroke-linejoin="round" style="stroke-width:8" />
+          <path d="M180 500 C 230 512, 290 510, 336 498 C 328 548, 290 578, 254 578 C 214 578, 186 548, 180 500 Z" fill="#16191d" stroke="#16191d" stroke-linejoin="round" style="stroke-width:8" />
+          <path d="M196 508 C 240 518, 286 516, 320 506 C 314 526, 286 538, 256 538 C 228 538, 204 528, 196 508 Z" fill="#efdcb4" />
+          <path d="M420 640 C 450 600, 520 578, 640 574 V 640 Z" fill="#e8473a" stroke="#16191d" stroke-linejoin="round" />
+        </g>
+      </g>
+      <rect x="0" y="0" width="200" height="200" rx="52" fill="none" class="k" />
+
+      <!-- the version, on a pick -->
+      <path d="M30 34 L4 -66" class="k" style="stroke-width:9" />
+      <path d="M30 34 L4 -66" stroke="#e8c48c" style="stroke-width:4" stroke-linecap="round" />
+      <path d="M6 -58 L-58 -40 L-68 -74 L-4 -92 Z" fill="#ffd67e" class="t" />
+      <text x="0" y="0" class="fz" font-size="22" fill="#1e1e1e" transform="translate(-55 -50) rotate(-16)">1.0</text>
+    </g>
+
+    <!-- the cloche, just lifted -->
+    <path d="M512 290 q34 -10 52 -34 M498 258 q22 -12 30 -30" class="t" fill="none" />
+    <g transform="translate(598 184) rotate(22)">
+      <path d="M-120 0 q0 -112 120 -112 q120 0 120 112 z" fill="#dfe4e8" class="k" />
+      <path d="M60 -6 q-4 -60 -50 -86" stroke="#c3cacf" style="stroke-width:16" stroke-linecap="round" fill="none" />
+      <path d="M-86 -24 q10 -50 60 -64" class="hi" style="stroke-width:7" />
+      <rect x="-132" y="-6" width="264" height="20" rx="10" fill="#c3cacf" class="k" />
+      <path d="M-8 -112 v-10 h16 v10" fill="#a9b1b8" class="t" />
+      <ellipse cx="0" cy="-128" rx="20" ry="12" fill="#c3cacf" class="k" />
+    </g>
+
+    <!-- and the sparkle of it -->
+    <g fill="#ffd67e" class="t">
+      <use href="#spark" transform="translate(196 330)" />
+      <use href="#spark" transform="translate(530 380) scale(0.75)" />
+      <use href="#spark" transform="translate(420 236) scale(0.62)" />
+      <use href="#spark" transform="translate(170 420) scale(0.5)" />
+    </g>
+  </g>
+</svg>

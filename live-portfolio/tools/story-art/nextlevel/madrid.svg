@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 01 Madrid: a night out, and a founder who needed a face. The mark's blue quarter is the night, with the moon and the drone in it; two glasses meet over the Puerta de Alcalá's three arches -->
+  <style>
+    .n { stroke: #0d2a4d; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .m { stroke: #0d2a4d; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+    .m:not([fill]), .n:not([fill]) { fill: none; }
+  </style>
+  <defs>
+    <filter id="soft" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="12" /></filter>
+    <clipPath id="disc"><circle cx="400" cy="310" r="214" /></clipPath>
+    <path id="spark" d="M0 -16 Q3 -3 16 0 Q3 3 0 16 Q-3 3 -16 0 Q-3 -3 0 -16 Z" />
+    <!-- the mark's drone -->
+    <g id="drone">
+      <rect x="-150" y="-6" width="300" height="12" rx="6" fill="#fff" class="m" />
+      <path d="M-150 0 v18 M150 0 v18" class="m" />
+      <path d="M-182 -22 h64 M118 -22 h64" class="n" style="stroke-width:9" />
+      <path d="M-130 -22 v16 M130 -22 v16" class="m" />
+      <rect x="-50" y="-26" width="100" height="44" rx="12" fill="#fff" class="m" />
+      <rect x="-26" y="18" width="52" height="22" rx="6" fill="#fff" class="m" />
+      <rect x="26" y="28" width="16" height="10" rx="2" fill="#fff" class="m" />
+      <path d="M54 30 l22 -6 M56 38 h24 M54 46 l22 6" class="m" />
+    </g>
+  </defs>
+
+  <!-- the ring every chapter is drawn in: the mark's circle, and its arc -->
+  <ellipse cx="400" cy="548" rx="190" ry="14" fill="#245f9e" opacity="0.26" filter="url(#soft)" />
+  <circle cx="400" cy="310" r="214" fill="#fff" />
+  <g clip-path="url(#disc)">
+    <rect x="186" y="96" width="214" height="150" fill="#0296ea" />
+    <circle cx="300" cy="166" r="30" fill="#fff" class="m" />
+    <circle cx="290" cy="158" r="6" fill="#d8ecfb" /><circle cx="310" cy="178" r="4" fill="#d8ecfb" />
+    <g fill="#fff"><use href="#spark" transform="translate(226 130) scale(0.55)" /><use href="#spark" transform="translate(364 206) scale(0.45)" /></g>
+    <use href="#drone" transform="translate(520 170) scale(0.36) rotate(-6)" />
+    <!-- the gate's arches, the foot of the ring -->
+    <rect x="186" y="440" width="428" height="84" fill="#0296ea" />
+    <path d="M186 440 H614" class="m" />
+    <path d="M300 524 V494 a16 16 0 0 1 32 0 V524 M374 524 V484 a26 26 0 0 1 52 0 V524 M468 524 V494 a16 16 0 0 1 32 0 V524" fill="#fff" class="m" />
+    <!-- two glasses, meeting -->
+    <g transform="translate(358 442) rotate(11)">
+      <path d="M-38 -150 H38 L30 0 H-30 Z" fill="#fff" />
+      <path d="M-35 -112 H35 L30 0 H-30 Z" fill="#9fd3fa" />
+      <path d="M-40 -140 q0 -22 18 -18 q8 -18 26 -8 q14 -12 26 2 q16 0 10 24 Z" fill="#fff" class="m" />
+      <path d="M-38 -150 H38 L30 0 H-30 Z" class="n" />
+      <path d="M-20 -92 L-17 -18" stroke="#fff" style="stroke-width:7" stroke-linecap="round" />
+    </g>
+    <g transform="translate(442 442) rotate(-11)">
+      <path d="M-38 -150 H38 L30 0 H-30 Z" fill="#fff" />
+      <path d="M-35 -112 H35 L30 0 H-30 Z" fill="#9fd3fa" />
+      <path d="M-40 -140 q0 -22 18 -18 q8 -18 26 -8 q14 -12 26 2 q16 0 10 24 Z" fill="#fff" class="m" />
+      <path d="M-38 -150 H38 L30 0 H-30 Z" class="n" />
+      <path d="M-20 -92 L-17 -18" stroke="#fff" style="stroke-width:7" stroke-linecap="round" />
+    </g>
+    <path d="M400 236 v-28 M370 242 l-14 -20 M430 242 l14 -20" class="n" />
+  </g>
+  <circle cx="400" cy="310" r="214" class="n" style="stroke-width:8" />
+  <path d="M510.8 101.6 A236 236 0 0 1 367.2 543.7" class="m" />
+</svg>

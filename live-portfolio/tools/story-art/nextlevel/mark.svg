@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 04 The mark: both worlds in one badge. The ring every chapter is drawn in, filled in as the badge, its name set as two bars, and its three colorways beside it -->
+  <style>
+    .n { stroke: #0d2a4d; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .m { stroke: #0d2a4d; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+    .m:not([fill]), .n:not([fill]) { fill: none; }
+  </style>
+  <defs>
+    <filter id="soft" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="12" /></filter>
+    <clipPath id="disc"><circle cx="400" cy="310" r="214" /></clipPath>
+    <path id="spark" d="M0 -16 Q3 -3 16 0 Q3 3 0 16 Q-3 3 -16 0 Q-3 -3 0 -16 Z" />
+    <!-- the mark's drone -->
+    <g id="drone">
+      <rect x="-150" y="-6" width="300" height="12" rx="6" fill="#fff" class="m" />
+      <path d="M-150 0 v18 M150 0 v18" class="m" />
+      <path d="M-182 -22 h64 M118 -22 h64" class="n" style="stroke-width:9" />
+      <path d="M-130 -22 v16 M130 -22 v16" class="m" />
+      <rect x="-50" y="-26" width="100" height="44" rx="12" fill="#fff" class="m" />
+      <rect x="-26" y="18" width="52" height="22" rx="6" fill="#fff" class="m" />
+      <rect x="26" y="28" width="16" height="10" rx="2" fill="#fff" class="m" />
+      <path d="M54 30 l22 -6 M56 38 h24 M54 46 l22 6" class="m" />
+    </g>
+  </defs>
+
+  <!-- the ring every chapter is drawn in: the mark's circle, and its arc -->
+  <ellipse cx="400" cy="548" rx="190" ry="14" fill="#245f9e" opacity="0.26" filter="url(#soft)" />
+  <circle cx="400" cy="310" r="214" fill="#fff" />
+  <g clip-path="url(#disc)">
+    <rect x="186" y="96" width="214" height="128" fill="#0296ea" />
+    <path d="M400 96 V224" class="m" />
+    <path d="M186 446 C 250 410, 290 456, 350 442 C 410 428, 440 398, 500 410 C 550 420, 580 442, 614 432 V524 H186 Z" fill="#0296ea" />
+    <path d="M412 524 C 424 482, 452 456, 480 442 C 466 476, 468 502, 482 524 Z" fill="#fff" />
+    <path d="M186 446 C 250 410, 290 456, 350 442 C 410 428, 440 398, 500 410 C 550 420, 580 442, 614 432" class="m" />
+    <use href="#drone" transform="translate(396 176) scale(0.62)" />
+  </g>
+  <g>
+    <rect x="206" y="268" width="388" height="44" rx="4" fill="#0d2a4d" stroke="#fff" style="stroke-width:12" paint-order="stroke" />
+    <rect x="250" y="330" width="300" height="28" rx="4" fill="#0d2a4d" stroke="#fff" style="stroke-width:12" paint-order="stroke" />
+  </g>
+  <circle cx="400" cy="310" r="214" class="n" style="stroke-width:8" />
+  <path d="M510.8 101.6 A236 236 0 0 1 367.2 543.7" class="m" />
+  <g class="m">
+    <circle cx="690" cy="236" r="22" fill="#9aafc5" /><circle cx="690" cy="300" r="22" fill="#1a62b7" /><circle cx="690" cy="364" r="22" fill="#0296ea" />
+  </g>
+</svg>

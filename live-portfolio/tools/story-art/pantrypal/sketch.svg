@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 01 Sketch: the pad the first screens were drawn on, the kept one in
+       pencil with the coral marker on what mattered, and the pencil still
+       on it -->
+  <style>
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .g { stroke: #57534c; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; fill: none; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="4" />
+      <feDisplacementMap in="SourceGraphic" scale="4.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="14" /></filter>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="translate(222 100)">
+      <path d="M24 0H0V24" fill="none" stroke="#a9d9ec" style="stroke-width:1.6" />
+    </pattern>
+  </defs>
+
+  <ellipse cx="392" cy="560" rx="236" ry="24" fill="#a9492a" opacity="0.26" filter="url(#soft)" />
+  <ellipse cx="640" cy="590" rx="110" ry="12" fill="#a9492a" opacity="0.22" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <g transform="rotate(-6 380 320)">
+      <!-- the pad, its pages under it, and its rings -->
+      <rect x="224" y="90" width="330" height="450" rx="10" fill="#efe4cf" class="k" />
+      <rect x="214" y="78" width="330" height="450" rx="10" fill="#fffdf7" class="k" />
+      <rect x="226" y="100" width="306" height="416" fill="url(#grid)" />
+      <g fill="#1e1e1e">
+        <circle cx="250" cy="96" r="5" /><circle cx="280" cy="96" r="5" /><circle cx="310" cy="96" r="5" />
+        <circle cx="340" cy="96" r="5" /><circle cx="370" cy="96" r="5" /><circle cx="400" cy="96" r="5" />
+        <circle cx="430" cy="96" r="5" /><circle cx="460" cy="96" r="5" /><circle cx="490" cy="96" r="5" />
+        <circle cx="520" cy="96" r="5" />
+      </g>
+      <g fill="#d9dde0" class="t">
+        <path d="M250 96 V66 a7 7 0 0 1 14 0 V84" /><path d="M280 96 V66 a7 7 0 0 1 14 0 V84" />
+        <path d="M310 96 V66 a7 7 0 0 1 14 0 V84" /><path d="M340 96 V66 a7 7 0 0 1 14 0 V84" />
+        <path d="M370 96 V66 a7 7 0 0 1 14 0 V84" /><path d="M400 96 V66 a7 7 0 0 1 14 0 V84" />
+        <path d="M430 96 V66 a7 7 0 0 1 14 0 V84" /><path d="M460 96 V66 a7 7 0 0 1 14 0 V84" />
+        <path d="M490 96 V66 a7 7 0 0 1 14 0 V84" /><path d="M520 96 V66 a7 7 0 0 1 14 0 V84" />
+      </g>
+
+      <!-- the marker first, under the pencil: the chosen food, and the button -->
+      <rect x="323" y="401" width="124" height="34" rx="17" fill="#ff7e7d" opacity="0.85" />
+      <path d="M304 300 c-10 -24 26 -40 46 -24 c20 16 2 46 -22 42 c-16 -3 -22 -10 -22 -18" fill="none" stroke="#ff4b4b" style="stroke-width:5" stroke-linecap="round" opacity="0.9" />
+
+      <!-- the screen, in pencil -->
+      <rect x="290" y="128" width="180" height="350" rx="28" class="g" />
+      <path d="M356 144 h48" class="g" style="stroke-width:7" />
+      <ellipse cx="336" cy="184" rx="32" ry="17" class="g" />
+      <path d="M316 181 q5 -7 10 0 t10 0 t10 0 t10 0 M320 190 q5 -5 10 0 t10 0" class="g" style="stroke-width:3" />
+      <path d="M422 200 v-12 q-12 -2 -9 -13 q4 -10 13 -6 q4 -10 14 -6 q10 3 7 13 q8 6 0 13 v11 z M426 200 h20" class="g" style="stroke-width:3.5" />
+      <path d="M296 218 q8 9 16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0" class="g" style="stroke-width:3.5" />
+      <path d="M312 246 c10 -7 18 6 28 0 s18 7 28 0 s18 6 28 0 s18 6 30 0" class="g" />
+      <g class="g">
+        <circle cx="330" cy="292" r="19" /><circle cx="380" cy="292" r="19" /><circle cx="430" cy="292" r="19" />
+        <circle cx="330" cy="350" r="19" /><circle cx="380" cy="350" r="19" /><circle cx="430" cy="350" r="19" />
+      </g>
+      <!-- six foods, the way a pencil has them: a fish, an egg, a drumstick,
+           cheese, a tomato and a carrot -->
+      <g class="g" style="stroke-width:3">
+        <path d="M318 292 q10 -10 20 0 q-10 10 -20 0 z M338 292 l6 -6 v12 z" />
+        <path d="M380 281 c-8 0 -11 9 -11 13 c0 7 5 10 11 10 s11 -3 11 -10 c0 -4 -3 -13 -11 -13 z" />
+        <path d="M422 300 l6 -6 M427 295 c-3 -6 2 -14 10 -12 c6 2 6 10 0 13 c-3 2 -7 2 -10 -1 z M420 298 a2.5 2.5 0 1 0 4 4" />
+        <path d="M318 358 l24 -8 v10 h-24 z M318 358 l6 -14 l18 6 M330 355 a2 2 0 1 0 0.1 0" />
+        <path d="M380 342 m-10 9 a10 10 0 1 0 20 0 a10 10 0 1 0 -20 0 M375 342 l5 -4 l5 4 M380 338 v-4" />
+        <path d="M424 358 l14 -14 l4 4 z M438 344 l4 -6 M440 346 l6 -2" />
+      </g>
+      <rect x="318" y="398" width="124" height="34" rx="17" class="g" />
+      <path d="M338 415 c8 -5 14 5 22 0 s14 5 22 0 s14 5 22 0" class="g" style="stroke-width:3" />
+      <!-- the line being drawn, up to the pencil's point -->
+      <path d="M326 449 c14 -4 24 4 38 0 s24 4 38 0 s26 3 50 -1" class="g" />
+    </g>
+
+    <!-- the pencil, its point where the line ends -->
+    <g transform="translate(465 440) rotate(25)">
+      <path d="M18 -7 L64 -24 H234 V24 H64 L18 7 Z" fill="#a9492a" opacity="0.16" transform="translate(4 14)" />
+      <path d="M18 -7 L64 -24 L64 24 L18 7 Z" fill="#f6d2a8" class="k" />
+      <path d="M0 0 L20 -7.5 L20 7.5 Z" fill="#3b3a38" class="t" />
+      <rect x="64" y="-24" width="170" height="48" fill="#ffd67e" />
+      <rect x="64" y="8" width="170" height="16" fill="#f3b544" />
+      <path d="M70 -24 L56 -16 L66 -6 L56 6 L66 16 L58 24 H70 Z" fill="#ffd67e" />
+      <path d="M70 8 L66 16 L58 24 H70 Z" fill="#f3b544" />
+      <path d="M64 -24 H234 V24 H58 L66 16 L56 6 L66 -6 L56 -16 Z" fill="none" class="k" />
+      <path d="M76 -8 H234" class="t" fill="none" style="stroke-width:3.5" />
+      <path d="M84 -15 H200" class="hi" />
+      <rect x="234" y="-26" width="36" height="52" fill="#cdd2d6" class="k" />
+      <path d="M246 -24 V24 M258 -24 V24" class="t" fill="none" style="stroke-width:3.5" />
+      <path d="M270 -24 H294 a16 16 0 0 1 16 16 V8 a16 16 0 0 1 -16 16 H270 Z" fill="#ff7e7d" class="k" />
+      <path d="M282 -14 H296" class="hi" />
+    </g>
+
+    <!-- what the eraser left -->
+    <g fill="#ff9d9c" class="t" style="stroke-width:4">
+      <path d="M598 566 q8 -8 14 -1 q6 8 -3 11 q-9 2 -11 -10 z" />
+      <path d="M628 584 q6 -9 13 -3 q5 7 -4 10 q-8 2 -9 -7 z" />
+      <path d="M572 590 q5 -6 10 -1 q4 5 -2 8 q-7 1 -8 -7 z" />
+    </g>
+  </g>
+</svg>

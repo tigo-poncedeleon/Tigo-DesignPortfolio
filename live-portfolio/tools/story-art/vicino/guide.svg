@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 03 The AI guide: a design system machines can read. The agent, in
+       its reading glasses, behind the guide held open: the skill's head on
+       one page, a component's rule on the other, and what it takes from
+       them floating up, in the chapter's orange -->
+  <style>
+    .p { stroke: #1d1d1f; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+    .q { stroke: #1d1d1f; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .q:not([fill]) { fill: none; }
+    .hand { font-family: 'Chalkboard SE', 'Noteworthy', cursive; fill: #1d1d1f; }
+    .sans { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="27" />
+      <feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="12" /></filter>
+  </defs>
+
+  <ellipse cx="400" cy="520" rx="270" ry="26" fill="#1c6f78" opacity="0.2" filter="url(#lift)" />
+
+  <g filter="url(#hand)">
+    <!-- what it reads, floating up -->
+    <g transform="rotate(-8 170 150)">
+      <rect x="120" y="120" width="100" height="56" rx="14" fill="#fff" class="q" />
+      <text x="170" y="160" text-anchor="middle" class="sans" font-size="30" font-weight="500" fill="#1d1d1f">Aa</text>
+    </g>
+    <g transform="rotate(6 640 150)">
+      <rect x="590" y="122" width="104" height="56" rx="14" fill="#fff" class="q" />
+      <text x="642" y="160" text-anchor="middle" class="hand" font-size="28" font-weight="700">{ }</text>
+    </g>
+    <g transform="rotate(10 250 70)">
+      <rect x="216" y="48" width="76" height="44" rx="12" fill="#fff" class="q" />
+      <circle cx="240" cy="70" r="10" fill="#ffb366" class="q" /><circle cx="268" cy="70" r="10" fill="#1d1d1f" class="q" />
+    </g>
+    <g transform="rotate(-6 560 60)">
+      <rect x="512" y="40" width="96" height="40" rx="20" fill="#1d1d1f" class="q" />
+      <rect x="532" y="56" width="56" height="8" rx="4" fill="#fff" />
+    </g>
+    <path d="M220 200 q20 20 60 34 M600 200 q-20 20 -60 34 M290 110 q24 40 64 66 M530 98 q-14 40 -44 70" class="q" stroke-dasharray="2 12" />
+
+    <!-- the agent, behind the book, glasses on -->
+    <path d="M400 180 V156" class="q" /><circle cx="400" cy="148" r="8" fill="#ffb366" class="q" />
+    <rect x="344" y="180" width="112" height="98" rx="20" fill="#fff" class="p" />
+    <circle cx="378" cy="222" r="17" fill="#fff4e6" class="q" /><circle cx="422" cy="222" r="17" fill="#fff4e6" class="q" />
+    <path d="M395 222 h10 M361 220 l-17 -6 M439 220 l17 -6" class="q" />
+    <circle cx="380" cy="224" r="5" fill="#1d1d1f" /><circle cx="424" cy="224" r="5" fill="#1d1d1f" />
+    <path d="M388 254 q12 6 24 0" class="q" />
+
+    <!-- the book: its cover, its pages -->
+    <path d="M126 290 Q 400 262 674 290 L 682 482 Q 400 458 118 482 Z" fill="#ffb366" class="p" />
+    <path d="M400 276 C 330 252, 216 252, 146 272 L 146 462 C 216 444, 330 444, 400 466 Z" fill="#fff" class="p" />
+    <path d="M400 276 C 470 252, 584 252, 654 272 L 654 462 C 584 444, 470 444, 400 466 Z" fill="#fff" class="p" />
+    <path d="M150 470 C 220 452, 330 452, 400 474 C 470 452, 580 452, 650 470" class="q" />
+    <path d="M556 466 v62 l14 -12 l14 12 v-64" fill="#ff8a3d" class="q" />
+
+    <!-- its hands on the edges -->
+    <circle cx="144" cy="378" r="14" fill="#fff" class="q" /><circle cx="656" cy="378" r="14" fill="#fff" class="q" />
+
+    <!-- the left page: the skill's head -->
+    <text x="176" y="306" class="hand" font-size="20" font-weight="700">---</text>
+    <text x="176" y="334" class="hand" font-size="20">name: pulse</text>
+    <text x="176" y="362" class="hand" font-size="20">use: always</text>
+    <text x="176" y="386" class="hand" font-size="20" font-weight="700">---</text>
+    <path d="M178 412 c14 -5 24 5 38 0 s24 5 38 0 s24 5 48 0 M178 436 c14 -5 24 5 38 0 s24 5 70 0" class="q" />
+
+    <!-- the right page: a component's rule, and what not to do -->
+    <text x="424" y="306" class="hand" font-size="20" font-weight="700">## Button</text>
+    <rect x="426" y="322" width="104" height="34" rx="17" fill="#1d1d1f" class="q" />
+    <rect x="450" y="335" width="56" height="8" rx="4" fill="#fff" />
+    <path d="M550 328 l8 10 l16 -20" stroke="#2fa36b" style="stroke-width:6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <rect x="426" y="372" width="104" height="34" rx="6" fill="#ffd8b5" class="q" />
+    <path d="M552 378 l18 20 M570 378 l-18 20" stroke="#e5484d" style="stroke-width:6" stroke-linecap="round" fill="none" />
+    <path d="M426 432 c14 -5 24 5 38 0 s24 5 38 0 s24 5 52 0" class="q" />
+  </g>
+</svg>

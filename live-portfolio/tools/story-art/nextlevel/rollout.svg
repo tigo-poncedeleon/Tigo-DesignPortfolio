@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 05 Rollout: one mark, everywhere it meets a customer. The quarter-zip rising in the ring with the badge on its chest, and the drone over it, at work -->
+  <style>
+    .n { stroke: #0d2a4d; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .m { stroke: #0d2a4d; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+    .m:not([fill]), .n:not([fill]) { fill: none; }
+  </style>
+  <defs>
+    <filter id="soft" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="12" /></filter>
+    <clipPath id="disc"><circle cx="400" cy="310" r="214" /></clipPath>
+    <path id="spark" d="M0 -16 Q3 -3 16 0 Q3 3 0 16 Q-3 3 -16 0 Q-3 -3 0 -16 Z" />
+    <!-- the mark's drone -->
+    <g id="drone">
+      <rect x="-150" y="-6" width="300" height="12" rx="6" fill="#fff" class="m" />
+      <path d="M-150 0 v18 M150 0 v18" class="m" />
+      <path d="M-182 -22 h64 M118 -22 h64" class="n" style="stroke-width:9" />
+      <path d="M-130 -22 v16 M130 -22 v16" class="m" />
+      <rect x="-50" y="-26" width="100" height="44" rx="12" fill="#fff" class="m" />
+      <rect x="-26" y="18" width="52" height="22" rx="6" fill="#fff" class="m" />
+      <rect x="26" y="28" width="16" height="10" rx="2" fill="#fff" class="m" />
+      <path d="M54 30 l22 -6 M56 38 h24 M54 46 l22 6" class="m" />
+    </g>
+  </defs>
+
+  <!-- the ring every chapter is drawn in: the mark's circle, and its arc -->
+  <ellipse cx="400" cy="548" rx="190" ry="14" fill="#245f9e" opacity="0.26" filter="url(#soft)" />
+  <circle cx="400" cy="310" r="214" fill="#fff" />
+  <g clip-path="url(#disc)">
+    <use href="#drone" transform="translate(400 176) scale(0.56)" />
+    <g fill="#0296ea"><use href="#spark" transform="translate(486 228) scale(0.6)" /><use href="#spark" transform="translate(530 196) scale(0.42)" /></g>
+    <g transform="translate(400 300)">
+      <path d="M-84 18 L-164 54 L-214 260 H214 L164 54 L84 18 Z" fill="#26364f" class="n" />
+      <path d="M-128 120 L-120 260 M128 120 L120 260" stroke="#3b4f6e" style="stroke-width:6" stroke-linecap="round" />
+      <path d="M-54 -12 L-60 22 Q0 58 60 22 L54 -12 Q0 10 -54 -12 Z" fill="#2f4260" class="n" />
+      <path d="M0 26 V150" stroke="#9aafc5" style="stroke-width:6" stroke-linecap="round" />
+      <rect x="-8" y="112" width="16" height="30" rx="5" fill="#9aafc5" class="m" style="stroke-width:3.5" />
+      <g transform="translate(66 92)">
+        <clipPath id="chest"><circle r="30" /></clipPath>
+        <g clip-path="url(#chest)"><rect x="-30" y="-30" width="60" height="60" fill="#fff" /><rect x="-30" y="-30" width="30" height="20" fill="#0296ea" /><path d="M-30 16 C -16 10, -6 22, 8 17 S 24 12, 30 17 V30 H-30 Z" fill="#0296ea" /></g>
+        <rect x="-22" y="-5" width="44" height="7" rx="2" fill="#0d2a4d" /><rect x="-17" y="5" width="34" height="5" rx="2" fill="#0d2a4d" />
+        <circle r="30" fill="none" stroke="#fff" style="stroke-width:4" />
+      </g>
+    </g>
+  </g>
+  <circle cx="400" cy="310" r="214" class="n" style="stroke-width:8" />
+  <path d="M510.8 101.6 A236 236 0 0 1 367.2 543.7" class="m" />
+</svg>

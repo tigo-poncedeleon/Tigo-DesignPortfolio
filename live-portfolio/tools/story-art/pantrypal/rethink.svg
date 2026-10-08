@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 04 Rethink: fourteen pots on one stove. The old first screen as a
+       kitchen: everything on at once, a pot on a lid, a pan off the edge,
+       and something boiling over -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .steam { stroke: #1e1e1e; stroke-width: 4; stroke-linecap: round; fill: none; opacity: 0.55; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="33" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+  </defs>
+
+  <ellipse cx="400" cy="584" rx="290" ry="20" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the stove: its top, its knobs, its door -->
+    <rect x="150" y="414" width="500" height="160" rx="18" fill="#f6f2ea" class="k" />
+    <path d="M150 470 H650" class="t" />
+    <g fill="#fff" class="t">
+      <circle cx="220" cy="442" r="15" /><circle cx="300" cy="442" r="15" /><circle cx="500" cy="442" r="15" /><circle cx="580" cy="442" r="15" />
+    </g>
+    <path d="M220 442 l7 -10 M300 442 l-9 -9 M500 442 l10 -6 M580 442 l2 -12" class="t" />
+    <rect x="374" y="432" width="52" height="20" rx="6" fill="#1e1e1e" />
+    <text x="400" y="448" text-anchor="middle" class="fz" font-size="15" fill="#ff7e7d">14</text>
+    <rect x="216" y="490" width="368" height="64" rx="12" fill="#3a3836" class="t" />
+    <path d="M236 504 l30 -0 M236 516 l16 0" class="hi" opacity="0.4" />
+    <path d="M136 414 L170 382 H630 L664 414 Z" fill="#dcd6cb" class="k" />
+
+    <!-- the kettle, at the back on the left, whistling -->
+    <g>
+      <path d="M174 334 q-44 -10 -62 -56" fill="none" class="k" style="stroke-width:20" />
+      <path d="M174 334 q-44 -10 -62 -56" fill="none" stroke="#b8edf8" style="stroke-width:8" stroke-linecap="round" />
+      <path d="M160 394 q-14 -96 72 -110 q86 14 72 110 z" fill="#b8edf8" class="k" />
+      <path d="M182 352 q2 -34 30 -48" class="hi" />
+      <path d="M190 292 q42 -66 84 0" fill="none" class="k" />
+      <ellipse cx="232" cy="286" rx="30" ry="9" fill="#8fd2e4" class="t" />
+      <circle cx="232" cy="272" r="8" fill="#1e1e1e" />
+      <path d="M104 262 q-6 -14 4 -24 q10 -10 0 -24 M86 268 q-14 -8 -12 -22" class="steam" />
+    </g>
+
+    <!-- the stock pot in the middle, its lid knocked askew, boiling over -->
+    <g>
+      <path d="M288 268 q-22 0 -22 18 q0 14 22 14" fill="none" class="k" />
+      <path d="M502 268 q22 0 22 18 q0 14 -22 14" fill="none" class="k" />
+      <rect x="292" y="232" width="206" height="160" rx="14" fill="#ff7e7d" class="k" />
+      <rect x="300" y="350" width="190" height="34" rx="8" fill="#ec6463" />
+      <rect x="292" y="232" width="206" height="160" rx="14" fill="none" class="k" />
+      <path d="M312 266 v66" class="hi" />
+      <rect x="282" y="222" width="226" height="22" rx="11" fill="#e45a59" class="k" />
+      <!-- what spills -->
+      <path d="M298 232 q-4 30 6 34 q10 2 8 -14 q0 22 12 20 q10 -2 6 -24 M470 232 q-2 18 8 20 q10 0 6 -18" fill="#fff" class="t" />
+      <g transform="rotate(16 440 214)">
+        <path d="M352 222 q0 -56 88 -56 q88 0 88 56 z" fill="#cdd2d6" class="k" />
+        <path d="M370 206 q10 -26 46 -30" class="hi" />
+        <rect x="428" y="152" width="24" height="16" rx="6" fill="#1e1e1e" />
+      </g>
+      <g fill="#fff" class="t" style="stroke-width:3.5"><circle cx="330" cy="214" r="10" /><circle cx="354" cy="204" r="7" /><circle cx="314" cy="198" r="6" /><circle cx="346" cy="182" r="5" /></g>
+    </g>
+
+    <!-- a little pot, balanced on the lid -->
+    <g transform="rotate(-10 470 130)">
+      <path d="M418 124 h-14 M522 124 h14" class="k" style="stroke-width:10" />
+      <rect x="420" y="100" width="100" height="68" rx="10" fill="#beeba6" class="k" />
+      <rect x="426" y="146" width="88" height="16" rx="5" fill="#9bd27f" />
+      <rect x="420" y="100" width="100" height="68" rx="10" fill="none" class="k" />
+      <rect x="412" y="92" width="116" height="16" rx="8" fill="#8fcf73" class="k" />
+      <path d="M434 116 v30" class="hi" />
+    </g>
+    <path d="M398 120 l-14 -6 M396 140 l-16 2 M548 92 l14 -8 M552 112 l16 0" class="t" />
+
+    <!-- the milk pan, at the back on the right -->
+    <g>
+      <rect x="532" y="282" width="100" height="94" rx="12" fill="#ffd67e" class="k" />
+      <rect x="538" y="348" width="88" height="22" rx="6" fill="#f3b544" />
+      <rect x="532" y="282" width="100" height="94" rx="12" fill="none" class="k" />
+      <rect x="524" y="272" width="116" height="18" rx="9" fill="#f3b544" class="k" />
+      <path d="M548 300 v44" class="hi" />
+      <path d="M570 262 q-8 -14 2 -26 q10 -12 0 -28 M598 260 q8 -14 -2 -26" class="steam" />
+    </g>
+
+    <!-- the saucepan in front, its handle out over the edge -->
+    <g>
+      <path d="M200 352 H62" class="k" style="stroke-width:22" />
+      <path d="M200 352 H66" stroke="#4a3128" style="stroke-width:10" stroke-linecap="round" />
+      <rect x="196" y="322" width="140" height="78" rx="12" fill="#5cc04a" class="k" />
+      <rect x="202" y="372" width="128" height="22" rx="6" fill="#47a338" />
+      <rect x="196" y="322" width="140" height="78" rx="12" fill="none" class="k" />
+      <rect x="188" y="312" width="156" height="18" rx="9" fill="#47a338" class="k" />
+      <path d="M212 340 v34" class="hi" />
+    </g>
+
+    <!-- the frying pan, its handle out the other side, an egg in it -->
+    <g>
+      <path d="M612 368 L758 330" class="k" style="stroke-width:22" />
+      <path d="M616 367 L754 331" stroke="#3a3836" style="stroke-width:10" stroke-linecap="round" />
+      <path d="M392 364 q0 34 22 38 h188 q22 -4 22 -38 z" fill="#3a3836" class="k" />
+      <ellipse cx="508" cy="364" rx="118" ry="26" fill="#55524c" class="k" />
+      <path d="M470 366 q-6 -18 20 -20 q12 -12 30 0 q24 2 14 18 q-6 12 -30 10 q-30 4 -34 -8 z" fill="#fff" class="t" />
+      <circle cx="502" cy="358" r="11" fill="#ffc93c" class="t" />
+      <path d="M498 354 l3 -2" class="hi" style="stroke-width:3" />
+    </g>
+
+    <!-- and the steam of all of it -->
+    <path d="M330 156 q-10 -16 2 -30 q12 -14 0 -32 M296 170 q-8 -12 0 -24" class="steam" />
+  </g>
+</svg>

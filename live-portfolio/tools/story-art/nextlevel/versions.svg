@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 03 Nine versions: symbols, characters, wordmarks, and two notes. Nine rings in the order they were sent, eight of them tries in grey, the ninth the badge that shipped -->
+  <style>
+    .n { stroke: #0d2a4d; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .m { stroke: #0d2a4d; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+    .m:not([fill]), .n:not([fill]) { fill: none; }
+  </style>
+  <defs>
+    <filter id="soft" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="12" /></filter>
+    <clipPath id="disc"><circle cx="400" cy="310" r="214" /></clipPath>
+    <path id="spark" d="M0 -16 Q3 -3 16 0 Q3 3 0 16 Q-3 3 -16 0 Q-3 -3 0 -16 Z" />
+    <!-- the mark's drone -->
+    <g id="drone">
+      <rect x="-150" y="-6" width="300" height="12" rx="6" fill="#fff" class="m" />
+      <path d="M-150 0 v18 M150 0 v18" class="m" />
+      <path d="M-182 -22 h64 M118 -22 h64" class="n" style="stroke-width:9" />
+      <path d="M-130 -22 v16 M130 -22 v16" class="m" />
+      <rect x="-50" y="-26" width="100" height="44" rx="12" fill="#fff" class="m" />
+      <rect x="-26" y="18" width="52" height="22" rx="6" fill="#fff" class="m" />
+      <rect x="26" y="28" width="16" height="10" rx="2" fill="#fff" class="m" />
+      <path d="M54 30 l22 -6 M56 38 h24 M54 46 l22 6" class="m" />
+    </g>
+  </defs>
+
+  <!-- the ring every chapter is drawn in: the mark's circle, and its arc -->
+  <ellipse cx="400" cy="548" rx="190" ry="14" fill="#245f9e" opacity="0.26" filter="url(#soft)" />
+  <circle cx="400" cy="310" r="214" fill="#fff" />
+  <g clip-path="url(#disc)">
+    <rect x="186" y="96" width="428" height="428" fill="#f3f8fd" />
+    <g transform="translate(302 212)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><circle cx="0" cy="0" r="8" fill="#9aafc5" /></g>
+    <g transform="translate(400 212)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><path d="M-14 4 h28" stroke="#9aafc5" style="stroke-width:6" stroke-linecap="round" /></g>
+    <g transform="translate(498 212)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><path d="M-14 -4 q14 -12 28 0" stroke="#9aafc5" style="stroke-width:6" stroke-linecap="round" fill="none" /></g>
+    <g transform="translate(302 310)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><rect x="-12" y="-12" width="24" height="24" rx="6" fill="#9aafc5" /></g>
+    <g transform="translate(400 310)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><path d="M-14 -4 h28 M-10 8 h20" stroke="#9aafc5" style="stroke-width:5" stroke-linecap="round" /></g>
+    <g transform="translate(498 310)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><circle cx="0" cy="0" r="16" fill="none" stroke="#9aafc5" style="stroke-width:4" /></g>
+    <g transform="translate(302 408)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><path d="M-14 8 q7 -10 14 0 t14 0" stroke="#9aafc5" style="stroke-width:6" stroke-linecap="round" fill="none" /></g>
+    <g transform="translate(400 408)"><circle r="36" fill="#fff" stroke="#9aafc5" style="stroke-width:5" /><path d="M-16 -2 h32 M0 -2 v14" stroke="#9aafc5" style="stroke-width:5" stroke-linecap="round" /></g>
+    <g transform="translate(498 408)">
+      <clipPath id="ninth"><circle r="36" /></clipPath>
+      <g clip-path="url(#ninth)"><rect x="-36" y="-36" width="72" height="72" fill="#fff" /><rect x="-36" y="-36" width="36" height="24" fill="#0296ea" /><path d="M-36 18 C -18 10, -6 26, 10 20 S 28 14, 36 20 V36 H-36 Z" fill="#0296ea" /></g>
+      <rect x="-26" y="-6" width="52" height="8" rx="2" fill="#0d2a4d" /><rect x="-20" y="6" width="40" height="6" rx="2" fill="#0d2a4d" />
+      <circle r="36" fill="none" class="n" />
+    </g>
+  </g>
+  <circle cx="400" cy="310" r="214" class="n" style="stroke-width:8" />
+  <path d="M510.8 101.6 A236 236 0 0 1 367.2 543.7" class="m" />
+  <circle cx="530" cy="438" r="20" fill="#0296ea" class="m" />
+  <path d="M520 438 l7 8 l14 -16" stroke="#fff" style="stroke-width:5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+</svg>

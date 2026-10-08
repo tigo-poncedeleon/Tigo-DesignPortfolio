@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 03 Build: the design system as mise en place. Its colours in one
+       bowl like sweets, its type in another as alphabet pasta, its stickers
+       in a third, its buttons stacked like pancakes with a pat of butter,
+       and the recipe they were made to, every line ticked but the last -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .grain { stroke: #c4874f; stroke-width: 3.5; stroke-linecap: round; fill: none; }
+    .fz { font-family: Fugaz; }
+    .pasta { font-family: Fugaz; fill: #ffd67e; stroke: #1e1e1e; stroke-width: 4; paint-order: stroke; stroke-linejoin: round; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="21" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+    <filter id="drop" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter>
+  </defs>
+
+  <ellipse cx="400" cy="560" rx="340" ry="22" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the board everything stands on -->
+    <path d="M60 492 L84 440 H716 L740 492 Z" fill="#e2aa6a" class="k" />
+    <path d="M60 492 H740 V520 a10 10 0 0 1 -10 10 H70 a10 10 0 0 1 -10 -10 Z" fill="#a86b38" class="k" />
+    <path d="M110 458 q120 -6 240 2 t240 -2 M150 478 q80 4 160 -2 M470 480 q90 6 220 -2" class="grain" />
+
+    <!-- the recipe, propped at the back -->
+    <g transform="rotate(-8 170 300)">
+      <rect x="86" y="160" width="190" height="262" rx="10" fill="#a9492a" opacity="0.22" filter="url(#drop)" transform="translate(6 10)" />
+      <rect x="80" y="152" width="190" height="262" rx="10" fill="#fffdf7" class="k" />
+      <path d="M80 214 V162 a10 10 0 0 1 10 -10 H260 a10 10 0 0 1 10 10 V214 Z" fill="#ff7e7d" class="k" />
+      <text x="175" y="194" text-anchor="middle" class="fz" font-size="27" fill="#fff" stroke="#1e1e1e" style="stroke-width:5" paint-order="stroke">Recipe</text>
+      <g class="t" fill="#fff">
+        <rect x="100" y="236" width="22" height="22" rx="4" /><rect x="100" y="276" width="22" height="22" rx="4" />
+        <rect x="100" y="316" width="22" height="22" rx="4" /><rect x="100" y="356" width="22" height="22" rx="4" />
+      </g>
+      <path d="M104 246 l6 7 l14 -16 M104 286 l6 7 l14 -16 M104 326 l6 7 l14 -16" stroke="#e23b32" style="stroke-width:5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <path d="M136 248 c12 -5 22 5 34 0 s22 5 34 0 s20 4 36 0 M136 288 c12 -5 22 5 34 0 s22 5 40 0 M136 328 c12 -5 22 5 34 0 s22 5 34 0 s16 4 26 0 M136 368 c12 -5 22 5 34 0 s20 4 30 0" stroke="#57534c" style="stroke-width:3.5" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- the buttons, stacked like pancakes, butter on top -->
+    <g>
+      <rect x="386" y="384" width="236" height="44" rx="22" fill="#a9492a" opacity="0.25" filter="url(#drop)" />
+      <rect x="380" y="368" width="232" height="46" rx="23" fill="#5cc04a" class="k" />
+      <rect x="392" y="324" width="232" height="46" rx="23" fill="#ffd67e" class="k" />
+      <rect x="376" y="280" width="232" height="46" rx="23" fill="#b8edf8" class="k" />
+      <rect x="388" y="232" width="232" height="50" rx="25" fill="#ff4b4b" class="k" />
+      <path d="M398 268 a24 24 0 0 0 16 12 H594 a24 24 0 0 0 16 -12 Z" fill="#d93434" />
+      <rect x="388" y="232" width="232" height="50" rx="25" fill="none" class="k" />
+      <text x="504" y="265" text-anchor="middle" class="fz" font-size="23" fill="#fff">Start cooking</text>
+      <path d="M404 244 q-6 4 -8 10" class="hi" opacity="0.6" />
+      <path d="M398 300 h40 M412 344 h30 M400 390 h30" class="hi" opacity="0.7" />
+      <path d="M474 234 l10 -20 h52 l10 20 Z" fill="#ffe58a" class="t" />
+      <path d="M484 214 l8 -10 h40 l4 10 Z" fill="#fff4c2" class="t" />
+      <path d="M528 234 q4 10 -2 16 q-6 -4 -4 -16 Z M482 234 q-2 8 -8 10" fill="#ffe58a" class="t" style="stroke-width:3.5" />
+      <path d="M496 210 h20" class="hi" style="stroke-width:4" />
+    </g>
+
+    <!-- the colours, a bowl of sweets, one fallen out -->
+    <g>
+      <ellipse cx="248" cy="404" rx="88" ry="22" fill="#5ea9bd" class="k" />
+      <g class="t">
+        <circle cx="200" cy="398" r="19" fill="#ff7e7d" /><circle cx="236" cy="384" r="19" fill="#ffd67e" />
+        <circle cx="272" cy="392" r="19" fill="#5cc04a" /><circle cx="300" cy="402" r="17" fill="#ff4b4b" />
+        <circle cx="252" cy="406" r="17" fill="#fff" /><circle cx="220" cy="410" r="15" fill="#b8edf8" />
+      </g>
+      <path d="M194 392 a8 8 0 0 1 6 -6 M230 378 a8 8 0 0 1 6 -6 M266 386 a8 8 0 0 1 6 -6" class="hi" style="stroke-width:4" />
+      <path d="M160 404 A88 22 0 0 0 336 404 C336 466 312 492 248 492 C184 492 160 466 160 404 Z" fill="#b8edf8" class="k" />
+      <path d="M166 444 C 180 486 210 492 248 492 C 286 492 316 486 330 444 C 300 456 200 456 166 444 Z" fill="#8fd2e4" />
+      <path d="M160 404 A88 22 0 0 0 336 404 C336 466 312 492 248 492 C184 492 160 466 160 404 Z" fill="none" class="k" />
+      <path d="M178 424 q4 30 22 44" class="hi" />
+      <circle cx="140" cy="480" r="15" fill="#ff7e7d" class="t" />
+      <path d="M134 474 a7 7 0 0 1 5 -5" class="hi" style="stroke-width:3.5" />
+    </g>
+
+    <!-- the type, alphabet pasta, and the spoon in it -->
+    <g>
+      <ellipse cx="450" cy="420" rx="92" ry="22" fill="#f0b54e" class="k" />
+      <path d="M470 418 L560 300" stroke="#1e1e1e" style="stroke-width:20" stroke-linecap="round" />
+      <path d="M470 418 L560 300" stroke="#d99a5c" style="stroke-width:10" stroke-linecap="round" />
+      <text class="pasta" font-size="46" transform="translate(386 428) rotate(-12)">A</text>
+      <text class="pasta" font-size="40" transform="translate(426 416) rotate(10)">a</text>
+      <text class="pasta" font-size="38" transform="translate(456 426) rotate(-6)">g</text>
+      <text class="pasta" font-size="34" transform="translate(494 422) rotate(14)">K</text>
+      <path d="M358 420 A92 22 0 0 0 542 420 C542 478 516 500 450 500 C384 500 358 478 358 420 Z" fill="#fff" class="k" />
+      <path d="M362 448 C 400 462 500 462 538 448 L 535 466 C 500 478 400 478 365 466 Z" fill="#ff4b4b" />
+      <path d="M358 420 A92 22 0 0 0 542 420 C542 478 516 500 450 500 C384 500 358 478 358 420 Z" fill="none" class="k" />
+      <path d="M376 440 q2 24 18 40" stroke="#e9e3d6" style="stroke-width:6" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- the stickers: a tomato, an egg and a fish's tail -->
+    <g>
+      <ellipse cx="642" cy="430" rx="72" ry="18" fill="#c98a2e" class="k" />
+      <path d="M672 418 q14 -30 34 -40 q-4 20 4 34 q-18 -2 -26 10 z" fill="#5e9bd1" class="t" />
+      <path d="M612 380 c-14 0 -20 18 -20 28 c0 14 10 20 20 20 s20 -6 20 -20 c0 -10 -6 -28 -20 -28 z" fill="#f6ead6" class="t" />
+      <circle cx="648" cy="414" r="22" fill="#e23b32" class="t" />
+      <path d="M648 394 l-8 -6 l7 -1 l-3 -8 l7 4 l2 -8 l3 8 l7 -4 l-3 8 l7 1 l-8 6 z" fill="#4fa83b" class="t" style="stroke-width:3" />
+      <path d="M636 406 a12 12 0 0 1 6 -6 M604 394 a8 8 0 0 1 4 -6" class="hi" style="stroke-width:4" />
+      <path d="M570 430 A72 18 0 0 0 714 430 C714 476 694 494 642 494 C590 494 570 476 570 430 Z" fill="#ffd67e" class="k" />
+      <path d="M574 456 C 600 470 684 470 710 456 C 704 486 680 494 642 494 C 604 494 580 486 574 456 Z" fill="#f3b544" />
+      <path d="M570 430 A72 18 0 0 0 714 430 C714 476 694 494 642 494 C590 494 570 476 570 430 Z" fill="none" class="k" />
+      <path d="M586 446 q2 18 14 30" class="hi" />
+    </g>
+  </g>
+</svg>

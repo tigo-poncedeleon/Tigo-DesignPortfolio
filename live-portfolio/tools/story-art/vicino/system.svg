@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 02 System: the language behind Pulse, as one specimen node, its
+       type, its scale, its five accents and its parts, and the agent with
+       a palette, painting in the last accent, in the chapter's violet -->
+  <style>
+    .p { stroke: #1d1d1f; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+    .q { stroke: #1d1d1f; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .q:not([fill]) { fill: none; }
+    .hand { font-family: 'Chalkboard SE', 'Noteworthy', cursive; fill: #1d1d1f; }
+    .sans { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .port { fill: #9b9cf1; stroke: #1d1d1f; stroke-width: 4.5; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="17" />
+      <feDisplacementMap in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="10" /></filter>
+  </defs>
+
+  <g fill="#1c6f78" opacity="0.18" filter="url(#lift)">
+    <rect x="76" y="148" width="404" height="364" rx="24" />
+    <rect x="560" y="268" width="100" height="90" rx="18" />
+  </g>
+
+  <g filter="url(#hand)">
+    <!-- the specimen -->
+    <rect x="70" y="132" width="404" height="364" rx="24" fill="#fff" class="p" />
+    <text x="98" y="176" class="hand" font-size="22" font-weight="700">PULSE</text>
+    <rect x="186" y="156" width="96" height="28" rx="14" fill="#e6e6fc" class="q" />
+    <text x="234" y="176" text-anchor="middle" class="hand" font-size="16">language</text>
+    <circle cx="70" cy="314" r="9" class="port" />
+    <circle cx="474" cy="314" r="9" class="port" />
+
+    <text x="96" y="300" class="sans" font-size="112" font-weight="500" fill="#1d1d1f" letter-spacing="-4">Aa</text>
+    <path d="M280 222 H446 M280 254 H420 M280 282 H392 M280 306 H364" class="q" />
+    <path d="M280 222 H446" stroke="#1d1d1f" style="stroke-width:12" stroke-linecap="round" />
+    <path d="M280 254 H420" stroke="#1d1d1f" style="stroke-width:9" stroke-linecap="round" />
+
+    <!-- one accent at a time: the five, the last being painted in -->
+    <circle cx="114" cy="368" r="22" fill="#1d1d1f" class="q" />
+    <circle cx="174" cy="368" r="22" fill="#5ed3e6" class="q" />
+    <circle cx="234" cy="368" r="22" fill="#62de8f" class="q" />
+    <circle cx="294" cy="368" r="22" fill="#f7cd52" class="q" />
+    <circle cx="354" cy="368" r="22" fill="#fff" class="q" />
+    <path d="M336 378 q8 -26 30 -26 q8 16 -6 34 q-14 10 -24 -8 z" fill="#9b9cf1" />
+    <circle cx="354" cy="368" r="22" class="q" />
+
+    <!-- its parts: a button, a switch, its spacing -->
+    <rect x="96" y="418" width="116" height="44" rx="22" fill="#1d1d1f" class="q" />
+    <text x="154" y="447" text-anchor="middle" class="sans" font-size="20" font-weight="600" fill="#fff">Run</text>
+    <rect x="236" y="422" width="70" height="36" rx="18" fill="#9b9cf1" class="q" />
+    <circle cx="288" cy="440" r="12" fill="#fff" class="q" />
+    <path d="M334 420 v40 M334 440 h20 M354 432 v16 M354 440 h28 M382 428 v24 M382 440 h40 M422 424 v32" class="q" />
+
+    <!-- the agent, palette in one hand, brush in the other -->
+    <path d="M562 318 Q 520 326 494 340" class="q" />
+    <circle cx="492" cy="342" r="10" fill="#fff" class="q" />
+    <path d="M488 346 L 372 362" stroke="#1d1d1f" style="stroke-width:12" stroke-linecap="round" />
+    <path d="M488 346 L 404 358" stroke="#c99a6a" style="stroke-width:5" stroke-linecap="round" />
+    <path d="M376 358 L 360 366 L 378 370 Z" fill="#9b9cf1" class="q" />
+    <rect x="554" y="252" width="100" height="90" rx="18" fill="#fff" class="p" />
+    <circle cx="588" cy="290" r="6" fill="#1d1d1f" /><circle cx="622" cy="290" r="6" fill="#1d1d1f" />
+    <path d="M590 312 q15 10 30 0" class="q" />
+    <path d="M580 274 q8 -6 16 0 M614 274 q8 -6 16 0" class="q" />
+    <path d="M604 252 V226" class="q" /><circle cx="604" cy="218" r="8" fill="#9b9cf1" class="q" />
+    <path d="M654 318 Q 680 340 684 372" class="q" />
+    <path d="M640 380 c-6 -36 54 -56 96 -30 c34 22 18 64 -16 62 c-14 -1 -18 12 -34 12 c-26 0 -42 -18 -46 -44 z" fill="#f6efe2" class="p" />
+    <circle cx="688" cy="404" r="11" fill="#ead9bd" class="q" />
+    <circle cx="672" cy="364" r="10" fill="#5ed3e6" class="q" /><circle cx="700" cy="352" r="10" fill="#62de8f" class="q" />
+    <circle cx="728" cy="364" r="10" fill="#f7cd52" class="q" /><circle cx="726" cy="392" r="10" fill="#9b9cf1" class="q" />
+    <circle cx="684" cy="372" r="10" fill="#fff" class="q" />
+
+    <path d="M520 200 h22 M531 189 v22 M600 520 h22 M611 509 v22" class="q" />
+  </g>
+</svg>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- 02 Prototype: the Figma screen on a phone, its dinner card picked
+       out by the selection's handles, and a prototype's noodle from it to
+       the recipe it opens -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .fz { font-family: Fugaz; }
+    .sel { stroke: #0d99ff; stroke-width: 4; fill: none; }
+    .hd { fill: #fff; stroke: #0d99ff; stroke-width: 3.5; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="9" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+    <clipPath id="screen"><rect x="14" y="14" width="232" height="492" rx="32" /></clipPath>
+    <clipPath id="page"><rect x="0" y="0" width="170" height="336" rx="22" /></clipPath>
+    <!-- the burger, drawn once, as the app's art has it -->
+    <g id="burger">
+      <path d="M-46 30 h92 a6 6 0 0 1 6 6 v4 a14 14 0 0 1 -14 14 h-76 a14 14 0 0 1 -14 -14 v-4 a6 6 0 0 1 6 -6 z" fill="#f2a54a" class="t" />
+      <path d="M-54 22 q9 -9 18 0 t18 0 t18 0 t18 0 t18 0 t18 0 v10 h-108 z" fill="#7cc44f" class="t" />
+      <rect x="-52" y="4" width="104" height="22" rx="11" fill="#8a4b2d" class="t" />
+      <path d="M-50 2 h100 l-12 14 l-8 -6 l-10 12 l-10 -10 l-12 6 l-10 -6 l-14 10 l-8 -8 z" fill="#ffc93c" class="t" />
+      <path d="M-52 2 q0 -50 52 -50 q52 0 52 50 z" fill="#f2a54a" class="t" />
+      <path d="M-30 -24 q10 -12 24 -14" class="hi" style="stroke-width:4" />
+      <g fill="#fff6dc"><ellipse cx="-18" cy="-20" rx="4" ry="2.4" /><ellipse cx="4" cy="-30" rx="4" ry="2.4" transform="rotate(-20 4 -30)" /><ellipse cx="22" cy="-16" rx="4" ry="2.4" transform="rotate(20 22 -16)" /><ellipse cx="-34" cy="-6" rx="4" ry="2.4" /><ellipse cx="34" cy="-4" rx="4" ry="2.4" /><ellipse cx="2" cy="-10" rx="4" ry="2.4" /></g>
+    </g>
+  </defs>
+
+  <ellipse cx="300" cy="604" rx="150" ry="18" fill="#a9492a" opacity="0.3" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the recipe the card opens, a frame floating to the right -->
+    <g transform="translate(530 140) rotate(7)">
+      <rect x="10" y="16" width="170" height="336" rx="22" fill="#a9492a" opacity="0.2" filter="url(#soft)" />
+      <rect x="0" y="0" width="170" height="336" rx="22" fill="#fff8e8" />
+      <g clip-path="url(#page)">
+        <rect x="0" y="0" width="170" height="64" fill="#b8edf8" />
+        <rect x="0" y="58" width="170" height="8" fill="#ff4b4b" />
+        <g fill="#ff4b4b"><circle cx="8" cy="66" r="7" /><circle cx="22" cy="66" r="7" /><circle cx="36" cy="66" r="7" /><circle cx="50" cy="66" r="7" /><circle cx="64" cy="66" r="7" /><circle cx="78" cy="66" r="7" /><circle cx="92" cy="66" r="7" /><circle cx="106" cy="66" r="7" /><circle cx="120" cy="66" r="7" /><circle cx="134" cy="66" r="7" /><circle cx="148" cy="66" r="7" /><circle cx="162" cy="66" r="7" /></g>
+        <rect x="0" y="84" width="170" height="128" fill="#ffd67e" />
+        <use href="#burger" transform="translate(85 152) scale(0.82)" />
+        <rect x="22" y="228" width="126" height="12" rx="6" fill="#e9dcc4" />
+        <rect x="34" y="248" width="102" height="10" rx="5" fill="#efe4cf" />
+        <rect x="14" y="276" width="142" height="40" rx="20" fill="#ff4b4b" class="t" />
+        <text x="85" y="302" text-anchor="middle" class="fz" font-size="16" fill="#fff">Start cooking</text>
+      </g>
+      <rect x="0" y="0" width="170" height="336" rx="22" fill="none" class="k" style="stroke-width:6" />
+    </g>
+
+    <!-- the phone, and the screen in it -->
+    <g transform="translate(150 70) rotate(-5 130 260)">
+      <rect x="0" y="0" width="260" height="520" rx="44" fill="#2a2a2a" class="k" />
+      <path d="M20 60 V40 a22 22 0 0 1 22 -22" class="hi" style="stroke-width:4" opacity="0.35" />
+      <g clip-path="url(#screen)">
+        <rect x="0" y="0" width="260" height="520" fill="#fff8e8" />
+        <rect x="0" y="0" width="260" height="140" fill="#b8edf8" />
+        <rect x="98" y="26" width="64" height="20" rx="10" fill="#1e1e1e" />
+        <g transform="rotate(-4 66 92)">
+          <rect x="26" y="62" width="86" height="58" rx="9" fill="#fff" class="t" style="stroke-width:3.5" />
+          <text x="34" y="88" class="fz" font-size="21" fill="#ff4b4b" stroke="#1e1e1e" style="stroke-width:3" paint-order="stroke">Pantry</text>
+          <text x="34" y="111" class="fz" font-size="21" fill="#ff4b4b" stroke="#1e1e1e" style="stroke-width:3" paint-order="stroke">Pal</text>
+          <circle cx="90" cy="104" r="8" fill="#ff4b4b" class="t" style="stroke-width:3" />
+        </g>
+        <path d="M196 116 v-14 q-14 -2 -11 -15 q4 -12 16 -7 q5 -12 17 -7 q12 3 8 15 q10 7 0 15 v13 z" fill="#fff" class="t" style="stroke-width:3.5" />
+        <path d="M197 108 h24" class="t" style="stroke-width:3" />
+        <rect x="0" y="130" width="260" height="10" fill="#ff4b4b" />
+        <g fill="#ff4b4b"><circle cx="10" cy="140" r="10" /><circle cx="30" cy="140" r="10" /><circle cx="50" cy="140" r="10" /><circle cx="70" cy="140" r="10" /><circle cx="90" cy="140" r="10" /><circle cx="110" cy="140" r="10" /><circle cx="130" cy="140" r="10" /><circle cx="150" cy="140" r="10" /><circle cx="170" cy="140" r="10" /><circle cx="190" cy="140" r="10" /><circle cx="210" cy="140" r="10" /><circle cx="230" cy="140" r="10" /><circle cx="250" cy="140" r="10" /></g>
+        <rect x="0" y="156" width="260" height="48" fill="#ff7e7d" />
+        <path d="M24 180 l14 -12 v7 h16 v10 h-16 v7 z" fill="#ff4b4b" class="t" style="stroke-width:3" />
+        <rect x="64" y="164" width="170" height="32" rx="16" fill="#fff" class="t" style="stroke-width:3.5" />
+        <text x="80" y="187" class="fz" font-size="19" fill="#1e1e1e">My recipes</text>
+        <rect x="0" y="212" width="260" height="186" fill="#ffd67e" />
+        <use href="#burger" transform="translate(84 304)" />
+        <text x="196" y="262" text-anchor="middle" class="fz" font-size="15" fill="#1e1e1e">Cheddar</text>
+        <text x="196" y="280" text-anchor="middle" class="fz" font-size="15" fill="#1e1e1e">Burger</text>
+        <rect x="160" y="292" width="72" height="7" rx="3.5" fill="#e0a83d" />
+        <rect x="160" y="305" width="64" height="7" rx="3.5" fill="#e0a83d" />
+        <rect x="160" y="318" width="70" height="7" rx="3.5" fill="#e0a83d" />
+        <rect x="160" y="331" width="50" height="7" rx="3.5" fill="#e0a83d" />
+        <rect x="26" y="420" width="150" height="12" rx="6" fill="#e9dcc4" />
+        <rect x="26" y="442" width="208" height="10" rx="5" fill="#efe4cf" />
+        <rect x="26" y="462" width="180" height="10" rx="5" fill="#efe4cf" />
+      </g>
+      <rect x="14" y="14" width="232" height="492" rx="32" fill="none" class="t" style="stroke-width:3" />
+
+      <!-- picked out, as Figma picks a frame -->
+      <rect x="10" y="212" width="240" height="186" class="sel" />
+      <rect x="4" y="206" width="12" height="12" class="hd" /><rect x="244" y="206" width="12" height="12" class="hd" />
+      <rect x="4" y="392" width="12" height="12" class="hd" /><rect x="244" y="392" width="12" height="12" class="hd" />
+      <rect x="84" y="410" width="92" height="24" rx="6" fill="#0d99ff" />
+      <text x="130" y="427" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="600" font-size="13" fill="#fff">240 × 186</text>
+    </g>
+
+    <!-- the noodle: tap the card, the recipe opens -->
+    <path d="M404 362 C 456 362, 452 306, 500 308" fill="none" stroke="#0d99ff" style="stroke-width:5" stroke-linecap="round" />
+    <path d="M488 296 L506 308 L488 320" fill="none" stroke="#0d99ff" style="stroke-width:5" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="404" cy="362" r="8" fill="#fff" stroke="#0d99ff" style="stroke-width:4" />
+
+    <!-- the cursor, at the corner it just dragged -->
+    <g transform="translate(404 446) rotate(-8) scale(1.35)">
+      <path d="M0 0 L0 44 L11 34 L19 52 L28 48 L20 31 L35 31 Z" fill="#fff" class="t" style="stroke-width:3.5" />
+    </g>
+  </g>
+</svg>
