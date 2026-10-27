@@ -233,6 +233,15 @@ html.rises .about-text p:not(.is-risen) .tk { scale: 0; }
   .tk-pantry > svg { transform-origin: 50% 80%; }
   .about-app:hover .tk-pantry > svg { animation: tk-wiggle 0.7s ease; }
 
+  /* Bluejay's mark turns once, the pinwheel it is drawn as, quick to start
+     and slow to settle */
+  .tk-bluejay .tk-mark { transform-box: fill-box; transform-origin: 50% 50%; }
+  .about-app:hover .tk-bluejay .tk-mark { animation: tk-spin 0.95s cubic-bezier(0.3, 0.7, 0.15, 1); }
+
+  /* YC's Y crouches, hops, and lands with a little squash */
+  .tk-yc .tk-y { transform-box: fill-box; transform-origin: 50% 76%; }
+  .about-app:hover .tk-yc .tk-y { animation: tk-y-hop 0.75s both; }
+
   /* the bike: the wheels turn, the lake runs past, the rider bobs */
   .tk-wheel { transform-box: fill-box; transform-origin: 50% 50%; }
   .tk-lake:hover .tk-wheel { animation: tk-spin 0.75s linear infinite; }
@@ -307,6 +316,14 @@ html.rises .about-text p:not(.is-risen) .tk { scale: 0; }
 @keyframes tk-hop {
   0%, 100% { translate: 0 0; }
   35% { translate: 0 -8px; }
+}
+@keyframes tk-y-hop {
+  0% { translate: 0 0; scale: 1 1; animation-timing-function: ease-out; }
+  14% { translate: 0 0; scale: 1.08 0.9; animation-timing-function: cubic-bezier(0.2, 0.7, 0.35, 1); }
+  44% { translate: 0 -13px; scale: 0.95 1.06; animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.35); }
+  70% { translate: 0 0; scale: 1.1 0.88; animation-timing-function: ease-out; }
+  84% { translate: 0 -2px; scale: 0.98 1.02; animation-timing-function: ease-in; }
+  100% { translate: 0 0; scale: 1 1; }
 }
 
 /* ---- the foot of About: where to find him ---- */
