@@ -278,7 +278,7 @@ long comment at the top of `resume.html` repeats them where they apply.
    fits on one line in *both* fonts; a fifth wraps the row and costs 26px.
    The header carries no city (the user cut it on 2026-09-01) — the location a
    gazetteer wants is `Chicago, IL` in the right margin of the education row
-   and of two experience rows, which is early enough in the text stream.
+   and of the PantryPal row, which is early enough in the text stream.
 4. **Real spaces at every seam.** Boxes separated only by `gap` or `padding`
    touch in the text stream — the contact row once came out as
    `tigoponcedeleon.comtigoponcedeleon@uchicago.edulinkedin.com/...`, i.e. no
