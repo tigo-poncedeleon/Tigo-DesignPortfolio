@@ -12,7 +12,9 @@
                them (the case study's working replica, with its minimap
                folded away; the Pulse home stood here before)
      PantryPal the shipped app on two iPhones, signing up and then the
-               dinner it opens on, the second a step lower
+               dinner it opens on, the second a step lower and a hair
+               apart from the first (they overlapped, the front one's edge
+               over the back one's)
      Next Level its website, as it is live, with the site's drone parked
                in the empty air beside the headline
    The two screens are photographed the same way, so they sit as a pair:
@@ -226,7 +228,7 @@
     0 calc(28 * var(--u)) calc(56 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent);
 }
 .shot-phone {
-  left: 9%;
+  left: 8.2%;
   top: 0;
   width: 42%;
   z-index: 1;
@@ -235,7 +237,7 @@
     drop-shadow(0 calc(20 * var(--u)) calc(26 * var(--u)) color-mix(in oklab, var(--deep) 30%, transparent));
 }
 .shot-phone-2 {
-  left: 49%;
+  left: 50.6%;
   top: calc(40 * var(--u));
   z-index: 0;
   transition-delay: 60ms;
