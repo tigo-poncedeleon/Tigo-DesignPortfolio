@@ -420,6 +420,11 @@
 /* the greeting the caret types out and takes back (js/prompt.js) is the
    placeholder, in the words' own ink, as if it had been typed there */
 .prompt-input::placeholder { color: var(--ink); opacity: 1; }
+/* a pointer onto the composer fades the greeting away instead (js/prompt.js) */
+.composer.is-giving-way .prompt-input::placeholder {
+  color: transparent;
+  transition: color 0.7s var(--ease-draw);
+}
 /* Where the greeting does not play, the hint (js/prompt.js) is the
    placeholder instead, in the grey of the line under the name: a label on
    the field, not words in it. It gives way to the caret when the field
@@ -469,6 +474,8 @@
   animation: caret-blink var(--t-blink) linear infinite;
 }
 .prompt-caret.is-gliding { transition: translate 90ms var(--ease-rise); }
+/* and the caret slides home across it, over most of the fade */
+.prompt-caret.is-returning { transition: translate 0.55s var(--ease-draw); }
 
 /* The live caret's rhythm: 1.06s, lit for the first half. Its edges are
    softened to about 60ms rather than cut with steps(1). At this size a hard
@@ -773,7 +780,8 @@ html[data-keyboard='held'] .masthead {
   /* a blinking caret is motion too (WCAG 2.2.2): under reduced motion it
      stands still, solid */
   .prompt-caret { animation: none; opacity: 1; }
-  .prompt-caret.is-gliding { transition: none; }
+  .prompt-caret:is(.is-gliding, .is-returning) { transition: none; }
+  .composer.is-giving-way .prompt-input::placeholder { transition: none; }
   .dots i { animation: none; opacity: 0.6; }
 }
 

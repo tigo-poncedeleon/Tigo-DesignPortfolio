@@ -51,6 +51,7 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
   let typeAnywhere = false;
   let chatting = false;
   let hinting = false;
+  let fading = false;
 
   // ---- where the caret goes ----
   function place() {
@@ -63,7 +64,7 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     // an empty field showing the greeting holds the caret at the greeting's
     // end, where the typing left it (the hint is not typed, so the caret
     // stays at the start)
-    const greeting = value || hinting ? '' : input.placeholder;
+    const greeting = value || hinting || fading ? '' : input.placeholder;
     mirror.textContent = greeting || value.slice(0, at);
     const tail = document.createElement('span');
     // a zero-width space stands in for "the end", so the tail has a position
@@ -231,8 +232,47 @@ export function createPrompt(form, { onSubmit, onChange } = {}) {
     greeted = true;
     clearTimeout(greetTimer);
     greetTimer = 0;
+    if (fading) settle();
     if (input.placeholder && !hinting) { input.placeholder = ''; schedule(); }
   }
+
+  // ---- the greeting gives way to a pointer ----
+  // On a laptop, a pointer coming onto the composer means you are about to
+  // ask, so the greeting stops where it is, typed out or half taken back,
+  // and fades away slowly rather than being backspaced, while the caret
+  // glides back to the start of the field and the field takes focus. By the
+  // time the words are gone the block is blinking where your first letter
+  // will go. The placeholder stays in the field while it fades (place()
+  // already puts the caret at the start), and is cleared once it has gone.
+  const FADE = 700;
+  let fadeTimer = 0;
+  function settle() {
+    clearTimeout(fadeTimer);
+    fadeTimer = 0;
+    fading = false;
+    form.classList.remove('is-giving-way');
+    caret.classList.remove('is-returning');
+    if (!hinting) input.placeholder = '';
+    schedule();
+  }
+  function giveWay() {
+    if (!typeAnywhere || quiet() || hinting || chatting) return;
+    greeted = true;
+    clearTimeout(greetTimer);
+    greetTimer = 0;
+    if (input.placeholder && !input.value && !fading) {
+      fading = true;
+      form.classList.add('is-giving-way');
+      caret.classList.add('is-returning');
+      typing();
+      fadeTimer = setTimeout(settle, reduced() ? 0 : FADE);
+    }
+    if (document.activeElement !== input) focus({ atEnd: true });
+    else schedule();
+  }
+  form.addEventListener('pointerenter', (e) => {
+    if (e.pointerType === 'mouse' && FINE_POINTER.matches) giveWay();
+  });
 
   // ---- the hint ----
   // The textarea's data-hint, as its placeholder, in --ink-2 (the grey of
