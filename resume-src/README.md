@@ -71,7 +71,6 @@ is invented:
 | --- | --- |
 | ruled rows, hairline per row | `.xp-ledger` / `.xp-row` in `css/about.css` |
 | date over location in the right margin | `.xp-date` / `.xp-loc` |
-| name beside role on one baseline | `.about-title` / `.work-title` title pair |
 | small tracked caps over a heavier rule | `.board-eyebrow` (`nextlevel.css`), `.accept-label` (`vicino.css`) |
 
 **Nothing on this page is chipped any more.** The row numerals and the date and
@@ -98,35 +97,21 @@ the page and they are the three things the eye is meant to find first.
 
 ### The masthead
 
-Two lines and nothing else: `Santiago (Tigo) Ponce de León` with the role beside
-it, then one middot-separated contact run. There is **no summary line** — the
-user cut it on 2026-09-01, so the page opens on the name and goes straight to
-education.
+Two lines and nothing else: `Santiago (Tigo) Ponce de León`, then one
+middot-separated contact run. There is **no summary line** — the user cut it on
+2026-09-01 — and **no role beside the name**: "Product Design Engineer" sat
+there on one baseline until the user cut it on 2026-10-28. The page opens on the
+name and goes straight to the contact run and education.
 
-Three sizes, settled by eye against the user's own read: **24 / 15 / 12.6px**.
-Each one moved for a reason, and all three were wrong at some point on
-2026-09-01:
+Two sizes, settled by eye against the user's own read: **24 / 12.6px**.
 
 - The name was tried at 28px and read as too big. 24 is the ceiling here.
-- The role was `rgba(0,0,0,0.3)` — 2.1:1, the faintest text on the sheet, which
-  is a strange place to put the two words the page is arguing for. It sits at
-  `--role` now, where every other job title on the page already lived.
 - The contact run was 11.6px, *smaller* than the 12.2px body copy. It is the
   one line a reader is meant to act on, so it now sits a step above body at
   12.6px.
 
-**There is no em dash between name and role**, unlike every row below. The rows
-need one because employer and role are set at nearly the same size and would run
-together; the masthead does not, because 24px against 15px already reads as two
-things. A dash was tried there and the user cut it. What separates them instead
-is the 18px `gap` (≈22px with the `&nbsp;`) — that gap *is* the separator, so
-don't quietly tighten it back to a normal one.
-
-`.head` is `white-space: nowrap`, so the pair is one line or it is broken —
-**a longer role title overflows the sheet silently instead of wrapping.**
-Measured 2026-09-01: the title line uses 562px of 704 in Inter (522 in SF Pro)
-and the contact run 654px (646 in SF). The contact line is the binding one —
-about four characters of headroom before it wraps and costs a row.
+Measured 2026-09-01: the contact run uses 654px of 704 (646 in SF Pro) — about
+four characters of headroom before it wraps and costs a row.
 
 ### The App Store code
 

@@ -113,25 +113,9 @@ html, body {
   flex-direction: column;
 }
 
-/* ---- header: the site's title pair (.about-title / .work-title) — one
-   name, one quiet phrase beside it on the same baseline.
-
-   NO em dash here, unlike every row below it (2026-09-01, user's call). The
-   rows need one because employer and role are the same size and would run
-   together; the masthead does not, because 24px against 15px already reads as
-   two things. What replaces it is SPACE — the gap has to stay clearly wider
-   than a word space or the pair reads as a run-on. That is what the 18px is
-   for; don't tighten it back to a normal gap. ---- */
-.head {
-  display: flex;
-  align-items: baseline;
-  gap: 18px;                /* + the &nbsp; between them ≈ 22px — this gap IS
-                               the separator now that the dash is gone */
-  /* nowrap: the pair is one line or it is wrong. A longer role title
-     overflows the sheet SILENTLY rather than wrapping — re-measure if this
-     text changes (the figure is in resume-src/README.md). */
-  white-space: nowrap;
-}
+/* ---- header: the name and nothing else. The role that sat beside it on
+   the same baseline came off on 2026-10-28 (user's call), so the page opens
+   on the name and goes straight to the contact run. ---- */
 .head h1 {
   font-size: 24px;
   font-weight: 400;
@@ -140,16 +124,9 @@ html, body {
                                employers listed under it */
   letter-spacing: -0.15px;  /* tracking tightens as type grows (styles.css) */
 }
-.head p {
-  font-size: 15px;
-  /* a JOB TITLE, so it sits where every other job title on this page sits.
-     It was rgba(0,0,0,0.3) — 2.1:1, the faintest thing on the sheet, which is
-     an odd place to put the two words the whole page is arguing for. */
-  color: var(--role);
-}
 /* NOTE: no location here — the city a parser needs is in the right margin of
    every row below (Chicago, IL twice), which is where it also belongs
-   visually. The header is name + role and nothing else. */
+   visually. The header is the name and nothing else. */
 
 
 /* ---- contact: one quiet run, middot-separated. It was chipped, which made
@@ -377,7 +354,7 @@ li::before {
 <div class="sheet">
 
   <header class="head">
-    <h1>Santiago (Tigo) Ponce de León</h1>&nbsp;<p>Product Design Engineer</p>
+    <h1>Santiago (Tigo) Ponce de León</h1>
   </header>
 
   <nav class="contact">
