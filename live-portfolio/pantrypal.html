@@ -136,12 +136,25 @@
       <!-- OVERVIEW: the story in a sentence, the facts, and the five
            chapters as a map, each with a picture of its own -->
       <section class="cs-sec cs-intro" data-title="Overview" aria-labelledby="h-overview">
-        <h2 class="cs-intro-name" id="h-overview" data-rise>Overview</h2>
-        <div class="cs-intro-words">
-          <p class="cs-lead" data-rise>PantryPal answers one question: <strong>what can I cook with what I already have?</strong> Scan a receipt or the fridge and it stocks a shelf. Then, instead of a menu, <strong>dinner is already on the screen</strong>: one dish, ranked against that shelf.</p>
-          <p class="cs-text cs-after" data-rise>I took it <strong>from sketches to the App Store</strong>: the wireframes, the Figma prototype, and then the real thing, <strong>a SwiftUI app</strong> with its own design system and the AI service behind it.</p>
+        <header class="cs-chapter" data-rise>
+          <div class="cs-chapter-top"><span class="cs-chapter-num is-word" aria-hidden="true">Menu!</span><span class="cs-chapter-rule" aria-hidden="true"></span><span class="cs-chapter-when">the story in five courses</span></div>
+          <h2 class="sr-only" id="h-overview">Overview</h2>
+        </header>
+        <!-- the question, and beside it the case on camera: a small film that
+             loops without its sound, and opens to the theater, with its sound
+             and its scrubber, where it is pressed (js/case.js, the theater;
+             assets/case/pantrypal/video/, encoded from the phone's clip, its
+             metadata left behind) -->
+        <div class="cs-intro-lede">
+          <p class="cs-intro-lead" data-rise>PantryPal answers one question: <strong>what can I cook with what I already have?</strong></p>
+          <button type="button" class="cs-intro-film" data-theater="assets/case/pantrypal/video/intro.mp4" data-rise aria-label="Watch the app at work, with sound (55 seconds)">
+            <video muted loop playsinline preload="none" width="360" height="640" poster="assets/case/pantrypal/video/intro-poster.jpg" aria-hidden="true">
+              <source src="assets/case/pantrypal/video/intro-loop.mp4" type="video/mp4" />
+            </video>
+            <span class="cs-intro-film-cue" aria-hidden="true"><svg viewBox="-2 -2 28 28" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.99-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z" /></svg>Watch · 0:55</span>
+          </button>
         </div>
-        <dl class="cs-facts cs-after-lg" data-rise>
+        <dl class="cs-facts" data-rise>
           <div><dt class="cs-eyebrow">role</dt><dd>Product Designer</dd></div>
           <div><dt class="cs-eyebrow">when</dt><dd>Nov 2025 – Present</dd></div>
           <div><dt class="cs-eyebrow">platform</dt><dd class="cs-list"><span>iPhone</span><span>iOS&nbsp;17</span></dd></div>
@@ -154,11 +167,11 @@
              chef served (tools/story-art/pantrypal/, baked by tools/story-art.sh
              into assets/case/pantrypal/story/) -->
         <ol class="cs-storymap" data-rise aria-label="The story, in five chapters">
-          <li><a href="#sketch"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/sketch.webp" width="800" height="640" alt="" loading="lazy" /></span><span class="cs-storymap-when">01&nbsp;·&nbsp;late 2025</span><b>Sketch</b></a></li>
-          <li><a href="#prototype"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/prototype.webp" width="800" height="640" alt="" loading="lazy" /></span><span class="cs-storymap-when">02&nbsp;·&nbsp;Jan 2026</span><b>Prototype</b></a></li>
-          <li><a href="#build"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/build.webp" width="800" height="640" alt="" loading="lazy" /></span><span class="cs-storymap-when">03&nbsp;·&nbsp;Jul 2026</span><b>Build</b></a></li>
-          <li><a href="#rethink"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/rethink.webp" width="800" height="640" alt="" loading="lazy" /></span><span class="cs-storymap-when">04&nbsp;·&nbsp;Aug 2026</span><b>Rethink</b></a></li>
-          <li><a href="#ship"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/ship.webp" width="800" height="640" alt="" loading="lazy" /></span><span class="cs-storymap-when">05&nbsp;·&nbsp;Sep 2026</span><b>Ship</b></a></li>
+          <li><a href="#sketch"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/sketch.webp" width="800" height="640" alt="" loading="lazy" /><span class="cs-chapter-num" aria-hidden="true">01</span></span><b>Sketch</b><span class="cs-storymap-when">late 2025</span></a></li>
+          <li><a href="#prototype"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/prototype.webp" width="800" height="640" alt="" loading="lazy" /><span class="cs-chapter-num" aria-hidden="true">02</span></span><b>Prototype</b><span class="cs-storymap-when">Jan 2026</span></a></li>
+          <li><a href="#build"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/build.webp" width="800" height="640" alt="" loading="lazy" /><span class="cs-chapter-num" aria-hidden="true">03</span></span><b>Build</b><span class="cs-storymap-when">Jul 2026</span></a></li>
+          <li><a href="#rethink"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/rethink.webp" width="800" height="640" alt="" loading="lazy" /><span class="cs-chapter-num" aria-hidden="true">04</span></span><b>Rethink</b><span class="cs-storymap-when">Aug 2026</span></a></li>
+          <li><a href="#ship"><span class="cs-storymap-pic"><img src="assets/case/pantrypal/story/ship.webp" width="800" height="640" alt="" loading="lazy" /><span class="cs-chapter-num" aria-hidden="true">05</span></span><b>Ship</b><span class="cs-storymap-when">Sep 2026</span></a></li>
         </ol>
       </section>
 

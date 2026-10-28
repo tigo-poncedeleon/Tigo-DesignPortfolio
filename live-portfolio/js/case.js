@@ -22,6 +22,9 @@
 //                 view
 //   zoom          a picture marked data-zoom opens out to the window, the
 //                 picture itself growing into it where the browser can
+//   the theater   [data-theater]: a small film loops silent while in view;
+//                 pressed, it opens out as a picture does, the whole film
+//                 with its sound and controls, from where the loop had got
 //   the light     a lit tile is lit again from wherever the pointer is
 //   live docs     [data-live]: a window that is the real page, laid over its
 //                 still once it is near and scaled down whole; a long one
@@ -651,6 +654,63 @@ if (zoomables.length) {
   dialog.addEventListener('click', shut);
   dialog.addEventListener('cancel', (e) => { e.preventDefault(); shut(); });
   dialog.addEventListener('close', () => from?.focus({ preventScroll: true }));
+}
+
+// ---- the theater ----
+// A film marked data-theater (PantryPal's, beside its question) loops small
+// and silent while it is in view, and stands still on its poster under
+// reduced motion. Pressed, it opens to the window over the frosted page in
+// a dialog of its own, dressed as zoom's (above): the whole film this time
+// (the file data-theater names), with its sound and its controls, from
+// where the loop had got to, so a reader can carry on or scrub back. A
+// press outside it, Escape, or the close button puts it back, and the loop
+// runs on. (It grew out of its place as a picture does, a carried view; a
+// playing video does not carry, and the little loop was left standing over
+// the big one.)
+for (const film of document.querySelectorAll('[data-theater]')) {
+  const loop = film.querySelector('video');
+  const run = () => { loop.preload = 'auto'; loop.play().catch(() => {}); };
+  const onScreen = () => {
+    const r = film.getBoundingClientRect();
+    return r.bottom > 0 && r.top < innerHeight;
+  };
+  const dialog = document.createElement('dialog');
+  dialog.className = 'cs-zoom cs-theater';
+  dialog.setAttribute('aria-label', 'The film, with sound');
+  dialog.innerHTML = '<video controls playsinline preload="none"></video>'
+    + '<button type="button" class="cs-zoom-close" aria-label="Close"><svg viewBox="-2 -2 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>';
+  document.body.append(dialog);
+  const big = dialog.querySelector('video');
+  big.poster = loop.poster;
+  big.src = film.dataset.theater;
+
+  if (!reduced()) {
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !dialog.open) run(); else loop.pause();
+    }).observe(film);
+  }
+
+  film.addEventListener('click', () => {
+    const at = loop.currentTime;
+    loop.pause();
+    dialog.showModal();
+    // played inside the press, so the browser lets it play with its sound;
+    // it is sent to the loop's moment once it knows its own length (a time
+    // set before then is dropped), and from the top if that is past its end
+    big.muted = false;
+    const seek = () => { big.currentTime = at < big.duration - 1 ? at : 0; };
+    if (big.readyState >= HTMLMediaElement.HAVE_METADATA) seek();
+    else big.addEventListener('loadedmetadata', seek, { once: true });
+    big.play().catch(() => {});
+  });
+  const shut = () => { if (dialog.open) dialog.close(); };
+  dialog.querySelector('.cs-zoom-close').addEventListener('click', shut);
+  dialog.addEventListener('click', (e) => { if (e.target === dialog) shut(); });
+  dialog.addEventListener('close', () => {
+    big.pause();
+    film.focus({ preventScroll: true });
+    if (!reduced() && onScreen()) run();
+  });
 }
 
 // ---- the light ----

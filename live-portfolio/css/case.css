@@ -4750,59 +4750,304 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
    the sketch it was made on, a flow the page scrolls through sideways.
    Most are made of the case's own pictures; none of them invents one.
    ====================================================================== */
-/* The overview, under the opening tile: named as every other part of the
-   page is, in the small capitals a label is set in and the case's deep
-   colour, so a reader who skims knows this is the whole story in brief
-   before the first chapter (it began on its first sentence, unnamed, and
-   read as the tile's caption). The facts stand under its words, two by
-   two between hairlines, and the story map under them. (They ran across
-   under the words, a fourth of a wider column each, and the overview
-   took a window and a half; then for a while they stood beside the
-   words, down a hairline, which in the one column left the first
-   sentence twenty letters to a line.) */
-.cs-intro { --sec-pad: calc(96 * var(--u)); }
-.cs-intro > .cs-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cs-intro-words > .cs-text.cs-after { margin-top: var(--air-stack); }
-/* Where the column is wide, the overview keeps the chapters' split: the
-   job in brief down the left, where a chapter's name stands, its four
-   facts one under another as a book's details stand down its flap, and
-   the case in words on the right, where a chapter's words stand, at the
-   same measure. The story map runs under both. (For a day the first
-   sentence stood on the left, at the lead's size in a column of 380: it
-   ran to eight lines of twenty-five letters.) */
-@container lane (min-width: 660px) {
-  .cs-intro {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    column-gap: var(--split-gap);
-    align-items: start;
-  }
-  .cs-intro > .cs-intro-name { grid-column: 1 / -1; grid-row: 1; }
-  .cs-intro-words { grid-column: 2; grid-row: 2; }
-  .cs-intro-words > .cs-text { max-width: none; }
-  .cs-intro > .cs-facts {
-    grid-column: 1;
-    grid-row: 2;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    margin-top: 0;
-    padding: 0;
-    border: 0;
-  }
-  .cs-intro > .cs-facts > div { padding: calc(14 * var(--u)) 0; border-top: 1px solid rgb(var(--line) / 0.1); }
-  /* the first fact's label stands on the lead's first line */
-  .cs-intro > .cs-facts > div:first-child { padding-top: calc(7 * var(--u)); border-top: 0; }
-  .cs-intro > .cs-facts > div:last-child { padding-bottom: 0; }
-  .cs-intro > .cs-storymap { grid-column: 1 / -1; grid-row: 3; }
+/* The overview, under the opening tile, opens as every chapter does: a
+   word in the case's own hand where a chapter's number stands (Vicino's
+   node, PantryPal's white button, Next Level's ring), the hairline drawn
+   out from it, and at its far end what follows, the story in so many
+   chapters, so the overview reads as the page's first chapter. (It was
+   named in small capitals alone, a label over its words, and read as a
+   caption to the tile above rather than the start of the story.)
+   Under the opener, three things and no more, each a step down from the
+   last: the case in one sentence, large; the facts, small, in a line
+   between two hairlines, as a film's credits run; and the chapters in
+   pictures, which say what the story will tell better than a paragraph
+   could. (Two paragraphs stood over the facts, the second listing what
+   the chapters' pictures already showed; for a day the whole of it stood
+   on a white card, which set it apart from the page more than it held it
+   together.) */
+.cs-intro {
+  --sec-pad: calc(96 * var(--u));
+  --intro-rule: color-mix(in oklab, var(--deep) 14%, transparent);
 }
-.cs-intro-name {
-  margin-bottom: calc(18 * var(--u));
+/* the sentence, between a part's title and a chapter's in size, quiet but
+   for the phrase that carries it, which takes the case's own deep colour */
+.cs-intro > :is(.cs-intro-lead, .cs-intro-lede) { margin-top: calc(36 * var(--u)); }
+.cs-intro .cs-intro-lead {
+  max-width: calc(780 * var(--u));
+  font-size: max(29px, calc(44 * var(--u)));
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink-3);
+  text-wrap: balance;
+}
+.cs-intro .cs-intro-lead strong { font-weight: inherit; color: var(--deep); }
+
+/* A film of the case, where a case has one (PantryPal's): small, beside
+   the sentence where the column is wide and under it where it is narrow,
+   looping without its sound as the page's other clips do, with a chip on
+   it saying what it is and how long. Pressed, it opens to the theater
+   (below). It was shot upright on a phone; here it is cut square, from a
+   little above its middle, so the face at the top and the phone in the
+   hand both stay in, and the whole frame waits in the theater. (It was cut
+   four by five, and stood a good deal taller than the two lines of the
+   question beside it, with empty space above and under them.) Its
+   corners are a story map picture's, and it is held in a box that clips
+   it, since Safari draws a video's own rounded corners square while it
+   plays. (It stood across the whole column under the sentence, with its
+   controls, and was the biggest thing in the overview.) */
+.cs-intro-lede { display: grid; row-gap: calc(28 * var(--u)); justify-items: start; }
+.cs-intro-lede > .cs-intro-lead { margin: 0; }
+.cs-intro-film {
+  position: relative;
+  display: block;
+  width: min(100%, 200px);
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: calc(20 * var(--u));
+  background: var(--tint);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
+    0 calc(10 * var(--u)) calc(24 * var(--u)) calc(-16 * var(--u)) color-mix(in oklab, var(--deep) 22%, transparent);
+  -webkit-tap-highlight-color: transparent;
+  transition: translate var(--t-settle) var(--spring-settle), box-shadow 0.45s ease;
+}
+.cs-intro-film video { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; object-position: 50% 26%; }
+/* the facts come up a little closer under a film's row, which the film's
+   height already sets apart from them */
+.cs-intro-lede:has(video) + .cs-facts { margin-top: calc(32 * var(--u)); }
+/* Vicino's is the board in small, dressed as one of the board's own nodes,
+   as the opening tile's Credits is: a white card, its header (a glyph, its
+   name, the teal chip a node's model wears, and where a done chip would
+   stand, the way in), and in its inset well the workflow alone, the
+   prompt, its two pictures, the video and the model, cut from the hero's
+   still without the editor's bars around it. It is a link to the working
+   replica in a tab of its own. Pointed at, the card lifts, the way in
+   fills, and the workflow leans in. (It was the whole of the hero's still,
+   toolbars and all, shrunk to a thumbnail: the bars were illegible and the
+   workflow was a small thing in its middle. For a day it opened the
+   replica in the theater, and wore an input port on its left edge.) */
+.cs-intro-film.is-board {
+  width: min(100%, 300px);
+  padding: 0 calc(9 * var(--u)) calc(9 * var(--u));
+  overflow: visible;
+  border-radius: calc(18 * var(--u));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(15 23 42 / 0.075),
+    inset 0 1px 0 rgb(255 255 255 / 0.88),
+    0 calc(10 * var(--u)) calc(24 * var(--u)) calc(-16 * var(--u)) color-mix(in oklab, var(--deep) 24%, transparent);
+}
+.cs-board-head {
+  display: flex;
+  align-items: center;
+  gap: calc(7 * var(--u));
+  height: calc(42 * var(--u));
+  padding: 0 0 0 calc(5 * var(--u));
+  font-size: max(13px, calc(14.5 * var(--u)));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+.cs-board-head > svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); }
+.cs-board-head em {
+  padding: calc(3 * var(--u)) calc(7 * var(--u));
+  border-radius: 99px;
+  background: #e6f6f8;
+  font-size: max(10.5px, calc(11 * var(--u)));
+  font-style: normal;
+  font-weight: 500;
+  color: #0d7685;
+}
+.cs-board-head i {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(3 * var(--u));
+  height: calc(26 * var(--u));
+  margin-left: auto;
+  padding: 0 calc(8 * var(--u)) 0 calc(10 * var(--u));
+  border-radius: calc(9 * var(--u));
+  background: #f0fdff;
+  font-size: max(11px, calc(12 * var(--u)));
+  font-style: normal;
+  font-weight: 600;
+  color: #0d7685;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.cs-board-head i svg { width: calc(13 * var(--u)); height: calc(13 * var(--u)); }
+.cs-board-well {
+  display: block;
+  overflow: hidden;
+  border-radius: calc(11 * var(--u));
+  background: #eef3f3;
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 0.05);
+}
+.cs-intro-film img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 729; transition: scale 0.7s var(--ease-rise); }
+.cs-intro-film-cue {
+  position: absolute;
+  left: calc(10 * var(--u));
+  bottom: calc(10 * var(--u));
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6 * var(--u));
+  height: calc(28 * var(--u));
+  padding: 0 calc(12 * var(--u)) 0 calc(9 * var(--u));
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.86);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  backdrop-filter: blur(10px) saturate(1.4);
+  box-shadow: 0 calc(4 * var(--u)) calc(12 * var(--u)) calc(-6 * var(--u)) rgb(0 0 0 / 0.18);
   font-size: var(--t-micro);
-  font-weight: 400;
-  line-height: 1.3;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--deep);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #1d1d1f;
+  transition: scale var(--t-pop) var(--spring-pop);
+}
+.cs-intro-film-cue svg { width: calc(14 * var(--u)); height: calc(14 * var(--u)); color: var(--deep); }
+.cs-intro-film:focus-visible { outline: 2px solid var(--deep); outline-offset: 3px; }
+@media (hover: hover) {
+  .cs-intro-film:hover {
+    translate: 0 calc(-3 * var(--u));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
+      0 calc(16 * var(--u)) calc(32 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 30%, transparent);
+  }
+  .cs-intro-film:hover .cs-intro-film-cue { scale: 1.06; }
+  .cs-intro-film:hover img { scale: 1.05; }
+  .cs-intro-film:hover .cs-board-head i { background: #0d7685; color: #fff; }
+  .cs-intro-film.is-board:hover {
+    box-shadow:
+      0 0 0 1px rgb(15 23 42 / 0.075),
+      inset 0 1px 0 rgb(255 255 255 / 0.88),
+      0 calc(16 * var(--u)) calc(32 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 32%, transparent);
+  }
+}
+@container lane (min-width: 660px) {
+  .cs-intro-lede { grid-template-columns: minmax(0, 1fr) auto; column-gap: calc(48 * var(--u)); align-items: center; }
+  .cs-intro-film { width: calc(200 * var(--u)); }
+  .cs-intro-film.is-board { width: calc(296 * var(--u)); }
+  /* beside a preview, the sentence a step smaller, so it keeps a reading
+     line in the narrower column rather than running to six short ones */
+  .cs-intro-lede > .cs-intro-lead { font-size: calc(40 * var(--u)); }
+}
+
+/* the theater: the film opened to the window over the frosted page, as a
+   picture opens (above, "a picture, opened out"), whole and upright, with
+   its sound and its controls, settling in from a little smaller as it
+   fades up. A press outside it, Escape, or the close button puts it
+   back. */
+.cs-theater { cursor: auto; }
+.cs-theater video {
+  display: block;
+  height: min(86vh, calc(92vw * 16 / 9), 1280px);
+  height: min(86dvh, calc(92vw * 16 / 9), 1280px);
+  width: auto;
+  aspect-ratio: 9 / 16;
+  border-radius: 20px;
+  background: #000;
+  box-shadow: 0 0 0 1px rgb(var(--line) / 0.06), 0 40px 80px -30px rgb(var(--line) / 0.4);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cs-theater[open] video { animation: cs-theater-in var(--t-settle) var(--spring-settle); }
+  .cs-theater[open]::backdrop { animation: cs-theater-fade 0.3s ease; }
+}
+@keyframes cs-theater-in { from { opacity: 0; scale: 0.94; } }
+@keyframes cs-theater-fade { from { opacity: 0; } }
+
+/* the facts: two by two where the column is narrow, labels in the deep
+   colour the chapters' dates are set in and values in the small print */
+.cs-intro > .cs-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: calc(44 * var(--u));
+  border-color: var(--intro-rule);
+}
+.cs-intro > .cs-facts dt { margin-bottom: calc(6 * var(--u)); color: var(--deep); }
+.cs-intro > .cs-facts dd { font-size: var(--t-small); line-height: 1.35; letter-spacing: 0; }
+/* Where the column is wide, the four run in one line, each as wide as its
+   value and the room left over shared out evenly, parted by hairlines
+   that stand the band's whole height. (They stood one under another down
+   the left, beside the words, as a book's details stand down its flap;
+   read down, they looked like a form.) Each fact past the first stands a
+   gap in from its hairline, so its list's dots are cut away by a clip on
+   the list itself rather than by the fact's box, which has that gap
+   inside it. */
+@container lane (min-width: 660px) {
+  .cs-intro > .cs-facts { grid-template-columns: repeat(4, auto); gap: 0; padding-block: 0; }
+  .cs-intro > .cs-facts > div { padding-block: calc(18 * var(--u)); overflow-x: visible; }
+  .cs-intro > .cs-facts > div + div { padding-left: calc(20 * var(--u)); border-left: 1px solid var(--intro-rule); }
+  .cs-intro > .cs-facts > div:not(:last-child) { padding-right: calc(20 * var(--u)); }
+  .cs-intro > .cs-facts dd.cs-list { clip-path: inset(-0.5em -0.5em -0.5em 0.7em); }
+}
+
+/* The story map, the overview's last word and its picture: a shelf of the
+   chapters. Each tile is a low plinth in the case's tint, and its drawing
+   stands on it, a little larger than the plinth is wide, so the top of it
+   rises over the plinth's edge as a thing set on a shelf does (the
+   drawings are inked on a clear ground; tools/story-art.sh). On the
+   plinth's front edge hangs the chapter's own badge, drawn as the
+   chapter's opener draws it further down the page (Vicino's node in the
+   chapter's colour, PantryPal's sticker, Next Level's ring), so the map
+   reads as the openers to come, in small; under it, the chapter's name
+   and its date, the whole width of the plinth. Pointed at, the
+   drawing lifts off its plinth a little further. (The drawings sat inside
+   their tiles, clipped to them, with "01 · late 2025" over the name; the
+   row read as a strip of thumbnails rather than the story's chapters.) */
+.cs-intro > .cs-storymap { margin-top: calc(76 * var(--u)); }
+.cs-intro .cs-storymap-pic {
+  display: block;
+  aspect-ratio: 4 / 2.6;
+  margin-bottom: calc(30 * var(--u));
+  overflow: visible;
+}
+.cs-intro .cs-storymap-pic img {
+  position: absolute;
+  left: -6%;
+  bottom: -2%;
+  width: 112%;
+  height: auto;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+  transition: translate 0.7s var(--ease-rise), scale 0.7s var(--ease-rise);
+}
+/* the badge at about two thirds of its opener's size (zoom, so it is
+   drawn and placed at that size), half over the plinth's front edge */
+.cs-intro .cs-storymap-pic .cs-chapter-num {
+  position: absolute;
+  left: calc(20 * var(--u));
+  bottom: 0;
+  z-index: 1;
+  translate: 0 50%;
+  zoom: 0.6;
+}
+[data-case='pantrypal'] .cs-intro .cs-storymap-pic .cs-chapter-num { zoom: 0.5; }
+[data-case='vicino'] .cs-intro .cs-storymap-pic .cs-chapter-num { zoom: 0.72; }
+.cs-intro .cs-storymap-when { margin: calc(4 * var(--u)) 0 0; }
+@media (hover: hover) {
+  .cs-intro .cs-storymap a:hover .cs-storymap-pic img { translate: 0 calc(-8 * var(--u)); scale: 1.04; }
+}
+/* On the way in, the plinths rise a beat apart, left to right, and each
+   drawing a beat after its plinth, up out of it from a little smaller.
+   (Animations, filling only before they start, so that once in, a drawing
+   answers the pointer at once, with no entrance delay left on it.) */
+@media (prefers-reduced-motion: no-preference) {
+  .cs-intro .cs-storymap li:nth-child(2) { --i: 1; }
+  .cs-intro .cs-storymap li:nth-child(3) { --i: 2; }
+  .cs-intro .cs-storymap li:nth-child(4) { --i: 3; }
+  .cs-intro .cs-storymap li:nth-child(5) { --i: 4; }
+  .cs-intro .cs-storymap.is-risen li {
+    animation: cs-shelf-in 0.9s var(--ease-rise) backwards;
+    animation-delay: calc(var(--i, 0) * 90ms + 80ms);
+  }
+  .cs-intro .cs-storymap.is-risen .cs-storymap-pic img {
+    animation: cs-shelf-pop 0.95s var(--spring-settle) backwards;
+    animation-delay: calc(var(--i, 0) * 90ms + 240ms);
+  }
+}
+@keyframes cs-shelf-in { from { opacity: 0; translate: 0 calc(18 * var(--u)); } }
+@keyframes cs-shelf-pop { from { opacity: 0; translate: 0 calc(16 * var(--u)); scale: 0.88; } }
+/* where the map runs sideways under a finger, it keeps room over the
+   plinths for the drawings, which its scroller would otherwise cut */
+@container lane (max-width: 500px) {
+  .cs-intro > .cs-storymap { margin-top: 20px; padding-top: 44px; }
 }
 .cs-label { margin-bottom: calc(12 * var(--u)); }
 
@@ -4884,7 +5129,7 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
     translate: 0 calc(-4 * var(--u));
     box-shadow:
       inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent),
-      0 calc(22 * var(--u)) calc(40 * var(--u)) calc(-22 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
+      0 calc(14 * var(--u)) calc(28 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 26%, transparent);
   }
   .cs-storymap a:hover .cs-storymap-pic img { translate: 0 calc(-6 * var(--u)); }
 }
