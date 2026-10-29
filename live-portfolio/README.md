@@ -114,8 +114,11 @@ because iOS fills a clear corner with black.
   poured out of a dot after the name on Home, which is always the next
   colour round, and spread over the page from it; where a pointer can
   hover, coming onto the dot deals the rest out in a line beside it
-  (`css/theme.css`). The one you leave it on is remembered in the browser.
-  The case studies keep the paper.
+  (`css/theme.css`). The one you leave it on is remembered in the browser
+  and worn by every page: on a case study a wash changes only the paper,
+  and ink turns the page and its reading dark while the work, the tiles,
+  sheets, tickets and prints, stays as it was drawn, light ("the case
+  studies in ink", at the foot of `css/case.css`).
 - `js/about.js` is About's foot: the six icons, the line that says where
   each goes, and the email icon, which copies the address.
 - `js/play/` holds the engine, the three games, and the stage. Picked up, a

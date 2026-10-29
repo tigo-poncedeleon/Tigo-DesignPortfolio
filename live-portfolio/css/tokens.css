@@ -277,30 +277,36 @@ html[data-theme='ink'] {
   --bubble-select: #5b86ec;
   color-scheme: dark;
 }
+/* What every wash shares: the answers' bubble a clear white over it, and
+   the two quieter inks a step deeper than on the paper, since a wash is a
+   little darker than #fafafa and they would otherwise lose some of what
+   they are allowed to carry (--ink-3 measured 4.1:1 on the washes, under
+   the 4.5 small print needs, and --ink-2 2.8 against its 3). Deepened by
+   that much, each holds on every wash what it holds on the paper. */
+html:is([data-theme='apricot'], [data-theme='rose'], [data-theme='lilac'], [data-theme='sky'], [data-theme='sage']) {
+  --ink-2: #7e7d7d;
+  --ink-3: #636262;
+  --pill: rgb(255 255 255 / 0.72);
+}
 html[data-theme='apricot'] {
   --bg: #fde2c8;
   --caret-rest: #b99f85;
-  --pill: rgb(255 255 255 / 0.72);
 }
 html[data-theme='rose'] {
   --bg: #fbe1ea;
   --caret-rest: #b79ea7;
-  --pill: rgb(255 255 255 / 0.72);
 }
 html[data-theme='lilac'] {
   --bg: #e9e6fb;
   --caret-rest: #a5a3b8;
-  --pill: rgb(255 255 255 / 0.72);
 }
 html[data-theme='sky'] {
   --bg: #dfeef8;
   --caret-rest: #9babb5;
-  --pill: rgb(255 255 255 / 0.72);
 }
 html[data-theme='sage'] {
   --bg: #dcece2;
   --caret-rest: #98a99f;
-  --pill: rgb(255 255 255 / 0.72);
 }
 
 /* A browser too old for linear() gets the old site's nearest cubics: a mild

@@ -7,9 +7,12 @@
 //           lavender, blue and green poured thin over the paper
 //   ink     the dark, a plain charcoal grey
 // (the colours themselves are in css/tokens.css, and the dots in
-// css/theme.css). The one you leave it on is remembered in this browser, and
-// put on before the first paint by the script in index.html's head, so the
-// page never shows the paper first.
+// css/theme.css). The one you leave it on is remembered in this browser and
+// worn by every page of the site: the case studies and the 404 page as well
+// as this one (css/case.css says how a case study wears each). The script
+// in each page's head puts it on before the first paint, so no page shows
+// the paper first, and followSaved, below, keeps a page up with it after
+// that.
 //
 // The dot after "Tigo Ponce de León" is always the next colour round the
 // ring, and pressing it pours that colour over the page. Where there is a
@@ -31,9 +34,11 @@
 // colour off the page's left edge, and then by a rainbow dot the size of a
 // letter at the head of the prompt, which stepped through them one press at
 // a time with nothing to say what came next. To take this one out, delete
-// the .hues block in index.html, css/theme.css's link and the line in the
-// head script that reads the colour back, the call to initTheme in
-// js/main.js, and the dot's pop in js/entrance.js.)
+// the .hues block in index.html, css/theme.css's link, the call to
+// initTheme in js/main.js and the dot's pop in js/entrance.js; and to take
+// the colours off the site altogether, the line in every page's head that
+// reads the colour back, the calls to followSaved in js/case.js and
+// 404.html, and "the case studies in ink" at the foot of css/case.css.)
 
 import { EASE, reduced } from './motion.js';
 
@@ -43,9 +48,37 @@ const KEY = 'draft.theme';
 const root = document.documentElement;
 const hover = matchMedia('(hover: hover)');
 
+// Put a colour on the page, and on the browser's own chrome around it, which
+// on a phone takes the page's paper too.
+function wear(theme) {
+  if (theme === 'paper') delete root.dataset.theme;
+  else root.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
+}
+const saved = () => {
+  try { const t = localStorage.getItem(KEY); return THEMES.includes(t) ? t : 'paper'; } catch { return 'paper'; }
+};
+
+// The colour saved in this browser, worn again whenever the page may have
+// fallen behind it: brought back from the browser's back-and-forward cache
+// (Home changed after a case study was left, say, and Forward taken), or
+// changed in another tab. Every page calls it; Home's dot hears of the
+// change through onChange, so the line deals itself out from the new colour.
+export function followSaved(onChange) {
+  const follow = () => {
+    const theme = saved();
+    if (theme === (root.dataset.theme || 'paper')) return;
+    wear(theme);
+    onChange?.(theme);
+  };
+  wear(saved());
+  addEventListener('pageshow', (e) => { if (e.persisted) follow(); });
+  addEventListener('storage', (e) => { if (e.key === KEY || e.key === null) follow(); });
+}
+
 export function initTheme(hues, { name } = {}) {
   if (!hues) return null;
-  const meta = document.querySelector('meta[name="theme-color"]');
   const dots = Object.fromEntries([...hues.querySelectorAll('[data-hue]')].map((b) => [b.dataset.hue, b]));
   let current = THEMES.includes(root.dataset.theme) ? root.dataset.theme : 'paper';
   // the line, in the order the colours would come from here: slot 0 is the
@@ -96,14 +129,13 @@ export function initTheme(hues, { name } = {}) {
     hues.setAttribute('aria-label', `The page's colour, now ${NAMES[current].toLowerCase()}`);
   }
 
-  function paint() {
-    if (current === 'paper') delete root.dataset.theme;
-    else root.dataset.theme = current;
-    // the browser's own chrome, on a phone, takes the paper too
-    meta?.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
-  }
+  const paint = () => wear(current);
   paint();
   slot({ still: true });
+  followSaved((theme) => {
+    current = theme;
+    slot({ still: true });
+  });
 
   // ---- the line, dealt out and gathered in ----
   // Out as soon as a pointer comes onto the dot, or the keyboard does; back

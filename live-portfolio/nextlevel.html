@@ -22,6 +22,9 @@
   <script>
     // the index's entrance is Home's; a case study has only the page's rise
     document.documentElement.classList.add('js', 'entered');
+    // the colour poured over the site from the dot beside the name on Home
+    // (js/theme.js), put on before the first paint
+    try { const t = localStorage.getItem('draft.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
   <!-- Carried across pages: a Work tile grows into its case study's opening
        tile, and shrinks home again (css/work.css, css/case.css). The opt-in

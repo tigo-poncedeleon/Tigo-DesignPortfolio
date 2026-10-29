@@ -60,13 +60,23 @@
 
 /* (the opt-in to carrying views across pages is in each page's head) */
 
-.cs[data-case='vicino'] { --tint: #c9eff1; --deep: #1c6f78; }
-.cs[data-case='pantrypal'] { --tint: #ffd9c9; --deep: #a9492a; }
-.cs[data-case='nextlevel'] { --tint: #c9e3fd; --deep: #245f9e; }
+/* Each case's two colours, and a third for ink: --deep-lit is the deep
+   colour lifted until it reads on the dark page as the deep reads on the
+   paper (about 7:1 on #1c1c1e), for the few words set in it straight on
+   the page (--accent, below, and "the case studies in ink" at the foot). */
+.cs[data-case='vicino'] { --tint: #c9eff1; --deep: #1c6f78; --deep-lit: #63bcc4; }
+.cs[data-case='pantrypal'] { --tint: #ffd9c9; --deep: #a9492a; --deep-lit: #ec9474; }
+.cs[data-case='nextlevel'] { --tint: #c9e3fd; --deep: #245f9e; --deep-lit: #72a8e6; }
 /* the other two, for the next case at the page's foot */
 .cs-next[data-case='vicino'] { --tint: #c9eff1; --deep: #1c6f78; }
 .cs-next[data-case='pantrypal'] { --tint: #ffd9c9; --deep: #a9492a; }
 .cs-next[data-case='nextlevel'] { --tint: #c9e3fd; --deep: #245f9e; }
+/* The deep colour as words standing on the page itself, with nothing of
+   their own under them: a part's number, an eyebrow, a date, the phrase
+   that carries the overview. It is the deep colour on the paper and on
+   every wash, and the lit one on ink; on anything that keeps the paper
+   (a tile, a sheet, a ticket), it is the deep colour again. */
+.cs { --accent: var(--deep); }
 
 .cs {
   /* where content may begin under the masthead: the square's foot and the
@@ -390,13 +400,13 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   line-height: 1;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-  color: var(--deep);
+  color: var(--accent);
 }
 .cs-part-num::after {
   content: '';
   width: calc(48 * var(--u));
   height: 1px;
-  background: color-mix(in oklab, var(--deep) 35%, transparent);
+  background: color-mix(in oklab, var(--accent) 35%, transparent);
 }
 .cs-part h3 {
   font-size: var(--t-title);
@@ -462,7 +472,7 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
 }
 .cs-text p + p { margin-top: 0.8em; }
 .cs-text strong, .cs-lessons strong, .cs-note strong { font-weight: inherit; color: var(--ink); }
-.cs-text a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.14em; text-decoration-color: color-mix(in oklab, var(--deep) 40%, transparent); }
+.cs-text a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.14em; text-decoration-color: color-mix(in oklab, var(--accent) 40%, transparent); }
 /* a chapter's first sentence, a size up, where the story's thread is */
 .cs-lead {
   max-width: calc(760 * var(--u));
@@ -1714,7 +1724,7 @@ button.cs-chip[aria-selected='true'] {
   font-size: var(--t-micro);
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
-  color: var(--deep);
+  color: var(--accent);
 }
 .cs-lessons strong {
   display: block;
@@ -2557,7 +2567,7 @@ button.cs-chip[aria-selected='true'] {
   transition: opacity 0.25s ease, translate 0.45s var(--ease-rise), visibility 0s 0.25s;
 }
 .cs-spec-notes > p[data-on] { opacity: 1; visibility: visible; translate: 0 0; transition-delay: 0.08s, 0.08s, 0s; }
-.cs-spec-notes b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--deep); }
+.cs-spec-notes b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent); }
 .cs-spec-notes strong { font-weight: inherit; color: var(--ink); }
 
 /* what each part does while it is read, held at its first frame until
@@ -4780,7 +4790,7 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
   color: var(--ink-3);
   text-wrap: balance;
 }
-.cs-intro .cs-intro-lead strong { font-weight: inherit; color: var(--deep); }
+.cs-intro .cs-intro-lead strong { font-weight: inherit; color: var(--accent); }
 
 /* A film of the case, where a case has one (PantryPal's): small, beside
    the sentence where the column is wide and under it where it is narrow,
@@ -4960,7 +4970,7 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
   margin-top: calc(44 * var(--u));
   border-color: var(--intro-rule);
 }
-.cs-intro > .cs-facts dt { margin-bottom: calc(6 * var(--u)); color: var(--deep); }
+.cs-intro > .cs-facts dt { margin-bottom: calc(6 * var(--u)); color: var(--accent); }
 .cs-intro > .cs-facts dd { font-size: var(--t-small); line-height: 1.35; letter-spacing: 0; }
 /* Where the column is wide, the four run in one line, each as wide as its
    value and the room left over shared out evenly, parted by hairlines
@@ -5122,7 +5132,7 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
   object-fit: cover;
   transition: translate 0.7s var(--ease-rise);
 }
-.cs-storymap-when { font-size: var(--t-micro); line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums; color: var(--deep); }
+.cs-storymap-when { font-size: var(--t-micro); line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums; color: var(--accent); }
 .cs-storymap b { font-weight: inherit; font-size: var(--t-name); line-height: 1.15; letter-spacing: -0.014em; text-wrap: balance; }
 @media (hover: hover) {
   .cs-storymap a:hover .cs-storymap-pic {
@@ -5527,7 +5537,7 @@ html.rises .cs-pinboard:not(.is-risen) .cs-stamp { opacity: 0; scale: 1.9; }
   left: calc(-1 * (24 * var(--u)) - 44 * var(--u));
   width: calc(78 * var(--u));
   height: calc(39 * var(--u));
-  color: var(--deep);
+  color: var(--accent);
   pointer-events: none;
 }
 .cs-pin-arrow path { stroke-dasharray: 1; stroke-dashoffset: 0; }
@@ -6304,7 +6314,7 @@ html.rises .cs-palette:not(.is-risen) .cs-palette-grid li { opacity: 0; scale: 0
   color: var(--pastel-ink);
   text-wrap: balance;
 }
-.cs-principles b { font-weight: inherit; font-size: var(--t-micro); letter-spacing: 0.06em; font-variant-numeric: tabular-nums; color: var(--deep); }
+.cs-principles b { font-weight: inherit; font-size: var(--t-micro); letter-spacing: 0.06em; font-variant-numeric: tabular-nums; color: var(--accent); }
 .cs-system-label { margin-top: calc(22 * var(--u)) !important; margin-bottom: calc(10 * var(--u)); color: var(--tile-ink-2); }
 .cs-ramp {
   display: grid;
@@ -6852,3 +6862,75 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
     transition-delay: 0s !important;
   }
 }
+
+/* ======================================================================
+   The case studies in ink
+   The colour poured over the site from the dot beside the name on Home
+   (js/theme.js) is worn here too. The washes need nothing of their own:
+   a wash changes only the paper, and everything on a case study already
+   stands on the paper's own colour or on a surface of its own. Ink turns
+   the page dark, and a case study is mostly the work, drawn on light
+   surfaces, so the page is told apart from the work:
+     the page       the reading, the heads, the hairlines, the rail's
+                    margin: they take ink's own colours, as Home does, and
+                    the few words set in the case's deep colour take its lit
+                    one (--accent, at the head of this file)
+     the work       the tiles in the case's colour, the white sheets, the
+                    kitchen's tickets, the stamped and taped paper, the
+                    prints, the rail's card: they stay as they are on the
+                    paper, with the paper's inks, as the Work tiles do on
+                    Home. They are the work, and the work was drawn light;
+                    turned dark, its ink drawings and screenshots would be
+                    lost, and they stand on the dark page as pictures stand
+                    on a dark wall
+     the controls   the capsules and chips that sit on the page take ink's
+                    raised grey, as the title pill and the composer do,
+                    with words to match
+   ====================================================================== */
+html[data-theme='ink'] .cs { --accent: var(--deep-lit); }
+html[data-theme='ink'] [data-case='nextlevel'] .cs-chapter-when { color: var(--accent); }
+
+/* the work: the paper's own inks, so whatever stands inside reads as it
+   does on the paper. The page colour itself (--bg) is left alone, since
+   what uses it inside is cut out of the page, not drawn on the work. */
+html[data-theme='ink'] :is(.cs-tile, .cs-lit, .cs-hero-tile, .cs-next, .cs-stat, .cs-band,
+  .cs-rail-in, .cs-ticket, .cs-rules-row li, .cs-pin-paper, .cs-chapter-num, .cs-intro-film,
+  .cs-print, .cs-history-stage) {
+  --ink: #444343;
+  --ink-2: #8a8989;
+  --ink-3: #6f6e6e;
+  --ink-4: #b6b5b5;
+  --fg: #1e1e1e;
+  --surface: #fff;
+  --pill: #e9eaeb;
+  --line: 30 30 30;
+  --bubble: #d0e4fd;
+  --bubble-ink: #444343;
+  --bubble-select: #a9cbf8;
+  --accent: var(--deep);
+  --tile-ink: color-mix(in oklab, var(--deep) 55%, var(--ink));
+  --tile-ink-2: color-mix(in oklab, var(--deep) 45%, #5c5b5b);
+  color-scheme: light;
+}
+/* and their words, which otherwise come down from the page already worked
+   out in ink's light grey. Kept as weak as a rule can be, so a surface
+   with a colour of its own (the dark editor's panel, the recipe card)
+   keeps it. */
+html[data-theme='ink'] :where(.cs-tile, .cs-lit, .cs-hero-tile, .cs-next, .cs-stat, .cs-band,
+  .cs-rail-in, .cs-ticket, .cs-pin-paper, .cs-intro-film, .cs-print, .cs-history-stage) {
+  color: var(--ink);
+}
+
+/* the controls on the page: the raised grey, with words to match (their
+   ink was the pastels', for a white capsule). The one chosen keeps the
+   case's tint and its dark words, and pointed at, a capsule fills with the
+   tint, as the back button and the contact links do; a chip that
+   turned white for it on the paper turns a step lighter grey. */
+html[data-theme='ink'] :is(.cs-paper .cs-pill, .cs-paper .cs-chip:not([aria-selected='true']), .cs-replay) { color: var(--ink); }
+@media (hover: hover) {
+  html[data-theme='ink'] :is(.cs-paper .cs-pill, .cs-replay):hover { color: var(--pastel-ink); }
+  html[data-theme='ink'] .cs-paper button.cs-chip:not([aria-selected='true']):hover { background: #3a3a3e; }
+}
+/* the question's last words stay marked in the app's butter, in the
+   butter's own ink */
+html[data-theme='ink'] .cs-hmw-q mark { color: var(--pastel-ink); }

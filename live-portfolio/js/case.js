@@ -39,13 +39,21 @@
 //                 again from its replay button; a clip in it (video[data-clip])
 //                 rolls once its card has filled, its scrubber on its clock
 //   scale         [data-scale]: one slider shrinks the pictures in it together
+//   the colour    the one chosen on Home (js/theme.js), worn here too
 //
 // Nothing here moves the page: it scrolls the browser's own way.
 
 import { initNav } from './nav.js';
 import { rise, reduced } from './motion.js';
+import { followSaved } from './theme.js';
 
 const root = document.documentElement;
+
+// ---- the colour ----
+// the one poured over the site from the dot beside the name on Home, worn
+// here too (put on before the first paint by the head's script; this keeps
+// the page up with it, and the browser's chrome)
+followSaved();
 
 // ---- the menu ----
 // its row of pages opens beside the square if it clears the back button,
