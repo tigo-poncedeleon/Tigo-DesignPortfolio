@@ -23,11 +23,11 @@ import { createComposer } from './composer.js';
 import { createChat } from './chat.js';
 import { watchKeyboard } from './keyboard.js';
 import { initNav } from './nav.js';
-import { startRouter, VIEWS } from './router.js';
+import { startRouter, parse, VIEWS } from './router.js';
 import { playEntrance } from './entrance.js';
 import { initAbout } from './about.js';
 import { initTheme } from './theme.js';
-import { SPRING, EASE, animate, rise, reduced, u } from './motion.js';
+import { SPRING, EASE, animate, rise, reduced, u, arrive } from './motion.js';
 
 const NAME = 'Tigo Ponce de León';
 const TITLES = {
@@ -208,11 +208,45 @@ let spying = 0;
 function onScroll() {
   spying = 0;
   frame.toggleAttribute('data-scrolled', scrollY > 4);
-  setSection(whereAmI());
+  const here = whereAmI();
+  if (heading && here !== heading) return;
+  if (heading) endTrip();
+  setSection(here);
 }
 addEventListener('scroll', () => {
   if (!spying) spying = requestAnimationFrame(onScroll);
 }, { passive: true });
+
+// ---- a trip to another screen ----
+// A pill, or the name, sends the page to its screen in an eased jump
+// (css/base.css), and on the way the page passes every screen between: from
+// Home to About, Work and Play. Each would be announced as it went by, the
+// headline swapping through their names and Play waking its games for a
+// moment, so for the length of the trip only where it is going counts, and
+// the headline changes once, when it gets there. A hand on the page (a
+// wheel, a touch, a key) ends the trip where it is, as the page coming to
+// rest does; in case neither comes, it ends on its own after two seconds.
+let heading = null;
+let tripping = 0;
+function endTrip() {
+  if (!heading) return;
+  heading = null;
+  clearTimeout(tripping);
+  setSection(whereAmI());
+}
+document.addEventListener('click', (e) => {
+  const link = e.target.closest?.('a[href]');
+  if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const to = new URL(link.href, location.href);
+  if (to.origin !== location.origin || to.pathname !== location.pathname) return;
+  const route = parse(to.hash);
+  if (!route || route.game || route.view === whereAmI()) return;
+  heading = route.view;
+  clearTimeout(tripping);
+  tripping = setTimeout(endTrip, 2000);
+});
+for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, endTrip, { passive: true });
+addEventListener('scrollend', endTrip);
 frame.toggleAttribute('data-scrolled', scrollY > 4);
 addEventListener('resize', () => { setSection(whereAmI()); fitPillStill(); });
 document.fonts?.ready.then(fitPillStill);
@@ -250,10 +284,27 @@ for (const el of document.querySelectorAll('[data-rise]')) riser.observe(el);
 // the first scroll the browser makes to get there puts everything else
 // right.
 const router = startRouter((next, prev, info) => show(next, prev, info));
-// A game's address (#play/pong) names no element on the page, so the browser
-// leaves a link to one at the top, on Home; take it to the Play screen, where
-// the game opens (js/play/play.js).
-if (router.current.game) screens[router.current.view].scrollIntoView({ block: 'start', behavior: 'instant' });
+// Arriving by a link (a case study's way back, its menu, the 404 page's
+// capsules), the page is put on the linked screen here, at once, rather
+// than left to the browser, which can come to it a frame or two late, with
+// Home showing first: by then the Work tile has to be where its case study
+// shrinks home to. A game's address (#play/pong) names no element on the
+// page at all, so the browser leaves a link to one at the top, on Home; it
+// is taken to the Play screen too, where the game opens (js/play/play.js).
+// A reload, and Back and Forward, put the page back where it was, and are
+// left to the browser.
+const arrival = performance.getEntriesByType?.('navigation')?.[0]?.type;
+if (router.current.game || (arrival === 'navigate' && router.current.view !== 'home')) {
+  screens[router.current.view].scrollIntoView({ block: 'start', behavior: 'instant' });
+}
+// and from here on, its jumps are eased (js/motion.js)
+arrive();
+// Left for a case study, the page notes the screen it was on, so the case's
+// way back knows where it leads (js/case.js): About links into two of them
+// as well as Work.
+addEventListener('pagehide', () => {
+  try { sessionStorage.setItem('home.left', section || 'home'); } catch { /* private mode */ }
+});
 fitPillStill();
 setSection(router.current.view, { initial: true });
 // Once the page has loaded and the browser has put it back where it was, the

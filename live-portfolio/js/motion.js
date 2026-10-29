@@ -99,6 +99,21 @@ export function rise(els, { delay = 0, stagger = 45, distance = 12, blur = 4 } =
   );
 }
 
+// The page has arrived: from here on its own jumps (a link to one of its
+// places) are eased (css/base.css, html.is-arrived). Until then a jump is
+// made at once, so a link in from another page opens on its place instead of
+// gliding there from the top. Arrived is the page loaded, the browser done
+// keeping a linked place in view while pictures came in above it, or a hand
+// on the page first, whichever is sooner.
+export function arrive() {
+  const on = () => root.classList.add('is-arrived');
+  if (document.readyState === 'complete') requestAnimationFrame(on);
+  else addEventListener('load', () => requestAnimationFrame(on), { once: true });
+  for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
+    addEventListener(type, on, { once: true, passive: true, capture: true });
+  }
+}
+
 // Take off whatever inline styles an animation left behind.
 export function clearInline(el, props = ['opacity', 'translate', 'transform', 'filter', 'scale']) {
   for (const p of props) el.style.removeProperty(p);

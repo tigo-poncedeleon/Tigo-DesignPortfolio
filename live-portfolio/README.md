@@ -140,7 +140,14 @@ Each opens on its Work tile grown to fill the whole
 window, edge to edge, and where the browser can carry a view across pages
 the tile itself grows into it, its icon travelling on its own to its new
 place, and shrinks home on the way back. The masthead carries only the back
-button and the menu square: there is no title beside the back button.
+button and the menu square: there is no title beside the back button. Come
+from Home, the back button is a step back, as the browser's Back is, to
+the screen you left (it says which) at the place you left it, however many
+chapters the rail has jumped since, and so is any link to that same
+screen; otherwise a way out opens Home afresh, already on its screen. Home
+eases its jumps only once it has arrived (`html.is-arrived`), so a link in
+never glides down to its screen from the top, and a pill's trip past the
+screens between names only the one it is going to (`js/main.js`).
 
 The opening tile's words keep to a column on the left: who it is at the
 top (the icon, the name, what it is), and at the column's foot the role

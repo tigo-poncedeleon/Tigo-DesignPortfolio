@@ -40,11 +40,13 @@
 //                 rolls once its card has filled, its scrubber on its clock
 //   scale         [data-scale]: one slider shrinks the pictures in it together
 //   the colour    the one chosen on Home (js/theme.js), worn here too
+//   the way back  to Home: a step back where Home is behind you, as you left
+//                 it, and otherwise a link that opens it on the screen
 //
 // Nothing here moves the page: it scrolls the browser's own way.
 
 import { initNav } from './nav.js';
-import { rise, reduced } from './motion.js';
+import { rise, reduced, arrive } from './motion.js';
 import { followSaved } from './theme.js';
 
 const root = document.documentElement;
@@ -60,6 +62,68 @@ followSaved();
 // the one thing on the masthead's left now
 const nav = initNav(document.querySelector('.menu'), { clearOf: document.querySelector('.cs-back') });
 nav.setCurrent('work');
+
+// ---- the way back ----
+// Every way out to Home (the back button, the menu's four pages, "all work"
+// at the foot) is a link into one of Home's screens, and followed, it opens
+// Home afresh on that screen (js/main.js). But a visitor who came here from
+// Home has Home still behind them, as they left it: the screen they were on,
+// scrolled where it was. Back to that screen, then, is a step back, as the
+// browser's own Back is, and it comes at once, the tile this case grew out
+// of shrinking home into its place. The back button always takes that step,
+// and says where to (Home notes the screen it was left on, js/main.js); a
+// link to the screen they came from takes it too; a link to any other
+// screen is followed.
+//
+// The step back is counted: the rail's and the story map's links to the
+// chapters each add a step to the browser's history on this page, so each
+// step is marked with how far it stands from the one this page was entered
+// by (history.state), and the way back goes that far, and one more.
+const SCREENS = { home: 'Home', work: 'Work', play: 'Play', about: 'About' };
+const homeScreen = (href) => {
+  const to = new URL(href, location.href);
+  if (to.origin !== location.origin || !/^\/(index\.html)?$/.test(to.pathname)) return null;
+  return to.hash.slice(1) || 'home';
+};
+// The screen of Home this page was entered from, if Home is the step before
+// it: where the browser can say what that step was (the Navigation API), it
+// says; elsewhere, the page that linked here is Home, there is a step to go
+// back to, and Home noted the screen it was left on.
+function cameFrom() {
+  if (window.navigation?.currentEntry) {
+    const before = navigation.entries()[navigation.currentEntry.index - 1];
+    return before ? homeScreen(before.url) : null;
+  }
+  try {
+    if (history.length > 1 && document.referrer && homeScreen(document.referrer)) return sessionStorage.getItem('home.left') || 'work';
+  } catch { /* blocked storage: follow the links */ }
+  return null;
+}
+let entry = null;
+function markStep() {
+  if (!Number.isInteger(history.state?.csStep)) {
+    const step = entry ? { csStep: entry.csStep + 1, csFrom: entry.csFrom } : { csStep: 0, csFrom: cameFrom() };
+    history.replaceState({ ...history.state, ...step }, '');
+  }
+  entry = history.state;
+}
+markStep();
+addEventListener('hashchange', markStep);
+addEventListener('popstate', markStep);
+const backButton = document.querySelector('.cs-back');
+if (backButton && SCREENS[entry.csFrom]) backButton.setAttribute('aria-label', `Back to ${SCREENS[entry.csFrom]}`);
+document.addEventListener('click', (e) => {
+  const link = e.target.closest?.('a[href]');
+  if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const from = history.state?.csFrom;
+  if (!from || !(link === backButton || homeScreen(link.href) === from)) return;
+  e.preventDefault();
+  nav.close();
+  history.go(-(history.state.csStep + 1));
+});
+
+// and from here on, the page's jumps (the rail's, the story map's) are eased
+arrive();
 
 // ---- the entrance ----
 root.classList.add('rises');
@@ -119,7 +183,6 @@ if (!reduced()) document.querySelectorAll('[data-odo]').forEach(odometer);
 // ---- reading ----
 // How much of the story is behind you, as a ring round the back button
 // (css/case.css .cs-back::before), painted once a frame at most.
-const backButton = document.querySelector('.cs-back');
 if (backButton) {
   let frame = 0;
   const paintRead = () => {

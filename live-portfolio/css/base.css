@@ -24,7 +24,7 @@ html {
      height of the window, and it scrolls the browser's own way: no snapping
      onto a screen, no script moving it. The menu's pills and the name are
      plain links to each screen (index.html), so going to one is the
-     browser's own jump, eased here, and Back and a reload do what they
+     browser's own jump, eased (below), and Back and a reload do what they
      always do. (Each page used to be the whole window, swapped for the next
      one in place; for a while after that the page settled onto a screen
      when you stopped near one, which took the scroll out of your hands.)
@@ -34,12 +34,19 @@ html {
      width (a Mac with a mouse, or set to always show them), one took 15
      pixels off the right, so the square stood 44 from the bar and not the
      window's edge, and the menu's row no longer fitted on the name's line. */
-  scroll-behavior: smooth;
   scrollbar-width: none;
 }
 html::-webkit-scrollbar { display: none; }
+/* The jumps are eased only once the page has arrived (js/motion.js
+   arrive()): a link from another page to one of this page's places, a case
+   study's way back to #work, is a jump too, and eased, the browser opened
+   the page at its top and glided down to the place from there, through
+   every screen on the way, the headline naming each as it went by. Until
+   the page has loaded, or a hand is on it, it simply opens where the link
+   points. */
+html.is-arrived { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html.is-arrived { scroll-behavior: auto; }
 }
 
 ::selection { background: var(--blue); color: var(--pastel-ink); }
