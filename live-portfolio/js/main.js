@@ -26,6 +26,7 @@ import { initNav } from './nav.js';
 import { startRouter, VIEWS } from './router.js';
 import { playEntrance } from './entrance.js';
 import { initAbout } from './about.js';
+import { initTheme } from './theme.js';
 import { SPRING, EASE, animate, rise, reduced, u } from './motion.js';
 
 const NAME = 'Tigo Ponce de León';
@@ -62,7 +63,8 @@ const nav = initNav(document.querySelector('.menu'), {
 // conversation restored by a reload) nothing moves: the name is simply not
 // there, and the entrance leaves it out (js/entrance.js).
 const frame = document.querySelector('.frame');
-const nameLines = [...document.querySelectorAll('.name-line')];
+// (the dot beside the name goes with it)
+const nameLines = [...document.querySelectorAll('.name-line, .hues')];
 function setChatting(on) {
   if (frame.hasAttribute('data-chat') === on) return;
   frame.toggleAttribute('data-chat', on);
@@ -288,6 +290,10 @@ else {
   }, { rootMargin: '100% 0px' });
   near.observe(screens.play);
 }
+
+// The dot after the name, which pours the next colour over the page
+// (js/theme.js).
+initTheme(document.querySelector('.hues'), { name: document.querySelector('.headline .name') });
 
 // About's foot: the icons that say where they go, and the email that copies
 // itself (js/about.js).

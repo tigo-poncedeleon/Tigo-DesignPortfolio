@@ -108,9 +108,14 @@ because iOS fills a clear corner with black.
   square's line, and the name, or a screen's title, is wiped away to make
   room for it and drawn back in when it shuts. The page's gutters are 44
   frame pixels, not the frame's 74 and 102, to make room for the row.
-- `js/theme.js` turns the page's colours: paper, night, then rose, sky and
-  sage, and back to paper, spreading out from where it was pressed. Nothing
-  on the page presses it for now; its header says how to hook it back up.
+- `js/theme.js` turns the page's colours: paper, then apricot, rose,
+  lilac, sky and sage (an orange, and the menu's pink, lavender, blue and
+  green poured thin), then ink, the dark, and back to paper. They are
+  poured out of a dot after the name on Home, which is always the next
+  colour round, and spread over the page from it; where a pointer can
+  hover, coming onto the dot deals the rest out in a line beside it
+  (`css/theme.css`). The one you leave it on is remembered in the browser.
+  The case studies keep the paper.
 - `js/about.js` is About's foot: the six icons, the line that says where
   each goes, and the email icon, which copies the address.
 - `js/play/` holds the engine, the three games, and the stage. Picked up, a

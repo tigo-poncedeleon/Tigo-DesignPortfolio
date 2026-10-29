@@ -15,7 +15,7 @@
      the light   one glaze over every one of them, the photo and the apps
                  included: a white glow from the top-left corner, the Work
                  tiles' own light, kept faint so no mark is washed out
-     the edge    the same hairline just inside every outline (in night, a
+     the edge    the same hairline just inside every outline (in ink, a
                  light one, so a dark icon keeps its edge on the dark paper)
      the shadow  one shadow for all, neutral, not tinted by the picture: a
                  tight contact shadow and a soft one under it, the way the
@@ -107,7 +107,7 @@
 /* the hairline: drawn on the outline inside the clip, so only its inner
    half shows */
 .tk-rim { fill: none; stroke: rgb(0 0 0 / 0.1); stroke-width: 4; }
-html[data-theme='night'] .tk-rim { stroke: rgb(255 255 255 / 0.14); }
+html[data-theme='ink'] .tk-rim { stroke: rgb(255 255 255 / 0.14); }
 
 @media (hover: hover) {
   .tk:hover, .about-app:hover .tk { scale: 1.12; }

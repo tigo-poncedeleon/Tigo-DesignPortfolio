@@ -5,6 +5,7 @@
 //   120ms   the menu square pops in, while its three lines draw themselves
 //           (every stroke carries pathLength="1")
 //   300ms   the bottom line rises
+//   320ms   the dot after the name pops in
 //   700ms   the caret appears and starts to blink
 //
 // Everything is started in one go with fill:'backwards', so each piece holds
@@ -53,6 +54,16 @@ export function playEntrance({ caret, section = 'home' } = {}) {
       { opacity: 0, scale: 0.92 },
       { opacity: 1, scale: 1 },
     ], { ...SPRING.pop, fill: 'backwards' }));
+  }
+
+  // the dot after the name pops in once the name has nearly risen, as the
+  // menu square does across from it
+  const hues = section === 'home' && !document.querySelector('.frame[data-chat]') && document.querySelector('.hues');
+  if (hues) {
+    running.push(animate(hues, [
+      { opacity: 0, scale: 0.4 },
+      { opacity: 1, scale: 1 },
+    ], { ...SPRING.pop, delay: 320, fill: 'backwards' }));
   }
 
   tiles.forEach((tile, i) => {

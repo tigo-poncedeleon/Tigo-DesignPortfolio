@@ -1,0 +1,164 @@
+/* ==========================================================================
+   theme.css — the dot after the name, and the line of colours it deals out.
+
+   At rest it is one dot, a space after "Tigo Ponce de León", in the colour
+   the page would turn next (js/theme.js). Pointed at, or reached from the
+   keyboard, the rest of the ring is dealt out after it along the name's
+   line, the way the menu deals its pages out from under the square: every
+   dot waits under the first, and they slide out to the right, the nearest
+   first and each one after 35ms, on the settling spring, swelling as they
+   come. Gathered in, they go back under it on the critically damped one,
+   the farthest setting off first, so they arrive together.
+
+   The page's own colour has no dot in the line: pressed, a dot pours itself
+   over the page and shrinks away where it stood, the dots after it close up
+   to fill its place, and the colour it covered swells back in at the far
+   end, last.
+
+   Each dot is its colour taken a step deeper than the wash it pours, as
+   the composer's mood dots are, since at the size of a full stop the
+   pastels themselves all but vanish on the paper; and each has the same
+   hairline just inside its edge, so the paper's own dot keeps its edge on a
+   wash, and every one keeps it on the paper.
+
+   To take the dot out, see the note at the head of js/theme.js.
+   ========================================================================== */
+
+.hues {
+  /* the dot (never under 13px, which on a phone's smaller name is a size
+     a fingertip can find), the room each one takes in the line (so the
+     line has no gaps the pointer could fall through), and the space
+     between the name and the first: a word space, a little under the
+     type's own */
+  --hue: max(0.6em, 13px);
+  --hue-step: calc(var(--hue) + 0.34em);
+  --hue-lead: 0.26em;
+  /* the dot's middle, down from the top of the name's line: halfway
+     between the middle of the capitals and the middle of the lowercase, so
+     it stands among the letters rather than on the baseline like a full
+     stop. (It was 0.44em across, a little under the lowercase; Tigo wanted
+     it bigger, and at 0.6 it is between the lowercase and a capital.) */
+  --hue-y: 0.64em;
+  /* the last slot in the line (js/theme.js sets it from the ring) */
+  --last: 5;
+
+  position: absolute;
+  top: 0;
+  left: calc(var(--name-end, 0px) + var(--hue-lead) - (var(--hue-step) - var(--hue)) / 2);
+  width: var(--hue-step);
+  height: calc(var(--lh) * 1em);
+}
+/* Dealt out, the line is one piece under the pointer, end to end. A dot
+   pressed shrinks away from under it before the next has slid into its
+   place, and a pointer left over nothing for that moment has left the
+   line, as far as the browser is concerned. */
+.hues[data-open] { width: calc((var(--last) + 1) * var(--hue-step)); }
+
+.hue {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: calc(10 - var(--slot, 0));
+  width: var(--hue-step);
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+
+  /* gathered: under the first dot, and gone */
+  translate: 0 0;
+  opacity: 0;
+  scale: 0.5;
+  pointer-events: none;
+  transition:
+    translate var(--t-out) var(--spring-out) calc((var(--last) - var(--slot, 0)) * 25ms),
+    scale var(--t-out) var(--spring-out) calc((var(--last) - var(--slot, 0)) * 25ms),
+    opacity 0.16s ease calc((var(--last) - var(--slot, 0)) * 25ms + 90ms);
+}
+/* the first, the one beside the name, is always there */
+.hue[data-slot='0'] {
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
+}
+/* dealt out: each to its place in the line, the nearest first */
+.hues[data-open] .hue {
+  translate: calc(var(--slot, 0) * var(--hue-step)) 0;
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
+  transition:
+    translate var(--t-settle) var(--spring-settle) calc(var(--slot, 0) * 35ms),
+    scale var(--t-settle) var(--spring-settle) calc(var(--slot, 0) * 35ms),
+    opacity 0.2s ease calc(var(--slot, 0) * 35ms);
+}
+/* the page's own colour: poured, it shrinks away where it stood, under
+   the dot sliding into its place */
+.hues .hue.is-page {
+  z-index: 0;
+  opacity: 0;
+  scale: 0;
+  pointer-events: none;
+  transition:
+    scale var(--t-out) var(--spring-out),
+    opacity 0.2s ease;
+}
+
+.hue-dot {
+  position: absolute;
+  left: 50%;
+  top: var(--hue-y);
+  width: var(--hue);
+  height: var(--hue);
+  margin: calc(var(--hue) / -2) 0 0 calc(var(--hue) / -2);
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px rgb(var(--line) / var(--edge, 0.08));
+  transition: scale var(--t-snap) var(--spring-snap), box-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .hue:hover .hue-dot { scale: 1.18; }
+}
+.hue:active .hue-dot { scale: 0.88; transition-duration: 90ms; }
+
+/* the keyboard's ring goes round the dot, not the room it stands in */
+.hue:focus-visible { outline: none; }
+.hue:focus-visible .hue-dot { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+/* the paper's own dot is white, a step brighter than the paper, with its
+   edge drawn a little firmer: on a wash it is the one pale dot among the
+   pastels, and has nothing else to stand out by */
+[data-hue='paper'] { --swatch: #fff; --edge: 0.16; }
+[data-hue='apricot'] { --swatch: #fca263; }
+[data-hue='rose'] { --swatch: #f7a6c0; }
+[data-hue='lilac'] { --swatch: #aea9f7; }
+[data-hue='sky'] { --swatch: #8dcff2; }
+[data-hue='sage'] { --swatch: #8fd1a6; }
+[data-hue='ink'] { --swatch: #1c1c1e; }
+
+/* A finger has no hover, so on a touch screen the line is never dealt out
+   and the dot beside the name is the whole of it: each tap pours the next
+   colour round the ring. Its room is let out past the dot on every side
+   but the name's, to a fingertip's size. */
+@media (pointer: coarse) {
+  .hue[data-slot='0']::after {
+    content: '';
+    position: absolute;
+    inset: -10px -16px -10px 0;
+  }
+}
+
+/* held unseen until the entrance pops it in (js/entrance.js), as the rest
+   of the masthead is (css/base.css) */
+html.js:not(.entered) .hues {
+  opacity: 0;
+  animation: entrance-failsafe 0s linear 1.4s forwards;
+}
+
+/* under reduced motion the dots only fade: each is already in its place
+   when it comes, and nothing swells */
+@media (prefers-reduced-motion: reduce) {
+  .hue, .hues[data-open] .hue, .hues .hue.is-page {
+    scale: 1;
+    transition: opacity 0.15s ease;
+  }
+  .hue-dot, .hue:hover .hue-dot, .hue:active .hue-dot { scale: 1; }
+}

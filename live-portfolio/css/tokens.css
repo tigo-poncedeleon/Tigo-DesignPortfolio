@@ -233,52 +233,73 @@
 }
 
 /* ---- the themes ----
-   js/theme.js can turn the page through five colours, one a press: the
-   paper, then night, then three tints, a pink, a blue and a green (taken
-   from the Home frame's gradient art), and back to the paper. For now
-   nothing on the page presses it: the art that did is out, and so is the
-   rainbow dot that took its place. Only the page's own colours change.
+   js/theme.js turns the page through seven colours, poured out of the dot
+   after the name (css/theme.css): the paper, then five washes, apricot,
+   rose, lilac, sky and sage, taken round the colour wheel in that order,
+   then ink, and back to the paper. Four of the washes are the menu's pink,
+   lavender, blue and green poured thin over the paper; apricot is an
+   orange of its own, warmer than the PantryPal tile's peach. (The menu's
+   yellow has no wash: a butter page would take the menu square's own
+   colour from it.) Only the page's own colours change.
    The pastels are the pastels in every theme: the menu and its pills, the
    clear square, the Work and Play tiles. They are surfaces with their own
    ink (--mark), so they hold up on any paper, and they are the site's
    identity.
 
-   Night is iOS's own dark: a near black, words a step down from white, the
-   composer's pill the raised grey of a sheet, and the question's bubble the
-   saturated blue a dark messenger uses, with the answers' grey deepened to
-   match. The tints keep every ink as it is; only the paper changes, and the
+   Ink is the dark a Mac or a phone wears: a plain charcoal grey, not a
+   black and not a colour, words a step down from white, the composer's
+   pill a raised sheet a step lighter, the question's bubble the saturated
+   blue a dark messenger uses, and the answers' grey a step lighter again.
+   The washes keep every ink as it is; only the paper changes, and the
    answers' bubble becomes a clear white over it, since grey on a pink or a
-   blue reads as dirt. */
-html[data-theme='night'] {
-  --bg: #111112;
+   blue reads as dirt. Each wash's caret is its paper less the ink, channel
+   by channel, so that drawn by `difference` over the paper it comes out as
+   the ink (css/home.css); on ink, the paper plus the ink. (Ink was
+   "night", iOS's own near black, until it had a dot of its own to be named
+   by; Tigo wanted it less black, and for a day it was a pen's blue-black
+   navy, which was not it either, so it is a neutral grey lifted off the
+   black. The washes were taken from the Home frame's gradient art, and sky
+   was the blue of a periwinkle until lilac came in beside it.) */
+html[data-theme='ink'] {
+  --bg: #1c1c1e;
   --ink: #e4e4e6;
   --ink-2: #8e8e93;
   --ink-3: #a1a1a6;
-  --ink-4: #4c4c50;
+  --ink-4: #4f4f54;
   --fg: #f5f5f7;
-  --surface: #1c1c1e;
+  --surface: #2a2a2d;
   --line: 255 255 255;
-  --caret-rest: #f5f5f8;
+  --caret-rest: #ffffff;
   --caret-open: #ffffff;
   --bubble: #2c5ed8;
   --bubble-ink: #f5f5f7;
-  --pill: #262628;
+  --pill: #333336;
   --bubble-select: #5b86ec;
   color-scheme: dark;
+}
+html[data-theme='apricot'] {
+  --bg: #fde2c8;
+  --caret-rest: #b99f85;
+  --pill: rgb(255 255 255 / 0.72);
 }
 html[data-theme='rose'] {
   --bg: #fbe1ea;
   --caret-rest: #b79ea7;
   --pill: rgb(255 255 255 / 0.72);
 }
+html[data-theme='lilac'] {
+  --bg: #e9e6fb;
+  --caret-rest: #a5a3b8;
+  --pill: rgb(255 255 255 / 0.72);
+}
 html[data-theme='sky'] {
-  --bg: #e0e7fb;
-  --caret-rest: #9ca4b8;
+  --bg: #dfeef8;
+  --caret-rest: #9babb5;
   --pill: rgb(255 255 255 / 0.72);
 }
 html[data-theme='sage'] {
   --bg: #dcece2;
-  --caret-rest: #98a9a0;
+  --caret-rest: #98a99f;
   --pill: rgb(255 255 255 / 0.72);
 }
 
