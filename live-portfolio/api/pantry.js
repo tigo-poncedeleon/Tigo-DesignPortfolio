@@ -44,7 +44,6 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 const PROXY = (process.env.PP_PROXY_URL || 'https://pantrypal-proxy.vercel.app').replace(/\/$/, '');
 const LOCAL_ORIGIN = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
@@ -69,10 +68,9 @@ async function picture(name, req) {
   if (pictures.has(name)) return pictures.get(name);
   const file = path.join('assets/case/pantrypal/app', PICTURES[name]);
   let bytes = null;
-  // the project's root, as Vercel runs a function, or beside this file
-  for (const at of [path.join(process.cwd(), file), fileURLToPath(new URL(`../${file}`, import.meta.url))]) {
-    try { bytes = await readFile(at); break; } catch { /* the next place */ }
-  }
+  // the project's root, as Vercel runs a function (it compiles this file to
+  // CommonJS, where import.meta is a syntax error, so no path beside it)
+  try { bytes = await readFile(path.join(process.cwd(), file)); } catch { /* fetched below */ }
   if (!bytes) {
     // a deployment that left the file out still serves it
     const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0];
