@@ -1,0 +1,32 @@
+{
+  "$description": "PantryPal illustration style spec, extracted from 18 full-res assets across all 6 frames. These images are generated at runtime by an AI image model — this file IS the contract for visual consistency. Human-readable version: docs/illustration-style.md.",
+  "style_prompt_template": "a bold cartoon sticker-style illustration of {ingredient}, thick near-black outline, flat saturated natural colors, simple cel shading with one darker tone and small white glossy highlights, minimal interior detail lines, single object centered at a slight three-quarter angle filling most of the canvas, plain transparent background, no text, no cast shadow, no gradients, playful children's-cookbook energy",
+  "negative_prompt": "text, letters, watermark, photorealism, 3d render, gradients, drop shadow, background scenery, pattern, multiple objects, hands, humans, border, frame",
+  "output": {
+    "background": "transparent (PNG with alpha)",
+    "aspect": "roughly square; subject fills ~80% of canvas",
+    "note": "the pink blob behind the recipe hero is drawn by the UI (IllustrationPlaceholder), never baked into the generated image"
+  },
+  "attributes": {
+    "rendering_style": "bold cartoon sticker / flat vector look (clean shapes, even fills)",
+    "outline": { "color": "#111111", "outer_weight": "very thick, uniform", "interior_weight": "thin black detail strokes" },
+    "palette": "full-saturation natural food colors — NOT the UI pastel chips; art color = the food's real color, amped",
+    "shading": "simple cel shading: one darker tone per surface + occasional lighter patch",
+    "highlights": "small white glossy crescents/dots on the upper-left of rounded forms",
+    "composition": "single object, centered, slight three-quarter tilt, generous margin, no cropping",
+    "background_treatment": "fully transparent; UI supplies any blob/tile behind it",
+    "detail_level": "icon-simple for single ingredients; denser interior linework allowed for composed dishes (burger, salad bowl)",
+    "motifs": "rounded friendly silhouettes; nothing anthropomorphized; no faces on food",
+    "cuteness": "playful children's-cookbook energy, but food stays food (the chef mascot is the only character)"
+  },
+  "category_variation": {
+    "checked": true,
+    "finding": "NO systematic style change by category. Color follows each food's natural color; meats carry extra marbling/texture strokes, produce reads simpler. Category color-coding lives in the UI pastel chips (tokens/colors.json ingredient.*), never in the artwork."
+  },
+  "variants": {
+    "dish": "same language, more interior detail permitted — used for recipe heroes and recipe-card images",
+    "character": "chef mascot: retro-cartoon human in the same ink-outline language (static asset, not generated)",
+    "scene": "Login kitchen background: full scene, softer earthy palette (static asset, EXCLUDED from this template)"
+  },
+  "normalized": "Source assets came from at least two different generators (Gemini + ChatGPT per layer names) yet already agree closely; template reflects their common denominator. Tomato asset doubles as the app logo icon."
+}

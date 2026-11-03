@@ -1,0 +1,41 @@
+# foods the scanner's two pictures come back with that the app has no
+# bundled drawing of, as the kitchen names them (folded), one to a line;
+# tools/pantry-drawn.py draws each into assets/case/pantrypal/app/drawn/
+baby carrot
+beer
+bruschetta spreading
+cheese slice
+cherry tomato
+flour tortilla
+fresh herb
+grape tomato
+greek yogurt
+green
+hass avocado
+iceberg lettuce
+kefir
+kombucha
+leafy green
+mini pepper
+olive
+parmesan cheese
+pastry
+pesto
+plum
+protein drink
+radish
+ranch dressing
+raspberry
+roma tomato
+salad green
+salsa
+sharp cheddar
+sharp cheddar cheese
+shredded parmesan cheese
+sliced cheese
+smoothie drink
+sun dried tomato bruschetta
+sun dried tomato spread
+sun-dried tomato bruschetta
+yellow onion
+yogurt drink

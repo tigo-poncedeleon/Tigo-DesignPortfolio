@@ -175,16 +175,20 @@ them saying where they go.
   of chapters, the steppers, the numbers that roll up like an odometer, the
   pictures that open out to the window, and the living pieces below. `js/pantry-story.js`
   lays out the pictures PantryPal's story draws from the app's own
-  drawings: a hundred foods for the food thrown away, the last thirty
-  falling out of the waffle as it rises, and the fifty dishes on one
-  plate. PantryPal's brief tells its two facts in pictures (the falling
-  waffle, and three of the app's dinners read against a breakfast fridge,
-  the few things it holds on white plates and the rest dashed) and ends on
-  its question as a line of type, its last words marked in the app's
+  drawings: the fifty dishes on one plate. PantryPal's brief tells its two
+  facts as two drawings of one cook, mirrored, on tiles of one shape: the
+  cook tipping good food into a full bin, signed with USDA's own symbol,
+  and the cook too tired to scroll a screen of recipes written for no
+  one. Both were drawn with Gemini (Nano Banana Pro) after the story
+  map's pictures and lifted off their white
+  (`assets/case/pantrypal/waste-bin.webp`, `weary-search.webp`). It ends
+  on its question as a line of type, its last words marked in the app's
   butter. Nothing on PantryPal's page is set as a chat: its quotes are a
-  house rule and a verdict, each on a rule of the case's colour. The same
-  script draws the leader lines that tie the rethink's three findings to
-  the places on the old hub they are about.
+  house rule and a verdict, each on a rule of the case's colour. The
+  rethink counts the old hub instead of explaining it: the first screen in
+  the dark but for its fourteen tap targets, lit one after another as a
+  great 14 counts up beside it, a bulb for each, and a "Cognitive
+  overload" sticker slapped on the card's edge.
 - PantryPal's story map, the row of chapters under its overview, is five
   illustrations drawn by hand in the app's own manner (its ink line, its
   flat colour, its palette and its Fugaz), each chapter told as a kitchen
@@ -202,15 +206,21 @@ them saying where they go.
   your mind; and under it what every lap leaves behind, the system, which
   is what lets AI carry the work.
 - PantryPal's ideas stand as paper: the Sketch chapter's three wireframes
-  and 4.1's four ways out are graph-paper sheets taped to a board, the
-  three judged with a rubber stamp and followed by the shelf that shipped,
-  the four drawn in the same ink and hand (`tools/pantry-ink.mjs` draws
-  them, from the app's own drawings with the colour taken out). The look
-  (2.1) is four cards of one make: the palette as a spec, the drawings,
-  and the two faces. The Ship chapter opens on the scan's moment, Tigo's
-  own fridge taped up behind the phone that took it, and runs the seven
-  screens from the front door to a plate in the app's own order, each
-  turning over to the prototype's screen at the same step.
+  are graph-paper sheets taped to a board in a centred row, judged in pen
+  by their names (a red cross beside two, the third ringed in green
+  marker, never a mark on the drawings), with the ring's ink running on to
+  the hub the kept one became in the first Figma build, standing under
+  them. The look
+  (2.1) is the app's own brand sheet, in its butter and ink: the chef on
+  his plate with his food on one arc round him, the four colours as one
+  strip of chips, and the two faces, each on the surface the app sets it
+  on. The Ship chapter goes straight from the rethink to the app as it
+  shipped: one card, panning across as the page scrolls or stepped along
+  at two arrows in its corners, of all thirteen screens in the order a new
+  chef meets them, the scan of Tigo's own fridge among them. Each is shot
+  from the page's own live phone (`tools/pantry-screens.mjs`, run again
+  whenever the live app changes), and a Current / Before switch turns the
+  row to the Figma prototype's six screens, in the prototype's order.
 - Each story is told in chapters, and every chapter opens the same way:
   its number and when it happened on a hairline, its title, and what it is
   about (`.cs-chapter`); a part of a chapter has a smaller head numbered
@@ -289,27 +299,53 @@ them saying where they go.
   PantryPal's running app stands in a card of the app's own kitchen, under
   its awning (`.cs-band`).
 - The work runs on the page wherever it can, instead of being pictured:
-  - PantryPal's **"The chef, live"** is the app itself: its Home and
-    Recipe screens in its own fonts, colours and drawings, ranking its
-    own fifty-dish book against a shelf you stock from the stickers
-    beside it (`assets/case/pantrypal/app/pantry-app.js`, fed by
-    `js/pantry-demo.js`). The ranking is a port of the app's
-    `ChefBook.swift`, rule for rule, and passes the app's own ChefBook
-    tests; the screens are drawn from `DishCard.swift` and
-    `CookScreen.swift`'s own numbers, and were laid over the app's
-    captures and measured to within a point: the deck that slides and
-    springs back as the app's does, the welcome's falling pile, the
-    add-missing chip, the scan and the ticks. Beside it, the shelf is one
-    of the app's cards named on the app's own wood planks, its stickers in
-    balanced rows whose count stands the card level with the phone; the
-    three shelves to start from are words of the sentence that offers them.
-    On a phone, where the app has scrolled away above the shelf, what the
-    chef decided rides the window's foot while the shelf is read. The app
-    writes two dishes for every new shelf of three or more on its own
-    server and seats them first, "Made for your shelf"; with no server
-    here, the page seats two of the book's own in their place, ones the
-    shelf can cook whole, built on what was just added, so the first card
-    changes with nearly every change to the shelf, as the app's does.
+  - PantryPal's **"The chef, live"** is the App Store build rebuilt for
+    the browser (`assets/case/pantrypal/app/`, started by
+    `js/pantry-demo.js`). The phone stands on its home screen, and
+    PantryPal opens out of its icon into the cold open, then the Kitchen
+    Pass, the tour, "Hey, chef!", the scanner, Type it in!, the deck, My
+    shelf behind the wardrobe, My recipes, a recipe and Settings behind the
+    chef, each screen doing what the app's does (`pantry-screens.js` says
+    which Swift screen each one is). The kitchen behind them is the app's
+    own: a scan is read and the two dishes at the front of the deck are
+    written by the app's proxy and its Gemini prompts, and a food with no
+    bundled drawing is drawn by its art store, all through this site's
+    relay, `api/pantry.js`, which holds the app's key (and on this Mac
+    `tools/serve.py`, which relays the same routes with the key from the
+    app's own `Secrets.xcconfig`). The camera is the one thing a page
+    cannot have: each scan door takes a picture the page carries instead
+    (a receipt, `tools/pantry-receipt.mjs`, and Tigo's fridge), sending
+    only its name, so the relay reads the photo off the site's own files
+    and the browser never redraws or uploads it; if the kitchen does not
+    answer, what it read off that picture once (`scan-readings.json`)
+    stands in. The foods those pictures come back with that the app has
+    no bundled drawing of were drawn by its art store once and lifted by
+    its own subject lifter (`app/drawn/`, `tools/pantry-drawn.py`); they
+    arrive as a fresh drawing does in the app, into a turning slot, and a
+    food nothing draws wears the nearest one's drawing. The beam sweeps
+    a shot at least twice, and the chef writes a whole menu before a dish
+    lands, however fast the kitchen answers; a written dish takes a seat
+    only if the shelf can cook it whole. **Choose from library** takes a
+    real file. The phone brings iOS's keyboard (`pantry-keys.js`), since
+    the app's screens are laid out around it. The phone stands on the page
+    on its own under the chapter's opener ("Live app!", as every chapter
+    opens on its sticker) with **Start over** under it, and nothing points
+    at what to press. The logic is a port of `ChefBook.swift`,
+    `IngredientName.swift`, `IngredientCategory` and `KnownIngredients`
+    (`pantry-chef.js`); the header and each title band are the app's own
+    pixels, cut from captures with the system's 9:41 bar over the art
+    (`tools/pantry-captures.sh`), every title pill on a solid line and the
+    back arrow on a coral band in butter (`tools/pantry-chrome.py`; the
+    app dashes a provisional screen's pill and leaves that arrow red on
+    red), and everything under them is drawn from
+    the Swift sources' own numbers and laid over the 1.3 build's captures. The Season Pass
+    and its paywall are left out, so every shelf is free. (Until November
+    2026 the phone was a five-screen prototype beside a card listing its
+    steps, the groceries typed in for you and two of the book's dishes
+    standing in for the kitchen's; before that the card was a shelf of
+    every ingredient the book knows, as stickers to stock it with.)
+    The relay needs `PP_APP_SECRET` (the app's shared secret, from its
+    `Secrets.xcconfig`) in the Vercel project's environment.
     `tools/pantry-app.sh` rebuilds everything the page takes from the
     app's repository.
   - Vicino's hero board runs when **Run the board** is pressed (the

@@ -1,0 +1,10 @@
+{
+  "$description": "PantryPal elevation tokens. The file uses NO drop shadows anywhere — depth is communicated entirely by 1-3px ink outlines (see borders.json). Kept for completeness + one inferred interaction offset.",
+  "none": { "value": null, "note": "default and only observed elevation" },
+  "pressedOffset": {
+    "value": 2,
+    "unit": "pt",
+    "inferred": true,
+    "rationale": "Inferred pressed affordance: the outlined 'sticker' translates down 2pt and darkens (colors.state.pressedOverlay) instead of casting/removing a shadow. Not observed in Figma — revisit freely."
+  }
+}

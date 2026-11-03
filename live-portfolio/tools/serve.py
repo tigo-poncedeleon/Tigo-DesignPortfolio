@@ -17,15 +17,40 @@ Three differences from `python3 -m http.server`, all on purpose:
   whatever is asked, and a browser given that cannot seek in it, so a
   scrubber dragged back went nowhere and a film opened partway through
   started again from the top.
+- It answers /api/pantry, as the site's relay (api/pantry.js) does, so the
+  PantryPal the case study runs scans and writes dishes here too: the same
+  three routes, passed to the app's own proxy with the app's shared secret,
+  read from PP_APP_SECRET or from the app's gitignored Secrets.xcconfig
+  (~/Developer/PantryPal/App, or $PANTRYPAL/App). Without either, the
+  route answers 503 and the app says the kitchen is slammed, as it would.
 """
 
+import base64
 import functools
 import http.server
+import json
 import os
 import re
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROXY = os.environ.get("PP_PROXY_URL", "https://pantrypal-proxy.vercel.app").rstrip("/")
+
+
+def app_secret():
+    """The app's shared secret: the environment's, or the app's own file's."""
+    if os.environ.get("PP_APP_SECRET"):
+        return os.environ["PP_APP_SECRET"]
+    app = os.path.join(os.environ.get("PANTRYPAL", os.path.expanduser("~/Developer/PantryPal")), "App", "Secrets.xcconfig")
+    try:
+        with open(app) as f:
+            found = re.search(r"^PP_APP_SECRET\s*=\s*(\S+)", f.read(), re.M)
+            return found[1] if found else None
+    except OSError:
+        return None
 
 
 class NoStore(http.server.SimpleHTTPRequestHandler):
@@ -37,6 +62,70 @@ class NoStore(http.server.SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("Accept-Ranges", "bytes")
         super().end_headers()
+
+    # ---- /api/pantry, the relay to PantryPal's kitchen ----
+    def do_GET(self):
+        if self.path.startswith("/api/pantry"):
+            return self.pantry("GET")
+        return super().do_GET()
+
+    def do_POST(self):
+        if self.path.startswith("/api/pantry"):
+            return self.pantry("POST")
+        self.send_error(405)
+
+    def pantry(self, method):
+        query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+        route = (query.get("route") or [""])[0]
+        secret = app_secret()
+        if not secret:
+            return self.answer(503, b'{"error":"kitchen"}', "application/json")
+        headers = {"x-pantrypal-key": secret, "x-pantrypal-device": "portfolio-local"}
+        if route == "illustrate" and method == "GET":
+            # the store files a subject by its lowercase name, as the app sends it
+            ask = {"ingredient": (query.get("ingredient") or [""])[0].strip().lower()[:60]}
+            if (query.get("variant") or [""])[0] == "dish":
+                ask["variant"] = "dish"
+            req = urllib.request.Request(f"{PROXY}/api/illustrate?{urllib.parse.urlencode(ask)}", headers=headers)
+            timeout = 34
+        elif route in ("recipes", "scan") and method == "POST":
+            body = self.rfile.read(int(self.headers.get("Content-Length") or 0))
+            try:
+                asked = json.loads(body)
+            except ValueError:
+                return self.answer(400, b'{"error":"body"}', "application/json")
+            # a scanner door names its picture, and the photo is read here
+            if route == "scan" and isinstance(asked, dict) and "picture" in asked:
+                name = {"receipt": "scan-receipt.jpg", "fridge": "scan-fridge.jpg"}.get(asked["picture"])
+                if not name:
+                    return self.answer(400, b'{"error":"picture"}', "application/json")
+                with open(os.path.join(ROOT, "assets/case/pantrypal/app", name), "rb") as f:
+                    body = json.dumps({"image": base64.b64encode(f.read()).decode(), "mime": "image/jpeg"}).encode()
+            headers["content-type"] = "application/json"
+            req = urllib.request.Request(f"{PROXY}/api/{route}", data=body, headers=headers, method="POST")
+            timeout = 33
+        else:
+            return self.answer(404, b'{"error":"route"}', "application/json")
+        # a kitchen that falls over is asked once more, as the site's relay does
+        for attempt in (1, 2):
+            try:
+                with urllib.request.urlopen(req, timeout=timeout) as up:
+                    return self.answer(up.status, up.read(), up.headers.get("Content-Type", "application/json"))
+            except urllib.error.HTTPError as err:
+                if err.code >= 500 and attempt == 1 and route != "illustrate":
+                    continue
+                sys.stderr.write(f"pantry: {route} answered {err.code}\n")
+                return self.answer(err.code, b'{"error":"kitchen"}', "application/json")
+            except (urllib.error.URLError, TimeoutError, OSError) as err:
+                sys.stderr.write(f"pantry: {route} did not answer ({err})\n")
+                return self.answer(504, b'{"error":"slow"}', "application/json")
+
+    def answer(self, status, body, kind):
+        self.send_response(status)
+        self.send_header("Content-Type", kind)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def send_head(self):
         # the bytes still to send of a part asked for, read by copyfile; None

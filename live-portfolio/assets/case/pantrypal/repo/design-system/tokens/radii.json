@@ -1,0 +1,7 @@
+{
+  "$description": "PantryPal corner radius tokens. Observed 9.159/10/12/13/14/24 normalized to three tiers + full (notes/analysis.md §4).",
+  "sm":   { "value": 10, "sources": ["inputs", "buttons", "ingredient name tags 9.159 (merged)"] },
+  "md":   { "value": 12, "sources": ["form card", "receipt frame", "search bar 13 (merged)", "scrollbar track 14 (merged)"] },
+  "xl":   { "value": 24, "sources": ["page title pills"] },
+  "full": { "value": 9999, "sources": ["badges", "circular action buttons"] }
+}

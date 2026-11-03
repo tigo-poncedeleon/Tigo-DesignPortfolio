@@ -457,7 +457,6 @@ html.rises .cs-chapter:not(.is-risen) .cs-chapter-rule { scale: 0 1; }
   :is(.cs-chapter, .cs-part) > .cs-text { grid-column: 2; grid-row: 2 / span 2; align-self: start; max-width: none; margin-top: 0; }
   /* the same split: the pieces that stand two things side by side, and
      the captions, which stand where the words do */
-  .cs-verdict-row { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--split-gap); }
   .cs-sec > .cs-cap-ink { max-width: none; margin-left: calc((100% - var(--split-gap)) * 5 / 12 + var(--split-gap)); }
 }
 
@@ -2667,84 +2666,190 @@ button.cs-chip[aria-selected='true'] {
 .cs-review { --ah: 340; }
 
 
-/* ---- PantryPal: the look, four cards of one make ----
-   Two by two: the palette and the drawings, the two faces under them,
-   each card the same lit tile with its eyebrow over it saying what it is
-   and the job it has, and the rule the look keeps under all four. (The
-   palette was four chips fanned and askew, standing alone on a row, and
-   each face's tile was laid out its own way, its name at one height and
-   the other's at another.) */
+/* ---- PantryPal: the look, the app's own brand sheet ----
+   Three cards made of the app's own things, each ringed in its ink on a
+   hard ink shadow, as everything you tap in the app is: the chef on the
+   kitchen's butter, and beside him, one over the other, the four colours
+   and the two faces. The words are only names. (Until November 2026 the
+   look was four of the page's lit tiles, two by two, each under an
+   eyebrow and a line of what it was for: the chef stood cut off in one
+   corner of his, six of the Figma file's stickers bobbed in a grid
+   beside him, and a paragraph over the four and a quote under them said
+   what the cards already showed.) */
 .cs-look {
+  --ring: calc(2.5 * var(--u));
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-rows: 1fr 1fr;
   gap: var(--gap);
 }
-.cs-look-card { display: grid; align-content: start; padding: calc(26 * var(--u)) calc(28 * var(--u)) calc(28 * var(--u)); }
-.cs-tile.cs-look-card > * { margin-top: 0; }
-.cs-look-card > .cs-eyebrow { margin-bottom: calc(20 * var(--u)); color: var(--tile-ink); }
-/* one column in a phone's lane */
-@container lane (max-width: 640px) { .cs-look { grid-template-columns: minmax(0, 1fr); } }
-
-/* the palette as a spec: a row a colour, its chip, its name over its
-   value, and its job at the row's end, on hairlines */
-.cs-swatches { display: grid; list-style: none; }
-.cs-swatches li { display: grid; grid-template-columns: calc(38 * var(--u)) auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: calc(14 * var(--u)); align-items: center; padding: calc(9 * var(--u)) 0; border-top: 1px solid color-mix(in oklab, var(--deep) 12%, transparent); }
-.cs-swatches li:first-child { padding-top: 0; border-top: 0; }
-.cs-swatches li:last-child { padding-bottom: 0; }
-.cs-swatches i { grid-row: 1 / 3; aspect-ratio: 1; border-radius: calc(11 * var(--u)); background: var(--c); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08), 0 calc(6 * var(--u)) calc(12 * var(--u)) calc(-7 * var(--u)) color-mix(in oklab, var(--c) 70%, #000); }
-.cs-swatches b { grid-column: 2; align-self: end; font-weight: inherit; font-size: var(--t-small); line-height: 1.2; color: var(--pastel-ink); }
-.cs-swatches span { grid-column: 2; align-self: start; font-size: var(--t-micro); line-height: 1.3; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; color: var(--tile-ink-2); }
-.cs-swatches em { grid-column: 3; grid-row: 1 / 3; justify-self: end; font-style: normal; font-size: var(--t-micro); line-height: 1.3; text-align: right; color: var(--tile-ink); text-wrap: balance; }
-html.rises .cs-look-paint:not(.is-risen) .cs-swatches i { scale: 0.6; opacity: 0; }
-.cs-look-paint.is-risen .cs-swatches i { transition: scale var(--t-pop) var(--spring-pop), opacity 0.25s ease; }
-.cs-look-paint.is-risen .cs-swatches li:nth-child(2) i { transition-delay: 0.06s; }
-.cs-look-paint.is-risen .cs-swatches li:nth-child(3) i { transition-delay: 0.12s; }
-.cs-look-paint.is-risen .cs-swatches li:nth-child(4) i { transition-delay: 0.18s; }
-
-/* the drawings: the chef standing at the card's foot, his food bobbing
-   beside him, three by two */
-.cs-kitchen { grid-template-columns: calc(118 * var(--u)) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: calc(14 * var(--u)); }
-.cs-kitchen > .cs-eyebrow { grid-column: 1 / -1; }
-.cs-kitchen-chef {
-  align-self: end;
-  width: 100%;
-  height: auto;
-  margin-bottom: calc(-28 * var(--u));
-  filter: drop-shadow(0 calc(18 * var(--u)) calc(24 * var(--u)) color-mix(in oklab, var(--deep) 30%, transparent));
-}
-.cs-kitchen-food {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: calc(6 * var(--u)) calc(10 * var(--u));
-  align-items: center;
+.cs-look-card {
+  margin: 0;
+  padding: 0;
+  border-radius: calc(26 * var(--u));
+  box-shadow: 0 0 0 var(--ring) var(--mark), 0 calc(5 * var(--u)) 0 var(--ring) var(--mark);
+  color: var(--mark);
   list-style: none;
 }
-.cs-kitchen-food img {
-  width: 100%;
+.cs-tile.cs-look-card > * { margin-top: 0; }
+
+/* the chef, on his plate as the app sets a dish on its own: a coral
+   ellipse in an ink rim on a white one, on a sunburst of twenty rays
+   (pantry-app.css .pp-plate), here a circle, turning slowly. He stands up
+   off the card's foot, where his drawing is cut, and his food is laid
+   round his plate on one arc, the dish at its top a size up from the
+   ingredients, each leaning out along the arc and bobbing a beat after
+   the one before. The card is square, so its width measures it both
+   ways (cqw). */
+.cs-kitchen {
+  --cx: 50cqw;
+  --cy: 62cqw;
+  grid-row: 1 / 3;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  background: radial-gradient(60% 60% at 50% 55%, #ffe3a1, transparent 75%), #ffd67e;
+}
+.cs-kitchen > * { position: absolute; }
+.cs-kitchen-rays {
+  left: var(--cx);
+  top: var(--cy);
+  width: 170cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 90deg, rgb(255 255 255 / 0.4) 0deg 9deg, transparent 9deg 18deg);
+  -webkit-mask: radial-gradient(closest-side, #000 18%, rgb(0 0 0 / 0.55) 46%, transparent 72%);
+  mask: radial-gradient(closest-side, #000 18%, rgb(0 0 0 / 0.55) 46%, transparent 72%);
+  animation: cs-look-turn 140s linear infinite;
+}
+@keyframes cs-look-turn { to { rotate: 1turn; } }
+.cs-kitchen-plate {
+  left: var(--cx);
+  top: var(--cy);
+  width: 50cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: #ff7e7d;
+  box-shadow: inset 0 0 0 var(--ring) var(--mark), 0 0 0 2.2cqw #fff;
+}
+.cs-kitchen-chef {
+  left: 50%;
+  bottom: 0;
+  width: 54cqw;
   height: auto;
-  filter: drop-shadow(0 calc(10 * var(--u)) calc(12 * var(--u)) color-mix(in oklab, var(--deep) 25%, transparent));
-  animation: bob 3.6s ease-in-out calc(var(--i) * -0.6s) infinite;
+  translate: -50% 0;
 }
-@keyframes bob {
-  0%, 100% { translate: 0 0; rotate: -2deg; }
-  50% { translate: 0 calc(-10 * var(--u)); rotate: 2deg; }
+.cs-kitchen-food { inset: 0; list-style: none; }
+.cs-kitchen-food li {
+  /* seven stops from a little under the left of the plate's middle to a
+     little under its right, 35 degrees apart */
+  --a: calc(195deg - var(--i) * 35deg);
+  --s: 15cqw;
+  position: absolute;
+  left: calc(var(--cx) + cos(var(--a)) * 41cqw);
+  top: calc(var(--cy) - sin(var(--a)) * 41cqw);
+  width: var(--s);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  rotate: calc((90deg - var(--a)) * 0.14);
 }
+.cs-kitchen-food li:nth-child(4) { --s: 19cqw; }
+.cs-kitchen-food img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0.8cqw 0 rgb(150 92 0 / 0.22));
+  animation: cs-look-bob 3.2s ease-in-out calc(var(--i) * -0.4s) infinite;
+}
+@keyframes cs-look-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -1.4cqw; }
+}
+/* coming into view, the chef rises off the card's foot and his food pops
+   on round him, left to right */
+html.rises .cs-kitchen:not(.is-risen) .cs-kitchen-chef { translate: -50% 18%; }
+html.rises .cs-kitchen:not(.is-risen) .cs-kitchen-food li { scale: 0; }
+.cs-kitchen.is-risen .cs-kitchen-chef { transition: translate var(--t-pop) var(--spring-pop); }
+.cs-kitchen.is-risen .cs-kitchen-food li { transition: scale var(--t-pop) var(--spring-pop) calc(0.18s + var(--i) * 0.06s); }
 
-/* the two faces, each card the same: its Aa, its name, its sizes and its
-   job, and a line set in it */
-.cs-face { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto auto auto; column-gap: calc(22 * var(--u)); }
-.cs-face > .cs-eyebrow { grid-column: 1 / -1; }
-.cs-face > .cs-type-aa { grid-row: 2 / 4; align-self: center; }
-.cs-face > .cs-tile-name { align-self: end; }
-.cs-face-spec { align-self: start; margin-top: calc(4 * var(--u)); font-size: var(--t-small); line-height: 1.35; color: var(--tile-ink); text-wrap: pretty; }
-/* the line set in each face stands in the same room in both cards, three
-   lines of the prose, so the two rules over them are level */
-.cs-face-sample { grid-column: 1 / -1; display: flex; align-items: center; min-height: calc(19 * var(--u) * 1.32 * 3 + 18 * var(--u)); margin-top: calc(22 * var(--u)); padding-top: calc(18 * var(--u)); border-top: 1px solid color-mix(in oklab, var(--deep) 14%, transparent); color: var(--mark); }
-.cs-face-sample.is-display { font-size: calc(40 * var(--u)); line-height: 1.1; }
-.cs-face-sample.is-prose { font-size: calc(19 * var(--u)); line-height: 1.32; text-wrap: pretty; }
+/* the palette as one strip of four chips, ringed and parted in the ink,
+   each colour's name in the app's face over its value; coming into view
+   the colours pour up into their chips, one after another */
+.cs-look-paint {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ring);
+  background: var(--mark);
+}
+.cs-look-paint li {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: calc(12 * var(--u)) calc(11 * var(--u));
+  background: linear-gradient(var(--c) 0 0) 0 100% / 100% 100% no-repeat, #fff;
+}
+.cs-look-paint b {
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: max(12px, calc(15 * var(--u)));
+  line-height: 1.2;
+}
+.cs-look-paint span {
+  margin-top: calc(3 * var(--u));
+  font-size: max(10px, calc(11 * var(--u)));
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(0 0 0 / 0.6);
+}
+html.rises .cs-look-paint:not(.is-risen) li { background-size: 100% 0%; }
+.cs-look-paint.is-risen li { transition: background-size 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.cs-look-paint.is-risen li:nth-child(2) { transition-delay: 0.08s; }
+.cs-look-paint.is-risen li:nth-child(3) { transition-delay: 0.16s; }
+.cs-look-paint.is-risen li:nth-child(4) { transition-delay: 0.24s; }
 
-/* the rule the look keeps, under the four */
-.cs-look-rule { max-width: 34em; }
+/* the two faces, each on the surface the app sets it on: Fugaz One white
+   in an ink outline on a coral title band, and Faustina in ink on a
+   recipe's white card; each face's name is set in itself */
+.cs-faces {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ring);
+  background: var(--mark);
+}
+.cs-faces li {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: calc(14 * var(--u));
+}
+.cs-faces li.is-display { background: #ff7e7d; }
+.cs-faces li.is-prose { background: #fff; }
+.cs-faces .cs-type-aa { flex: 1; display: grid; place-items: center; padding-top: calc(8 * var(--u)); font-size: calc(84 * var(--u)); }
+.cs-faces .cs-type-aa.cs-type-display { color: #fff; }
+.cs-faces b { font-weight: 400; font-size: max(12px, calc(15 * var(--u))); line-height: 1.2; }
+.cs-faces .is-display b { font-family: 'PP Fugaz One', system-ui, sans-serif; }
+.cs-faces .is-prose b { font-family: 'PP Faustina', Georgia, serif; font-weight: 600; font-size: max(14px, calc(18 * var(--u))); line-height: 1.1; }
+.cs-faces li > span:last-child { margin-top: calc(3 * var(--u)); font-size: max(10px, calc(11 * var(--u))); line-height: 1.2; letter-spacing: 0.04em; color: rgb(0 0 0 / 0.6); }
+
+/* The sheet is drawn in the page's unit, so it holds its shape as the
+   lane narrows; only the palette's chips run out of room for their names
+   first, and under 700 they stand two by two. Under 520, a phone's lane,
+   the three stand one over another, the chef first. (It stood in one
+   column from 640 down, which on a window of about 1000 by 720 put the
+   chef alone on a whole screen.) */
+@container lane (max-width: 700px) {
+  .cs-look-paint { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container lane (max-width: 520px) {
+  .cs-look { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .cs-kitchen { grid-row: auto; }
+  .cs-look-paint { grid-template-columns: repeat(4, minmax(0, 1fr)); height: calc(150 * var(--u)); }
+  .cs-faces { height: calc(190 * var(--u)); }
+}
 
 /* ---- Next Level: Madrid, a map with two prints on it ---- */
 /* (560 tall until October 2026: with the chapter's head and its story
@@ -2927,7 +3032,7 @@ html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
 @media (prefers-reduced-motion: reduce) {
   .cs-stage > *, .cs-stage > [data-on] { translate: 0 0; filter: none; transition-duration: 0.2s; transition-delay: 0s; }
   .cs-lift:hover, .cs-hero-tile:hover .cs-hero-art > *, .cs-next:hover .cs-hero-art > * { translate: 0 0; }
-  .cs-kitchen-food img { animation: none; }
+  .cs-kitchen-food img, .cs-kitchen-rays { animation: none; }
 }
 
 /* ---- a narrower column ----
@@ -2998,7 +3103,6 @@ html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
   .cs-head { margin-top: calc((var(--menu-size) - var(--title-h)) / 2); gap: 6px; }
   .cs-next, .cs-tile, .cs-stat { border-radius: 26px; }
   .cs-next .cs-hero-art { height: 300px; margin-left: 20px; }
-  .cs-awning { border-radius: 26px; }
 }
 
 /* ======================================================================
@@ -3031,74 +3135,44 @@ html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
   pointer-events: none;
 }
 
-/* ---- the demo: the app itself, and the shelf it answers to ----
-   The phone stands on the band's floor, running the app
-   (assets/case/pantrypal/app), and beside it one of the app's own cards
-   holds what feeds it: every ingredient the bundled book knows, as the
-   app's stickers, stocked or not; the chef's five rules run under both.
-   The phone is drawn at the app's points inside, so it can stand at any
-   size here. (It stood inside the card, three frames deep in the band.
-   With the rules in the card too, the card ran half again the phone's
-   height on a laptop.) */
-.cs-bench {
-  /* The phone as tall as the window lets it stand whole beside the card,
-     under the masthead and the band's own air, and never wider than 340,
-     nor than two fifths of the band, which leaves the shelf room for its
-     stickers. The phone is 800 by 1636. (At 340 in any window it stood
-     780 tall on a laptop, and the shelf and its phone could not be seen
-     at once.) */
-  --phone-w: min(calc(340 * var(--u)), (100cqw - 80 * var(--u)) * var(--phone-share, 0.44), (100svh - var(--cs-top) - var(--phone-air, 64 * var(--u))) * 0.489);
+/* ---- the demo: the app itself, on a phone ----
+   The phone is the chapter, standing on the page on its own under the
+   chapter's opener (its sticker, "Live app!", the rule, the caption, as
+   every chapter opens), with "Start over" under its foot. PantryPal is on
+   its home screen, opens from its icon and runs as the App Store build
+   does (assets/case/pantrypal/app), drawn at the app's points inside so it
+   can stand at any size here. Opener, phone and button stand together in
+   one window: a link to the chapter lands with the opener 24 under the
+   window's top, the masthead's buttons clear at the sides, and the phone
+   as tall as the window leaves under it, never wider than 440. (Until
+   November 2026 the phone stood in the app's butter under its awning, a
+   card of its own; for a while before that under the chapter's title and
+   a line about it, which put its foot under the fold; before that beside a
+   card of the flow it walked, and a shelf of stickers.) */
+#try.cs-phonesec { scroll-margin-top: calc(24 * var(--u) - var(--sec-pad)); }
+.cs-phonesec-head { margin-bottom: calc(20 * var(--u)); }
+.cs-phonestage {
+  --phone-w: min(calc(440 * var(--u)), 100cqw - 40 * var(--u), (100svh - 190 * var(--u)) * 0.489);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--phone-w);
-  column-gap: calc(40 * var(--u));
-  align-items: center;
-}
-.cs-demo {
-  --pad-x: calc(30 * var(--u));
-  --plank-bleed: calc(var(--pad-x) - 2.5 * var(--u));
-  display: grid;
-  gap: calc(22 * var(--u));
-  align-content: start;
-  padding: calc(28 * var(--u)) var(--pad-x) calc(26 * var(--u));
-}
-/* the rules under both, named, flowing on from one another (below) */
-.cs-rules {
-  display: grid;
+  justify-items: center;
   gap: calc(12 * var(--u));
-  margin-top: var(--air-work);
 }
-.cs-rules-note {
-  max-width: 46em;
-  font-size: var(--t-small);
-  line-height: 1.4;
-  color: #6b5a32;
-  text-wrap: pretty;
-}
-.cs-rules-name {
-  font-size: var(--t-micro);
-  line-height: 1.3;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: #6b5a32;
-}
-.cs-tile.cs-demo > * { margin-top: 0; }
 .cs-demo-phone {
   position: relative;
+  width: var(--phone-w);
   filter:
     drop-shadow(0 calc(2 * var(--u)) calc(3 * var(--u)) color-mix(in oklab, var(--deep) 16%, transparent))
-    drop-shadow(0 calc(28 * var(--u)) calc(36 * var(--u)) color-mix(in oklab, var(--deep) 34%, transparent));
+    drop-shadow(0 calc(28 * var(--u)) calc(36 * var(--u)) color-mix(in oklab, var(--deep) 30%, transparent));
 }
-/* until the app has painted, the phone is the capture it replaces */
-.cs-demo-phone:not(.pp-device) { aspect-ratio: 800 / 1636; background: 0 0 / 100% auto no-repeat; }
+/* until the app has painted, the phone is its frame on a dark screen */
+.cs-demo-phone:not(.pp-device) {
+  aspect-ratio: 900 / 1840;
+  background:
+    url(../assets/case/pantrypal/app/frame.webp) 0 0 / 100% 100% no-repeat,
+    radial-gradient(60% 40% at 30% 25%, #4a5466, #262c37 70%) 5.4% 2.5% / 89.2% 94.9% no-repeat;
+}
 .cs-demo-phone.pp-device { background: none; }
-
-.cs-shelf { display: grid; gap: calc(18 * var(--u)); min-width: 0; }
-/* The shelves to start from are words of the sentence that offers them,
-   each in the app's ink ring, the one the shelf is on now in the app's
-   butter; the lines stand apart enough for a ring between them. (They
-   were three chips of their own under the sentence, which on a laptop
-   wrapped to two rows and cost the shelf a row of stickers.) */
-.cs-shelf-how { line-height: 1.72; }
+/* a word to press, in the app's ink ring */
 .cs-preset {
   display: inline-block;
   padding: 0 calc(7 * var(--u));
@@ -3113,140 +3187,10 @@ html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.2s ease, scale var(--t-pop) var(--spring-pop);
 }
-.cs-preset[aria-pressed='true'] { background: #ffd67e; }
-@media (hover: hover) { .cs-preset:not([aria-pressed='true']):hover { background: #fff1c9; } }
+@media (hover: hover) { .cs-preset:hover { background: #fff1c9; } }
 .cs-preset:active { scale: 0.95; transition-duration: 90ms; }
 .cs-preset:focus-visible { outline: 2px solid var(--deep); outline-offset: 2px; }
-
-.cs-shelf-groups { display: grid; gap: calc(11 * var(--u)); container: shelf / inline-size; }
-.cs-shelf-group { display: grid; gap: calc(6 * var(--u)); }
-/* Each shelf is named on the app's own plank (ShelfScreen's
-   WoodShelfHeader): its wood, with the groove the app's crop of it shows,
-   an ink line along its foot, and the name in Fugaz, white in a black
-   outline (DS OutlinedText), from the left as the app sets it. The plank
-   runs the card's width, ring to ring, as the app's runs the screen's.
-   (The names were the page's own small grey words over each shelf, or
-   beside it in a column of their own.) */
-.cs-plank {
-  display: flex;
-  align-items: center;
-  height: calc(23 * var(--u));
-  margin: 0 calc(-1 * var(--plank-bleed, 0px));
-  /* the name a point low of the middle, its capitals centred as the
-     app's sit, and the groove a third of the way down, behind them */
-  padding: calc(2.2 * var(--u)) calc(var(--plank-bleed, 0px) + 9 * var(--u)) 0;
-  background: #8a6a4c url(../assets/case/pantrypal/app/plank.webp) 50% 46% / 100% auto;
-  box-shadow: inset 0 calc(1.5 * var(--u)) 0 var(--mark), inset 0 calc(-1.5 * var(--u)) 0 var(--mark);
-  font-family: 'PP Fugaz One', system-ui, sans-serif;
-  font-size: calc(14 * var(--u));
-  line-height: 1;
-  color: #fff;
-  --o: calc(1.25 * var(--u));
-  --d: calc(0.884 * var(--u));
-  text-shadow:
-    var(--o) 0 0 var(--mark), var(--d) var(--d) 0 var(--mark),
-    0 var(--o) 0 var(--mark), calc(-1 * var(--d)) var(--d) 0 var(--mark),
-    calc(-1 * var(--o)) 0 0 var(--mark), calc(-1 * var(--d)) calc(-1 * var(--d)) 0 var(--mark),
-    0 calc(-1 * var(--o)) 0 var(--mark), var(--d) calc(-1 * var(--d)) 0 var(--mark);
-}
-/* Square stickers in columns every shelf shares, so they line up down the
-   card, as many as the width holds at --sticker-min or more, and each
-   shelf's own stickers shared out evenly over the rows it needs
-   (js/pantry-demo.js fit writes the count, --c, and each shelf's share
-   of it, --per). Until the script has counted, as many as fit. */
-@property --sticker-min { syntax: '<length>'; inherits: true; initial-value: 32px; }
-@property --sticker-max { syntax: '<length>'; inherits: true; initial-value: 44px; }
-/* (the least a sticker may be: thirty units, but never under 29, where a
-   drawing stops reading, nor over 34, so a wide card can still put every
-   shelf on one row; and the most, thirty-six) */
-.cs-shelf-groups { --sticker-min: clamp(29px, calc(30 * var(--u)), 34px); --sticker-max: calc(36 * var(--u)); --sticker-gap: calc(5 * var(--u)); }
-.cs-shelf-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--sticker-min), 1fr));
-  gap: var(--sticker-gap);
-}
-.cs-shelf-groups[style*='--c'] .cs-shelf-items {
-  grid-template-columns: repeat(var(--per), calc((100% - (var(--c) - 1) * var(--sticker-gap)) / var(--c)));
-}
-/* a sticker: stocked, it stands on a white plate at full colour; taken off
-   the shelf, it goes pale and grey on the frost, and the chef stops
-   counting it */
-.cs-food {
-  position: relative;
-  display: grid;
-  place-items: center;
-  /* square, whatever the drawing: a grid item's automatic minimum height
-     let a tall bottle stretch its tile past the row */
-  aspect-ratio: 1;
-  min-width: 0;
-  min-height: 0;
-  border-radius: 30%;
-  background: rgb(255 255 255 / 0.38);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.6);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.2s ease, box-shadow 0.25s ease, scale var(--t-pop) var(--spring-pop);
-}
-.cs-food img {
-  position: absolute;
-  inset: 13%;
-  width: 74%;
-  height: 74%;
-  object-fit: contain;
-  opacity: 0.45;
-  filter: grayscale(0.85);
-  transition: opacity 0.2s ease, filter 0.25s ease, translate var(--t-pop) var(--spring-pop);
-}
-.cs-food[aria-pressed='true'] {
-  background: #fff;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--deep) 14%, transparent),
-    0 calc(6 * var(--u)) calc(14 * var(--u)) calc(-8 * var(--u)) color-mix(in oklab, var(--deep) 50%, transparent);
-}
-.cs-food[aria-pressed='true'] img { opacity: 1; filter: none; }
-.cs-food:active { scale: 0.9; transition-duration: 90ms; }
-.cs-food.is-new img { animation: cs-food-in var(--t-pop) var(--spring-pop); }
-@keyframes cs-food-in { from { translate: 0 calc(-10 * var(--u)); } }
-/* "here": asked for by the phone (its "Type my groceries", its title, its
-   wardrobe), the stickers hop one after another, a wave across the shelf
-   (js/pantry-demo.js call) */
-.cs-shelf.is-called .cs-food img { animation: cs-food-hop 0.46s var(--ease-rise) calc(var(--k, 0) * 14ms) both; }
-@keyframes cs-food-hop { 40% { translate: 0 calc(-7 * var(--u)); scale: 1.08; } }
-.cs-food:focus-visible { outline: 2px solid var(--deep); outline-offset: 2px; }
-/* its name, in a small frosted tag, while pointed at or focused */
-.cs-food::after {
-  content: attr(data-name);
-  position: absolute;
-  z-index: 4;
-  left: 50%;
-  bottom: calc(100% + 6 * var(--u));
-  translate: calc(-50% + var(--tag-x, 0px)) calc(4 * var(--u));
-  padding: calc(6 * var(--u)) calc(10 * var(--u));
-  border-radius: 99px;
-  background: var(--surface);
-  box-shadow: 0 calc(6 * var(--u)) calc(16 * var(--u)) calc(-6 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
-  font-size: calc(17 * var(--u));
-  line-height: 1;
-  letter-spacing: 0;
-  color: var(--pastel-ink);
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease, translate var(--t-snap) var(--spring-snap);
-}
-.cs-food:is(:hover, :focus-visible)::after { opacity: 1; translate: calc(-50% + var(--tag-x, 0px)) 0; }
-@media (hover: none) { .cs-food::after { display: none; } }
-
-.cs-shelf-read {
-  min-height: calc(2 * 1.3em);
-  font-size: var(--t-small);
-  line-height: 1.3;
-  letter-spacing: 0;
-  color: var(--tile-ink);
-  text-wrap: pretty;
-}
-.cs-shelf-read b { font-weight: inherit; color: var(--pastel-ink); }
-.cs-shelf-read-art { display: none; }
+.cs-phonestage-restart { padding: calc(4 * var(--u)) calc(12 * var(--u)); border-radius: calc(10 * var(--u)); font-size: var(--t-small); }
 
 .cs-type-display {
   font-family: 'PP Fugaz One', system-ui, sans-serif;
@@ -3264,91 +3208,197 @@ html:active-view-transition-type(case)::view-transition-old(case-nextlevel) {
   letter-spacing: 0;
 }
 
-/* ---- the four ways out: what each counted ----
-   Each way's three counts, a label over a row of dots and its number
-   (below, "the four ways out, side by side"). */
-.cs-concept-nums {
-  display: grid;
-  gap: calc(6 * var(--u));
-  margin-top: calc(18 * var(--u)) !important;
-  padding-top: calc(14 * var(--u));
-  border-top: 1px solid color-mix(in oklab, var(--deep) 14%, transparent);
-}
-.cs-concept-nums div { display: flex; justify-content: space-between; gap: calc(8 * var(--u)); font-size: var(--t-small); line-height: 1.3; letter-spacing: 0; color: var(--tile-ink-2); }
-.cs-concept-nums b { font-weight: inherit; color: var(--pastel-ink); font-variant-numeric: tabular-nums; }
-
-/* ---- PantryPal: the hub, counted ----
-   The old first screen, and what was wrong with it, each finding drawn
-   to the place on the screen it is about: the screen as a whole, its two
-   kinds of plus, and the basket the recipes hid behind (js/pantry-story.js
-   draws the lines, whatever the words beside the screen wrap to). Beside
-   them its fourteen things, in the three kinds its markers are coloured
-   by. (The findings were three white notes numbered 1 to 3, beside a
-   screen numbered 1 to 14, and none of them pointed at anything.) */
+/* ---- PantryPal: the hub, in the dark ----
+   The old first screen with the lights off but for what it asked you to
+   tap: fourteen windows onto the same screen, in the three kinds they come
+   in (the foods in the brand's red, the shelf tabs in honey, the buttons in
+   the app's own green). Seen at once, they are the finding; nothing has to
+   point at them. Beside the screen, the one number that says it, as large
+   as the tile will carry, over a row of fourteen bulbs, a bulb a window.
+   As the tile rises the screen goes dark and the windows light one after
+   another, each with a ping; with each one the number counts on by one
+   (01 to 14) and its bulb comes on, so the count is the lights, not a
+   number rolled up beside them.
+   (It was a screenshot with fourteen numbered markers baked over it, which
+   covered half the tabs' names, beside three findings with a paragraph
+   each and lines drawn from them to the screen: three columns of words
+   for one picture. The next try kept two smaller counts beside the screen,
+   three taps to a recipe and two meanings for one plus, and they only
+   took the eye off the fourteen.)
+   Each window is a piece of the screen itself, the same picture laid at
+   the same place over the dark (the figure is a container, so one of the
+   picture's pixels is 100cqw / 459), so the dark never has to have holes
+   cut in it. Places and sizes are in the picture's own pixels, and the
+   two buttons' outer bottom corners (--bl, --br) follow the screen's own
+   curve, or their windows would light a corner of the bezel. */
 .cs-hub {
+  --phone: calc(232 * var(--u));
+  --t: min(var(--u), (100cqw - var(--phone) - 200 * var(--u)) / 340);
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
-  gap: calc(40 * var(--u));
+  grid-template-columns: auto var(--phone);
+  justify-content: space-evenly;
+  column-gap: calc(40 * var(--u));
   align-items: center;
-  padding: calc(32 * var(--u));
+  padding: calc(44 * var(--u));
 }
 .cs-tile.cs-hub > * { margin-top: 0; }
-.cs-hub-words { display: grid; align-content: center; }
-.cs-hub-stage { position: relative; display: grid; grid-template-columns: calc(206 * var(--u)) minmax(0, 1fr); column-gap: calc(56 * var(--u)); }
-.cs-hub-shot { position: relative; z-index: 1; display: block; }
-.cs-hub-shot img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: calc(22 * var(--u));
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent),
-    0 calc(22 * var(--u)) calc(40 * var(--u)) calc(-20 * var(--u)) color-mix(in oklab, var(--deep) 50%, transparent);
-}
-.cs-hub-finds { position: relative; z-index: 1; display: grid; align-content: space-between; gap: calc(22 * var(--u)); padding: calc(4 * var(--u)) 0; list-style: none; }
-.cs-find-name { font-size: var(--t-name); line-height: 1.2; letter-spacing: -0.014em; color: var(--pastel-ink); text-wrap: balance; }
-.cs-find-body { margin-top: calc(6 * var(--u)); font-size: var(--t-small); line-height: 1.42; color: var(--tile-ink); text-wrap: pretty; }
-.cs-hub-leaders { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; overflow: visible; pointer-events: none; color: var(--deep); }
-.cs-hub-leaders path { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; opacity: 0.62; }
-.cs-hub-leaders .is-dot { fill: currentColor; }
-.cs-hub-leaders .is-ring { fill: rgb(255 255 255 / 0.35); stroke: currentColor; stroke-width: 1.4; opacity: 0.7; }
-html.rises .cs-hub:not(.is-risen) .cs-hub-leaders path { stroke-dashoffset: 1; }
-html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
-.cs-hub.is-risen .cs-hub-leaders path { transition: stroke-dashoffset 0.8s var(--ease-draw) calc(0.9s + var(--i, 0) * 0.3s); }
-.cs-hub.is-risen .cs-hub-leaders circle { transition: opacity 0.3s ease calc(1.5s + var(--i, 0) * 0.3s); }
-/* over the stage in a laptop's narrower column, the count beside its sum */
-@container lane (max-width: 900px) {
-  .cs-hub { grid-template-columns: minmax(0, 1fr); gap: calc(30 * var(--u)); }
-  .cs-hub-words { grid-template-columns: minmax(0, 1fr) auto; column-gap: calc(40 * var(--u)); align-items: end; }
-  .cs-hub-words > .cs-eyebrow { grid-column: 1 / -1; }
-  .cs-hub-kinds { margin: 0 0 calc(4 * var(--u)); }
-}
-/* a phone's: the screen over its findings, and no lines to draw */
-@container lane (max-width: 560px) {
-  .cs-hub { padding: 26px 22px; }
-  .cs-hub-words { grid-template-columns: minmax(0, 1fr); }
-  .cs-hub-kinds { margin-top: 20px; }
-  .cs-hub-stage { grid-template-columns: minmax(0, 1fr); row-gap: 26px; }
-  .cs-hub-shot { width: min(230px, 66%); justify-self: center; }
-  .cs-hub-leaders { display: none; }
-}
+.cs-hub .is-food { --kind: #ff4b4b; }
+.cs-hub .is-tab { --kind: #e8a33d; }
+.cs-hub .is-button { --kind: #45b441; }
+/* one window, its bulb and its count all keep the same time */
+.cs-hub [style*='--k'] { --at: calc(0.7s + var(--k, 0) * 0.085s); }
 
-/* ---- a verdict said as the chat says an answer, with who said it ---- */
-/* A verdict quoted: the words a size up in the page's ink on a rule of the
-   case's deep colour, as a page quotes, and who gave it under them (it
-   was a grey chat answer, which made the verdict read as a message) */
-.cs-quote { display: grid; justify-items: start; gap: calc(12 * var(--u)); padding-left: calc(22 * var(--u)); border-left: calc(3 * var(--u)) solid color-mix(in oklab, var(--deep) 55%, transparent); }
-.cs-quote p {
-  max-width: 24em;
-  padding-left: 0.42em;
-  text-indent: -0.42em;
-  font-size: var(--t-lead);
-  line-height: 1.28;
-  letter-spacing: var(--track-lead);
-  color: var(--ink);
-  text-wrap: pretty;
+.cs-hub-phone { position: relative; justify-self: center; width: var(--phone); container-type: inline-size; --px: calc(100cqw / 459); }
+.cs-hub-phone img { width: 100%; }
+.cs-hub-dark, .cs-hub-lights { position: absolute; pointer-events: none; }
+.cs-hub-dark {
+  left: calc(33 * var(--px));
+  top: calc(37 * var(--px));
+  width: calc(387 * var(--px));
+  height: calc(836 * var(--px));
+  border-radius: calc(46 * var(--px));
+  background: rgb(24 14 10 / 0.7);
+  -webkit-backdrop-filter: saturate(0.45);
+  backdrop-filter: saturate(0.45);
+  transition: opacity 0.6s ease 0.2s;
 }
-.cs-quote figcaption { color: var(--ink-3); }
+.cs-hub-lights { inset: 0; }
+.cs-hub-lights i {
+  position: absolute;
+  left: calc(var(--x) * var(--px));
+  top: calc(var(--y) * var(--px));
+  width: calc(var(--w) * var(--px));
+  height: calc(var(--h) * var(--px));
+  border-radius: calc(12 * var(--px)) calc(12 * var(--px)) calc(var(--br, 12) * var(--px)) calc(var(--bl, 12) * var(--px));
+  background: url(../assets/case/pantrypal/figma/figma-2.webp) calc(var(--x) * var(--px) * -1) calc(var(--y) * var(--px) * -1) / 100cqw auto no-repeat;
+  box-shadow:
+    0 0 0 calc(1.5 * var(--u)) var(--kind),
+    0 0 calc(14 * var(--u)) color-mix(in oklab, var(--kind) 55%, transparent);
+  transition: opacity 0.25s ease;
+}
+/* the ping each window gives as it lights: its ring thrown out and gone */
+.cs-hub-lights i::after { content: ''; position: absolute; inset: 0; border-radius: inherit; opacity: 0; }
+html.rises .cs-hub:not(.is-risen) .cs-hub-dark,
+html.rises .cs-hub:not(.is-risen) .cs-hub-lights i { opacity: 0; }
+.cs-hub.is-risen .cs-hub-lights i { animation: cs-hub-light 0.4s ease-out var(--at) backwards; }
+.cs-hub.is-risen .cs-hub-lights i::after { animation: cs-hub-ping 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) var(--at); }
+@keyframes cs-hub-light { from { opacity: 0; } }
+@keyframes cs-hub-ping {
+  from { opacity: 1; box-shadow: 0 0 0 0 var(--kind); }
+  to { opacity: 0; box-shadow: 0 0 0 calc(14 * var(--u)) var(--kind); }
+}
+/* a kind pointed at under the count leaves only its own windows lit */
+.cs-hub:has(.cs-hub-tally .is-food:hover) .cs-hub-lights i:not(.is-food),
+.cs-hub:has(.cs-hub-tally .is-tab:hover) .cs-hub-lights i:not(.is-tab),
+.cs-hub:has(.cs-hub-tally .is-button:hover) .cs-hub-lights i:not(.is-button) { opacity: 0; }
+.cs-hub-tally:has(li:hover) li:not(:hover) { opacity: 0.35; }
+
+/* The count, and the screen beside it, stand as one pair in the middle of
+   the tile, the same air either side of them and between. Everything in
+   the count is measured in --t, a unit that is the page's --u until the
+   tile is too narrow to hold the screen and 340 of them (the count's
+   width) side by side, so the number and the bulbs under it shrink
+   together and keep one width. The bulbs are spread to the number's own
+   ends, and the number is drawn in by the 1's side bearing, so its ink
+   stands on the words' left edge. Its two digits are a counter (it
+   counts on with the windows: a registered integer, so it can be
+   animated, stepping once a window), always two digits wide, so the
+   column never jumps as it goes from 09 to 10; the real 14 is beside it
+   for a reader, and is what shows without script or under reduced motion. */
+@property --hub-n { syntax: '<integer>'; inherits: false; initial-value: 14; }
+.cs-hub-sum { display: grid; }
+.cs-hub-count { display: grid; justify-items: start; }
+.cs-hub-count b { font-weight: inherit; }
+.cs-hub-n {
+  display: block;
+  margin-left: -0.126em;
+  font-size: calc(308 * var(--t));
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--pastel-ink);
+  counter-reset: hub var(--hub-n, 14);
+}
+.cs-hub-n::before { content: counter(hub, decimal-leading-zero); }
+html.rises .cs-hub:not(.is-risen) .cs-hub-n { --hub-n: 0; }
+/* a beat behind each window's own start, so it counts the window once it shows */
+.cs-hub.is-risen .cs-hub-n { animation: cs-hub-count calc(14 * 0.085s) steps(14, jump-start) 0.82s backwards; }
+@keyframes cs-hub-count { from { --hub-n: 0; } to { --hub-n: 14; } }
+.cs-hub-count > span { margin-top: calc(22 * var(--t)); font-size: max(16px, calc(23 * var(--t))); line-height: 1.25; letter-spacing: -0.014em; color: var(--pastel-ink); }
+
+/* the tally: a bulb a window, unlit rings until each window lights, its
+   kind under each run of them */
+.cs-hub-tally { display: flex; justify-content: space-between; gap: calc(20 * var(--t)); margin-top: calc(36 * var(--t)); padding-top: calc(22 * var(--t)); border-top: 1px solid color-mix(in oklab, var(--deep) 16%, transparent); list-style: none; }
+.cs-hub-tally li { display: grid; gap: calc(12 * var(--t)); font-size: max(12px, calc(15 * var(--t))); line-height: 1.2; color: var(--tile-ink); white-space: nowrap; cursor: default; transition: opacity 0.25s ease; }
+.cs-hub-bulbs { display: flex; gap: calc(6 * var(--t)); }
+.cs-hub-bulbs i {
+  position: relative;
+  flex: none;
+  width: calc(12 * var(--t));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 max(1px, calc(1.5 * var(--t))) color-mix(in oklab, var(--kind) 45%, transparent);
+}
+.cs-hub-bulbs i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--kind);
+  box-shadow:
+    0 0 0 calc(3 * var(--t)) color-mix(in oklab, var(--kind) 18%, transparent),
+    0 0 calc(12 * var(--t)) color-mix(in oklab, var(--kind) 50%, transparent);
+}
+html.rises .cs-hub:not(.is-risen) .cs-hub-bulbs i::after { scale: 0; }
+.cs-hub.is-risen .cs-hub-bulbs i::after { animation: cs-hub-bulb var(--t-pop) var(--spring-pop) var(--at) backwards; }
+@keyframes cs-hub-bulb { from { scale: 0; } }
+
+/* The verdict, as one of the case's stickers (the app's white button,
+   ringed and set down on its ink, as the chapters' words are): a brain in
+   the app's coral throwing off sparks, and what it is, slapped on the
+   card's top edge once the count has come to fourteen, at its right,
+   under the words it is the verdict on, and over the screen's column
+   but clear of the screen, so it labels the finding without lying over
+   the design. (At the left it sat under the chapter's deck, which ends
+   lower than its words do, and crowded it.) The card lets it hang over
+   its edge. */
+.cs-tile.cs-hub { overflow: visible; }
+.cs-tile.cs-hub > .cs-hub-flag {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: calc(44 * var(--u));
+  display: inline-flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  height: calc(48 * var(--u));
+  margin: 0;
+  padding: 0 calc(22 * var(--u)) 0 calc(13 * var(--u));
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(2.5 * var(--u)) var(--mark), 0 calc(4 * var(--u)) 0 var(--mark);
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  font-size: max(15px, calc(21 * var(--u)));
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--mark);
+  translate: 0 -55%;
+  rotate: 2.5deg;
+}
+.cs-hub-flag svg { flex: none; width: calc(32 * var(--u)); height: auto; overflow: visible; }
+.cs-hub-flag .is-brain { fill: #ff7e7d; stroke: var(--mark); stroke-width: 2; }
+.cs-hub-flag .is-fold { stroke: var(--mark); stroke-width: 1.6; }
+.cs-hub-flag .is-spark { stroke: var(--mark); stroke-width: 2.2; }
+html.rises .cs-hub:not(.is-risen) .cs-hub-flag { opacity: 0; }
+.cs-hub.is-risen .cs-hub-flag { animation: cs-hub-slap 0.55s var(--spring-pop) 2.05s backwards; }
+@keyframes cs-hub-slap { from { opacity: 0; scale: 1.8; rotate: 12deg; } }
+
+/* a phone's: the count over the screen, both centred */
+@container lane (max-width: 560px) {
+  .cs-hub { --phone: min(230px, 64cqw); --t: min(var(--u), (100cqw - 44px) / 340); grid-template-columns: auto; justify-content: center; row-gap: 34px; padding: 40px 22px 34px; }
+  .cs-tile.cs-hub > .cs-hub-flag { right: 16px; }
+}
 
 /* ---- the store page: the listing's own panels, as the store lays them ---- */
 .cs-store {
@@ -3760,58 +3810,19 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
 .cs-scale-control input[type='range']:focus-visible { outline: 2px solid var(--deep); outline-offset: 4px; border-radius: 99px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-food, .cs-food img { transition-duration: 0.01s; }
-  .cs-food.is-new img, .cs-shelf.is-called .cs-food img { animation: none; }
   .cs-ways.is-playing *, .cs-interview-stage > [data-on] *, .cs-spec *, .cs-live-dot, .cs-pill[data-run] svg, .cs-site-page img { animation: none !important; }
   .cs-ways.is-playing .cs-typing, .cs-interview-stage .cs-typing { display: none !important; }
 }
 
-/* The living pieces in a column under 1000, which is every desktop's: the
-   running app's phone stands narrower beside its shelf, in a card with
-   less air round it, so the shelf keeps room for its stickers (with the
-   phone at 38, the meat, the produce and the dairy took two and three
-   rows each, and the card was taller than a window). (The board in
-   miniature beside the agent's chat was shrunk a step further here; it
-   now stands in two rows that fit the half column as drawn, above, "two
-   ways to build".) */
-@container lane (max-width: 999px) {
-  .cs-awning { padding: calc(var(--strip) + var(--sc) + 36 * var(--u)) calc(28 * var(--u)) calc(36 * var(--u)); }
-  .cs-bench { column-gap: calc(28 * var(--u)); }
-  .cs-demo { --pad-x: calc(20 * var(--u)); padding-top: calc(22 * var(--u)); padding-bottom: calc(20 * var(--u)); }
-}
-/* The living pieces in a narrow lane: side-by-side pieces stack, the
-   phone stands over its shelf, and rows scroll sideways. */
+/* The living pieces in a narrow lane: side-by-side pieces stack, and rows
+   scroll sideways. */
 @container lane (max-width: 500px) {
   .cs-store { grid-template-columns: repeat(5, 200px); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .cs-store li { scroll-snap-align: start; }
-  /* a phone's column: the phone first, then the card that feeds it */
-  .cs-bench { grid-template-columns: minmax(0, 1fr); row-gap: 28px; }
-  .cs-demo { --pad-x: 22px; padding-top: 24px; padding-bottom: 22px; }
-  .cs-demo-phone { order: -1; width: min(300px, 80%); justify-self: center; }
-  /* the shelves to start from, big enough for a finger, on lines far
-     enough apart for the rings */
-  .cs-shelf-how { line-height: 2.15; }
-  .cs-preset { padding: 3px 9px; line-height: 1.35; }
-  /* Under the phone, a press on the shelf changes a screen that has
-     scrolled away above it, so what the chef decided rides along the
-     window's foot while the shelf is in view, led by the dish's own
-     drawing, over the app's rough ink rule, and settles at the shelf's
-     foot when the shelf has been read. */
-  .cs-shelf-read {
-    position: sticky;
-    bottom: 0;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 0;
-    margin: 0 calc(-1 * var(--plank-bleed));
-    padding: 17px calc(var(--plank-bleed) + 2px) 12px;
-    background: url(../assets/case/pantrypal/app/rule.webp) 0 0 / auto 7px repeat-x, #fffaf0;
-  }
-  .cs-shelf-read-art { display: block; flex: none; width: 46px; height: 46px; object-fit: contain; }
-  .cs-shelf-read .cs-read-lead { display: none; }
-  .cs-shelf-read b { display: block; font-size: 16px; line-height: 1.25; }
+  .cs-phonestage-restart { padding: 7px 14px; }
+  /* on a phone the masthead's buttons stand over the lane, so the phone
+     lands under them, as any chapter does, and stands no taller than it is */
+  #try.cs-phonesec { scroll-margin-top: calc(var(--cs-top) + 24 * var(--u) - var(--sec-pad)); }
   .cs-history { grid-template-columns: minmax(0, 1fr); padding: 16px; }
   .cs-history-stage { min-height: 360px; }
   /* the two badges stay side by side, to be shrunk and compared at the
@@ -3824,8 +3835,6 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
   /* the floors that keep a desktop row of tiles level leave a phone's
      single column full of air: there the words set the height */
   .cs-stat { min-height: 0; gap: 18px; }
-  /* a finger's stickers: none under 38 */
-  .cs-shelf-groups { --sticker-min: 38px; --sticker-max: 48px; --sticker-gap: 6px; }
 }
 
 /* ======================================================================
@@ -5174,181 +5183,152 @@ html.rises .cs-hub:not(.is-risen) .cs-hub-leaders circle { opacity: 0; }
 @media (hover: hover) { .cs-belt:hover .cs-belt-row { animation-play-state: paused; } }
 
 /* ---- PantryPal: the problem, in two pictures and a question ----
-   The food thrown away, as a hundred of the app's own stickers falling
-   out of a waffle; the recipes that start from themselves, as three of
-   the app's dinners read against a breakfast fridge; and the question
-   the two leave, set as the chapter's last word. Not on a plate or in a
-   bubble: a bubble made the brief a chat. (It was the two numbers, the
-   recipes as a greyed belt of dishes running past, and the question in a
-   message bubble, "which raises the question" over it.) */
-/* the two pictures one over the other, each its picture beside its words
-   (side by side in a wide lane, the dinners' column was too narrow for a
-   dinner's ingredients, and the waffle's tile stood half empty beside it) */
-.cs-problem { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+   Two facts, each a drawing of the same cook beside its words: the food
+   thrown away, as the cook tipping a plate of good food into a full bin,
+   signed with USDA's own symbol; the recipes written for no one, as the
+   cook too tired to scroll a column of strangers' dinners; and the
+   question the two leave, set as the chapter's last word. Not on a plate
+   or in a bubble: a bubble made the brief a chat. (It was the two
+   numbers, the recipes as a greyed belt of dishes running past, and the
+   question in a message bubble, "which raises the question" over it; then
+   a waffle of a hundred of the app's stickers, the last thirty falling
+   out, beside three of its dinners read against a breakfast fridge.) */
+/* the two one over the other, each its drawing beside its words, and the
+   two always one height, the taller one's (the first's words, with their
+   source under them, can stand taller than its drawing) */
+.cs-problem { display: grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; gap: var(--gap); align-items: stretch; }
 
-/* A waffle of the app's stickers, ten by ten, one sticker a percent of
-   the food supply (js/pantry-story.js lays the hundred out). As the tile
-   rises the last thirty fall out of it, the last first, each with a
-   little lift and a turn of its own, and leave their places dashed and
-   empty, as the app leaves a shelf's empty places; the ten before them,
-   the range up to forty, go pale and stay. (They went grey where they
-   stood, tipped nine degrees, and read as a fridge gone off rather than
-   food thrown out.) */
-.cs-waste {
+/* The two are one tile twice, mirrored: a drawing in one half and the
+   words in the other, the first drawing on the left and the second on the
+   right, so the two cooks stand nearest the page's middle. Each drawing
+   stands on its tile's foot, which cuts the cook's legs as a floor would,
+   so it needs no shadow of its own, and each is drawn on nothing, so the
+   tile's light shows through, as the story map's pictures do. Both were
+   drawn with Gemini (Nano Banana Pro) after the story map's pictures, the
+   bin from the desk's cook, lifted off their white, and set in pictures
+   of one size, the cook drawn at nearly one size in each. */
+.cs-waste, .cs-endless {
   display: grid;
-  grid-template-columns: clamp(220px, 36%, calc(270 * var(--u))) minmax(0, 1fr);
-  gap: calc(40 * var(--u));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: calc(24 * var(--u)) calc(32 * var(--u));
   align-items: center;
-  padding: calc(26 * var(--u)) calc(28 * var(--u));
+  padding: calc(24 * var(--u)) calc(28 * var(--u));
 }
-.cs-tile.cs-waste > * { margin-top: 0; }
-.cs-waste-grid {
-  display: grid;
-  grid-template-columns: repeat(10, minmax(0, 1fr));
-  gap: calc(5 * var(--u));
-}
-.cs-waste-grid i {
-  position: relative;
-  display: block;
-  aspect-ratio: 1;
-  min-width: 0;
-  min-height: 0;
-  border-radius: 28%;
-  background: rgb(255 255 255 / 0.62);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.75);
-  transition: background-color 0.4s ease, box-shadow 0.4s ease;
-  transition-delay: inherit;
-}
-/* an empty place: the dashes the app draws round a place on the shelf */
-.cs-waste-grid i::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  border: calc(1.5 * var(--u)) dashed color-mix(in oklab, var(--tile-ink-2) 52%, transparent);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  transition-delay: inherit;
-}
-.cs-waste-grid img {
-  position: absolute;
-  inset: 12%;
-  width: 76%;
-  height: 76%;
-  object-fit: contain;
-  transition: filter 0.6s ease, opacity 0.6s ease;
-  transition-delay: inherit;
-}
-.cs-waste-grid i.is-gone, .cs-waste-grid i.is-maybe { transition-delay: calc(var(--k) * 26ms + 700ms); }
-.cs-waste.is-risen .cs-waste-grid i.is-gone { background: transparent; box-shadow: none; }
-.cs-waste.is-risen .cs-waste-grid i.is-gone::before { opacity: 1; }
-.cs-waste.is-risen .cs-waste-grid i.is-gone img { animation: cs-waste-fall 0.9s cubic-bezier(0.45, 0, 0.8, 0.4) calc(var(--k) * 26ms + 380ms) both; }
-.cs-waste.is-risen .cs-waste-grid i.is-maybe { background: rgb(255 255 255 / 0.3); }
-.cs-waste.is-risen .cs-waste-grid i.is-maybe img { filter: grayscale(0.85); opacity: 0.5; }
-/* lifted a hair, then gone off the tile's foot, as a thing knocked off a
-   shelf goes (--drop, the rows under it and two more; --tilt, its turn) */
-@keyframes cs-waste-fall {
-  14% { translate: 0 calc(-4 * var(--u)); rotate: calc(var(--tilt, 14deg) * -0.2); opacity: 1; }
-  80% { opacity: 1; }
-  100% { translate: 0 calc(var(--drop, 3) * 112% + 36 * var(--u)); rotate: var(--tilt, 14deg); opacity: 0; }
-}
+.cs-tile:is(.cs-waste, .cs-endless) > * { margin-top: 0; }
+.cs-waste-art, .cs-endless-art { align-self: end; min-width: 0; margin-bottom: calc(-24 * var(--u)); }
+.cs-waste-art img, .cs-endless-art img { display: block; width: 100%; height: auto; }
+
+/* the words: an eyebrow, the head, and a sentence that opens on its
+   figure. Each tile's words are a container, so its head is set as big as
+   its column holds it whatever the lane makes of the tile, and the two
+   heads, "Wasted Food" and "Impersonal Recipes", a word a line, at one
+   size: the longest word, "Impersonal", is four of its own ems wide. */
+.cs-waste-words, .cs-endless-words { container-type: inline-size; }
+.cs-waste-words .cs-eyebrow, .cs-endless-words .cs-eyebrow { color: var(--tile-ink); }
 .cs-waste-num, .cs-endless-num {
   margin: calc(10 * var(--u)) 0 calc(14 * var(--u));
-  font-size: calc(100 * var(--u));
+  font-size: min(calc(76 * var(--u)), 24cqw);
   white-space: nowrap;
   line-height: 0.92;
   letter-spacing: -0.05em;
-  font-variant-numeric: tabular-nums;
   color: var(--pastel-ink);
 }
-.cs-waste-words .cs-eyebrow, .cs-endless-words .cs-eyebrow, .cs-dinners-name { color: var(--tile-ink); }
-/* each figure's words are a container, so its number is set as big as
-   its column holds it whatever the lane makes of the tile (at 100, or 80
-   in a narrower lane, it ran past the tile's edge) */
-.cs-waste-words, .cs-endless-words { container-type: inline-size; }
-.cs-waste-words .cs-waste-num { font-size: min(calc(76 * var(--u)), 26cqw); }
-.cs-waste-words .cs-tile-meta { max-width: 22em; }
-/* the key, each swatch one of the waffle's own places */
-.cs-waste-key { display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(16 * var(--u)); margin-top: calc(22 * var(--u)); font-size: var(--t-micro); letter-spacing: 0.02em; color: var(--tile-ink-2); }
-.cs-waste-key span { display: inline-flex; align-items: center; gap: calc(7 * var(--u)); }
-.cs-waste-key i { width: calc(13 * var(--u)); height: calc(13 * var(--u)); border-radius: 30%; background: rgb(255 255 255 / 0.9); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tile-ink-2) 22%, transparent); }
-.cs-waste-key i.is-gone { background: transparent; box-shadow: none; border: calc(1.5 * var(--u)) dashed color-mix(in oklab, var(--tile-ink-2) 60%, transparent); }
-.cs-waste-key i.is-maybe { background: rgb(255 255 255 / 0.4); box-shadow: none; }
-
-/* The recipes, read from the recipe's end, as a recipe asks to be read:
-   three dinners of the app's own book, each its ingredients in the order
-   it lists them, the few a breakfast fridge holds on a white plate in the
-   ink ring the shelf's stocked stickers wear further down the page, and
-   the rest dashed, where the shopping would go. */
-.cs-endless {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: calc(24 * var(--u)) calc(32 * var(--u));
-  align-items: center;
-  padding: calc(24 * var(--u)) calc(24 * var(--u)) calc(24 * var(--u)) calc(28 * var(--u));
-}
-.cs-tile.cs-endless > * { margin-top: 0; }
+.cs-waste-num span, .cs-endless-num span { display: block; }
+.cs-waste-words .cs-tile-meta, .cs-endless-words .cs-tile-meta { max-width: 24em; }
 .cs-endless-words { display: grid; align-content: start; }
-.cs-endless-words .cs-endless-num { font-size: min(calc(76 * var(--u)), 30cqw); }
-.cs-endless-words .cs-tile-meta { max-width: 24em; }
-.cs-dinners { display: grid; gap: calc(10 * var(--u)); min-width: 0; }
-.cs-dinners-name { font-size: var(--t-micro); line-height: 1.3; letter-spacing: 0.09em; text-transform: uppercase; }
-.cs-dinners-list { display: grid; gap: calc(6 * var(--u)); list-style: none; }
-.cs-dinner {
-  display: grid;
-  grid-template-columns: calc(48 * var(--u)) minmax(0, 1fr);
-  grid-template-areas: 'art name' 'art needs';
-  gap: calc(5 * var(--u)) calc(12 * var(--u));
+/* The source, signed at the words' foot: the words stand the drawing's
+   height, the figure in the middle of it and the signature at its
+   bottom. The symbol is USDA's own file, in
+   its own blue and green and nothing of the case's over it, as Apple's
+   badge is drawn; beside it a hairline, and the Department's name over
+   the page the range is from, as a report credits a source. */
+.cs-waste-words { display: flex; flex-direction: column; align-self: stretch; }
+.cs-waste-words > :first-child { margin-top: auto; }
+.cs-waste-source { display: flex; margin-top: auto; padding-top: calc(20 * var(--u)); }
+.cs-waste-source a {
+  display: inline-flex;
   align-items: center;
-  padding: calc(7 * var(--u)) calc(14 * var(--u)) calc(8 * var(--u)) calc(8 * var(--u));
-  border-radius: calc(18 * var(--u));
-  background: rgb(255 255 255 / 0.5);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.75);
+  gap: calc(12 * var(--u));
+  color: var(--tile-ink-2);
+  text-decoration: none;
+  border-radius: calc(4 * var(--u));
+  -webkit-tap-highlight-color: transparent;
 }
-.cs-dinner-art { grid-area: art; display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
-.cs-dinner-name {
-  grid-area: name;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0 calc(12 * var(--u));
-  font-size: var(--t-small);
-  line-height: 1.25;
-  color: var(--pastel-ink);
+.cs-waste-source img { display: block; flex: none; width: auto; height: calc(30 * var(--u)); }
+.cs-waste-source-words {
+  display: grid;
+  gap: calc(1 * var(--u));
+  padding-left: calc(12 * var(--u));
+  border-left: 1px solid color-mix(in oklab, var(--deep) 22%, transparent);
+  font-size: var(--t-micro);
+  line-height: 1.3;
+  letter-spacing: 0.01em;
 }
-.cs-dinner-name span { font-size: var(--t-micro); letter-spacing: 0.02em; font-variant-numeric: tabular-nums; color: var(--tile-ink-2); }
-.cs-dinner-needs { grid-area: needs; display: flex; flex-wrap: wrap; gap: calc(5 * var(--u)); list-style: none; }
-.cs-dinner-needs li { position: relative; width: max(24px, calc(27 * var(--u))); aspect-ratio: 1; border-radius: 30%; }
-.cs-dinner-needs img { position: absolute; inset: 13%; width: 74%; height: 74%; object-fit: contain; }
-.cs-dinner-needs .is-in {
-  background: #fff;
-  box-shadow: inset 0 0 0 calc(1.5 * var(--u)) var(--mark), 0 calc(2.5 * var(--u)) 0 var(--mark);
+.cs-waste-source-words b { font-weight: 500; color: var(--tile-ink); }
+.cs-waste-source svg { display: inline-block; width: 1.05em; height: 1.05em; margin-left: calc(2 * var(--u)); vertical-align: -0.2em; transition: translate var(--t-pop) var(--spring-pop); }
+.cs-waste-source a:focus-visible { outline: 2px solid var(--deep); outline-offset: 4px; }
+@media (hover: hover) {
+  .cs-waste-source a:hover { color: var(--deep); }
+  .cs-waste-source a:hover svg { translate: calc(1.5 * var(--u)) calc(-1.5 * var(--u)); }
 }
-.cs-dinner-needs .is-out { border: calc(1.5 * var(--u)) dashed color-mix(in oklab, var(--tile-ink-2) 52%, transparent); }
-.cs-dinner-needs .is-out img { opacity: 0.38; filter: grayscale(0.85); }
-/* as the tile rises, what the fridge holds is ticked off the list, one
-   after another down the three */
-html.rises .cs-endless:not(.is-risen) .cs-dinner-needs .is-in { scale: 0.4; opacity: 0; }
-.cs-dinner-needs .is-in { transition: scale 0.5s var(--spring-pop, ease) calc(var(--t, 0) * 1ms + 450ms), opacity 0.3s ease calc(var(--t, 0) * 1ms + 450ms); }
-.cs-dinner:nth-child(1) .is-in { --t: 0; }
-.cs-dinner:nth-child(2) .is-in { --t: 160; }
-.cs-dinner:nth-child(2) .is-in + li + li + .is-in { --t: 260; }
-.cs-dinner:nth-child(3) .is-in { --t: 380; }
-.cs-dinner:nth-child(3) .is-in + .is-in { --t: 480; }
+
+/* The two facts as two alerts: on each tile's top right corner a badge, as
+   a phone badges an app with what is waiting for it, a warning and its
+   number in ink on the system's own yellow, as a road sign sets one (the
+   warning's mark is cut out of it, so it is the badge's own yellow
+   whatever that is). It stands on the corner's
+   curve, its middle on the curve's middle (0.29 of the radius in from each
+   edge), ringed in the page's own colour, so it is cut out of the tile's
+   edge rather than laid over it, on every wash and on ink. It sits in its
+   tile's row of the pair and not in the tile, which clips what overhangs
+   it. Once its tile has risen it pops on, a beat after, and is still. */
+.cs-problem > .cs-waste, .cs-alert.is-waste { grid-area: 1 / 1; }
+.cs-problem > .cs-endless, .cs-alert.is-endless { grid-area: 2 / 1; }
+.cs-alert {
+  position: relative;
+  z-index: 2;
+  justify-self: end;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  height: max(26px, calc(30 * var(--u)));
+  padding: 0 calc(11 * var(--u)) 0 calc(8 * var(--u));
+  border-radius: 999px;
+  background: #ffcc00;
+  color: #2b2200;
+  font-size: max(13px, calc(15 * var(--u)));
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow:
+    0 0 0 max(2.5px, calc(3 * var(--u))) var(--bg),
+    0 calc(8 * var(--u)) calc(18 * var(--u)) calc(-6 * var(--u)) rgb(176 128 0 / 0.5);
+  translate: calc(50% - var(--r-tile) * 0.29) calc(-50% + var(--r-tile) * 0.29);
+  pointer-events: none;
+}
+.cs-alert svg { display: block; flex: none; width: 1.1em; height: 1.1em; margin-top: -0.08em; }
+html.rises .cs-alert { opacity: 0; scale: 0.4; }
+html.rises :is(.cs-waste.is-risen ~ .cs-alert.is-waste, .cs-endless.is-risen ~ .cs-alert.is-endless) {
+  opacity: 1;
+  scale: 1;
+  transition: scale var(--t-pop) var(--spring-pop) var(--wait), opacity 0.18s ease var(--wait);
+}
+.cs-alert.is-waste { --wait: 640ms; }
+.cs-alert.is-endless { --wait: 760ms; }
+@media (prefers-reduced-motion: reduce) {
+  html.rises .cs-alert { scale: 1; transition: opacity 0.2s ease !important; }
+}
 
 /* The question the two leave: the chapter's last word, at a part's size,
    its last words marked in the app's butter as a pen marks a page, the
    mark drawn on as it rises, and under it who it was asked for. */
 .cs-hmw { display: grid; justify-items: start; gap: calc(10 * var(--u)); }
-/* In a phone's lane each picture stands over its words, and the waffle as
-   wide as the tile (beside its words, a hundred stickers in a third of a
-   phone stood 11 points across) */
+/* In a phone's lane each tile stands its words over its drawing */
 @container lane (max-width: 560px) {
   .cs-waste, .cs-endless { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 22px; }
-  .cs-endless-words { order: -1; }
-  .cs-dinner { grid-template-columns: 44px minmax(0, 1fr); padding: 8px 12px 9px 8px; }
-  .cs-dinner-name { display: grid; gap: 1px; }
+  .cs-waste-words, .cs-endless-words { order: -1; }
+  .cs-waste-art, .cs-endless-art { margin-bottom: -22px; }
 }
 .cs-hmw-q {
   max-width: 19em;
@@ -5372,185 +5352,130 @@ html.rises .cs-hmw:not(.is-risen) .cs-hmw-q mark { background-size: 0% 0.44em; }
 .cs-hmw-for { display: flex; flex-wrap: wrap; align-items: center; gap: calc(8 * var(--u)) calc(14 * var(--u)); margin-top: calc(6 * var(--u)); }
 .cs-hmw-for .cs-small { color: var(--ink-3); }
 
-/* ---- PantryPal: the app's own kitchen ----
-   The running app stands in a card of its own world: the
-   app's butter, under its awning (a coral strip along the card's top, its
-   foot cut into the scallops the app hangs under its own header), and the
-   app's own rough ink rule (app/rule.webp, the line the app draws between
-   its bands) along its foot. In it the demo is one of the app's own
-   cards, ink-ringed on a hard ink shadow, as everything you tap in the
-   app is. (It was a band across the window's whole width, its scallops
-   standing up off its top edge, until the story kept to the lane.) */
-.cs-awning {
-  --sc: calc(16 * var(--u));
-  --strip: calc(26 * var(--u));
-  --coral: #ff7e7d;
-  --butter: #ffe9b3;
-  position: relative;
-  padding: calc(var(--strip) + var(--sc) + 40 * var(--u)) calc(40 * var(--u)) calc(40 * var(--u));
-  border-radius: calc(40 * var(--u));
-  /* clipped, not hidden: a hidden box is a scroller of its own, and the
-     shelf's read, sticky on a phone, would ride the band instead of the
-     window */
-  overflow: clip;
-  isolation: isolate;
-  background:
-    url(../assets/case/pantrypal/app/rule.webp) 0 100% / auto calc(9 * var(--u)) repeat-x,
-    radial-gradient(120% 60% at 50% 0%, #fff5d9, transparent 70%),
-    var(--butter);
-  box-shadow: inset 0 0 0 1px rgb(107 70 0 / 0.08);
-}
-.cs-awning::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: calc(var(--strip) + var(--sc));
-  background:
-    linear-gradient(var(--coral), var(--coral)) 0 0 / 100% var(--strip) no-repeat,
-    radial-gradient(circle at 50% 0, var(--coral) calc(var(--sc) - 0.6px), transparent var(--sc)) 50% var(--strip) / calc(var(--sc) * 2) var(--sc) repeat-x;
-  pointer-events: none;
-}
-/* what stands in the card takes its whole width */
-.cs-band-in { max-width: none; }
-.cs-awning .cs-chapter-rule { background: rgb(30 30 30 / 0.22); }
-.cs-awning .cs-chapter-when { color: #6b5a32; }
-.cs-awning .cs-chapter-deck { color: #6b5a32; }
-.cs-awning .cs-tile.cs-demo {
-  overflow: clip;
-  background: #fffaf0;
-  box-shadow:
-    inset 0 0 0 calc(2.5 * var(--u)) var(--mark),
-    0 calc(7 * var(--u)) 0 var(--mark);
-  border-radius: calc(30 * var(--u));
-}
-.cs-awning .cs-demo .cs-tile-meta, .cs-awning .cs-shelf-read { color: #6b5a32; }
-.cs-awning .cs-demo .cs-chip {
-  background: #fff;
-  box-shadow: inset 0 0 0 calc(1.5 * var(--u)) var(--mark);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  color: var(--mark);
-}
-.cs-awning .cs-demo .cs-chip[aria-pressed='true'] { background: #ffd67e; }
-.cs-awning .cs-food { background: rgb(255 214 126 / 0.28); box-shadow: inset 0 0 0 1px rgb(30 30 30 / 0.08); }
-.cs-awning .cs-food[aria-pressed='true'] { background: #fff; box-shadow: inset 0 0 0 calc(1.5 * var(--u)) var(--mark), 0 calc(3 * var(--u)) 0 var(--mark); }
-.cs-awning .cs-demo-phone { filter: drop-shadow(0 calc(26 * var(--u)) calc(30 * var(--u)) rgb(107 70 0 / 0.28)); }
-/* The chef's rules, in the order the app applies them, under the shelf
-   and the phone: each the app's own button, ink-ringed, its number on the
-   coral, as wide as its words, and the five flowing on from one another
-   as a sentence does, so they read in order at any width. (They were five
-   even steps, or two columns of three; before that a centred cluster,
-   three over two or four over one; and for a day down the head's right
-   side, which broke the chapter's name in two.) */
-.cs-rules-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(8 * var(--u));
-  list-style: none;
-}
-.cs-rules-row li {
-  display: flex;
-  align-items: center;
-  gap: calc(9 * var(--u));
-  min-height: max(30px, calc(34 * var(--u)));
-  padding: calc(4 * var(--u)) calc(14 * var(--u)) calc(4 * var(--u)) calc(4 * var(--u));
-  border-radius: calc(17 * var(--u));
-  background: #fff;
-  box-shadow: inset 0 0 0 calc(1.5 * var(--u)) var(--mark);
-  font-size: var(--t-small);
-  line-height: 1.25;
-  letter-spacing: 0;
-  color: var(--mark);
-  text-wrap: balance;
-}
-.cs-rules-row b {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: calc(26 * var(--u));
-  height: calc(26 * var(--u));
-  border-radius: 50%;
-  background: var(--coral);
-  font-family: 'PP Fugaz One', system-ui, sans-serif;
-  font-weight: 400;
-  font-size: calc(14 * var(--u));
-  /* the app's ink on its coral (6.8:1), as its own buttons are lettered:
-     white on the coral is 2.5:1 */
-  color: var(--mark);
-}
-
-/* ---- PantryPal: the three sheets, stamped, and the shelf they became ----
+/* ---- PantryPal: the three sheets, marked up, and the hub they became ----
    The wireframes as the graph paper they were drawn on, taped to the
-   case's board (below, "ideas on paper"), each judged with a rubber
-   stamp: two set aside in a tired blue, the third kept in red, coming
-   down one after another as the board rises, too big and then pressed
-   flat, the way a stamp lands. At the end of their row stands the shelf
-   that shipped, as tall as a sheet, and a drawn arrow from the kept one
-   to it, so the sketch and what it became are read in one line. (The
-   three stood askew on the page in white cards, and the phone on a row
-   of its own under them with the arrow at its side.) */
-.cs-pins.is-papers { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 0.842fr); }
+   case's board (below, "ideas on paper"), in a row of their own, centred
+   on the board, each named in a word. They are judged the way a designer
+   judges their own sheets, in pen by the names and never on the drawings:
+   a red cross beside each of the two set aside, one and then the other
+   as the board rises, and the third ringed in green marker. The ring's
+   ink runs on into the arrow, down to the hub the kept one
+   became in the first Figma build, standing under them in the middle a
+   little taller than a sheet, so the verdict and what came of it are one
+   stroke of the same pen. (The three stood askew on the page in white
+   cards; then, each with a sentence under it, beside the shelf that
+   shipped at the end of their row; but none of these screens shipped, and
+   the screen the third became was this hub. Then rubber stamps came down
+   across the middle of each drawing, "set aside" and "kept!", and sat on
+   the very sketches they judged; then the two names were struck through
+   in blue pencil and the third ringed in red, but a struck name reads as
+   a word taken back, not an idea weighed, and red on the keep read as a
+   warning.) */
+.cs-pinboard-papers {
+  --sheet-gap: calc(40 * var(--u));
+  /* a sheet is 180 wide, or a third of a column too narrow for that, or
+     as wide as lets the row and the hub under it stand in one window
+     together: the board is about 3.6 sheets and 160 tall, so at 196 it
+     stood 70px taller than a window of 1440×900, and at 180 still 24px
+     taller than one of 1910×960 */
+  --sheet: min(calc(180 * var(--u)), (100cqw - 56 * var(--u) - 2 * var(--sheet-gap)) / 3, (100svh - 160 * var(--u)) / 3.6);
+  /* the hub a hair taller than a sheet, and never so narrow that its
+     screen can't be read, which on a phone makes it the larger of them */
+  --hub: max(var(--sheet) * 0.92, 124px);
+  --hub-gap: calc(26 * var(--u));
+  /* a unit the size of a sheet, so the tape is torn in proportion to
+     the paper it holds */
+  --su: calc(var(--sheet) / 176);
+  /* the two pens: red for a cut, green for a keep, both fixed, since the
+     board keeps its own light paper in the ink theme. The green is a
+     shade brighter than it looks, since the marks are multiplied into
+     the peach board (at 30 152 82 the ring dried to an olive) */
+  --cut-ink: rgb(214 58 42);
+  --keep-ink: rgb(22 170 88);
+}
+.cs-pins.is-papers { grid-template-columns: repeat(3, var(--sheet)); justify-content: center; column-gap: var(--sheet-gap); }
+.cs-pins.is-papers .cs-pin-paper { margin-bottom: calc(12 * var(--u)); }
+/* and the tape in proportion to its sheet too, or on a phone a strip
+   for a page's sheet crossed most of a sheet a third as wide */
+.cs-pins.is-papers .cs-pin-paper::before { top: calc(-10 * var(--su)); width: max(36px, 62 * var(--su)); height: max(12px, 20 * var(--su)); }
+.cs-pin-name {
+  font-size: var(--t-small);
+  line-height: 1.2;
+  text-align: center;
+  color: var(--tile-ink);
+}
+.cs-pinboard-papers > .cs-pin-hub { position: relative; width: var(--hub); margin: var(--hub-gap) auto 0; }
+.cs-pin-hub .cs-phone { width: 100%; margin-bottom: calc(12 * var(--u)); }
 /* the three sketches in one frame, the third's: the first is a little
    wider and the second a little taller, and filled to it neither loses
    its phone */
 .cs-pins.is-papers .cs-pin-paper img { aspect-ratio: 474 / 838; object-fit: cover; }
-.cs-stamp {
-  --ink-stamp: rgb(52 92 150 / 0.82);
-  position: absolute;
-  top: 47%;
-  left: 50%;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  padding: calc(7 * var(--u)) calc(14 * var(--u)) calc(8 * var(--u));
-  translate: -50% -50%;
-  rotate: -13deg;
-  border: calc(3 * var(--u)) solid var(--ink-stamp);
-  border-radius: calc(10 * var(--u));
-  box-shadow: inset 0 0 0 calc(2 * var(--u)) #fff, inset 0 0 0 calc(3.5 * var(--u)) var(--ink-stamp);
-  font-family: 'PP Fugaz One', system-ui, sans-serif;
-  font-size: calc(19 * var(--u));
-  line-height: 1;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--ink-stamp);
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  /* the ink takes unevenly, as a rubber stamp's does */
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+/* the marks, drawn by the name they judge and sized in its em, so a
+   cross and a ring fit their word at every size of type. The cross
+   hangs just past the end of its name, out of the line, so the name
+   stays centred under its sheet; it is two quick strokes, the second
+   a beat after the first, each overshooting a little as a hand's does.
+   The ring is loose and overshoots where it began, as a marker's ring
+   does when it is drawn quickly */
+.cs-pin-word { position: relative; display: inline-block; }
+.cs-pin-mark { position: absolute; overflow: visible; pointer-events: none; mix-blend-mode: multiply; }
+.is-crossed .cs-pin-mark { left: calc(100% + 0.4em); top: 0.27em; width: 0.7em; height: 0.7em; color: var(--cut-ink); stroke-width: 3.4; }
+.is-ringed .cs-pin-mark { left: -0.74em; top: -0.52em; width: calc(100% + 1.48em); height: 2.24em; color: var(--keep-ink); stroke-width: 3.4; }
+.cs-pin-mark path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+html.rises .cs-pinboard:not(.is-risen) .cs-pin-mark path { stroke-dashoffset: 1; }
+.cs-pinboard.is-risen .is-crossed .cs-pin-mark path { transition: stroke-dashoffset 0.18s var(--ease-draw) calc(0.6s + var(--k, 0) * 0.34s); }
+.cs-pinboard.is-risen .is-crossed .cs-pin-mark path + path { transition-delay: calc(0.82s + var(--k, 0) * 0.34s); }
+.cs-pinboard.is-risen .is-ringed .cs-pin-mark path { transition: stroke-dashoffset 0.62s var(--ease-draw) 1.25s; }
+/* and as the ring is drawn the kept sheet comes up off the board, a
+   little nearer and its shadow a little longer, picked from the three
+   without a mark on its drawing. (The lift is a transform, so it adds
+   to the hover's translate, and the hover keeps its own quick timing.) */
+.cs-pins.is-papers .cs-pin.is-kept .cs-pin-paper {
+  transform: translateY(calc(-7 * var(--u)));
+  box-shadow:
+    0 0 0 1px rgb(30 30 30 / 0.05),
+    0 calc(2 * var(--u)) calc(3 * var(--u)) rgb(30 30 30 / 0.07),
+    0 calc(30 * var(--u)) calc(36 * var(--u)) calc(-18 * var(--u)) color-mix(in oklab, var(--deep) 58%, transparent);
 }
-.cs-pin.is-kept .cs-stamp { --ink-stamp: rgb(219 44 44 / 0.88); rotate: -8deg; font-size: calc(24 * var(--u)); }
-html.rises .cs-pinboard:not(.is-risen) .cs-stamp { opacity: 0; scale: 1.9; }
-.cs-pinboard.is-risen .cs-stamp { transition: opacity 0.1s ease calc(0.55s + var(--k, 0) * 0.24s), scale 0.42s var(--spring-pop) calc(0.55s + var(--k, 0) * 0.24s); }
-/* the shelf that shipped, and the arrow that points at it from the kept sheet */
-.cs-pin-phone { display: block; margin-bottom: calc(16 * var(--u)); }
-.cs-pin-phone .cs-phone { display: block; width: 100%; height: auto; }
+html.rises .cs-pinboard:not(.is-risen) .cs-pin.is-kept .cs-pin-paper {
+  transform: none;
+  box-shadow:
+    0 0 0 1px rgb(30 30 30 / 0.05),
+    0 calc(1.5 * var(--u)) calc(2 * var(--u)) rgb(30 30 30 / 0.06),
+    0 calc(22 * var(--u)) calc(30 * var(--u)) calc(-20 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
+}
+.cs-pinboard.is-risen .cs-pin.is-kept .cs-pin-paper {
+  transition:
+    translate var(--t-settle) var(--spring-settle),
+    transform 0.7s var(--spring-settle) 1.3s,
+    box-shadow 0.7s ease 1.3s;
+}
+/* the arrow from the ring down to the hub: its tail starts at the foot
+   of the ring, a sheet and a gap right of the board's middle, and its
+   head (at 14 of its 160) lands just past the phone's right edge, so
+   the arrow is as wide as the distance between the two, and the
+   drawing's proportions keep its height. It is drawn in the ring's green
+   and starts as the ring closes, so the pen never seems to lift */
 .cs-pin-arrow {
+  --arrow: calc((var(--sheet) + var(--sheet-gap) - var(--hub) / 2 - 4 * var(--u)) * 160 / 136);
   position: absolute;
   z-index: 4;
-  top: 12%;
-  left: calc(-1 * (24 * var(--u)) - 44 * var(--u));
-  width: calc(78 * var(--u));
-  height: calc(39 * var(--u));
-  color: var(--accent);
+  top: calc(-1 * var(--hub-gap) + 1 * var(--u));
+  left: calc(100% + 4 * var(--u) - var(--arrow) * 14 / 160);
+  width: var(--arrow);
+  height: calc(var(--arrow) * 150 / 160);
+  color: var(--keep-ink);
+  stroke-width: 2.6;
   pointer-events: none;
 }
 .cs-pin-arrow path { stroke-dasharray: 1; stroke-dashoffset: 0; }
 html.rises .cs-pinboard:not(.is-risen) .cs-pin-arrow path { stroke-dashoffset: 1; }
-.cs-pinboard.is-risen .cs-pin-arrow path { transition: stroke-dashoffset 0.8s var(--ease-draw) 1.35s; }
-.cs-pinboard.is-risen .cs-pin-arrow path + path { transition-delay: 2.05s; transition-duration: 0.3s; }
-/* a phone's lane: the sheets two to a row, the kept one and the shelf
-   it became side by side on the second */
+.cs-pinboard.is-risen .cs-pin-arrow path { transition: stroke-dashoffset 0.7s var(--ease-draw) 1.84s; }
+.cs-pinboard.is-risen .cs-pin-arrow path + path { transition-delay: 2.5s; transition-duration: 0.26s; }
+/* a narrow lane: the three still in one row, each a third of it, with
+   the gaps between them closed up */
 @container lane (max-width: 640px) {
-  .cs-pins.is-papers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* the shelf as tall as the sheet beside it, not as wide */
-  .cs-pins.is-papers .cs-pin-phone { width: 86%; }
-  .cs-pin-arrow { left: calc(-1 * (24 * var(--u)) - 30 * var(--u)); width: calc(56 * var(--u)); height: calc(28 * var(--u)); }
+  .cs-pinboard-papers { --sheet-gap: 14px; --hub-gap: 24px; }
 }
 
 /* ---- a reel: a flow of screens the page scrolls through sideways ----
@@ -5594,7 +5519,7 @@ html.rises .cs-pinboard:not(.is-risen) .cs-pin-arrow path { stroke-dashoffset: 1
   width: min(calc(268 * var(--u)), (100svh - var(--cs-top) - 220 * var(--u)) * 0.5);
   height: auto;
 }
-.cs-reel-track span, .cs-flip-cap {
+.cs-reel-track span {
   display: inline-flex;
   align-items: center;
   gap: calc(8 * var(--u));
@@ -5602,7 +5527,7 @@ html.rises .cs-pinboard:not(.is-risen) .cs-pin-arrow path { stroke-dashoffset: 1
   line-height: 1;
   color: var(--ink-3);
 }
-.cs-reel-track span i, .cs-flip-cap i {
+.cs-reel-track span i {
   display: grid;
   place-items: center;
   min-width: calc(24 * var(--u));
@@ -5753,67 +5678,16 @@ html.rises .cs-pinboard:not(.is-risen) .cs-pin-arrow path { stroke-dashoffset: 1
 .cs-belt-stats dd { order: -1; font-size: calc(60 * var(--u)); line-height: 1; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; color: var(--pastel-ink); }
 .cs-belt-stats dt { font-size: var(--t-small); line-height: 1.42; color: var(--tile-ink); text-wrap: pretty; }
 
-.cs-hub-count { display: grid; gap: calc(8 * var(--u)); margin-top: calc(10 * var(--u)); }
-.cs-hub-count b { font-weight: inherit; font-size: calc(96 * var(--u)); line-height: 0.92; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; color: var(--pastel-ink); }
-.cs-hub-count > span { max-width: 24em; font-size: var(--t-small); line-height: 1.42; color: var(--tile-ink); }
-.cs-hub-words .cs-eyebrow { color: var(--tile-ink); }
-/* the fourteen in the three kinds they come in, a dot each, in the colours
-   of their markers on the screen: the foods' brand red, the tabs' wood,
-   the buttons' green; the dots come up one after another as it rises */
-.cs-hub .is-food { --kind: #ff4b4b; }
-.cs-hub .is-tab { --kind: #8a6a4c; }
-.cs-hub .is-button { --kind: #45b441; }
-.cs-hub-kinds { display: grid; gap: calc(9 * var(--u)); margin-top: calc(22 * var(--u)); list-style: none; }
-.cs-hub-kinds li { display: flex; align-items: center; gap: calc(10 * var(--u)); font-size: var(--t-small); line-height: 1.2; color: var(--tile-ink); white-space: nowrap; }
-.cs-hub-kinds b { min-width: 0.7em; font-weight: inherit; font-size: var(--t-name); line-height: 1; color: var(--pastel-ink); font-variant-numeric: tabular-nums; }
-.cs-pots { display: flex; gap: calc(5 * var(--u)); width: calc(6 * 17 * var(--u)); }
-.cs-pots i { flex: none; width: calc(12 * var(--u)); height: calc(12 * var(--u)); border-radius: 50%; background: var(--kind); box-shadow: 0 0 0 calc(2.5 * var(--u)) color-mix(in oklab, var(--kind) 18%, transparent); }
-html.rises .cs-hub:not(.is-risen) .cs-pots i { scale: 0; }
-.cs-hub.is-risen .cs-pots i { transition: scale var(--t-pop) var(--spring-pop) calc(0.3s + var(--k, 0) * 0.045s); }
 .cs-note.is-static { cursor: default; }
 .cs-note-more.is-open { grid-template-rows: 1fr; opacity: 1; }
 
-/* ---- the four ways out, side by side, their counts as dots ----
-   Four across where the column allows, so the counts stand in rows the eye can read
-   straight across: one dot a choice, a tap or a wait, so fewer dots is
-   a better route, at a glance, before a number is read. The dots draw
-   out as the tile rises. (Each count was a number alone, two tiles to a
-   row, so the four could not be read against each other.) */
-.cs-concept-nums { gap: calc(8 * var(--u)); }
-.cs-concept-nums div {
-  display: grid;
-  gap: calc(2 * var(--u));
-  /* the count's one column fills the list, so every number stands at its
-     right edge, one over another (the flex row's space-between, kept by
-     the grid, shrank each column to its own label, and the 8, the 3 and
-     the 1 stood at three different places) */
-  justify-content: stretch;
-}
-.cs-concept-nums dt { font-size: var(--t-micro); letter-spacing: 0.04em; color: var(--tile-ink-2); }
-.cs-concept-nums dd { display: flex; align-items: center; justify-content: space-between; gap: calc(8 * var(--u)); min-height: calc(18 * var(--u)); }
-.cs-concept-nums dd b { font-weight: inherit; font-size: var(--t-small); color: var(--pastel-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cs-dots {
-  --d: calc(10 * var(--u));
-  --step: calc(var(--d) + 4 * var(--u));
-  display: block;
-  width: calc(var(--n) * var(--step));
-  height: var(--d);
-  background: radial-gradient(circle closest-side, currentColor 92%, transparent) 0 50% / var(--step) var(--d) repeat-x;
-  color: color-mix(in oklab, var(--deep) 70%, var(--tint));
-  transition: width 0.9s var(--ease-rise) 0.35s;
-}
-.cs-dots.is-tap { color: #ef4a4a; }
-.cs-dots.is-wait { background: radial-gradient(circle closest-side, transparent 52%, currentColor 58% 92%, transparent) 0 50% / var(--step) var(--d) repeat-x; color: color-mix(in oklab, var(--deep) 60%, var(--tint)); }
-.cs-dots.is-upto { opacity: 0.5; }
-
 /* ---- PantryPal: ideas on paper ----
-   The sketch's three sheets and the rethink's four ways out were both
-   ideas before they were screens, so both stand as the graph paper they
-   were drawn on: upright and one size, each taped flat to the case's own
-   board, and under each its name, what it bet on and what became of it.
-   (The
-   three stood askew on the page in cards of their own, and the four ways
-   were the lab's colour captures, cropped, two tiles to a row.) */
+   The sketch's three sheets were ideas before they were screens, so they
+   stand as the graph paper they were drawn on: upright and one size, each
+   taped flat to the case's own board, and under each its name and what
+   became of it. (They stood askew on the page in cards of their own. The
+   rethink's four ways out stood on a board like it, as ink sketches; the
+   story now goes from the rethink straight to the app that shipped.) */
 .cs-pinboard { padding: calc(34 * var(--u)) calc(28 * var(--u)) calc(28 * var(--u)); }
 .cs-pins {
   display: grid;
@@ -5822,11 +5696,7 @@ html.rises .cs-hub:not(.is-risen) .cs-pots i { scale: 0; }
   row-gap: calc(34 * var(--u));
   list-style: none;
 }
-.cs-pins.is-four { --cols: 4; }
 .cs-pin { position: relative; display: grid; align-content: start; min-width: 0; }
-/* the four ways' counts and verdicts level across the board, whatever
-   the words over them take */
-.cs-pins.is-four .cs-pin { grid-row: span 5; grid-template-rows: subgrid; row-gap: 0; }
 /* the paper: a white margin round the drawing, lifting a little off the
    board, and a strip of tape across its head at its own small angle */
 .cs-pin-paper {
@@ -5860,288 +5730,158 @@ html.rises .cs-hub:not(.is-risen) .cs-pots i { scale: 0; }
   pointer-events: none;
 }
 @media (hover: hover) { .cs-pin:hover .cs-pin-paper { translate: 0 calc(-5 * var(--u)); } }
-.cs-pin > .cs-tile-name { margin-bottom: calc(4 * var(--u)); }
-.cs-pin > .cs-tile-meta { margin-bottom: calc(16 * var(--u)); text-wrap: pretty; }
-.cs-pin > .cs-concept-nums { align-self: end; margin-top: 0 !important; }
-.cs-pin > .cs-verdict { justify-self: start; margin-top: calc(14 * var(--u)); }
-html.rises .cs-pinboard:not(.is-risen) .cs-dots { width: 0; }
-/* two to a row in a laptop's narrower column and on a phone */
-@container lane (max-width: 820px) { .cs-pins.is-four { --cols: 2; } }
 
-/* the verdict beside the premise it turned over */
-.cs-verdict-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: calc(32 * var(--u)) calc(56 * var(--u));
-  align-items: center;
-}
-.cs-pull {
-  font-size: var(--t-lead);
-  line-height: 1.3;
-  letter-spacing: var(--track-lead);
-  color: var(--ink-3);
-  text-wrap: pretty;
-}
-.cs-pull strong { font-weight: inherit; color: var(--ink); }
 
-/* ---- PantryPal: the small calls, as tickets on the kitchen's rail ----
-   Six orders hung from a steel rail, each a docket with a torn foot, its
-   number in the till's type, its drawing, the call, and why. They hang a
-   little crooked, from the rail, and swing when touched. */
-.cs-tickets {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: calc(52 * var(--u)) calc(22 * var(--u));
-  padding-top: calc(26 * var(--u));
-  list-style: none;
+/* ---- PantryPal: the app as it shipped, in one card ----
+   Every screen of the shipped app in the order a new chef meets them, on
+   one card of the case's colour that pans across as the page scrolls, as
+   the prototype's reel does (the same reel, js/case.js, a little faster,
+   since thirteen screens at the page's own pace ran three windows long):
+   in at the front door, the tour, "Hey, chef!", the scan's four steps,
+   Type it in!, the chef writing, dinner, its recipe, the shelf, and last
+   Settings, behind the chef. Each screen is drawn by the page's own phone
+   (tools/pantry-screens.mjs), so the reel wears what the live app wears,
+   and stands over its number and the name of its step, the bar under the
+   row filling as it goes. Two arrows in the card's top corners, either
+   side of the switch, step it a screen at a time, or glide while held,
+   for a reader who would rather not scroll the page to move it.
+   The switch at the card's head turns the row to before: the Figma
+   prototype's six screens alone, in the prototype's own order (log in,
+   pick, scan, check out, choose, cook), each in the place of the screen
+   it became, under its name then. The row fades out, turns, and comes
+   back a screen at a time. (The chapter stood five screens on a stage,
+   each over the chapter it carried on, with the scan in a card of its
+   own; earlier, seven screens turned over one by one, a 3D flip that hid
+   half the row's change from view. Before showed an empty place where
+   the prototype had no step, eight of fourteen, more empty than not.) */
+.cs-ship-reel .cs-reel-view { padding: calc(26 * var(--u)) 0 calc(28 * var(--u)); }
+.cs-tile.cs-reel-view > * + * { margin-top: 0; }
+/* (room under the row for the phones' shadows to fade out in: the row is
+   a scroller, which cuts whatever runs past it, and a shadow stopped at its
+   foot drew a hard line across the card) */
+.cs-ship-reel .cs-reel-track { --reel-gap: calc(40 * var(--u)); gap: var(--reel-gap); padding: calc(6 * var(--u)) calc(56 * var(--u)) calc(40 * var(--u)); }
+/* inside a card the screens fade out over the card's own margin as they
+   leave it, a longer fade than the open page's reel, or they read as
+   sliced off at the card's edge; the row's own margin is a little wider
+   than the fade, so the first and last screens stand clear of it at rest */
+.cs-ship-reel .cs-reel-scroll {
+  -webkit-mask: linear-gradient(to right, transparent, #000 calc(48 * var(--u)), #000 calc(100% - 48 * var(--u)), transparent);
+  mask: linear-gradient(to right, transparent, #000 calc(48 * var(--u)), #000 calc(100% - 48 * var(--u)), transparent);
 }
-.cs-ticket-slot { position: relative; }
-/* the rail, a stretch of it over each ticket, so a row of them is one bar */
-.cs-ticket-slot::before {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  left: calc(-11 * var(--u) - 1px);
-  right: calc(-11 * var(--u) - 1px);
-  top: calc(-24 * var(--u));
-  height: calc(14 * var(--u));
-  background: linear-gradient(to bottom, #f4f6f8, #c4ccd3 45%, #8d98a2 80%, #a9b2ba);
-  box-shadow: 0 calc(3 * var(--u)) calc(5 * var(--u)) rgb(30 30 30 / 0.18);
-}
-.cs-ticket-slot:nth-child(3n + 1)::before { left: calc(-6 * var(--u)); border-radius: calc(7 * var(--u)) 0 0 calc(7 * var(--u)); }
-.cs-ticket-slot:nth-child(3n)::before { right: calc(-6 * var(--u)); border-radius: 0 calc(7 * var(--u)) calc(7 * var(--u)) 0; }
-.cs-ticket {
-  --z: calc(9 * var(--u));
+/* a screen's place: as tall as the window lets the whole card stand in
+   it, and never so wide that fewer than three stand in the card at once.
+   Its two faces stand in it one over the other */
+.cs-ship-card {
   position: relative;
+  width: min(calc(228 * var(--u)), (100svh - var(--cs-top) - 330 * var(--u)) * 0.489, (100cqw - 112 * var(--u) - 2 * var(--reel-gap)) / 3);
+  aspect-ratio: 800 / 1636;
+}
+.cs-ship-reel .cs-ship-card > * { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+/* each prototype render drawn so its phone is the app's phone's size, at
+   its place: the renders frame their phones in margins of their own, so
+   held to the card's height they stood a size smaller; the places come
+   from each render's measured phone (pantrypal.html, --l --t --w --h) */
+.cs-ship-reel .cs-ship-card > img.is-then { inset: auto; left: var(--l, 0); top: var(--t, 0); width: var(--w, 100%); height: var(--h, 100%); object-fit: fill; }
+/* the face turned away is neither seen, pressed nor read */
+.cs-ship-reel[data-show='now'] .cs-ship-card > .is-then,
+.cs-ship-reel[data-show='then'] .cs-ship-card > .is-now { visibility: hidden; }
+/* before: the screens the prototype never had are gone, and the six it
+   had stand in its own order */
+.cs-ship-reel[data-show='then'] .cs-reel-track li.is-new { display: none; }
+.cs-ship-reel[data-show='then'] .cs-reel-track li { order: var(--then, 0); }
+/* the step's name and number, as they are and as they were */
+.cs-ship-reel .cs-reel-track span { color: var(--tile-ink); }
+.cs-ship-reel .cs-reel-track span i { background: rgb(255 255 255 / 0.72); color: var(--pastel-ink); }
+.cs-ship-reel .cs-reel-track b { font-weight: inherit; }
+.cs-ship-reel[data-show='now'] :is(.cs-reel-track, .cs-reel-foot) :is(b, i).is-then,
+.cs-ship-reel[data-show='then'] :is(.cs-reel-track, .cs-reel-foot) :is(b, i).is-now { display: none; }
+.cs-ship-reel .cs-reel-foot { max-width: none; margin: calc(-8 * var(--u)) calc(56 * var(--u)) 0; color: var(--tile-ink-2); }
+.cs-ship-reel .cs-reel-foot b { font-weight: inherit; }
+.cs-ship-reel .cs-reel-bar { background: color-mix(in oklab, var(--deep) 14%, transparent); }
+/* as the switch turns the row, each screen comes back up after the one
+   before it (js/pantry-story.js deals them, --n their place in the row) */
+.cs-ship-reel .cs-reel-track.is-dealt li { animation: cs-ship-deal 0.5s var(--ease-rise) calc(var(--n, 0) * 50ms) backwards; }
+@keyframes cs-ship-deal { from { opacity: 0; translate: 0 calc(14 * var(--u)); } }
+/* the switch: two words in one white well, the one on show lifted onto
+   white, the other in the card's ink */
+.cs-ship-head {
   display: grid;
-  /* the order's number across the top, its drawing beside the call, and
-     why under both (the drawing stood over the call, a line to itself) */
-  grid-template-columns: calc(44 * var(--u)) minmax(0, 1fr);
-  align-content: start;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: calc(8 * var(--u)) calc(12 * var(--u));
-  min-height: 100%;
-  padding: calc(20 * var(--u)) calc(20 * var(--u)) calc(22 * var(--u) + var(--z));
-  background: #fffdf8;
-  transform-origin: 50% calc(-20 * var(--u));
-  rotate: var(--r, 0deg);
-  filter: drop-shadow(0 calc(16 * var(--u)) calc(14 * var(--u)) rgb(60 30 0 / 0.16));
-  transition: rotate var(--t-settle) var(--spring-settle);
+  margin-bottom: calc(22 * var(--u));
+  padding-inline: calc(26 * var(--u));
 }
-/* the torn foot: a zigzag cut along the bottom */
-.cs-ticket::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(-1 * var(--z) + 1px);
-  height: var(--z);
-  background: conic-gradient(from -45deg at 50% 100%, transparent, #fffdf8 1deg 89deg, transparent 90deg) 0 0 / calc(2 * var(--z)) 100%;
-  rotate: 180deg;
-}
-.cs-ticket { margin-bottom: var(--z); }
-.cs-ticket-no {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: calc(10 * var(--u));
-  margin-bottom: calc(4 * var(--u));
-  border-bottom: 1px dashed rgb(30 30 30 / 0.22);
-  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-  font-size: var(--t-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #8a6d3b;
-}
-.cs-ticket-no::after { content: 'PantryPal'; letter-spacing: 0.04em; text-transform: none; color: rgb(30 30 30 / 0.35); }
-.cs-ticket-art { width: calc(44 * var(--u)); height: calc(44 * var(--u)); object-fit: contain; filter: drop-shadow(0 calc(5 * var(--u)) calc(6 * var(--u)) rgb(60 30 0 / 0.2)); }
-.cs-ticket-name { font-size: var(--t-name); line-height: 1.2; letter-spacing: -0.014em; color: var(--ink); text-wrap: balance; }
-.cs-ticket-text { grid-column: 1 / -1; font-size: var(--t-small); line-height: 1.5; color: var(--ink-3); text-wrap: pretty; }
-@media (hover: hover) {
-  .cs-ticket-slot:hover .cs-ticket { animation: cs-swing 1.4s var(--ease-rise); }
-}
-@keyframes cs-swing {
-  0% { rotate: var(--r, 0deg); }
-  18% { rotate: calc(var(--r, 0deg) + 4deg); }
-  42% { rotate: calc(var(--r, 0deg) - 2.6deg); }
-  64% { rotate: calc(var(--r, 0deg) + 1.2deg); }
-  84% { rotate: calc(var(--r, 0deg) - 0.4deg); }
-  100% { rotate: var(--r, 0deg); }
-}
-
-/* ---- PantryPal: the scan, at its moment ----
-   My own fridge, as the photo it is, taped to the tile a little askew,
-   and in front of it the phone that took it, showing the app's "Looks
-   good?" with the same shelves in its frame: the one moment in the app
-   that starts from the kitchen itself. */
-.cs-fridge {
-  display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  gap: calc(28 * var(--u));
-  align-items: center;
-  padding: calc(36 * var(--u)) calc(36 * var(--u)) calc(36 * var(--u)) calc(40 * var(--u));
-}
-.cs-tile.cs-fridge > * { margin-top: 0; }
-.cs-fridge-words { display: grid; gap: calc(12 * var(--u)); align-content: center; }
-.cs-fridge-words .cs-eyebrow { color: var(--tile-ink); }
-.cs-fridge-title { font-size: var(--t-title); line-height: 1.08; letter-spacing: -0.03em; color: var(--pastel-ink); text-wrap: balance; }
-.cs-fridge-text { max-width: 24em; font-size: var(--t-small); line-height: 1.45; color: var(--tile-ink); text-wrap: pretty; }
-.cs-fridge-text strong { font-weight: inherit; color: var(--pastel-ink); }
-/* the print and the phone, one group as wide as the two less their
-   overlap, in the middle of its column: the print the group's height,
-   the phone standing over its lower left corner */
-.cs-fridge-art {
-  --fh: calc(380 * var(--u));
-  --phw: calc(170 * var(--u));
-  position: relative;
-  display: block;
-  justify-self: center;
-  width: calc(var(--fh) * 0.754 + var(--phw) - 80 * var(--u));
-  height: var(--fh);
-}
-.cs-fridge-print {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  aspect-ratio: 760 / 1008;
-  padding: calc(8 * var(--u)) calc(8 * var(--u)) calc(30 * var(--u));
-  border-radius: calc(3 * var(--u));
-  background: #fff;
-  rotate: 3deg;
-  box-shadow:
-    0 0 0 1px rgb(30 30 30 / 0.05),
-    0 calc(2 * var(--u)) calc(3 * var(--u)) rgb(30 30 30 / 0.07),
-    0 calc(30 * var(--u)) calc(44 * var(--u)) calc(-26 * var(--u)) color-mix(in oklab, var(--deep) 50%, transparent);
-}
-.cs-fridge-print img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: calc(2 * var(--u)); }
-.cs-fridge-print::before {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  top: calc(-11 * var(--u));
-  left: 50%;
-  width: calc(78 * var(--u));
-  height: calc(22 * var(--u));
-  translate: -50% 0;
-  rotate: -4deg;
-  background: linear-gradient(rgb(255 252 242 / 0.84), rgb(248 238 214 / 0.76));
-  box-shadow: 0 calc(1 * var(--u)) calc(2 * var(--u)) rgb(60 40 20 / 0.14);
-  clip-path: polygon(3% 6%, 7% 0, 94% 0, 98% 14%, 100% 48%, 97% 86%, 100% 100%, 5% 100%, 0 84%, 3% 50%, 0 16%);
-}
-.cs-fridge-phone {
-  position: absolute;
-  z-index: 3;
-  bottom: calc(-14 * var(--u));
-  left: 0;
-  width: var(--phw);
-  rotate: -4deg;
-  filter: drop-shadow(0 calc(24 * var(--u)) calc(26 * var(--u)) color-mix(in oklab, var(--deep) 42%, transparent));
-}
-.cs-fridge-phone .cs-phone { display: block; width: 100%; height: auto; }
-html.rises .cs-fridge:not(.is-risen) .cs-fridge-phone { translate: calc(-30 * var(--u)) calc(40 * var(--u)); rotate: -10deg; opacity: 0; }
-.cs-fridge.is-risen .cs-fridge-phone { transition: translate 0.9s var(--spring-settle) 0.25s, rotate 0.9s var(--spring-settle) 0.25s, opacity 0.4s ease 0.25s; }
-/* a narrower lane: the words over the art */
-@container lane (max-width: 700px) {
-  .cs-fridge { grid-template-columns: minmax(0, 1fr); gap: calc(26 * var(--u)); }
-  .cs-fridge-text { max-width: 30em; }
-}
-@container lane (max-width: 560px) {
-  .cs-fridge { padding: 26px 22px 34px; }
-  .cs-fridge-art { --fh: 300px; --phw: 136px; }
-}
-
-/* ---- PantryPal: the seven screens that shipped, each over its prototype ----
-   Turned over (the switch in the tile's head, or a press on a screen's
-   number), each shipped screen flips to the Figma screen it grew from,
-   one after another, left to right, and back again; its caption says
-   what the step was called then. The two doors to a scan were new, so
-   their back is the prototype's blank. */
-.cs-flip { --flip-pad: calc(36 * var(--u)); padding: calc(30 * var(--u)) var(--flip-pad) calc(36 * var(--u)); }
-.cs-tile.cs-flip > * + * { margin-top: 0; }
-.cs-flip-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: calc(12 * var(--u)); margin-bottom: calc(30 * var(--u)) !important; }
-.cs-seg {
+.cs-ship-head .cs-ship-switch { justify-self: center; }
+.cs-ship-switch {
   display: inline-flex;
   padding: calc(4 * var(--u));
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.5);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.7), 0 1px 2px color-mix(in oklab, var(--deep) 12%, transparent);
+  background: rgb(255 255 255 / 0.46);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--deep) 10%, transparent);
 }
-.cs-seg button {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(8 * var(--u));
-  height: max(28px, calc(34 * var(--u)));
-  padding: 0 calc(14 * var(--u));
+.cs-ship-switch button {
+  height: max(34px, calc(36 * var(--u)));
+  padding: 0 calc(20 * var(--u));
+  border: 0;
   border-radius: 999px;
+  background: none;
+  font: inherit;
   font-size: var(--t-small);
   line-height: 1;
-  letter-spacing: 0;
   color: var(--tile-ink);
-  transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
-.cs-seg button span { font-size: var(--t-micro); letter-spacing: 0.04em; color: var(--tile-ink-2); }
-.cs-seg button[aria-checked='true'] { background: #fff; color: var(--pastel-ink); box-shadow: 0 calc(4 * var(--u)) calc(10 * var(--u)) calc(-4 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent); }
-.cs-flip-row {
+.cs-ship-switch button[aria-checked='true'] {
+  background: #fff;
+  color: var(--pastel-ink);
+  box-shadow: 0 1px 2px rgb(30 30 30 / 0.06), 0 calc(6 * var(--u)) calc(14 * var(--u)) calc(-6 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent);
+}
+@media (hover: hover) { .cs-ship-switch button[aria-checked='false']:hover { color: var(--pastel-ink); } }
+/* the two arrows, white coins in the card's top corners, as far in from
+   its edges as the switch is down from its top, so the three stand on one
+   line and the corners are even; the one with nowhere to go is faint.
+   (They stood at the card's two sides, level with the phones, over the
+   screens fading out at its edges.) */
+.cs-reel-step {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: calc(16 * var(--u));
-  list-style: none;
+  place-items: center;
+  width: max(38px, calc(42 * var(--u)));
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--pastel-ink);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--deep) 8%, transparent),
+    0 calc(8 * var(--u)) calc(18 * var(--u)) calc(-8 * var(--u)) color-mix(in oklab, var(--deep) 45%, transparent);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: opacity 0.25s ease, scale 0.2s var(--ease-rise);
 }
-/* the back of a step the prototype did not have: a blank card */
-.cs-flip-none {
-  position: absolute;
-  inset: 3% 7%;
-  display: grid;
-  place-content: center;
-  gap: calc(6 * var(--u));
-  padding: calc(10 * var(--u));
-  border-radius: calc(16 * var(--u));
-  border: calc(1.5 * var(--u)) dashed color-mix(in oklab, var(--deep) 40%, transparent);
-  background: rgb(255 255 255 / 0.5);
-  text-align: center;
-  rotate: y 180deg;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-.cs-flip-none span { font-size: var(--t-micro); line-height: 1.3; color: var(--pastel-ink); }
-.cs-flip-none em { font-style: normal; font-size: max(10px, calc(11 * var(--u))); line-height: 1.3; color: var(--tile-ink-2); }
-.cs-flip-row li { display: grid; justify-items: center; gap: calc(16 * var(--u)); perspective: calc(1600 * var(--u)); }
-.cs-flip-card {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 800 / 1636;
-  transform-style: preserve-3d;
-  transition: rotate 0.9s var(--spring-settle);
-  transition-delay: calc(var(--i) * 80ms);
-}
-.cs-flip-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
-.cs-flip-card img.is-back { rotate: y 180deg; padding: 2% 3%; }
-.cs-flip[data-show='figma'] .cs-flip-card { rotate: y 180deg; }
-.cs-flip-cap { flex-wrap: wrap; justify-content: center; text-align: center; }
-.cs-flip-cap b { font-weight: inherit; color: var(--pastel-ink); }
-.cs-flip-cap em { flex-basis: 100%; font-style: normal; font-size: var(--t-micro); letter-spacing: 0.03em; color: var(--tile-ink-2); transition: color 0.3s ease; }
-.cs-flip[data-show='figma'] .cs-flip-cap em { color: var(--tile-ink); }
-/* under 760 the seven run sideways, three and a bit to a view, so each
-   is big enough to read and the next one says there are more */
-@container lane (max-width: 759.98px) {
-  .cs-flip-row {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: calc((100% - 2 * 14px) / 3.3);
-    gap: 14px;
-    margin-inline: calc(-1 * var(--flip-pad, 24px));
-    padding: 4px var(--flip-pad, 24px) 10px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--flip-pad, 24px);
-    scrollbar-width: none;
+.cs-reel-step svg { width: 48%; height: auto; }
+.cs-reel-step:disabled { opacity: 0.35; cursor: default; }
+@media (hover: hover) { .cs-reel-step:not(:disabled):hover { scale: 1.06; } }
+.cs-reel-step:not(:disabled):active { scale: 0.94; }
+/* a phone's lane: two and a bit to a view, so the next one says there
+   are more; the arrows stay, a finger's other way to move them */
+@container lane (max-width: 560px) {
+  .cs-ship-reel .cs-reel-view { padding: 20px 0 22px; }
+  .cs-ship-head { margin-bottom: 16px; padding-inline: 16px; }
+  .cs-ship-reel .cs-reel-track { --reel-gap: 18px; padding: 4px 30px 30px; }
+  .cs-ship-reel .cs-reel-scroll {
+    -webkit-mask: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+    mask: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
   }
-  .cs-flip-row::-webkit-scrollbar { display: none; }
-  .cs-flip-row li { scroll-snap-align: start; }
+  .cs-ship-card { width: min(176px, 46cqw); }
+  .cs-ship-reel .cs-reel-foot { margin: -6px 22px 0; white-space: nowrap; }
+  /* (the bar and the count alone: beside them the flow's name broke over
+     two lines, and the count over two more) */
+  .cs-ship-reel .cs-reel-foot > span:first-child { display: none; }
 }
-
 
 /* ---- the store's panels, fanned a little, lifting in turn ---- */
 .cs-store li { transition: translate 0.7s var(--ease-rise); }
@@ -6820,14 +6560,6 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
   .cs-rollout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cs-rollout-web { grid-column: 1 / -1; grid-row: auto; }
   .cs-rollout-merch, .cs-rollout-socials { grid-column: auto; grid-row: auto; }
-  /* two tickets to a stretch of rail, so each call reads on a line or two
-     beside its drawing (three to a stretch, a call had 130 beside its
-     drawing and broke over three lines: "Salt is / already in / the
-     kitchen") */
-  .cs-tickets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cs-ticket-slot:nth-child(n)::before { left: calc(-11 * var(--u) - 1px); right: calc(-11 * var(--u) - 1px); border-radius: 0; }
-  .cs-ticket-slot:nth-child(odd)::before { left: calc(-6 * var(--u)); border-radius: calc(7 * var(--u)) 0 0 calc(7 * var(--u)); }
-  .cs-ticket-slot:nth-child(even)::before { right: calc(-6 * var(--u)); border-radius: 0 calc(7 * var(--u)) calc(7 * var(--u)) 0; }
   /* the prototype's six screens three to a view, as wide as three fit in
      the column, so the flow is read three steps at a time and the pan
      runs through the other three (at 268 two and a half stood in the
@@ -6861,19 +6593,6 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
 /* the same, in a desktop's column only: under 500 these stand one over
    another as a phone's do */
 @container lane (501px <= width <= 860px) {
-  /* the seven screens that shipped in one row, front door to plate, read
-     left to right as the flow runs, and flipped to the prototype in one
-     wave across it (three to a row, two rows stood 1.3 windows tall, and
-     the six turned over with half of them out of sight) */
-  .cs-flip-row { column-gap: calc(12 * var(--u)); }
-  .cs-flip-cap { font-size: var(--t-micro); }
-  /* every caption starts just under its phone, so the six stand on one
-     line (the shorter ones were stretched down to the tallest's height,
-     and the step whose name ran to two lines stood a line above the rest);
-     what a step was called then is set a step smaller and untracked, so
-     "then: check out" keeps to its line */
-  .cs-flip-row li { align-content: start; }
-  .cs-flip-cap em { font-size: max(10.5px, calc(11.5 * var(--u))); letter-spacing: 0; text-wrap: balance; }
   /* the nine versions: the list a little narrower, the version on show a
      little bigger beside it */
   .cs-history { grid-template-columns: minmax(0, 1fr) calc(290 * var(--u)); }
@@ -6909,8 +6628,6 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
   }
   .cs-storymap::-webkit-scrollbar { display: none; }
   .cs-storymap li { scroll-snap-align: start; }
-  .cs-verdict-row { grid-template-columns: minmax(0, 1fr); }
-  .cs-awning { padding: calc(var(--strip) + var(--sc) + 40px) 24px 32px; }
   .cs-pipes { padding: 24px; }
   .cs-belt-stats { grid-template-columns: minmax(0, 1fr); padding: 0 28px; }
   .cs-belts { padding: 28px 0; }
@@ -6928,7 +6645,6 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
   .cs-interview > .cs-chips { flex-direction: row; }
   .cs-construct { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 40px 28px 32px 92px; }
   .cs-palette { padding: 24px; }
-  .cs-flip { --flip-pad: 24px; padding: 24px; }
 }
 /* the grids in a narrow lane, a phone's or a narrow window's */
 @container lane (max-width: 460px) {
@@ -6937,13 +6653,6 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
      the fifty dishes and the nine versions came out too small to read) */
   .cs-stats.cs-results { grid-template-columns: minmax(0, 1fr); }
   .cs-stats.is-five { grid-template-columns: minmax(0, 1fr); }
-  .cs-flip-head { flex-direction: column; align-items: flex-start; }
-  /* the switch runs the tile's width, each side its name over its date
-     (side by side they broke into "the / prototype" beside "Jan / 2026") */
-  .cs-flip-head > .cs-seg { display: flex; align-self: stretch; }
-  .cs-seg button { flex: 1 1 0; flex-direction: column; justify-content: center; gap: 3px; height: auto; min-height: 44px; padding: 7px 12px; white-space: nowrap; }
-  .cs-tickets { grid-template-columns: minmax(0, 1fr); gap: 56px; }
-  .cs-ticket-slot:nth-child(n)::before { left: -6px; right: -6px; border-radius: 7px; }
   /* one to a row, a chain's wire ends at each lesson's own edge (it ran
      on past the column by a gap, toward a neighbour that was not there) */
   .cs-lessons, .cs-lessons.is-chain { grid-template-columns: minmax(0, 1fr); --lesson-gap: 40px; }
@@ -6980,11 +6689,11 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
   .cs-part-num { margin-bottom: 10px; }
   [data-case='pantrypal'] .cs-chapter-num { font-size: 40px; -webkit-text-stroke-width: 4px; }
   [data-case='pantrypal'] .cs-chapter-num.is-word { height: 36px; padding: 0 14px; font-size: 17px; }
-  .cs-waste-words .cs-waste-num, .cs-endless-words .cs-endless-num { font-size: 64px; }
+  .cs-waste-words .cs-waste-num, .cs-endless-words .cs-endless-num { font-size: min(64px, 24cqw); }
   .cs-stat b { font-size: 60px; }
   .cs-stats.is-five .cs-stat b { font-size: 56px; }
   .cs-results .cs-stat { min-height: 0; }
-  .cs-hub-count b, .cs-severity-total b { font-size: 64px; }
+  .cs-severity-total b { font-size: 64px; }
   .cs-type-aa { font-size: 76px; }
   .cs-pillars-row b { font-size: 24px; }
   .cs-construct { padding: 32px 20px 28px 76px; }
@@ -7003,16 +6712,16 @@ html.rises .cs-construct:not(.is-risen) .cs-construct-tag { opacity: 0; }
    belts are still, the sparks gone, the stamps down, the fan dealt, the
    counts drawn, the guides drawn, and nothing waits on a rise to show. */
 @media (prefers-reduced-motion: reduce) {
-  .cs-belt-row, .cs-pipe-steps::after, [data-case='vicino'] .cs-chapter-rule::after, .cs-ticket { animation: none !important; }
+  .cs-belt-row, .cs-pipe-steps::after, [data-case='vicino'] .cs-chapter-rule::after,
+  .cs-hub-lights i, .cs-hub-lights i::after, .cs-hub-n, .cs-hub-bulbs i::after, .cs-hub-flag,
+  .cs-ship-reel .cs-reel-track.is-dealt li { animation: none !important; }
   .cs-belt-row { flex-wrap: nowrap; }
   .cs-pipe-steps::after, [data-case='vicino'] .cs-chapter-rule::after { opacity: 0 !important; }
-  /* the thrown food is simply gone, its place dashed, and the question's
-     mark and the fridge's few things are there as the words are */
-  .cs-waste.is-risen .cs-waste-grid i.is-gone img { animation: none; opacity: 0; }
-  .cs-chapter-rule, .cs-stamp, .cs-swatches i, .cs-dots, .cs-pots i, .cs-waste-grid i, .cs-waste-grid i::before, .cs-waste-grid img,
-  .cs-hmw-q mark, .cs-dinner-needs .is-in, .cs-hub-leaders path, .cs-hub-leaders circle, .cs-fridge-phone,
+  /* the question's mark is there as the words are */
+  .cs-chapter-rule, .cs-pin-mark path, .cs-look-paint li, .cs-kitchen-chef, .cs-kitchen-food li,
+  .cs-hmw-q mark, .cs-hub-dark,
   .cs-plate img, .cs-split-bar i, .cs-palette-grid li, .cs-ramp i, .cs-lint-list li, .cs-severity-bar i,
-  .cs-construct-lines > *, .cs-construct-tag, .cs-pillars-row li, .cs-pin-arrow path, .cs-flip-card,
+  .cs-construct-lines > *, .cs-construct-tag, .cs-pillars-row li, .cs-pin-arrow path,
   .cs-odo-d > span, .cs-storymap-pic, .cs-storymap-pic img, .cs-pin-paper, .cs-rail, .cs-rail a span {
     transition-duration: 0.01s !important;
     transition-delay: 0s !important;
@@ -7050,7 +6759,7 @@ html[data-theme='ink'] [data-case='nextlevel'] .cs-chapter-when { color: var(--a
    does on the paper. The page colour itself (--bg) is left alone, since
    what uses it inside is cut out of the page, not drawn on the work. */
 html[data-theme='ink'] :is(.cs-tile, .cs-lit, .cs-hero-tile, .cs-next, .cs-stat, .cs-band,
-  .cs-rail-in, .cs-ticket, .cs-rules-row li, .cs-pin-paper, .cs-chapter-num, .cs-intro-film,
+  .cs-rail-in, .cs-pin-paper, .cs-chapter-num, .cs-intro-film,
   .cs-print, .cs-history-stage) {
   --ink: #444343;
   --ink-2: #8a8989;
@@ -7073,7 +6782,7 @@ html[data-theme='ink'] :is(.cs-tile, .cs-lit, .cs-hero-tile, .cs-next, .cs-stat,
    with a colour of its own (the dark editor's panel, the recipe card)
    keeps it. */
 html[data-theme='ink'] :where(.cs-tile, .cs-lit, .cs-hero-tile, .cs-next, .cs-stat, .cs-band,
-  .cs-rail-in, .cs-ticket, .cs-pin-paper, .cs-intro-film, .cs-print, .cs-history-stage) {
+  .cs-rail-in, .cs-pin-paper, .cs-intro-film, .cs-print, .cs-history-stage) {
   color: var(--ink);
 }
 

@@ -1,0 +1,26 @@
+{
+  "$description": "PantryPal spacing tokens. 4pt scale inferred from clustered values (notes/analysis.md §3); the file drifts a few px around these — normalized.",
+  "scale": {
+    "xxs": 4,
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 20,
+    "xl": 24,
+    "xxl": 32,
+    "xxxl": 48
+  },
+  "layout": {
+    "gutter":           { "value": 24, "sources": ["title pills x=24, w=347 on a 393 screen"] },
+    "screenWidth":      { "value": 393, "note": "reference canvas (iPhone 15 class)" }
+  },
+  "controls": {
+    "controlHeight":    { "value": 44, "sources": ["inputs 43, Log In 42 (normalized to iOS min tap target)"] },
+    "chipHeight":       { "value": 19, "sources": ["ingredient chips 19 (LITERAL — reverted from 20 on 2026-07-03: at 19pt a 1pt change is >5% of the element and visibly fattens the band; see docs/principles.md)"] },
+    "searchBarHeight":  { "value": 56, "sources": ["search bar / title-pill-small 56"] },
+    "titlePillHeight":  { "value": 70, "sources": ["page title pills"] },
+    "stepBandHeight":   { "value": 50, "sources": ["step bands 50/51 (normalized)"] },
+    "sectionBandHeight":{ "value": 56, "sources": ["My Ingredients section bands"] },
+    "badgeSize":        { "value": 25, "sources": ["quantity badges ~24.75x22 (normalized round)"] }
+  }
+}

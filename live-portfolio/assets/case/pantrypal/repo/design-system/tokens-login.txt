@@ -1,0 +1,8 @@
+tokens/colors.json:4:    "red": { "value": "#FF4B4B", "sources": ["logo wordmark (all screens)", "Log In button #FF3939 (merged)"] }
+tokens/colors.json:7:    "butter":   { "value": "#FFD67E", "sources": ["Login header band", "Scan content bg", "My Recipes cards 1&3", "Final Recipe hero", "My Ingredients bands #FFC850 (merged)"] },
+tokens/colors.json:11:    "offWhite": { "value": "#F7F7F7", "sources": ["Login inputs", "chip cells #F6F1F1 (merged)", "scrollbar track #FFFAFA (merged)"] },
+tokens/colors.json:25:    "placeholder": { "value": "#5A5A5A", "sources": ["Login input placeholders"] }
+tokens/illustration-style.json:29:    "scene": "Login kitchen background: full scene, softer earthy palette (static asset, EXCLUDED from this template)"
+tokens/spacing.json:18:    "controlHeight":    { "value": 44, "sources": ["inputs 43, Log In 42 (normalized to iOS min tap target)"] },
+tokens/typography.json:62:        "Log In button"
+tokens/typography.json:123:        "Login logo 69.47"

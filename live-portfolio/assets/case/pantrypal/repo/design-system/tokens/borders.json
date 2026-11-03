@@ -1,0 +1,23 @@
+{
+  "$description": "PantryPal border tokens. Ink outlines are the system's depth mechanism — every structural element is outlined in black. Dashed style is SEMANTIC: it marks provisional content (scanning, selecting, editing), solid marks settled content. See notes/analysis.md §5.",
+  "width": {
+    "hairline": { "value": 1, "sources": ["search bar", "ingredient tag 0.763 (merged)"] },
+    "standard": { "value": 2, "sources": ["inputs", "buttons", "form card", "title pills"] },
+    "heavy":    { "value": 3, "sources": ["scrollbar track", "receipt frame"] }
+  },
+  "style": {
+    "solid":  { "usage": "settled content (default)" },
+    "dashed": {
+      "usage": "provisional content: scan frame, ingredient-selection tags, Choose Ingredients title pill; inferred extension: focused inputs",
+      "dashPattern": [6, 4],
+      "dashPatternNote": "inferred from visual density of the receipt frame dashes; Figma exports them as raster"
+    }
+  },
+  "scallop": {
+    "$description": "Signature scalloped edge under every header: a row of brand.red semicircle bumps",
+    "bumpWidth": 24,
+    "bumpHeight": 17,
+    "color": "brand.red",
+    "sources": ["border-decoration ellipses 24x17 on all 6 frames"]
+  }
+}

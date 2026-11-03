@@ -29,6 +29,7 @@
     { "source": "/Media/apple-touch-icon.png", "destination": "/apple-touch-icon.png", "permanent": true }
   ],
   "functions": {
-    "api/chat.js": { "maxDuration": 30 }
+    "api/chat.js": { "maxDuration": 30 },
+    "api/pantry.js": { "maxDuration": 60, "includeFiles": "assets/case/pantrypal/app/scan-*.jpg" }
   }
 }

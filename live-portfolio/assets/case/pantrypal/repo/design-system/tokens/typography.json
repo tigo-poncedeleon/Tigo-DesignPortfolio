@@ -1,0 +1,135 @@
+{
+  "$description": "PantryPal type tokens. Two-family split is strict: Fugaz One for ALL display/labels/UI text, Faustina (serif) ONLY for recipe prose. Normalizations documented in notes/analysis.md §2.",
+  "families": {
+    "display": {
+      "value": "Fugaz One",
+      "postscriptName": "FugazOne-Regular",
+      "fallback": "system heavy rounded",
+      "note": "Google Font; must be bundled + registered in the app target"
+    },
+    "body": {
+      "value": "Faustina",
+      "postscriptName": "Faustina-Regular",
+      "fallback": "system serif",
+      "note": "Google Font (variable); must be bundled + registered in the app target"
+    }
+  },
+  "lineHeight": {
+    "display": {
+      "value": 0.9,
+      "note": "leading-[0.9] on nearly every Fugaz node"
+    },
+    "body": {
+      "value": 1.0
+    }
+  },
+  "scale": {
+    "caption": {
+      "size": 13,
+      "family": "display",
+      "sources": [
+        "macro rows 12.594 x12 (normalized)"
+      ]
+    },
+    "chip": {
+      "size": 13,
+      "family": "display",
+      "tracking": 0.52,
+      "sources": [
+        "ingredient chip labels"
+      ]
+    },
+    "link": {
+      "size": 14,
+      "family": "display",
+      "sources": [
+        "Sign Up link"
+      ]
+    },
+    "label": {
+      "size": 16,
+      "family": "display",
+      "sources": [
+        "input labels",
+        "More info",
+        "15.4/16.8 (merged)"
+      ]
+    },
+    "button": {
+      "size": 20,
+      "family": "display",
+      "sources": [
+        "Log In button"
+      ]
+    },
+    "cardTitle": {
+      "size": 24,
+      "family": "display",
+      "sources": [
+        "recipe card titles x3"
+      ]
+    },
+    "heading": {
+      "size": 28,
+      "family": "display",
+      "sources": [
+        "tab labels",
+        "ingredient names",
+        "step titles 30 (merged)"
+      ]
+    },
+    "title": {
+      "size": 33,
+      "family": "display",
+      "sources": [
+        "page title pills x4"
+      ]
+    },
+    "display": {
+      "size": 40,
+      "family": "display",
+      "sources": [
+        "'Let's get cooking!' headline"
+      ]
+    },
+    "bodySm": {
+      "size": 15,
+      "family": "body",
+      "sources": [
+        "recipe card descriptions"
+      ]
+    },
+    "fineprint": {
+      "size": 12.5,
+      "family": "body",
+      "inferred": true,
+      "note": "NOT observed in Figma. Legal small print (sign-up consent line). The display face has no small-print register — Fugaz at 11.5 carries the same stroke weight as a 16pt field label — so this is the one documented exception to 'Faustina = recipe prose only'."
+    },
+    "body": {
+      "size": 18,
+      "family": "body",
+      "sources": [
+        "recipe step bodies"
+      ]
+    }
+  },
+  "logoLockup": {
+    "$description": "Wordmark sizes are lockup specs, not scale members",
+    "large": {
+      "size": 69,
+      "family": "display",
+      "color": "brand.red",
+      "sources": [
+        "Login logo 69.47"
+      ]
+    },
+    "small": {
+      "size": 33,
+      "family": "display",
+      "color": "brand.red",
+      "sources": [
+        "header logo 32.63 x5"
+      ]
+    }
+  }
+}

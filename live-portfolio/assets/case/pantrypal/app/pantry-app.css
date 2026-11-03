@@ -98,6 +98,7 @@
   text-align: left;
   -webkit-font-smoothing: antialiased;
 }
+.pp-screen > * { --pt: calc(100cqw / 393); }
 .pp-view {
   --pt: calc(100cqw / 393);
   position: absolute;
@@ -105,7 +106,9 @@
   overflow: hidden;
   background: var(--butter);
   font-size: calc(16 * var(--pt));
+  visibility: hidden;
 }
+.pp-view.is-on { visibility: visible; }
 /* The phone brings its own reset rather than leaning on the page's, and
    every rule of it weighs nothing (:where), so a class further down always
    wins: the first cut's plain `.pp-screen button` outweighed `.pp-go` and
@@ -143,20 +146,6 @@
   height: auto;
   pointer-events: none;
 }
-/* the system's own bar, which a capture does not carry */
-.pp-indicator {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  bottom: calc(8 * var(--pt));
-  width: calc(139 * var(--pt));
-  height: calc(5 * var(--pt));
-  margin-left: calc(-69.5 * var(--pt));
-  border-radius: 99px;
-  background: var(--ink);
-  pointer-events: none;
-}
-
 /* the outline every white display word wears: eight copies of the word,
    two points out, behind the fill (DS OutlinedText, width 2) */
 .pp-outlined {
@@ -532,20 +521,73 @@
 }
 .pp-prev[hidden] { display: flex; width: 0; margin-right: calc(-8 * var(--pt)); opacity: 0; scale: 0.6; pointer-events: none; }
 
-/* The title and the wardrobe, both doors to the shelf: the chrome is the
-   app's pixels, so the door is laid over them, and a press shades it as
-   the app's pressed state does. The pill is 283 by 49 and the wardrobe 52
-   square, as measured. */
-.pp-door {
+/* The seat's verb, which it does not have yet (HomeScreen.primaryButton,
+   the cooking case): the primary disabled, on the design system's steel
+   with the placeholder's grey, saying what the chef is doing. */
+.pp-go.is-thinking { background: var(--steel); color: var(--placeholder); cursor: default; }
+.pp-go.is-thinking::after { display: none; }
+.pp-go.is-thinking:active { translate: none; }
+
+/* ---- the seat (Components/CookingDishCard.swift) ----
+   DishCard's frame, part for part, so the dish that fills it changes the
+   food and nothing else: the pill in the corner (butter, the app's waiting
+   surface, under the rank badge's hat), the plate coral, the name band's
+   treatment, and where a dish keeps its pills, the bar. */
+.pp-card.is-seat { cursor: grab; }
+.pp-card.is-seat .pp-hero { padding-top: calc(40.5 * var(--pt)); }
+.pp-stocked.is-cooking { gap: calc(4 * var(--pt)); background: var(--butter); }
+.pp-stocked.is-cooking img { width: calc(14 * var(--pt)); height: calc(12 * var(--pt)); object-fit: contain; }
+/* the halo turns once in seven seconds, IllustrationView's clock */
+.pp-plate.is-writing .pp-rays { animation: pp-turn 7s linear infinite; }
+@keyframes pp-turn { to { rotate: 360deg; } }
+/* the card, 68 per cent of the plate's width and tipped two degrees, the
+   pencil free to stand up off its top edge */
+.pp-menu {
   position: absolute;
-  z-index: 3;
-  top: calc(144.7 * var(--pt));
-  border-radius: calc(10 * var(--pt));
+  left: 50%;
+  top: 50%;
+  width: 68%;
+  height: auto;
+  overflow: visible;
+  translate: -50% -50%;
+  rotate: -2deg;
 }
-.pp-door.is-title { left: calc(22.9 * var(--pt)); top: calc(146 * var(--pt)); width: calc(283.2 * var(--pt)); height: calc(49 * var(--pt)); border-radius: 99px; }
-.pp-door.is-door { left: calc(318 * var(--pt)); width: calc(52 * var(--pt)); height: calc(52 * var(--pt)); }
-.pp-door:active { background: rgb(0 0 0 / 0.1); }
-.pp-door:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(2 * var(--pt)); }
+.pp-ln { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+/* provisional while it writes, real when it is done: two borders that
+   cross over, which is what the app does since SwiftUI cannot animate one
+   border's style */
+.pp-menu-dashed, .pp-menu-solid { transition: opacity 0.35s ease-out; }
+.pp-menu-solid { opacity: 0; }
+.pp-menu.is-done .pp-menu-dashed { opacity: 0; }
+.pp-menu.is-done .pp-menu-solid { opacity: 1; }
+/* under the name, 14 above the words, 12 to the bar, and the measured 10
+   under it (as under a dish's pills) */
+.pp-body.is-seat { gap: calc(12 * var(--pt)); padding-top: calc(14 * var(--pt)); }
+.pp-wait {
+  justify-self: stretch;
+  display: grid;
+  justify-items: center;
+  gap: calc(4 * var(--pt));
+  padding: 0 calc(12 * var(--pt));
+}
+.pp-wait p {
+  font-family: 'PP Faustina', Georgia, serif;
+  font-size: calc(15 * var(--pt));
+  line-height: calc(18.9 * var(--pt));
+  color: var(--placeholder);
+  white-space: nowrap;
+}
+/* EstimatedProgressBar: a white capsule 10 tall, the brand red filling it
+   from the left, the hairline over both */
+.pp-track {
+  position: relative;
+  justify-self: stretch;
+  height: calc(10 * var(--pt));
+  border-radius: 99px;
+  background: #fff;
+}
+.pp-track i { position: absolute; left: 0; top: 0; bottom: 0; width: calc(10 * var(--pt)); border-radius: 99px; background: var(--red); }
+.pp-track::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink); }
 
 /* ---- the welcome (HomeScreen emptyShelfWelcome, SpillStage) ----
    An empty shelf trades the deck for the app's welcome, under its own
@@ -557,14 +599,12 @@
    buttons stand at 662 and 718, as measured. (It was a still of the 1.2
    build, its scan button wearing the chef's hat the app has since traded
    for a camera, and its two buttons pressed nothing.) */
-.pp-chrome.is-welcome, .pp-welcome { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
-.pp-home.is-empty :is(.pp-chrome.is-welcome, .pp-welcome) { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-.pp-home :is(.pp-chrome.is-deck, .pp-door, .pp-door-count, .pp-rank, .pp-deck, .pp-go, .pp-row) { transition: opacity 0.3s ease, visibility 0s; }
-.pp-home.is-empty :is(.pp-chrome.is-deck, .pp-door, .pp-door-count, .pp-rank, .pp-deck, .pp-go, .pp-row) {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-}
+/* The welcome and the deck are two states of one screen, and the app swaps
+   them with no animation of its own: the deck is simply what Home is once
+   the welcome lets go, already there under a page sliding away. */
+.pp-chrome.is-welcome, .pp-welcome { visibility: hidden; }
+.pp-home.is-empty :is(.pp-chrome.is-welcome, .pp-welcome) { visibility: visible; }
+.pp-home.is-empty :is(.pp-chrome.is-deck, .pp-door-count, .pp-rank, .pp-deck, .pp-go, .pp-row) { visibility: hidden; }
 .pp-welcome { position: absolute; inset: 0; z-index: 1; }
 .pp-spill {
   position: absolute;
@@ -608,12 +648,130 @@
 }
 .pp-scan { top: calc(662 * var(--pt)); background: var(--red); color: #fff; }
 .pp-type { top: calc(718 * var(--pt)); background: #fff; }
+/* "Add more groceries" keeps the sticker's own 16, where "Type my
+   groceries" wears the primary's 20 */
+.pp-type.is-more { font-size: calc(16 * var(--pt)); }
+
+/* ======================================================================
+   Type it in! (Screens/ManualAddScreen.swift)
+   As it reads once the groceries are typed and the keyboard is put away:
+   the entry card, still dashed with nothing in its field; what is on the
+   shelf now, as chips to undo; the staples still on offer; and the bottom
+   slot's way forward. From 16 under the band, 24 in from each side, 12
+   between the pieces, and 4 under each piece's label.
+   ====================================================================== */
+.pp-tscroll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(206.7 * var(--pt));
+  height: calc(539.3 * var(--pt));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.pp-tscroll::-webkit-scrollbar { display: none; }
+.pp-tin { display: grid; gap: calc(12 * var(--pt)); padding: calc(16 * var(--pt)) calc(24 * var(--pt)) calc(24 * var(--pt)); }
+/* art, name and add as one object, on the dashed provisional edge */
+.pp-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: calc(12 * var(--pt));
+  padding: calc(12 * var(--pt));
+  border-radius: calc(12 * var(--pt));
+  background: #fff;
+}
+.pp-entry.is-ready .pp-dash rect { stroke-dasharray: none; }
+.pp-well {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(68 * var(--pt));
+  height: calc(62 * var(--pt));
+  color: var(--placeholder);
+}
+/* a Circle in the 68 × 62 the drawing and its padding make: 62 across */
+.pp-well::before {
+  content: '';
+  position: absolute;
+  left: calc(3 * var(--pt));
+  top: 0;
+  width: calc(62 * var(--pt));
+  height: calc(62 * var(--pt));
+  border-radius: 50%;
+  background: var(--offwhite);
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+}
+.pp-well .pp-g { position: relative; }
+.pp-field {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: calc(19 * var(--pt));
+  line-height: var(--fugaz-lh);
+  color: var(--placeholder);
+  white-space: nowrap;
+}
+.pp-plusbadge { flex: none; width: calc(44 * var(--pt)); height: calc(39.6 * var(--pt)); }
+.pp-tlabel {
+  margin-bottom: calc(4 * var(--pt));
+  font-size: calc(12 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+  line-height: var(--fugaz-lh);
+}
+.pp-tlabel span, .pp-tlabel.is-quiet { color: var(--placeholder); }
+/* the shelf so far two to a row (an adaptive 128 at least), the staples
+   three; each chip as wide as it is, in the middle of its cell */
+.pp-tgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: calc(8 * var(--pt)); justify-items: center; }
+.pp-tgrid.is-staples { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pp-tchip {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--pt));
+  max-width: 100%;
+  height: calc(44 * var(--pt));
+  padding: 0 calc(8 * var(--pt));
+  border-radius: 99px;
+  box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--ink);
+  font-size: calc(13 * var(--pt));
+  line-height: 1;
+  white-space: nowrap;
+  transition: translate 80ms ease-out, filter 80ms ease-out;
+}
+.pp-tchip:active { translate: 0 calc(2 * var(--pt)); filter: brightness(0.94); }
+.pp-tchip img { flex: none; width: calc(26 * var(--pt)); height: calc(24 * var(--pt)); object-fit: contain; }
+.pp-tchip span { min-width: 0; overflow: hidden; }
+.pp-tchip .is-x { color: var(--placeholder); }
+.pp-tchip.is-staple { padding: 0 calc(6 * var(--pt)); background: #fff; }
+.pp-tchip.is-staple img { width: calc(24 * var(--pt)); height: calc(22 * var(--pt)); }
+/* the bar pinned under the page, the rough rule over it */
+.pp-donebar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(746 * var(--pt));
+  bottom: 0;
+  background: var(--butter);
+}
+.pp-bar {
+  position: absolute;
+  left: calc(24 * var(--pt));
+  top: calc(12 * var(--pt));
+  width: calc(345 * var(--pt));
+}
+.pp-bar.is-primary { background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+.pp-bar.is-secondary { background: #fff; font-size: calc(16 * var(--pt)); }
+.pp-bar .is-chevron { width: calc(9 * var(--pt)); height: auto; }
+.pp-typein.is-keyed .pp-donebar { top: calc(445 * var(--pt)); }
+.pp-typein.is-keyed .pp-tscroll { height: calc(238.3 * var(--pt)); }
 
 /* ======================================================================
    Recipe (Screens/CookScreen.swift)
    ====================================================================== */
-.pp-recipe { visibility: hidden; }
-.pp-recipe.is-on { visibility: visible; }
 .pp-back {
   position: absolute;
   z-index: 3;
@@ -822,8 +980,769 @@
 .pp-save.is-kept .pp-badge { display: grid; }
 .pp-done { background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
 
+/* ======================================================================
+   The phone: its home screen, the window PantryPal opens in, the status
+   bar over both, and the keyboard (pantry-app.js, pantry-keys.js). These
+   are the system's, drawn here to look like iOS 26 on an iPhone 16 (an
+   icon 63 across on a 91 by 98.7 grid, the dock 367 wide, the island 125
+   by 37): none of Apple's glyphs or icons, and the phone's other apps a
+   blur of colour, so the one icon with a name is the one to open.
+   ====================================================================== */
+.pp-board {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 77% 70%;
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+}
+.pp-wall {
+  position: absolute;
+  inset: -6%;
+  background:
+    radial-gradient(42% 26% at 24% 18%, rgb(150 160 178 / 0.55), transparent 70%),
+    radial-gradient(50% 30% at 78% 34%, rgb(120 132 152 / 0.5), transparent 72%),
+    radial-gradient(60% 34% at 40% 62%, rgb(96 106 124 / 0.55), transparent 74%),
+    radial-gradient(70% 40% at 70% 92%, rgb(60 68 84 / 0.7), transparent 75%),
+    linear-gradient(170deg, #4c5566, #2e3542 55%, #232832);
+}
+.pp-icon, .pp-appicon {
+  position: absolute;
+  width: calc(63 * var(--pt));
+  height: calc(63 * var(--pt));
+  border-radius: calc(14.2 * var(--pt));
+}
+.pp-icon {
+  background:
+    radial-gradient(70% 60% at 35% 30%, hsl(var(--h) 55% 72% / 0.5), transparent 70%),
+    linear-gradient(150deg, hsl(var(--h) 34% 58% / 0.55), hsl(var(--h) 28% 34% / 0.5));
+  box-shadow: inset 0 0 0 calc(0.6 * var(--pt)) rgb(255 255 255 / 0.2), 0 calc(1 * var(--pt)) calc(4 * var(--pt)) rgb(0 0 0 / 0.18);
+  filter: blur(calc(0.6 * var(--pt)));
+}
+.pp-appicon { padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pp-appicon img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  box-shadow: 0 calc(1 * var(--pt)) calc(4 * var(--pt)) rgb(0 0 0 / 0.25);
+  transition: filter 0.15s ease;
+}
+.pp-appicon:active img { filter: brightness(0.72); }
+.pp-appicon:focus-visible { outline: calc(2 * var(--pt)) solid #fff; outline-offset: calc(3 * var(--pt)); }
+.pp-appicon span {
+  position: absolute;
+  left: 50%;
+  top: calc(68 * var(--pt));
+  translate: -50% 0;
+  font-weight: 500;
+  font-size: calc(12 * var(--pt));
+  line-height: 1.2;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 0 calc(3 * var(--pt)) rgb(0 0 0 / 0.35);
+}
+.pp-search {
+  position: absolute;
+  left: 50%;
+  top: calc(682 * var(--pt));
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: calc(5 * var(--pt));
+  height: calc(29 * var(--pt));
+  padding: 0 calc(12 * var(--pt)) 0 calc(10 * var(--pt));
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.2);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  font-weight: 500;
+  font-size: calc(13.5 * var(--pt));
+  color: rgb(255 255 255 / 0.88);
+}
+.pp-search svg { width: calc(13 * var(--pt)); height: calc(13 * var(--pt)); }
+.pp-dock {
+  position: absolute;
+  left: calc(12.8 * var(--pt));
+  top: calc(730 * var(--pt));
+  width: calc(367.4 * var(--pt));
+  height: calc(107 * var(--pt));
+  border-radius: calc(38 * var(--pt));
+  background: rgb(255 255 255 / 0.16);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: inset 0 0 0 calc(0.6 * var(--pt)) rgb(255 255 255 / 0.18);
+}
+.pp-dock .pp-icon { top: calc(23 * var(--pt)); }
+
+/* the window: PantryPal's own screen, opened out of its icon */
+.pp-app {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  visibility: hidden;
+  transform-origin: 0 0;
+  background: var(--sky);
+}
+.pp-app.is-open { visibility: visible; }
+/* closed is closed: a screen on the stack wears visibility: visible, which a
+   hidden parent does not override, so everything in a closed window is
+   hidden by name (it stood over the home screen after Start over) */
+.pp-app:not(.is-open) * { visibility: hidden !important; }
+.pp-stack { position: absolute; inset: 0; }
+.pp-layer { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+.pp-layer > * { pointer-events: auto; }
+.pp-launch-icon { position: absolute; inset: 0; z-index: 60; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+/* the bar the system draws over every screen, and the island */
+.pp-status {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.pp-screen.is-board .pp-status.is-dark, .pp-screen:not(.is-board) .pp-status.is-light { opacity: 0; }
+.pp-island {
+  position: absolute;
+  z-index: 51;
+  left: calc(134 * var(--pt));
+  top: calc(11.3 * var(--pt));
+  width: calc(124.7 * var(--pt));
+  height: calc(37 * var(--pt));
+  border-radius: 99px;
+  background: #000;
+  pointer-events: none;
+}
+
+/* The keyboard: iOS 26's glass, which takes the colour of the screen under
+   it (so it is beige on the app's butter, as in the capture), its keys
+   pale, the suggestion bar's two rules, the blue return. Its top stands at
+   517 on an iPhone 16. */
+.pp-kbd {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  height: calc(335 * var(--pt));
+  border-radius: calc(30 * var(--pt)) calc(30 * var(--pt)) 0 0;
+  background: rgb(204 216 235 / 0.45);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  backdrop-filter: blur(16px) saturate(1.25);
+  box-shadow: 0 calc(-0.5 * var(--pt)) 0 rgb(0 0 0 / 0.06);
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  color: #000;
+  translate: 0 102%;
+  transition: translate 0.36s cubic-bezier(0.2, 0.9, 0.25, 1);
+  touch-action: manipulation;
+}
+.pp-kbd.is-up { translate: 0 0; }
+.pp-kbd-bar { position: absolute; left: 0; right: 0; top: 0; height: calc(44 * var(--pt)); }
+.pp-kbd-bar i { position: absolute; top: calc(12 * var(--pt)); bottom: calc(8 * var(--pt)); width: 1px; background: rgb(0 0 0 / 0.14); }
+.pp-kbd-bar i:first-child { left: 33.3%; }
+.pp-kbd-bar i:last-child { left: 66.6%; }
+.pp-kbd-keys { position: absolute; left: calc(6.6 * var(--pt)); right: calc(6.6 * var(--pt)); top: calc(52 * var(--pt)); display: grid; row-gap: calc(12 * var(--pt)); }
+.pp-krow { display: flex; justify-content: center; gap: calc(6 * var(--pt)); height: calc(42.7 * var(--pt)); }
+.pp-krow.is-three, .pp-krow.is-four { justify-content: space-between; gap: 0; }
+.pp-kmid { display: flex; gap: calc(6 * var(--pt)); }
+.pp-key {
+  flex: 0 0 calc(32.6 * var(--pt));
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: calc(8.5 * var(--pt));
+  background: rgb(255 255 246 / 0.84);
+  box-shadow: 0 calc(1 * var(--pt)) 0 rgb(0 0 0 / 0.1);
+  font: 400 calc(23 * var(--pt)) / 1 -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  color: #000;
+  cursor: pointer;
+}
+.pp-key.is-down { background: rgb(255 255 255 / 0.5); }
+.pp-key svg { width: calc(22 * var(--pt)); height: calc(22 * var(--pt)); stroke: #000; }
+.pp-key.is-shift { flex-basis: calc(43.3 * var(--pt)); font-size: calc(15 * var(--pt)); }
+.pp-key.is-shift svg { fill: none; }
+.pp-key.is-shift.is-on svg { fill: #000; }
+.pp-key.is-del { flex-basis: calc(43.9 * var(--pt)); }
+.pp-key.is-del svg { width: calc(24 * var(--pt)); }
+.pp-key.is-mode { flex-basis: calc(89.9 * var(--pt)); font-size: calc(17 * var(--pt)); }
+.pp-key.is-space { flex: 0 0 calc(186.5 * var(--pt)); }
+.pp-key.is-return { flex-basis: calc(89.9 * var(--pt)); background: #0a84ff; }
+.pp-key.is-return svg { stroke: #fff; width: calc(26 * var(--pt)); height: calc(26 * var(--pt)); }
+.pp-kbd-foot { position: absolute; left: calc(28 * var(--pt)); right: calc(30 * var(--pt)); top: calc(278 * var(--pt)); display: flex; justify-content: space-between; }
+.pp-kbd-foot svg { width: calc(27 * var(--pt)); height: calc(27 * var(--pt)); stroke: #000; fill: #000; }
+.pp-kbd-foot span:last-child svg { width: calc(19 * var(--pt)); fill: none; }
+
+/* the presses laid over a capture's pixels: the logo, the chef, the back
+   arrow, the wardrobe, the shelf's plus */
+.pp-hit { position: absolute; z-index: 3; padding: 0; border: 0; background: none; border-radius: calc(12 * var(--pt)); cursor: pointer; }
+.pp-hit.is-logo { left: calc(10 * var(--pt)); top: calc(48 * var(--pt)); width: calc(118 * var(--pt)); height: calc(64 * var(--pt)); }
+.pp-hit.is-gear { left: calc(318 * var(--pt)); top: calc(40 * var(--pt)); width: calc(68 * var(--pt)); height: calc(72 * var(--pt)); }
+.pp-hit.is-back { left: calc(14 * var(--pt)); top: calc(140 * var(--pt)); width: calc(84 * var(--pt)); height: calc(58 * var(--pt)); }
+.pp-hit.is-door { left: calc(314 * var(--pt)); top: calc(138 * var(--pt)); width: calc(66 * var(--pt)); height: calc(64 * var(--pt)); }
+.pp-hit.is-add { left: calc(316 * var(--pt)); top: calc(140 * var(--pt)); width: calc(60 * var(--pt)); height: calc(60 * var(--pt)); border-radius: 50%; }
+.pp-hit:focus-visible { outline: calc(2 * var(--pt)) solid #1e1e1e; outline-offset: calc(-2 * var(--pt)); }
+
+/* ======================================================================
+   The cold open (Components/LaunchCurtain.swift): the large header's
+   lockup, built of the same pieces the app builds it of (the blob, the
+   wordmark set in Fugaz One with its ink line, the tomato, the chef), at
+   the large header's own numbers, so seated it is the pass's header.
+   ====================================================================== */
+.pp-curtain { position: absolute; inset: 0; z-index: 45; overflow: hidden; pointer-events: none; }
+.pp-csky { position: absolute; inset: 0; background: var(--sky); transform-origin: 50% 0; }
+/* two thirds of a point left of the numbers, and the words a third right
+   and down, as laid over the pass's capture: seated, it is the header */
+.pp-lockup { position: absolute; left: calc(-0.67 * var(--pt)); top: 0; width: calc(393 * var(--pt)); height: calc(231.5 * var(--pt)); }
+.pp-lockup > * { position: absolute; }
+.pp-lsky { left: 0; top: 0; width: 100%; height: calc(213 * var(--pt)); background: var(--sky); }
+.pp-cscallop { left: 0; top: calc(205 * var(--pt)); width: calc(393 * var(--pt)); height: calc(24.56 * var(--pt)); overflow: visible; }
+.pp-cblob { left: calc(13 * var(--pt)); top: calc(68 * var(--pt)); width: calc(261 * var(--pt)); height: calc(132 * var(--pt)); transform-origin: 65.5% 50%; }
+.pp-cword {
+  left: calc(24.33 * var(--pt));
+  font-size: calc(69 * var(--pt));
+  line-height: calc(62 * var(--pt));
+  color: var(--red);
+  -webkit-text-stroke: calc(4 * var(--pt)) #000;
+  paint-order: stroke fill;
+  white-space: nowrap;
+}
+.pp-cword.is-one { top: calc(74.33 * var(--pt)); }
+.pp-cword.is-two { top: calc(136.33 * var(--pt)); }
+.pp-ctomato, .pp-cring { left: calc(138 * var(--pt)); top: calc(116 * var(--pt)); width: calc(92 * var(--pt)); height: calc(92 * var(--pt)); }
+.pp-ctomato { transform-origin: 50% 84.9%; }
+.pp-cring { border-radius: 50%; box-shadow: inset 0 0 0 calc(3 * var(--pt)) #000; opacity: 0; }
+.pp-cchef { left: calc(263 * var(--pt)); top: calc(32 * var(--pt)); width: calc(150 * var(--pt)); height: calc(182 * var(--pt)); object-fit: contain; transform-origin: 0 100%; }
+
+/* ======================================================================
+   The Kitchen Pass (Screens/SignUpScreen.swift): the large header, the
+   band and its fringe, the kitchen under them, and the pass over it all,
+   313 wide, 32 under the fringe on an iPhone 16 (FrontDoorMetrics)
+   ====================================================================== */
+.pp-scene { position: absolute; inset: 0; transition: translate 0.25s ease-out; }
+.pp-signup.is-typing .pp-scene { translate: 0 calc(-332.3 * var(--pt)); }
+.pp-kitchen { position: absolute; left: 0; top: calc(297 * var(--pt)); width: calc(408 * var(--pt)); height: calc(609 * var(--pt)); max-width: none; }
+.pp-scene .pp-chrome { z-index: 1; }
+.pp-passroll { position: absolute; inset: 0; z-index: 2; overflow: hidden; }
+.pp-pass {
+  position: absolute;
+  left: calc(40 * var(--pt));
+  top: calc(360.3 * var(--pt));
+  width: calc(313 * var(--pt));
+  overflow: hidden;
+  border-radius: calc(24 * var(--pt));
+  background: #fff;
+  transition: translate 0.25s ease-out;
+}
+.pp-pass::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; pointer-events: none; }
+.pp-pass-band {
+  display: flex;
+  align-items: center;
+  gap: calc(10 * var(--pt));
+  height: calc(48 * var(--pt));
+  padding: 0 calc(14 * var(--pt)) 0 calc(12 * var(--pt));
+  background: var(--coral);
+  box-shadow: inset 0 calc(-2 * var(--pt)) 0 #000;
+}
+.pp-pass-dot { flex: none; width: calc(19 * var(--pt)); height: calc(19 * var(--pt)); border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-pass-band .pp-outlined { flex: 1; font-size: calc(21 * var(--pt)); letter-spacing: calc(0.8 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-pass-band img { flex: none; width: calc(40 * var(--pt)); height: calc(36 * var(--pt)); object-fit: contain; }
+.pp-pass-body { display: grid; width: calc(258 * var(--pt)); margin: 0 auto; padding: calc(20 * var(--pt)) 0; }
+/* PPTextField: off-white, the ink line dashed while it is being typed in */
+.pp-field { position: relative; display: block; height: calc(44 * var(--pt)); border-radius: calc(10 * var(--pt)); background: var(--offwhite); cursor: text; }
+.pp-field::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; pointer-events: none; }
+.pp-field.is-focused::after { box-shadow: none; outline: calc(2 * var(--pt)) dashed #000; outline-offset: calc(-2 * var(--pt)); }
+.pp-field.is-error::after { box-shadow: inset 0 0 0 calc(2 * var(--pt)) #b01919; outline-color: #b01919; }
+.pp-ph { position: absolute; left: calc(12 * var(--pt)); top: 0; bottom: 0; display: flex; align-items: center; font-size: calc(16 * var(--pt)); color: var(--placeholder); pointer-events: none; }
+.pp-field:not(.is-empty) .pp-ph { display: none; }
+.pp-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  padding: 0 calc(12 * var(--pt));
+  border: 0;
+  background: none;
+  font: 400 calc(16 * var(--pt)) / 1 'PP Fugaz One', system-ui, sans-serif;
+  color: #000;
+  caret-color: var(--red);
+  outline: none;
+}
+.pp-ferr { margin-top: calc(4 * var(--pt)); font-size: calc(14 * var(--pt)); line-height: 1.3; color: #b01919; }
+.pp-join { margin-top: calc(16 * var(--pt)); background: var(--red); font-size: calc(20 * var(--pt)); }
+.pp-outlined.is-thin { --o: calc(1.5 * var(--pt)); --d: calc(1.06 * var(--pt)); }
+.pp-consent { margin-top: calc(12 * var(--pt)); font-family: 'PP Faustina', Georgia, serif; font-size: calc(12.5 * var(--pt)); line-height: 1.3; text-align: center; }
+.pp-consent a { color: inherit; text-decoration: underline; text-underline-offset: 0.12em; }
+.pp-pass-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(8 * var(--pt));
+  padding: calc(8 * var(--pt)) calc(16 * var(--pt)) calc(12 * var(--pt));
+  background: var(--butter);
+  box-shadow: inset 0 calc(2 * var(--pt)) 0 #000;
+  font-size: calc(11.5 * var(--pt));
+  letter-spacing: calc(0.7 * var(--pt));
+  line-height: 1.2;
+}
+.pp-pass-pick button { text-decoration: underline; padding: 0 calc(4 * var(--pt)); }
+
+/* ======================================================================
+   How it works! (Screens/OnboardingScreen.swift, TicketRailBoard.swift):
+   the board 336 by 464, centred between the band and the footer
+   ====================================================================== */
+.pp-tourwrap { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: calc(98 * var(--pt)); display: grid; place-items: center; }
+.pp-tour {
+  position: relative;
+  width: calc(336 * var(--pt));
+  height: calc(464 * var(--pt));
+  border-radius: calc(12 * var(--pt));
+  background: linear-gradient(rgb(255 214 126 / 0.22), rgb(255 214 126 / 0.22)), #fff;
+}
+.pp-tour::after { content: ''; position: absolute; inset: 0; z-index: 3; border-radius: inherit; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; pointer-events: none; }
+.pp-tour-shadow { position: absolute; left: 50%; top: calc(50% + 232 * var(--pt) + 7 * var(--pt)); width: calc(240 * var(--pt)); height: calc(22 * var(--pt)); translate: -50% 0; border-radius: 50%; background: rgb(0 0 0 / 0.1); z-index: -1; }
+.pp-tour-head { position: relative; display: grid; place-items: center; height: calc(56 * var(--pt)); overflow: hidden; border-radius: calc(10 * var(--pt)) calc(10 * var(--pt)) 0 0; box-shadow: inset 0 calc(-2 * var(--pt)) 0 #000; }
+.pp-tour-wood { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pp-tour-head .pp-outlined { position: relative; font-size: calc(24 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-tickets { display: grid; gap: calc(22 * var(--pt)); padding: calc(18 * var(--pt)) calc(34 * var(--pt)) calc(52 * var(--pt)); }
+.pp-ticket {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  height: calc(98 * var(--pt));
+  border-radius: calc(10 * var(--pt));
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000;
+  opacity: 0;
+  transition: box-shadow 0.22s ease-out;
+}
+.pp-ticket.is-landed { opacity: 1; }
+.pp-ticket.is-lit { box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000, 0 0 calc(8 * var(--pt)) rgb(255 126 125 / 0.95), 0 0 calc(22 * var(--pt)) rgb(255 126 125 / 0.6); }
+.pp-ticket.is-payoff.is-lit { box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000, 0 0 calc(8 * var(--pt)) rgb(180 255 133 / 0.95), 0 0 calc(22 * var(--pt)) rgb(180 255 133 / 0.6); }
+.pp-stub { flex: 0 0 calc(92 * var(--pt)); display: grid; place-items: center; height: 100%; filter: saturate(0); opacity: 0.62; transition: filter 0.22s ease-out, opacity 0.22s ease-out; }
+.pp-ticket.is-lit .pp-stub { filter: none; opacity: 1; }
+.pp-stub .is-food { width: calc(76 * var(--pt)); height: calc(68 * var(--pt)); object-fit: contain; }
+.pp-stub .is-wardrobe { width: calc(62 * var(--pt)); height: calc(72 * var(--pt)); object-fit: contain; }
+.pp-perf { flex: 0 0 calc(10 * var(--pt)); align-self: stretch; margin: calc(12 * var(--pt)) 0; background: linear-gradient(rgb(0 0 0 / 0.5) 0 calc(5 * var(--pt)), transparent 0) 50% calc(-2 * var(--pt)) / calc(2 * var(--pt)) calc(9 * var(--pt)) repeat-y; }
+.pp-tword { flex: 1; min-width: 0; padding: 0 calc(8 * var(--pt)) 0 calc(12 * var(--pt)); font-size: calc(17 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); line-height: calc(25 * var(--pt)); color: rgb(0 0 0 / 0.55); transition: color 0.22s ease-out; }
+.pp-ticket.is-payoff .pp-tword { white-space: nowrap; }
+.pp-ticket.is-lit .pp-tword { color: #000; }
+.pp-bulbs { position: absolute; z-index: 2; display: flex; justify-content: space-between; pointer-events: none; }
+.pp-bulbs.is-left, .pp-bulbs.is-right { top: calc(68 * var(--pt)); bottom: calc(14 * var(--pt)); flex-direction: column; }
+.pp-bulbs.is-left { left: calc(12 * var(--pt)); }
+.pp-bulbs.is-right { right: calc(12 * var(--pt)); }
+.pp-bulbs.is-bottom { left: calc(12 * var(--pt)); right: calc(12 * var(--pt)); bottom: calc(14 * var(--pt)); }
+.pp-bulbs i { width: calc(10 * var(--pt)); height: calc(10 * var(--pt)); border-radius: 50%; background: var(--butter); box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; }
+.pp-bulbs i.is-coral { background: var(--coral); }
+.pp-stamp {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: calc(30 * var(--pt));
+  translate: calc(-50% - 26 * var(--pt)) 0;
+  rotate: -7deg;
+  padding: calc(10 * var(--pt)) calc(20 * var(--pt));
+  border-radius: 99px;
+  background: var(--green);
+  box-shadow: inset 0 0 0 calc(4 * var(--pt)) #000;
+  font-size: calc(21 * var(--pt));
+  letter-spacing: calc(0.52 * var(--pt));
+  line-height: var(--fugaz-lh);
+  white-space: nowrap;
+  opacity: 0;
+}
+.pp-stamp.is-stamped { opacity: 1; box-shadow: inset 0 0 0 calc(4 * var(--pt)) #000, 0 0 calc(14 * var(--pt)) rgb(180 255 133 / 0.9); }
+.pp-foot { position: absolute; left: 0; right: 0; bottom: 0; height: calc(98 * var(--pt)); background: var(--butter); }
+.pp-start { position: absolute; left: calc(20 * var(--pt)); right: calc(20 * var(--pt)); top: calc(12 * var(--pt)); background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+
+/* ======================================================================
+   The scanner (Screens/ScannerScreen.swift)
+   ====================================================================== */
+.pp-scanner :is(.pp-doors, .pp-review, .pp-found) { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; display: none; }
+.pp-scanner[data-stage='framing'] .pp-doors { display: block; }
+.pp-scanner:is([data-stage='captured'], [data-stage='reading']) .pp-review { display: flex; }
+.pp-scanner[data-stage='confirming'] .pp-found { display: flex; }
+.pp-doorart { width: 100%; height: auto; }
+.pp-doors .pp-hit { left: 0; width: 100%; border-radius: 0; }
+.pp-hit.is-receipt { top: 0; height: calc(272.2 * var(--pt)); }
+.pp-hit.is-food { top: calc(272.2 * var(--pt)); height: calc(273.3 * var(--pt)); }
+/* the library's section under the doors, whose picture carries the rule
+   between them, the food's sky running down to it */
+.pp-library { position: absolute; left: 0; right: 0; top: calc(551 * var(--pt)); bottom: 0; background: var(--butter); }
+.pp-libbtn { position: absolute; left: calc(24 * var(--pt)); right: calc(24 * var(--pt)); top: calc(8.5 * var(--pt)); background: #fff; font-size: calc(16 * var(--pt)); }
+.pp-libbtn .is-photo { width: calc(18 * var(--pt)); height: auto; }
+.pp-review { flex-direction: column; }
+.pp-shot { position: relative; flex: none; margin: calc(16 * var(--pt)) calc(24 * var(--pt)) 0; aspect-ratio: 0.75; }
+.pp-shot img { width: 100%; height: 100%; object-fit: cover; border-radius: calc(24 * var(--pt)); background: #fff; }
+.pp-shotline { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.pp-shotline rect { x: 0; y: 0; width: 100%; height: 100%; rx: calc(24 * var(--pt)); fill: none; stroke: #000; stroke-width: calc(3 * var(--pt)); stroke-dasharray: calc(10 * var(--pt)) calc(8 * var(--pt)); }
+/* ScanBeam: the shot dimmed, a red band sweeping down it every 1.7 s */
+.pp-beam { position: absolute; inset: 0; display: none; overflow: hidden; border-radius: calc(24 * var(--pt)); background: rgb(0 0 0 / 0.18); }
+.pp-scanner[data-stage='reading'] .pp-beam { display: block; }
+.pp-beam i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(54 * var(--pt));
+  background:
+    linear-gradient(var(--red), var(--red)) 50% 50% / 100% calc(2.5 * var(--pt)) no-repeat,
+    linear-gradient(rgb(255 75 75 / 0), rgb(255 75 75 / 0.55), rgb(255 75 75 / 0));
+  animation: pp-beam 1.7s ease-in-out infinite;
+}
+@keyframes pp-beam { from { top: calc(-54 * var(--pt)); } to { top: 100%; } }
+.pp-serr { flex: none; margin: calc(8 * var(--pt)) calc(24 * var(--pt)) 0; font-size: calc(16 * var(--pt)); line-height: 1.25; color: #b01919; text-align: center; }
+.pp-serr:empty { display: none; }
+.pp-decide { display: flex; gap: calc(12 * var(--pt)); margin: auto calc(24 * var(--pt)); }
+.pp-scanner[data-stage='reading'] .pp-decide, .pp-scanner[data-stage='captured'] .pp-reading { display: none; }
+.pp-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(10 * var(--pt));
+  height: calc(58 * var(--pt));
+  border-radius: calc(10 * var(--pt));
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(2.5 * var(--pt)) #000;
+  font-size: calc(20 * var(--pt));
+  transition: translate 80ms ease-out, filter 80ms ease-out;
+}
+.pp-tab:active { translate: 0 calc(2 * var(--pt)); filter: brightness(0.92); }
+.pp-tab.is-accept { background: #349e31; }
+.pp-outlined.is-tab { --o: calc(1.8 * var(--pt)); --d: calc(1.27 * var(--pt)); }
+.pp-inkmark { width: calc(var(--ms) * var(--pt)); height: calc(var(--ms) * var(--pt)); fill: none; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+/* the caption in a frame the height of a control, its gap and 12 more, in
+   the middle of the room under the shot (readingCaption) */
+.pp-reading { display: grid; justify-items: center; align-content: center; gap: calc(8 * var(--pt)); height: calc(80 * var(--pt)); margin: auto; }
+.pp-reading > .pp-outlined { font-size: calc(28 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-wait.is-free { width: calc(260 * var(--pt)); padding: 0; }
+.pp-found { flex-direction: column; }
+.pp-found-head { display: flex; align-items: center; gap: calc(8 * var(--pt)); padding: calc(12 * var(--pt)) calc(24 * var(--pt)) calc(8 * var(--pt)); }
+.pp-found-head p { flex: 1; font-size: calc(16 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-found-count { padding: calc(4 * var(--pt)) calc(12 * var(--pt)); border-radius: 99px; background: #fff; box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; font-size: calc(13 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-found-list { flex: 1; min-height: 0; overflow-y: auto; display: grid; align-content: start; gap: calc(8 * var(--pt)); padding: 0 calc(24 * var(--pt)) calc(16 * var(--pt)); scrollbar-width: none; overscroll-behavior: contain; }
+.pp-frow {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--pt));
+  padding: calc(8 * var(--pt)) calc(12 * var(--pt));
+  border-radius: calc(12 * var(--pt));
+  background: #fff;
+  box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000;
+  cursor: pointer;
+}
+.pp-frow.is-off { background: rgb(255 255 255 / 0.5); box-shadow: none; outline: calc(2 * var(--pt)) dashed #000; outline-offset: calc(-2 * var(--pt)); }
+.pp-frow-art { flex: none; position: relative; width: calc(52 * var(--pt)); height: calc(46 * var(--pt)); transition: opacity 0.18s ease; }
+.pp-frow-art > * { width: 100%; height: 100%; object-fit: contain; }
+.pp-frow.is-off .pp-frow-art { opacity: 0.4; }
+/* a drawing on its way (IllustrationView, showsLoading): the butter slot
+   with a sunburst turning in it, until the art store answers */
+.pp-frow-art:has(> [data-pending])::before {
+  content: '';
+  position: absolute;
+  inset: calc(2 * var(--pt));
+  border-radius: calc(10 * var(--pt));
+  background:
+    radial-gradient(circle, transparent 30%, var(--butter) 75%),
+    repeating-conic-gradient(from calc(90deg + var(--spin)), rgb(255 255 255 / 0.75) 0deg 18deg, transparent 18deg 36deg),
+    var(--butter);
+  animation: pp-rays 7s linear infinite;
+}
+@property --spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes pp-rays { to { --spin: 360deg; } }
+.pp-frow-name { flex: 1; min-width: 0; display: grid; gap: calc(1 * var(--pt)); }
+.pp-frow-name b { font-weight: 400; font-size: calc(17 * var(--pt)); line-height: 1.2; }
+.pp-frow-name small { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.2; color: var(--placeholder); }
+.pp-frow.is-off .pp-frow-name { text-decoration: line-through; text-decoration-color: var(--placeholder); }
+.pp-frow-qty { flex: none; min-width: calc(44 * var(--pt)); height: calc(26 * var(--pt)); padding: 0 calc(9 * var(--pt)); border-radius: 99px; background: var(--butter); box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; font-size: calc(15 * var(--pt)); }
+.pp-frow.is-off .pp-frow-qty { background: #fff; opacity: 0.5; }
+.pp-frow-mark { flex: none; display: grid; place-items: center; width: calc(28 * var(--pt)); }
+.pp-frow-mark > * { grid-area: 1 / 1; }
+.pp-frow-mark .pp-ring { width: calc(28 * var(--pt)); height: calc(25 * var(--pt)); }
+.pp-frow-mark .pp-ring ellipse { fill: none; stroke: #000; stroke-width: 1; stroke-dasharray: 6 4; }
+.pp-frow:not(.is-off) .pp-ring, .pp-frow.is-off .pp-badge { display: none; }
+.pp-found-foot { position: relative; flex: none; height: calc(98 * var(--pt)); background: var(--butter); }
+.pp-keep { position: absolute; left: calc(24 * var(--pt)); right: calc(24 * var(--pt)); top: calc(12 * var(--pt)); background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+.pp-keep:disabled { background: var(--steel); color: var(--placeholder); }
+.pp-flash { position: absolute; inset: 0; z-index: 20; background: #fff; opacity: 0; pointer-events: none; }
+
+/* ======================================================================
+   Type it in!, live (Screens/ManualAddScreen.swift)
+   ====================================================================== */
+.pp-onshelf { position: absolute; z-index: 2; left: calc(101.3 * var(--pt)); top: calc(144.6 * var(--pt)); width: calc(267.4 * var(--pt)); height: calc(49 * var(--pt)); display: grid; place-items: center; border-radius: 99px; background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; font-size: calc(33 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-typein:not(.is-batch) .pp-onshelf { display: none; }
+.pp-well { cursor: pointer; }
+.pp-wellart { position: absolute; left: calc(4 * var(--pt)); top: calc(4 * var(--pt)); width: calc(60 * var(--pt)); height: calc(54 * var(--pt)); object-fit: contain; }
+.pp-wellart[hidden] { display: none; }
+.pp-entry.is-named .pp-well .pp-g { display: none; }
+.pp-tinput {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 400 calc(19 * var(--pt)) / var(--fugaz-lh) 'PP Fugaz One', system-ui, sans-serif;
+  color: #000;
+  caret-color: var(--red);
+  outline: none;
+}
+.pp-tinput::placeholder { color: var(--placeholder); opacity: 1; }
+.pp-addbadge { display: grid; place-items: center; }
+.pp-addbadge:disabled .pp-plusbadge { opacity: 0.35; }
+.pp-entry-row { grid-column: 1 / -1; display: none; align-items: center; gap: calc(8 * var(--pt)); margin-top: calc(-4 * var(--pt)); }
+.pp-entry.is-ready .pp-entry-row { display: flex; }
+.pp-catchip { display: flex; align-items: center; gap: calc(4 * var(--pt)); padding: calc(4 * var(--pt)) calc(8 * var(--pt)); border-radius: 99px; box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; font-size: calc(12 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-catchip .is-chevron { width: calc(9 * var(--pt)); height: auto; transition: rotate 0.18s ease; }
+.pp-catchip.is-open .is-chevron { rotate: 180deg; }
+.pp-qty { display: flex; align-items: center; margin-left: auto; }
+.pp-qn { min-width: calc(26 * var(--pt)); text-align: center; font-size: calc(17 * var(--pt)); }
+.pp-stepbtn { position: relative; display: grid; place-items: center; width: calc(44 * var(--pt)); height: calc(44 * var(--pt)); }
+.pp-stepbtn::before { content: ''; position: absolute; left: calc(5 * var(--pt)); top: calc(5 * var(--pt)); width: calc(34 * var(--pt)); height: calc(34 * var(--pt)); border-radius: 50%; background: var(--offwhite); box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; }
+.pp-stepbtn:disabled { opacity: 0.35; cursor: default; }
+.pp-stepper { position: relative; width: calc(var(--sp) * var(--pt)); height: calc(var(--sp) * var(--pt)); fill: currentColor; }
+.pp-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(8 * var(--pt)); }
+.pp-picker[hidden], .pp-suggest[hidden], .pp-added[hidden], .pp-staples[hidden] { display: none; }
+.pp-shelfchip { display: grid; place-items: center; height: calc(44 * var(--pt)); }
+.pp-shelfchip > span { display: grid; place-items: center; width: 100%; min-width: calc(65.5 * var(--pt)); height: calc(19 * var(--pt)); padding: 0 calc(2 * var(--pt)); font-size: calc(13 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); }
+.pp-shelfchip.is-on > span { box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-shelfchip .pp-outlined { --o: calc(0.69 * var(--pt)); --d: calc(0.49 * var(--pt)); }
+.pp-srow { display: flex; gap: calc(8 * var(--pt)); overflow-x: auto; scrollbar-width: none; }
+.pp-srow .pp-tchip { flex: none; }
+.pp-art.is-drawn { animation: pp-drawn 0.28s ease-out; }
+@keyframes pp-drawn { from { opacity: 0; } }
+
+/* IllustrationPlaceholder's missing tile: the shelf's pastel and the fork */
+.pp-tile { display: grid; place-items: center; width: 100%; height: 100%; border-radius: calc(10 * var(--pt)); color: rgb(0 0 0 / 0.5); }
+.pp-tile .pp-g { width: 32%; height: auto; }
+
+/* ======================================================================
+   My shelf (Screens/ShelfScreen.swift): a wood shelf to each food type,
+   pinned while its foods scroll under it; three columns between the
+   shelf's dashed rails, a row every 157
+   ====================================================================== */
+.pp-sscroll { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+.pp-sscroll::-webkit-scrollbar { display: none; }
+.pp-sscroll[hidden], .pp-sempty[hidden], .pp-drawer[hidden], .pp-modal[hidden] { display: none; }
+.pp-wood {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  height: calc(46 * var(--pt));
+  margin: 0;
+  padding-left: calc(15 * var(--pt));
+  background: url(tab-wood.webp) 50% 50% / cover;
+  box-shadow: inset 0 calc(2 * var(--pt)) 0 #000, inset 0 calc(-2 * var(--pt)) 0 #000;
+  font-weight: 400;
+}
+.pp-wood .pp-outlined { font-size: calc(28 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-sgrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: calc(124 * var(--pt)) calc(146 * var(--pt)) calc(123 * var(--pt));
+  grid-auto-rows: calc(157 * var(--pt));
+  /* the rails: a white dash between two ink ones, 15 on and 15 off */
+  background:
+    linear-gradient(#fff 50%, transparent 0) calc(122 * var(--pt)) 0 / calc(4 * var(--pt)) calc(30 * var(--pt)) repeat-y,
+    linear-gradient(#000 50%, transparent 0) calc(120 * var(--pt)) 0 / calc(2 * var(--pt)) calc(30 * var(--pt)) repeat-y,
+    linear-gradient(#000 50%, transparent 0) calc(126 * var(--pt)) 0 / calc(2 * var(--pt)) calc(30 * var(--pt)) repeat-y,
+    linear-gradient(#fff 50%, transparent 0) calc(268 * var(--pt)) 0 / calc(4 * var(--pt)) calc(30 * var(--pt)) repeat-y,
+    linear-gradient(#000 50%, transparent 0) calc(266 * var(--pt)) 0 / calc(2 * var(--pt)) calc(30 * var(--pt)) repeat-y,
+    linear-gradient(#000 50%, transparent 0) calc(272 * var(--pt)) 0 / calc(2 * var(--pt)) calc(30 * var(--pt)) repeat-y;
+}
+/* between rows, the same rail lying down */
+.pp-sgrid::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(157 * var(--pt) - 4 * var(--pt));
+  height: calc((var(--rows) - 1) * 157 * var(--pt));
+  background:
+    linear-gradient(90deg, #fff 50%, transparent 0) 0 calc(2 * var(--pt)) / calc(30 * var(--pt)) calc(4 * var(--pt)) repeat-x,
+    linear-gradient(90deg, #000 50%, transparent 0) 0 0 / calc(30 * var(--pt)) calc(2 * var(--pt)) repeat-x,
+    linear-gradient(90deg, #000 50%, transparent 0) 0 calc(6 * var(--pt)) / calc(30 * var(--pt)) calc(2 * var(--pt)) repeat-x;
+  -webkit-mask: repeating-linear-gradient(#000 0 calc(8 * var(--pt)), transparent 0 calc(157 * var(--pt)));
+  mask: repeating-linear-gradient(#000 0 calc(8 * var(--pt)), transparent 0 calc(157 * var(--pt)));
+  pointer-events: none;
+}
+.pp-cell { position: relative; display: flex; flex-direction: column; align-items: center; gap: calc(11 * var(--pt)); padding: calc(16 * var(--pt)) calc(12 * var(--pt)); -webkit-touch-callout: none; }
+.pp-cell.is-picked::before { content: ''; position: absolute; inset: calc(4 * var(--pt)) calc(8 * var(--pt)); border-radius: calc(12 * var(--pt)); background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-tagwrap { position: relative; display: grid; place-items: center; height: calc(38 * var(--pt)); max-width: 100%; }
+.pp-tag {
+  display: grid;
+  place-items: center;
+  min-width: calc(61 * var(--pt));
+  min-height: calc(23 * var(--pt));
+  max-width: 100%;
+  padding: calc(2 * var(--pt)) calc(10 * var(--pt));
+  border-radius: calc(10 * var(--pt));
+  background: #fff;
+  outline: calc(1 * var(--pt)) dashed #000;
+  outline-offset: calc(-1 * var(--pt));
+  font-size: calc(13 * var(--pt));
+  line-height: 1.1;
+  text-align: center;
+}
+.pp-cell.is-picked .pp-tag { outline-style: solid; }
+.pp-cellart { position: relative; width: calc(83 * var(--pt)); height: calc(76 * var(--pt)); }
+.pp-cellart > .pp-art, .pp-cellart > .pp-tile { width: 100%; height: 100%; object-fit: contain; }
+.pp-badges { position: absolute; right: calc(-8 * var(--pt)); bottom: calc(-8 * var(--pt)); display: flex; align-items: flex-end; gap: calc(-1 * var(--pt)); }
+.pp-badges .pp-badge { translate: 0 calc(2 * var(--pt)); }
+.pp-qbadge { display: grid; place-items: center; width: calc(24.75 * var(--pt)); height: calc(22 * var(--pt)); border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; font-size: calc(16 * var(--pt)); line-height: 1; }
+.pp-addcell {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: calc(4 * var(--pt));
+  margin: calc(16 * var(--pt)) calc(12 * var(--pt));
+  border-radius: calc(12 * var(--pt));
+  background: rgb(255 255 255 / 0.45);
+  outline: calc(2 * var(--pt)) dashed #000;
+  outline-offset: calc(-2 * var(--pt));
+  color: var(--placeholder);
+  font-size: calc(13 * var(--pt));
+}
+.pp-clearwrap { padding: calc(24 * var(--pt)) calc(20 * var(--pt)) calc(20 * var(--pt)); }
+.is-danger { background: #fff; color: #b01919; font-size: calc(20 * var(--pt)); }
+.pp-clear { width: 100%; }
+.pp-clear .is-trash { width: calc(15 * var(--pt)); height: auto; }
+.pp-sempty { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; display: grid; place-content: center; justify-items: center; gap: calc(16 * var(--pt)); padding: calc(24 * var(--pt)); text-align: center; }
+.pp-sempty-chef { height: calc(110 * var(--pt)); width: auto; }
+.pp-sempty-title, .pp-mempty-title { font-size: calc(33 * var(--pt)); line-height: 1.1; }
+.pp-sempty-body { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.3; color: var(--placeholder); }
+.pp-sempty-add { width: calc(220 * var(--pt)); margin-top: calc(8 * var(--pt)); background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+/* the picks, in a drawer over the shelf's foot */
+.pp-drawer { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: grid; gap: calc(8 * var(--pt)); padding: calc(12 * var(--pt)) 0 calc(42 * var(--pt)); background: var(--butter); box-shadow: inset 0 calc(3 * var(--pt)) 0 #000; }
+.pp-drawer-label { padding: 0 calc(20 * var(--pt)); font-size: calc(12 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); }
+.pp-drawer-label b { font-weight: 400; }
+.pp-drawer-label span { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); letter-spacing: 0; color: var(--placeholder); }
+.pp-picks { display: flex; gap: calc(8 * var(--pt)); height: calc(46 * var(--pt)); padding: 0 calc(20 * var(--pt)); overflow-x: auto; scrollbar-width: none; }
+.pp-pick { position: relative; flex: none; display: grid; place-items: center; width: calc(46 * var(--pt)); height: calc(44 * var(--pt)); }
+.pp-pick::before { content: ''; position: absolute; inset: 0 calc(1 * var(--pt)); border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; }
+.pp-pick > * { position: relative; width: calc(34 * var(--pt)); height: calc(32 * var(--pt)); object-fit: contain; }
+.pp-find, .pp-removesel { margin: 0 calc(20 * var(--pt)); }
+.pp-find { background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+.pp-find .is-search { width: calc(17 * var(--pt)); height: auto; }
+.pp-find:disabled, .pp-removesel:disabled { opacity: 0.6; }
+.pp-drawer-note { padding: 0 calc(20 * var(--pt)); }
+.pp-drawer-note:empty { display: none; }
+.pp-drawer-note .pp-wait { width: 100%; }
+.pp-drawer-err { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.3; color: #b01919; text-align: center; }
+.pp-spin { width: calc(16 * var(--pt)); height: calc(16 * var(--pt)); border-radius: 50%; border: calc(2.4 * var(--pt)) solid rgb(255 255 255 / 0.35); border-top-color: #fff; animation: pp-spin 0.8s linear infinite; }
+@keyframes pp-spin { to { rotate: 360deg; } }
+.pp-shelf.has-drawer .pp-clear { visibility: visible; }
+/* the add chooser and the editor, over a scrim */
+.pp-modal { position: absolute; inset: 0; z-index: 10; display: grid; place-items: center; }
+.pp-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / 0.25); }
+.pp-mcard { position: relative; width: calc(264 * var(--pt)); border-radius: calc(12 * var(--pt)); background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-mcard:has(.pp-medit-name) { display: grid; justify-items: center; gap: calc(12 * var(--pt)); width: calc(280 * var(--pt)); padding: calc(20 * var(--pt)); }
+.pp-choose { display: grid; gap: calc(2 * var(--pt)); width: 100%; padding: calc(12 * var(--pt)) calc(16 * var(--pt)); text-align: left; }
+.pp-choose b { font-weight: 400; font-size: calc(20 * var(--pt)); line-height: 1.2; }
+.pp-choose span { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); color: var(--placeholder); }
+.pp-mdash { display: block; margin: 0 calc(16 * var(--pt)); border-top: calc(1 * var(--pt)) dashed rgb(0 0 0 / 0.45); }
+.pp-medit-art { width: calc(76 * var(--pt)); height: calc(68 * var(--pt)); }
+.pp-medit-art > * { width: 100%; height: 100%; object-fit: contain; }
+.pp-medit-name { max-width: 100%; overflow: hidden; font-size: calc(28 * var(--pt)); line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
+.pp-medit-qty { display: flex; align-items: center; gap: calc(12 * var(--pt)); }
+.pp-medit-qty b { min-width: calc(44 * var(--pt)); font-weight: 400; font-size: calc(20 * var(--pt)); text-align: center; }
+.pp-mstep { position: relative; display: grid; place-items: center; width: calc(44 * var(--pt)); height: calc(44 * var(--pt)); }
+.pp-mstep::before { content: ''; position: absolute; inset: calc(4 * var(--pt)); border-radius: 50%; background: var(--offwhite); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-mstep:disabled { opacity: 0.4; }
+.pp-mremove { width: 100%; height: calc(44 * var(--pt)); border-radius: calc(10 * var(--pt)); background: var(--offwhite); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #b01919; font-size: calc(16 * var(--pt)); color: #b01919; }
+.pp-mdone { width: 100%; background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+
+/* ======================================================================
+   My recipes (Screens/RecipesScreen.swift)
+   ====================================================================== */
+.pp-mscroll { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; display: grid; align-content: start; gap: calc(20 * var(--pt)); padding: calc(16 * var(--pt)) calc(20 * var(--pt)) calc(40 * var(--pt)); overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
+.pp-mscroll[hidden], .pp-mempty[hidden] { display: none; }
+.pp-lcard { display: grid; gap: calc(12 * var(--pt)); }
+.pp-card.is-list { position: relative; inset: auto; }
+.pp-card.is-list .pp-hero { flex: none; height: calc(196 * var(--pt)); }
+.pp-card.is-list.is-stocked .pp-hero { height: calc(224.5 * var(--pt)); }
+.pp-card.is-list .pp-summary { -webkit-line-clamp: 4; }
+.pp-lgo { background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+.pp-secline { margin-bottom: calc(-8 * var(--pt)); font-size: calc(12 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); }
+.pp-secline b { font-weight: 400; }
+.pp-secline span { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); letter-spacing: 0; color: var(--placeholder); }
+.pp-mempty { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; display: grid; place-items: center; padding: calc(24 * var(--pt)); }
+.pp-mempty-card { display: grid; justify-items: center; gap: calc(8 * var(--pt)); padding: calc(20 * var(--pt)); border-radius: calc(12 * var(--pt)); background: var(--offwhite); outline: calc(2 * var(--pt)) dashed #000; outline-offset: calc(-2 * var(--pt)); text-align: center; }
+.pp-mempty-card p:last-child { font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.3; color: var(--placeholder); }
+.pp-mempty-chef { height: calc(96 * var(--pt)); width: auto; }
+.pp-mcluster { position: absolute; z-index: 3; right: calc(36 * var(--pt)); top: calc(148 * var(--pt)); display: grid; grid-template-columns: repeat(3, calc(21 * var(--pt))); gap: calc(2 * var(--pt)); pointer-events: none; }
+.pp-mcluster > * { width: calc(21 * var(--pt)); height: calc(19 * var(--pt)); object-fit: contain; }
+
+/* the dish's own foods on its plate while the art store draws it, and
+   "plating…" under them (DishHeroArt, PlatingLoader) */
+.pp-cluster { position: absolute; inset: 14% calc(34 * var(--pt)) 22%; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: calc(2 * var(--pt)); align-content: center; transition: opacity 0.28s ease-out; }
+.pp-cluster > * { width: 100%; aspect-ratio: 1.1; object-fit: contain; }
+.pp-plating { position: absolute; left: 50%; bottom: calc(8 * var(--pt)); translate: -50% 0; padding: calc(5 * var(--pt)) calc(12 * var(--pt)); border-radius: 99px; background: rgb(255 255 255 / 0.9); box-shadow: inset 0 0 0 calc(1 * var(--pt)) #000; font-size: calc(14 * var(--pt)); letter-spacing: calc(0.52 * var(--pt)); color: rgb(0 0 0 / 0.75); white-space: nowrap; transition: opacity 0.28s ease-out; }
+.pp-dish.is-plated :is(.pp-cluster, .pp-plating), .pp-dish.is-tried .pp-plating { opacity: 0; }
+.pp-dish .pp-art.is-hero[data-pending] { opacity: 0; }
+
+/* ======================================================================
+   Settings (Screens/SettingsScreen.swift)
+   ====================================================================== */
+.pp-setscroll { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; display: grid; align-content: start; gap: calc(12 * var(--pt)); padding: calc(16 * var(--pt)) calc(20 * var(--pt)) calc(48 * var(--pt)); overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
+.pp-promo { position: relative; border-radius: calc(12 * var(--pt)); background: #fff; }
+.pp-promo::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 calc(3 * var(--pt)) #000; pointer-events: none; }
+.pp-promo-top { display: grid; place-items: center; min-height: calc(21 * var(--pt)); border-radius: calc(12 * var(--pt)) calc(12 * var(--pt)) 0 0; background: var(--red); font-size: calc(10.5 * var(--pt)); letter-spacing: calc(1.5 * var(--pt)); color: #fff; padding-top: calc(2 * var(--pt)); }
+.pp-promo-body { display: flex; align-items: center; gap: calc(12 * var(--pt)); padding: calc(12 * var(--pt)) calc(21 * var(--pt)) calc(12 * var(--pt)) calc(16 * var(--pt)); }
+.pp-promo-hat { flex: none; display: grid; place-items: center; width: calc(42 * var(--pt)); height: calc(42 * var(--pt)); border-radius: 50%; background: var(--butter); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-promo-hat img { width: calc(30 * var(--pt)); height: calc(27 * var(--pt)); object-fit: contain; }
+.pp-promo-words { flex: 1; display: grid; gap: calc(3 * var(--pt)); }
+.pp-promo-words b { font-weight: 400; font-size: calc(18 * var(--pt)); letter-spacing: calc(0.8 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-outlined.is-butter { color: var(--butter); --o: calc(1.2 * var(--pt)); --d: calc(0.85 * var(--pt)); }
+.pp-promo-words span { font-family: 'PP Faustina', Georgia, serif; font-size: calc(12.5 * var(--pt)); line-height: 1.25; }
+.pp-promo-arrow { flex: none; width: calc(32 * var(--pt)); height: calc(20 * var(--pt)); }
+.pp-promo i { position: absolute; top: 50%; width: calc(18 * var(--pt)); height: calc(18 * var(--pt)); translate: 0 -50%; border-radius: 50%; background: var(--butter); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; z-index: 1; }
+.pp-promo i.is-l { left: calc(-9 * var(--pt)); }
+.pp-promo i.is-r { right: calc(-9 * var(--pt)); }
+.pp-group { padding: calc(12 * var(--pt)) 0; border-radius: calc(12 * var(--pt)); background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-group h3 { padding: 0 calc(12 * var(--pt)) calc(4 * var(--pt)); font-weight: 400; font-size: calc(20 * var(--pt)); line-height: 1.25; margin: 0; }
+.pp-group hr { margin: calc(4 * var(--pt)) calc(12 * var(--pt)); border: 0; border-top: calc(1 * var(--pt)) solid rgb(0 0 0 / 0.14); }
+.pp-setrow { display: flex; align-items: center; gap: calc(12 * var(--pt)); padding: calc(8 * var(--pt)) calc(12 * var(--pt)); }
+.pp-setrow > div { flex: 1; min-width: 0; }
+.pp-setrow.is-link { cursor: pointer; }
+.pp-setrow-title { font-size: calc(17 * var(--pt)); line-height: 1.25; }
+.pp-setrow-title span { margin-left: calc(4 * var(--pt)); font-size: calc(14 * var(--pt)); color: var(--placeholder); }
+.pp-setrow-note { margin-top: calc(2 * var(--pt)); font-family: 'PP Faustina', Georgia, serif; font-size: calc(15 * var(--pt)); line-height: 1.3; color: var(--placeholder); }
+.pp-switch { position: relative; flex: none; width: calc(51 * var(--pt)); height: calc(31 * var(--pt)); border-radius: 99px; background: var(--steel); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; transition: background-color 0.2s ease; }
+.pp-switch i { position: absolute; left: calc(3 * var(--pt)); top: calc(3 * var(--pt)); width: calc(25 * var(--pt)); height: calc(25 * var(--pt)); border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; transition: translate 0.22s cubic-bezier(0.3, 1.3, 0.5, 1); }
+.pp-switch.is-on { background: #349e31; }
+.pp-switch.is-on i { translate: calc(20 * var(--pt)) 0; }
+.pp-clearbtn { flex: none; padding: calc(5 * var(--pt)) calc(12 * var(--pt)); border-radius: 99px; background: #fff; box-shadow: inset 0 0 0 calc(1.5 * var(--pt)) #b01919; font-size: calc(13 * var(--pt)); color: #b01919; }
+.pp-disclose .is-chevron { width: calc(12 * var(--pt)); height: auto; rotate: -90deg; }
+.pp-setbtn { margin: calc(12 * var(--pt)) calc(12 * var(--pt)) 0; background: #fff; font-size: calc(16 * var(--pt)); }
+.pp-setdelete { display: block; width: 100%; min-height: calc(44 * var(--pt)); margin-top: calc(4 * var(--pt)); font-size: calc(14 * var(--pt)); color: #b01919; }
+
+/* ======================================================================
+   The system's alert, as iOS 26 draws one
+   ====================================================================== */
+.pp-alert { position: absolute; inset: 0; display: grid; place-items: center; background: rgb(0 0 0 / 0.22); font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; }
+.pp-alert-box { width: calc(300 * var(--pt)); padding: calc(22 * var(--pt)) calc(16 * var(--pt)) calc(16 * var(--pt)); border-radius: calc(32 * var(--pt)); background: rgb(246 246 248 / 0.94); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); box-shadow: 0 calc(12 * var(--pt)) calc(40 * var(--pt)) rgb(0 0 0 / 0.22); text-align: center; color: #000; }
+.pp-alert-title { font-weight: 600; font-size: calc(17 * var(--pt)); line-height: 1.3; }
+.pp-alert-msg { margin-top: calc(6 * var(--pt)); font-size: calc(14 * var(--pt)); line-height: 1.38; color: rgb(0 0 0 / 0.72); }
+.pp-alert-btns { display: flex; gap: calc(10 * var(--pt)); margin-top: calc(18 * var(--pt)); }
+.pp-alert-btns.is-stacked { flex-direction: column; }
+.pp-alert-btn { flex: 1; height: calc(46 * var(--pt)); border-radius: 99px; background: rgb(120 120 128 / 0.16); font: 500 calc(17 * var(--pt)) / 1 -apple-system, 'SF Pro Text', system-ui, sans-serif; color: #000; }
+.pp-alert-btn.is-destructive { color: #ff3b30; }
+.pp-alert-btn.is-cancel { font-weight: 600; }
+.pp-alert-btn:active { background: rgb(120 120 128 / 0.28); }
+
+/* the app's own Animations switch, off: nothing moves */
+.pp-device.is-still *, .pp-device.is-still *::before, .pp-device.is-still *::after { transition-duration: 0.01s !important; animation-duration: 0.01s !important; animation-iteration-count: 1 !important; }
+
 @media (prefers-reduced-motion: reduce) {
-  .pp-btn, .pp-prev, .pp-step, .pp-step-head, .pp-step-num, .pp-step-tick, .pp-step-body, .pp-count, .pp-missing { transition-duration: 0.01s; }
+  .pp-btn, .pp-prev, .pp-step, .pp-step-head, .pp-step-num, .pp-step-tick, .pp-step-body, .pp-count, .pp-missing, .pp-tchip, .pp-menu-dashed, .pp-menu-solid { transition-duration: 0.01s; }
+  .pp-plate.is-writing .pp-rays { animation: none; }
   .pp-step.is-done .pp-step-tick .pp-badge { animation: none; }
   .pp-door-count.is-bumped { animation: none; }
+  .pp-kbd, .pp-scene, .pp-pass, .pp-switch i, .pp-ticket, .pp-stub, .pp-tword { transition-duration: 0.01s; }
+  .pp-beam i { animation: none; top: calc(50% - 27 * var(--pt)); }
 }

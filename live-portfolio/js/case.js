@@ -840,88 +840,52 @@ for (const belts of document.querySelectorAll('[data-belts]')) {
   }
 }
 
-// ---- the flip ----
-// [data-flip]: a two-way switch (role radio) in its head turns every screen
-// in the row over to the other face, the cards turning one after another
-// (css/case.css .cs-flip). The arrow keys move along the switch, as they do
-// along any radio group. Once in view it turns over by itself once, a beat
-// in, to show there is another side, unless a hand has got there first.
-for (const flip of document.querySelectorAll('[data-flip]')) {
-  const options = [...flip.querySelectorAll('[data-show]')];
-  const fronts = [...flip.querySelectorAll('.is-front')];
-  const backs = [...flip.querySelectorAll('.is-back')];
-  let touched = false;
-  const show = (which, { focus = false } = {}) => {
-    flip.dataset.show = which;
-    options.forEach((o) => {
-      const on = o.dataset.show === which;
-      o.setAttribute('aria-checked', String(on));
-      o.tabIndex = on ? 0 : -1;
-      if (on && focus) o.focus();
-    });
-    // the face turned away is neither read nor reached: only the screens
-    // showing are pictures to open (the first option is the front)
-    const front = which === options[0].dataset.show;
-    for (const [face, up] of [[fronts, front], [backs, !front]]) {
-      for (const img of face) {
-        // (written out: an empty aria-hidden is read as not hidden at all)
-        if (up) img.removeAttribute('aria-hidden');
-        else img.setAttribute('aria-hidden', 'true');
-        if (img.hasAttribute('data-zoom')) img.tabIndex = up ? 0 : -1;
-      }
-    }
-  };
-  options.forEach((o, n) => {
-    o.addEventListener('click', () => { touched = true; show(o.dataset.show); });
-    o.addEventListener('keydown', (e) => {
-      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      if (!step) return;
-      e.preventDefault();
-      touched = true;
-      show(options[(n + step + options.length) % options.length].dataset.show, { focus: true });
-    });
-  });
-  show(options.find((o) => o.getAttribute('aria-checked') === 'true')?.dataset.show || options[0].dataset.show);
-  if (reduced()) continue;
-  new IntersectionObserver(([e], io) => {
-    if (!e.isIntersecting) return;
-    io.disconnect();
-    const first = flip.dataset.show;
-    const other = options.find((o) => o.dataset.show !== first)?.dataset.show;
-    setTimeout(() => { if (!touched) show(other); }, 1400);
-    setTimeout(() => { if (!touched) show(first); }, 4200);
-  }, { threshold: 0.55 }).observe(flip);
-}
-
 // ---- the reel ----
 // [data-reel]: on a wide window the reel's view stands still in the window
 // (css position: sticky) for as long as it takes to pan the whole row across
 // it, and the row's offset is read straight off how far the page has been
 // scrolled through that stretch: down moves it left, up moves it back. The
-// stretch is exactly as long as the pan, so a screen crosses the window at
-// the speed the page scrolls. Narrower, or under reduced motion, the row
-// scrolls sideways under a finger and the bar follows that instead.
+// stretch is as long as the pan, so a screen crosses the window at the speed
+// the page scrolls, or shorter by the reel's data-speed, for a long row
+// (the Ship chapter's thirteen screens run 1.6 times the page's pace).
+// Narrower, or under reduced motion, the row scrolls sideways under a
+// finger and the bar follows that instead.
+//   A reel's row can change under it (the Ship chapter's switch turns it to
+// the prototype's six), so the row is measured again whenever its own size
+// changes; while the reel is marked data-hold the stretch keeps the length
+// it had, and the shorter row pans across the same stretch, so the page
+// under the reader never jumps.
+//   Arrows in it ([data-reel-step], -1 and 1) move it a screen at a time, or
+// glide it while held: pinned, by scrolling the page to where the row
+// would be, so the arrows and the page's own scroll stay one motion;
+// otherwise by scrolling the row itself.
 for (const reel of document.querySelectorAll('[data-reel]')) {
   const view = reel.querySelector('.cs-reel-view');
   const scroller = reel.querySelector('.cs-reel-scroll');
   const track = reel.querySelector('.cs-reel-track');
   const bar = reel.querySelector('.cs-reel-bar b');
+  const steps = [...reel.querySelectorAll('[data-reel-step]')];
   const wide = matchMedia('(min-width: 881px)');
+  const speed = Math.max(1, parseFloat(reel.dataset.speed) || 1);
   let pan = 0;
+  let run = 0;
   let queued = 0;
   const pinned = () => wide.matches && !reduced();
+  const stickAt = () => parseFloat(getComputedStyle(view).top) || 0;
+  // how far the row has moved, and how far it can
+  const max = () => (reel.classList.contains('is-pinned') ? pan : scroller.scrollWidth - scroller.clientWidth);
+  const at = () => {
+    if (!reel.classList.contains('is-pinned')) return scroller.scrollLeft;
+    const r = reel.getBoundingClientRect();
+    return run > 0 ? Math.min(1, Math.max(0, (stickAt() - r.top) / run)) * pan : 0;
+  };
   function paint() {
     queued = 0;
-    if (reel.classList.contains('is-pinned')) {
-      const r = reel.getBoundingClientRect();
-      const stick = parseFloat(getComputedStyle(view).top) || 0;
-      const p = pan > 0 ? Math.min(1, Math.max(0, (stick - r.top) / pan)) : 0;
-      track.style.translate = `${(-p * pan).toFixed(1)}px 0`;
-      bar?.style.setProperty('--p', p.toFixed(4));
-    } else {
-      const max = scroller.scrollWidth - scroller.clientWidth;
-      bar?.style.setProperty('--p', max > 0 ? (scroller.scrollLeft / max).toFixed(4) : '0');
-    }
+    const m = max();
+    const x = at();
+    if (reel.classList.contains('is-pinned')) track.style.translate = `${(-x).toFixed(1)}px 0`;
+    bar?.style.setProperty('--p', m > 0 ? (x / m).toFixed(4) : '0');
+    for (const b of steps) b.disabled = Number(b.dataset.reelStep) < 0 ? x <= 1 : x >= m - 1;
   }
   function measure() {
     const on = pinned();
@@ -929,15 +893,90 @@ for (const reel of document.querySelectorAll('[data-reel]')) {
     if (on) scroller.scrollLeft = 0;
     track.style.translate = '';
     pan = on ? Math.max(0, track.scrollWidth - scroller.clientWidth) : 0;
-    reel.style.setProperty('--pan', `${pan}px`);
+    if (!run || !reel.hasAttribute('data-hold')) run = pan / speed;
+    reel.style.setProperty('--pan', `${(on ? run : 0).toFixed(1)}px`);
     paint();
   }
   const ask = () => { if (!queued) queued = requestAnimationFrame(paint); };
   addEventListener('scroll', ask, { passive: true });
   scroller.addEventListener('scroll', ask, { passive: true });
   new ResizeObserver(measure).observe(scroller);
+  new ResizeObserver(measure).observe(track);
   wide.addEventListener('change', measure);
   measure();
+
+  // ---- its arrows ----
+  // where each screen stands, as an offset of the row: the left edge of
+  // every one on show, the last no further than the row can go
+  const stops = () => {
+    const items = [...track.children].filter((li) => li.offsetParent !== null);
+    if (!items.length) return [0];
+    const first = Math.min(...items.map((li) => li.offsetLeft));
+    return [...new Set(items.map((li) => Math.min(li.offsetLeft - first, max())))].sort((a, b) => a - b);
+  };
+  const behavior = () => (reduced() ? 'auto' : 'smooth');
+  function goTo(x) {
+    const to = Math.min(Math.max(0, x), max());
+    if (reel.classList.contains('is-pinned')) {
+      const top = scrollY + reel.getBoundingClientRect().top - stickAt() + (pan > 0 ? (to / pan) * run : 0);
+      scrollTo({ top, behavior: behavior() });
+    } else {
+      scroller.scrollTo({ left: to, behavior: behavior() });
+    }
+  }
+  function step(dir) {
+    const x = at();
+    const s = stops();
+    goTo(dir > 0 ? (s.find((v) => v > x + 4) ?? max()) : ([...s].reverse().find((v) => v < x - 4) ?? 0));
+  }
+  // held: after a beat the row glides, 900 of its pixels a second, until let go
+  let hold = 0;
+  let glide = 0;
+  let glided = false;
+  function stopHold() {
+    clearTimeout(hold);
+    cancelAnimationFrame(glide);
+    hold = glide = 0;
+    scroller.style.scrollSnapType = '';
+  }
+  for (const b of steps) {
+    const dir = Number(b.dataset.reelStep);
+    b.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      glided = false;
+      try { b.setPointerCapture(e.pointerId); } catch {}
+      hold = setTimeout(() => {
+        glided = true;
+        scroller.style.scrollSnapType = 'none';
+        let last = performance.now();
+        const frame = (now) => {
+          // (the glide stops at the row's end, or a held arrow would scroll
+          // the page on past the reel)
+          if (dir > 0 ? at() >= max() - 1 : at() <= 1) { stopHold(); return; }
+          const dx = dir * 900 * Math.min(0.05, (now - last) / 1000);
+          last = now;
+          if (reel.classList.contains('is-pinned')) {
+            if (pan > 0) scrollTo({ top: scrollY + (dx / pan) * run, behavior: 'instant' });
+          } else {
+            scroller.scrollLeft += dx;
+          }
+          glide = requestAnimationFrame(frame);
+        };
+        glide = requestAnimationFrame(frame);
+      }, 320);
+    });
+    const end = () => {
+      if (!hold && !glide) return;
+      const wasGlide = glided;
+      stopHold();
+      if (!wasGlide) step(dir);
+    };
+    b.addEventListener('pointerup', end);
+    b.addEventListener('pointercancel', stopHold);
+    b.addEventListener('lostpointercapture', stopHold);
+    // a press from the keyboard arrives as a click with no pointer behind it
+    b.addEventListener('click', (e) => { if (e.detail === 0) step(dir); });
+  }
 }
 
 // ---- the construction ----

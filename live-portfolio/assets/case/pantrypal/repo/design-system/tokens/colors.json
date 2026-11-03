@@ -1,0 +1,50 @@
+{
+  "$description": "PantryPal color tokens. Derived from Figma y5JwIMDK9YakkOMBnSMtLz (6 frames). Merges documented in notes/analysis.md §1. 'inferred: true' = state color generated from the design language, not observed in Figma.",
+  "brand": {
+    "red": { "value": "#FF4B4B", "sources": ["logo wordmark (all screens)", "Log In button #FF3939 (merged)"] }
+  },
+  "surface": {
+    "butter":   { "value": "#FFD67E", "sources": ["Login header band", "Scan content bg", "My Recipes cards 1&3", "Final Recipe hero", "My Ingredients bands #FFC850 (merged)"] },
+    "sky":      { "value": "#B8EDF8", "sources": ["logo/header band (all screens)"] },
+    "coral":    { "value": "#FF8D7E", "sources": ["My Recipes card 2", "Final Recipe step bands"] },
+    "steel":    { "value": "#CDCDCD", "sources": ["My Recipes + Final Recipe header strips", "My Ingredients section bands #D9D9D9 (merged)"] },
+    "offWhite": { "value": "#F7F7F7", "sources": ["Login inputs", "chip cells #F6F1F1 (merged)", "scrollbar track #FFFAFA (merged)"] },
+    "card":     { "value": "#FFFFFF", "sources": ["login form card", "title pills", "search bar"] }
+  },
+  "accent": {
+    "green": { "value": "#B4FF85", "sources": ["Final Recipe step-number blocks", "quantity badges / check art (same hue family)"] }
+  },
+  "neutral": {
+    "charcoal": { "value": "#424242", "sources": ["scrollbar thumbs"] },
+    "wood":     { "value": "#8A6A4C", "sources": ["category tab bar texture (sampled fallback flat; real surface is a raster texture)"] },
+    "woodDark": { "value": "#3D2C1E", "sources": ["tab bar divider grooves (sampled fallback flat)"] }
+  },
+  "text": {
+    "ink":         { "value": "#000000", "sources": ["all body/label text, all outlines"] },
+    "inverse":     { "value": "#FFFFFF", "sources": ["text on butter/coral/wood bands"] },
+    "placeholder": { "value": "#5A5A5A", "sources": ["Login input placeholders"] }
+  },
+  "border": {
+    "ink": { "value": "#000000", "sources": ["every outlined element"] }
+  },
+  "overlay": {
+    "active": { "value": "#020202", "alpha": 0.46, "sources": ["Choose Ingredients active tab overlay"] }
+  },
+  "ingredient": {
+    "$description": "Category pastel palette (UI chips). Deliberate system: each ingredient's natural color desaturated to ~25-35% saturation at ~85-92% lightness. Use derivation rule for new ingredients.",
+    "beef":    { "value": "#EBD5A6" },
+    "lettuce": { "value": "#BEEBA6" },
+    "tomato":  { "value": "#EBA6A6" },
+    "cheddar": { "value": "#F5EE90" },
+    "bun":     { "value": "#E2FFFF" },
+    "salt":    { "value": "#DBDBDB" },
+    "derivationRule": "pastel = mix(naturalColor, white, 0.65) — blend the ingredient's saturated natural color 65% toward white; clamp so text.inverse stays legible on top."
+  },
+  "state": {
+    "$description": "Inferred state colors — generated from the design language, NOT observed in Figma. Revisit freely.",
+    "pressedOverlay":  { "value": "#000000", "alpha": 0.10, "inferred": true, "rationale": "ink-outline system: pressing darkens the sticker slightly" },
+    "disabledSurface": { "value": "#CDCDCD", "inferred": true, "rationale": "reuse surface.steel — the file's only muted surface" },
+    "disabledText":    { "value": "#5A5A5A", "inferred": true, "rationale": "reuse text.placeholder" },
+    "error":           { "value": "#B01919", "inferred": true, "rationale": "brand.red used to double as the error hue, but at #FF4B4B it measures 2.39:1 on surface.butter and 3.30:1 on card white — both under the 4.5:1 WCAG AA floor for body text, and error copy is the text a reader can least afford to squint at (the shelf drawer's generation error and the scanner's error line both sit on butter). Darkened until it clears on every surface it can land on: 5.06:1 butter, 7.00:1 card, 6.54:1 offWhite. Same hue family, so it still reads as the app's red." }
+  }
+}
