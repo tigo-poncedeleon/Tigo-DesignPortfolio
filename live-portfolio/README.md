@@ -192,18 +192,15 @@ them saying where they go.
   noodle, the design system prepped in bowls with its buttons stacked like
   pancakes, fourteen pots on one stove, and the app's own chef served
   under a lifted cloche.
-- PantryPal ends on the store's own word on it. Results stands the App
-  Store listing on a phone as it really reads, its seven five-star ratings
-  ringed in the keep's green, beside what App Store Connect counted, set
-  as the app's kitchen sets an order: a ticket hung from the rail, as the
-  store's first panel is, from 861 looks in the store to 4 purchases and
-  $33, with the dashboard it was copied off small under it, to open
-  (`assets/case/pantrypal/results/`). What I learned is the loop every
-  chapter went round, four stops drawn in the story map's hand
-  (`tools/story-art/pantrypal/lesson-*.svg`): grow the look in Figma, hand
-  it to friends, ship it and listen, change your mind; and under it what
-  every lap leaves behind, the system, which is what lets AI carry the
-  work.
+- PantryPal ends on the store's own word on it. Results stands the
+  store's two screens side by side, each as it really reads: the listing
+  on a phone, and App Store Connect's dashboard to November 1 in a
+  browser's window, each to open (`assets/case/pantrypal/results/`).
+  What I learned is the loop every chapter went round, four stops drawn
+  in the story map's hand (`tools/story-art/pantrypal/lesson-*.svg`):
+  grow the look in Figma, hand it to friends, ship it and listen, change
+  your mind; and under it what every lap leaves behind, the system, which
+  is what lets AI carry the work.
 - PantryPal's ideas stand as paper: the Sketch chapter's three wireframes
   and 4.1's four ways out are graph-paper sheets taped to a board, the
   three judged with a rubber stamp and followed by the shelf that shipped,
