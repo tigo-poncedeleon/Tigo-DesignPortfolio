@@ -58,7 +58,8 @@ const SYSTEM_PROMPT =
   "He designed and built it end to end, from wireframes and a Figma prototype to " +
   "a SwiftUI app with its own design system and a small AI service on Vercel " +
   "(Gemini reads the receipts and writes new dishes), and it is live on the App " +
-  "Store. UX Engineer Intern at Vicino AI in Bellevue, WA, June to August 2026 " +
+  "Store, where all seven of its ratings are five stars (to November 1, 2026: 36 " +
+  "first-time downloads, 4 in-app purchases, $33 in proceeds). UX Engineer Intern at Vicino AI in Bellevue, WA, June to August 2026 " +
   "(the internship has ended): he helped build Canvas, Vicino's node editor where " +
   "every AI generation step is a node, from the ground up; helped create the " +
   "design system behind Pulse, its marketing-analytics side (356 tokens in one " +

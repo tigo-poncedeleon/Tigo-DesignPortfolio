@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- What I learned, 1: grow the look in Figma. The app's tomato, growing
+       in its pot inside a Figma frame, its handles out, and the pen still
+       drawing the vine: a look is grown on the canvas, not picked -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .sel { stroke: #0d99ff; stroke-width: 4; fill: none; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="12" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+    <path id="leaf" d="M0 0 C 18 -26, 58 -30, 84 -8 C 58 14, 22 16, 0 0 Z" />
+  </defs>
+
+  <ellipse cx="400" cy="566" rx="190" ry="18" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the frame it grows in, selected, as Figma draws one -->
+    <rect x="214" y="92" width="372" height="470" class="sel" />
+    <g fill="#fff" stroke="#0d99ff" stroke-width="4">
+      <rect x="203" y="81" width="22" height="22" /><rect x="575" y="81" width="22" height="22" />
+      <rect x="203" y="551" width="22" height="22" /><rect x="575" y="551" width="22" height="22" />
+    </g>
+    <rect x="330" y="586" width="140" height="34" rx="9" fill="#0d99ff" />
+    <text x="400" y="610" text-anchor="middle" class="fz" font-size="19" fill="#fff">372 × 470</text>
+
+    <!-- the vine: a stem out of the pot, and its two arms -->
+    <path d="M398 446 C 392 380, 412 330, 398 268 C 388 226, 400 186, 420 150" fill="none" class="k" style="stroke-width:20" />
+    <path d="M398 446 C 392 380, 412 330, 398 268 C 388 226, 400 186, 420 150" fill="none" stroke="#5cc04a" style="stroke-width:9" stroke-linecap="round" />
+    <path d="M402 330 C 440 318, 470 300, 486 262" fill="none" class="k" style="stroke-width:16" />
+    <path d="M402 330 C 440 318, 470 300, 486 262" fill="none" stroke="#5cc04a" style="stroke-width:6" stroke-linecap="round" />
+    <path d="M396 262 C 362 254, 336 236, 326 206" fill="none" class="k" style="stroke-width:16" />
+    <path d="M396 262 C 362 254, 336 236, 326 206" fill="none" stroke="#5cc04a" style="stroke-width:6" stroke-linecap="round" />
+
+    <!-- its leaves -->
+    <g fill="#5cc04a" class="t">
+      <use href="#leaf" transform="translate(398 392) rotate(-24)" />
+      <use href="#leaf" transform="translate(396 372) rotate(200) scale(0.9)" />
+      <use href="#leaf" transform="translate(404 214) rotate(-40) scale(0.8)" />
+      <use href="#leaf" transform="translate(452 308) rotate(-70) scale(0.62)" />
+      <use href="#leaf" transform="translate(352 244) rotate(230) scale(0.66)" />
+    </g>
+    <path d="M412 386 q30 -10 50 -26 M386 366 q-28 -6 -50 -22 M414 206 q16 -14 24 -32" stroke="#47a338" stroke-width="3.5" stroke-linecap="round" fill="none" />
+
+    <!-- the fruit: one ripe, one turning, one still green -->
+    <g>
+      <circle cx="486" cy="296" r="46" fill="#ff4b4b" class="k" />
+      <path d="M462 280 q8 -16 24 -18" class="hi" />
+      <path d="M486 252 l-14 -12 m14 12 l2 -18 m-2 18 l16 -10 m-16 10 l-18 2 m18 -2 l18 4" stroke="#2e8a2a" stroke-width="7" stroke-linecap="round" fill="none" />
+    </g>
+    <g>
+      <circle cx="326" cy="238" r="34" fill="#ff9b6a" class="k" />
+      <path d="M310 228 q6 -12 18 -14" class="hi" />
+      <path d="M326 206 l-10 -8 m10 8 l1 -13 m-1 13 l12 -7 m-12 7 l13 3" stroke="#2e8a2a" stroke-width="6" stroke-linecap="round" fill="none" />
+    </g>
+    <g>
+      <circle cx="424" cy="152" r="22" fill="#9bd27f" class="t" />
+      <path d="M414 146 q4 -8 12 -9" class="hi" style="stroke-width:4" />
+    </g>
+
+    <!-- the pot -->
+    <path d="M318 470 L338 556 H462 L482 470 Z" fill="#e07a4f" class="k" />
+    <path d="M330 496 H470" stroke="#c9623a" style="stroke-width:10" />
+    <rect x="302" y="438" width="196" height="38" rx="10" fill="#ef9468" class="k" />
+    <ellipse cx="400" cy="446" rx="82" ry="7" fill="#6b4632" />
+    <path d="M318 456 h40" class="hi" />
+    <path d="M352 512 l10 34" class="hi" opacity="0.5" />
+
+    <!-- and the pen, still drawing the vine out to a new leaf, its anchors
+         and a handle showing -->
+    <path d="M486 252 C 510 214, 548 196, 590 200" fill="none" stroke="#0d99ff" stroke-width="3.5" stroke-dasharray="2 9" stroke-linecap="round" />
+    <path d="M538 214 L 554 174" stroke="#0d99ff" stroke-width="3" />
+    <g fill="#fff" stroke="#0d99ff" stroke-width="3.5">
+      <rect x="537" y="185" width="16" height="16" />
+      <circle cx="538" cy="214" r="5.5" /><circle cx="554" cy="174" r="5.5" />
+    </g>
+    <g transform="translate(596 206) rotate(34)">
+      <path d="M0 0 L -16 -44 Q -20 -70 0 -92 Q 20 -70 16 -44 Z" fill="#fff" class="t" />
+      <path d="M0 0 V -38" class="t" />
+      <circle cx="0" cy="-44" r="6" fill="#1e1e1e" />
+      <rect x="-20" y="-132" width="40" height="44" rx="8" fill="#1e1e1e" />
+      <path d="M-10 -124 v24" class="hi" opacity="0.4" style="stroke-width:4" />
+    </g>
+  </g>
+</svg>

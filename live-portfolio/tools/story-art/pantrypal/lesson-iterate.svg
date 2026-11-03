@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- What I learned, 4: change your mind. The recipe on its fourth card,
+       1.0, 1.1 and 1.2 fanned out behind it by their tabs, a line on the
+       new one struck out and written again, and the pencil still out -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .ln { stroke: #b9b2a6; stroke-width: 6; stroke-linecap: round; fill: none; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="61" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+  </defs>
+
+  <ellipse cx="410" cy="566" rx="230" ry="20" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the old cards, fanned behind, each by its tab -->
+    <g transform="rotate(-27 400 540)">
+      <rect x="268" y="84" width="58" height="46" rx="10" fill="#b8edf8" class="t" />
+      <text x="297" y="116" text-anchor="middle" class="fz" font-size="21" fill="#1e1e1e">1.0</text>
+      <rect x="262" y="124" width="276" height="404" rx="18" fill="#f3efe6" class="k" />
+    </g>
+    <g transform="rotate(-17 400 540)">
+      <rect x="268" y="84" width="58" height="46" rx="10" fill="#beeba6" class="t" />
+      <text x="297" y="116" text-anchor="middle" class="fz" font-size="21" fill="#1e1e1e">1.1</text>
+      <rect x="262" y="124" width="276" height="404" rx="18" fill="#f7f3eb" class="k" />
+    </g>
+    <g transform="rotate(-7 400 540)">
+      <rect x="268" y="84" width="58" height="46" rx="10" fill="#ffd67e" class="t" />
+      <text x="297" y="116" text-anchor="middle" class="fz" font-size="21" fill="#1e1e1e">1.2</text>
+      <rect x="262" y="124" width="276" height="404" rx="18" fill="#faf7f1" class="k" />
+    </g>
+
+    <!-- the new one, on top -->
+    <g transform="rotate(4 400 540)">
+      <rect x="268" y="84" width="58" height="46" rx="10" fill="#ff4b4b" class="t" />
+      <text x="297" y="116" text-anchor="middle" class="fz" font-size="21" fill="#fff">1.3</text>
+      <rect x="262" y="124" width="276" height="404" rx="18" fill="#fff" class="k" />
+      <path d="M262 142 q0 -18 18 -18 h240 q18 0 18 18 v44 h-276 z" fill="#ff7e7d" class="t" />
+      <text x="400" y="172" text-anchor="middle" class="fz" font-size="30" fill="#fff" stroke="#1e1e1e" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Recipe</text>
+      <path d="M262 186 h276" class="t" />
+      <!-- its steps: kept, struck out and written again, kept, and new -->
+      <path d="M296 226 q30 -8 60 0 t60 0 t60 0" class="ln" />
+      <path d="M296 286 q30 -8 60 0 t60 0 t60 0" class="ln" />
+      <path d="M288 282 C 340 292, 420 276, 492 290" stroke="#ff4b4b" stroke-width="6" stroke-linecap="round" fill="none" />
+      <path d="M300 258 q12 -14 22 -2 q10 12 20 -2 q10 -14 22 0 q10 10 22 -2 q12 -12 22 2" stroke="#2e8a2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <path d="M296 346 q30 -8 60 0 t60 0" class="ln" />
+      <path d="M296 406 q30 -8 60 0 t60 0 t40 0" class="ln" />
+      <path d="M296 466 q30 -8 60 0 t30 0" class="ln" />
+      <path d="M464 456 l14 14 l26 -30" stroke="#2e8a2a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </g>
+
+    <!-- the pencil, still out, and what it rubbed off -->
+    <g transform="translate(612 470) rotate(-38)">
+      <path d="M-10 0 h196 v28 h-196 l-34 -14 z" fill="#ffd67e" class="t" />
+      <path d="M-10 0 l-34 14 l34 14 z" fill="#efd8b0" class="t" />
+      <path d="M-44 14 l12 -5 v10 z" fill="#1e1e1e" />
+      <path d="M8 10 h160" stroke="#f3b544" stroke-width="5" stroke-linecap="round" />
+      <rect x="186" y="-2" width="20" height="32" rx="4" fill="#c3cacf" class="t" />
+      <path d="M206 -2 h18 q10 0 10 16 q0 16 -10 16 h-18 z" fill="#ff7e7d" class="t" />
+    </g>
+    <g fill="#ff7e7d" class="t" style="stroke-width:3.5"><circle cx="596" cy="560" r="6" /><circle cx="618" cy="572" r="4.5" /><circle cx="576" cy="574" r="4" /></g>
+
+  </g>
+</svg>

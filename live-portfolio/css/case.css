@@ -6153,56 +6153,350 @@ html.rises .cs-fridge:not(.is-risen) .cs-fridge-phone { translate: calc(-30 * va
 .cs-stats.cs-results { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .cs-results .cs-stat { min-height: 0; grid-template-rows: auto minmax(0, 1fr) auto; align-content: stretch; gap: calc(16 * var(--u)); padding: calc(24 * var(--u)); }
 /* the unit under the number, not beside it: a quarter of the column is
-   too narrow for "165" and "drawings" on one line */
+   too narrow for "3" and "colorways" on one line */
 .cs-results .cs-stat b { font-size: calc(60 * var(--u)); }
 .cs-results .cs-stat b small { display: block; flex-basis: 100%; margin: calc(6 * var(--u)) 0 0; font-size: var(--t-small); }
 /* (Next Level's "9 → 1" keeps its arrow between its two numbers) */
 .cs-results .cs-stat b small:not(:last-child) { flex-basis: auto; margin: 0 0.2em; font-size: 0.5em; }
 .cs-results .cs-stat > span:last-child { align-self: end; }
-.cs-taps, .cs-plate, .cs-heap, .cs-split-bar { align-self: center; }
-/* one tap, where the prototype asked for three more */
-.cs-taps { display: flex; flex-wrap: wrap; align-items: center; gap: calc(6 * var(--u)); }
-.cs-taps i {
-  display: inline-flex;
+
+/* ---- PantryPal's results: the store's own count ----
+   The listing as a phone shows it, and beside it what App Store Connect
+   counted, set down as the app's kitchen sets down an order: a ticket hung
+   from the rail, as the store's first panel is (5.2), in the app's ink, its
+   cream and its Fugaz, from a look in the store to a purchase. Under it the
+   dashboard it was copied off, small, to open. (Four tiles of the build's
+   own counts stood here, a tap, fifty dishes, 165 drawings and 272 tests,
+   each with a picture of itself; they said what went into the app, and
+   Tigo wanted what came of it.) */
+.cs-listed {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
   align-items: center;
-  height: calc(30 * var(--u));
-  padding: 0 calc(12 * var(--u));
-  border-radius: 999px;
-  background: #ff7e7d;
-  font-style: normal;
-  font-size: var(--t-small);
-  color: var(--mark);
+  column-gap: calc(44 * var(--u));
+  padding: calc(26 * var(--u)) calc(52 * var(--u)) calc(24 * var(--u));
 }
-.cs-taps i.is-gone { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--deep) 30%, transparent); color: var(--tile-ink-2); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--deep) 45%, transparent); }
-/* fifty dishes: the whole book, on one plate */
-.cs-plate { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: calc(2 * var(--u)); }
-.cs-plate img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 calc(3 * var(--u)) calc(3 * var(--u)) color-mix(in oklab, var(--deep) 20%, transparent)); }
-html.rises .cs-results:not(.is-risen) .cs-plate img { opacity: 0; scale: 0.6; }
-.cs-results.is-risen .cs-plate img { transition: opacity 0.3s ease, scale var(--t-pop) var(--spring-pop); transition-delay: calc(var(--i) * 18ms + 300ms); }
-/* the drawings: a cheeseburger's worth, in a pile */
-.cs-heap { display: flex; min-width: 0; padding-left: calc(10 * var(--u)); }
-.cs-heap img { flex: 0 1 calc(54 * var(--u)); min-width: 0; width: calc(54 * var(--u)); height: auto; aspect-ratio: 1; margin-left: calc(-12 * var(--u)); object-fit: contain; filter: drop-shadow(0 calc(6 * var(--u)) calc(7 * var(--u)) color-mix(in oklab, var(--deep) 24%, transparent)); }
-.cs-heap img:nth-child(odd) { rotate: -8deg; translate: 0 calc(6 * var(--u)); }
-.cs-heap img:nth-child(even) { rotate: 6deg; }
-/* the tests, split by kind */
-.cs-split-bar { display: flex; gap: calc(4 * var(--u)); height: calc(40 * var(--u)); }
-.cs-split-bar i {
-  flex: var(--v) 1 0;
+.cs-tile.cs-listed > * + * { margin-top: 0; }
+/* the phone, about as tall as the ticket beside it, its ratings ringed in
+   the green the kept sheet of 01 is ringed in, drawn on as it rises */
+.cs-listed-phone { position: relative; justify-self: center; width: min(100%, calc(242 * var(--u))); }
+.cs-listed-phone .cs-phone { width: 100%; }
+.cs-listed-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: rgb(22 170 88);
+  stroke-width: 10;
+  mix-blend-mode: multiply;
+}
+.cs-listed-ring path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+html.rises .cs-listed:not(.is-risen) .cs-listed-ring path { stroke-dashoffset: 1; }
+.cs-listed.is-risen .cs-listed-ring path { transition: stroke-dashoffset 0.7s var(--ease-draw) 0.9s; }
+
+/* The ticket. The paper is cut to its shape, square above and a run of
+   scallops along its foot, as many whole ones as fit; its ink line is
+   drawn as four hard shadows of that cut, the one way a line can follow
+   scallops (a border runs round the box, and left the scallops bare). It
+   hangs a degree and a half off true from a clip on the rail. */
+.cs-docket {
+  --dk-ink: #1e1e1e;
+  --dk-rule: 2px dashed rgb(30 30 30 / 0.22);
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding-top: calc(16 * var(--u));
+}
+.cs-docket::before, .cs-docket::after { content: ''; position: absolute; z-index: 2; }
+/* the rail, the column's width and a little over */
+.cs-docket::before {
+  top: calc(4 * var(--u));
+  left: calc(-14 * var(--u));
+  right: calc(-14 * var(--u));
+  height: calc(10 * var(--u));
+  border-radius: 999px;
+  background: linear-gradient(#f1f3f5, #a9b1b8);
+  box-shadow: inset 0 0 0 2px var(--dk-ink);
+}
+/* the clip on it */
+.cs-docket::after {
+  top: 0;
+  left: 50%;
+  width: calc(40 * var(--u));
+  height: calc(26 * var(--u));
+  translate: -50% 0;
+  border-radius: calc(7 * var(--u));
+  background: linear-gradient(#e6eaed, #b9c0c6);
+  box-shadow: inset 0 0 0 2.5px var(--dk-ink), inset 0 calc(-8 * var(--u)) 0 rgb(0 0 0 / 0.08);
+}
+.cs-docket-paper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  rotate: -1.4deg;
+  transform-origin: 50% 0;
+  filter:
+    drop-shadow(2.5px 0 0 var(--dk-ink)) drop-shadow(-2.5px 0 0 var(--dk-ink))
+    drop-shadow(0 2.5px 0 var(--dk-ink)) drop-shadow(0 -2.5px 0 var(--dk-ink))
+    drop-shadow(0 calc(16 * var(--u)) calc(14 * var(--u)) color-mix(in oklab, var(--deep) 24%, transparent));
+}
+.cs-docket-sheet {
+  --sc: calc(10 * var(--u));
+  padding-bottom: calc(var(--sc) + 10 * var(--u));
+  border-radius: calc(14 * var(--u)) calc(14 * var(--u)) 0 0;
+  overflow: hidden;
+  background: #fffaf0;
+  font-family: 'PP Fugaz One', system-ui, sans-serif;
+  color: var(--dk-ink);
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--sc) + 1px) no-repeat,
+    radial-gradient(farthest-side at 50% 0, #000 calc(100% - 0.6px), transparent) bottom / calc(2.6 * var(--sc)) var(--sc) round no-repeat;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--sc) + 1px) no-repeat,
+    radial-gradient(farthest-side at 50% 0, #000 calc(100% - 0.6px), transparent) bottom / calc(2.6 * var(--sc)) var(--sc) round no-repeat;
+}
+/* its head, the store docket's coral band: what it is, and to when */
+.cs-docket-band {
+  display: grid;
+  justify-items: center;
+  gap: calc(5 * var(--u));
+  padding: calc(17 * var(--u)) calc(16 * var(--u)) calc(9 * var(--u));
+  border-bottom: 2.5px solid var(--dk-ink);
+  background: #ff7e7d;
+  text-transform: uppercase;
+  text-align: center;
+}
+.cs-docket-band b { font-weight: inherit; font-size: max(13px, calc(16 * var(--u))); line-height: 1; letter-spacing: 0.26em; color: #fff; }
+.cs-docket-band span { font-size: max(10px, calc(11 * var(--u))); line-height: 1.2; letter-spacing: 0.12em; color: rgb(30 30 30 / 0.7); }
+/* the order itself, one line a step: the count in the app's display face,
+   what it counts, and a bar as long as its share of the first, each bar
+   in the next of the app's paints, laid on as the ticket rises. The counts
+   are printed, as a ticket's are, and don't roll: the page's odometer
+   holds a digit to a window 1em tall, and cut the tops and feet off
+   Fugaz's figures. */
+.cs-docket-funnel { padding: calc(4 * var(--u)) calc(24 * var(--u)) 0; list-style: none; }
+.cs-docket-funnel li {
+  display: grid;
+  grid-template-columns: calc(76 * var(--u)) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: calc(14 * var(--u));
+  row-gap: calc(6 * var(--u));
+  align-items: center;
+  padding: calc(8 * var(--u)) 0;
+  border-bottom: var(--dk-rule);
+}
+.cs-docket-funnel b {
+  grid-row: span 2;
+  justify-self: end;
+  font-weight: inherit;
+  font-size: calc(31 * var(--u));
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.cs-docket-funnel span { align-self: end; font-size: max(13px, calc(15 * var(--u))); line-height: 1.1; }
+.cs-docket-funnel i {
+  align-self: start;
+  width: max(calc(10 * var(--u)), var(--v) / 861 * 100%);
+  height: calc(11 * var(--u));
+  border-radius: 999px;
+  background: var(--paint);
+  box-shadow: inset 0 0 0 2px var(--dk-ink);
+  transform-origin: 0 50%;
+}
+.cs-docket-funnel li:nth-child(1) { --paint: #b8edf8; --k: 0; }
+.cs-docket-funnel li:nth-child(2) { --paint: #ffd67e; --k: 1; }
+.cs-docket-funnel li:nth-child(3) { --paint: #ff7e7d; --k: 2; }
+.cs-docket-funnel li:nth-child(4) { --paint: #ff4b4b; --k: 3; }
+html.rises .cs-listed:not(.is-risen) .cs-docket-funnel i { scale: 0 1; }
+.cs-listed.is-risen .cs-docket-funnel i { transition: scale 0.9s var(--ease-rise) calc(0.35s + var(--k) * 0.14s); }
+/* three more counts on one line, the way the till prints its extras */
+.cs-docket-more {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 calc(24 * var(--u));
+  padding: calc(9 * var(--u)) 0;
+  border-bottom: var(--dk-rule);
+  text-align: center;
+}
+.cs-docket-more div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: calc(4 * var(--u)); padding: 0 calc(4 * var(--u)); }
+.cs-docket-more div + div { border-left: var(--dk-rule); }
+.cs-docket-more dd { font-size: calc(20 * var(--u)); line-height: 1; font-variant-numeric: tabular-nums; }
+.cs-docket-more dt { font-size: max(10.5px, calc(11.5 * var(--u))); line-height: 1.15; color: rgb(30 30 30 / 0.66); text-wrap: balance; }
+/* and the total, on the butter card the store docket serves its dish on */
+.cs-docket-total {
   display: flex;
   align-items: center;
-  padding: 0 calc(12 * var(--u));
-  border-radius: calc(10 * var(--u));
-  background: var(--deep);
-  font-style: normal;
-  font-size: var(--t-micro);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  color: #fff;
-  overflow: hidden;
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
+  margin: calc(12 * var(--u)) calc(18 * var(--u)) 0;
+  padding: calc(9 * var(--u)) calc(18 * var(--u));
+  border-radius: calc(14 * var(--u));
+  background: #ffd67e;
+  box-shadow: inset 0 0 0 2.5px var(--dk-ink);
 }
-.cs-split-bar i + i { background: #ff7e7d; color: var(--mark); }
-html.rises .cs-results:not(.is-risen) .cs-split-bar i { flex-grow: 0.001; }
-.cs-results.is-risen .cs-split-bar i { transition: flex-grow 1.1s var(--ease-rise) 0.4s; }
+.cs-docket-total span { display: grid; gap: calc(3 * var(--u)); font-size: max(15px, calc(19 * var(--u))); line-height: 1; }
+.cs-docket-total small { font-family: 'PP Faustina', Georgia, serif; font-style: italic; font-size: max(12px, calc(13 * var(--u))); line-height: 1.2; color: rgb(30 30 30 / 0.7); }
+.cs-docket-total b { font-weight: inherit; font-size: calc(36 * var(--u)); line-height: 1; }
+/* where it came from: the dashboard, small, to open */
+.cs-docket-source {
+  justify-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: calc(14 * var(--u));
+  margin-top: calc(14 * var(--u));
+  font-size: var(--t-small);
+  line-height: 1.3;
+  color: var(--tile-ink-2);
+  text-wrap: pretty;
+}
+.cs-docket-source img {
+  flex: none;
+  width: calc(76 * var(--u));
+  height: auto;
+  border-radius: calc(6 * var(--u));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--deep) 16%, transparent),
+    0 calc(6 * var(--u)) calc(12 * var(--u)) calc(-6 * var(--u)) color-mix(in oklab, var(--deep) 40%, transparent);
+  cursor: zoom-in;
+}
+.cs-docket-source b { font-weight: inherit; color: var(--tile-ink); }
+
+/* ---- PantryPal: what I learned, as the loop it is ----
+   The four stops every chapter went round, a drawing to each in the story
+   map's hand on the map's own plinth, its number on the plinth's foot as
+   the map's are; an arrow in each gutter on to the next stop, and from the
+   last a line back under the row to the first: and round again. Under the
+   loop, what every lap leaves behind, the system, a tile of its own with
+   its drawing beside its words. (Four lessons stood here as sentences on
+   hairlines, each lesson and its reason at the one size.) */
+.cs-loop {
+  --loop-gap: calc(28 * var(--u));
+  --loop-ink: color-mix(in oklab, var(--accent) 60%, transparent);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(3, auto);
+  column-gap: var(--loop-gap);
+  padding-bottom: calc(50 * var(--u));
+  list-style: none;
+}
+/* the stops share three rows, so every name and every reason starts
+   level with its neighbours' */
+.cs-loop li { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start; }
+.cs-loop-pic {
+  position: relative;
+  aspect-ratio: 4 / 3.2;
+  margin-bottom: calc(24 * var(--u));
+  border-radius: calc(20 * var(--u));
+  background:
+    radial-gradient(130% 75% at 0% 0%, color-mix(in oklab, var(--tint), #fff 70%), transparent 72%),
+    linear-gradient(to bottom, color-mix(in oklab, var(--tint), #fff 38%), var(--tint) 62%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--deep) 9%, transparent);
+}
+.cs-loop-pic img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.cs-loop-pic .cs-chapter-num { position: absolute; z-index: 1; left: calc(16 * var(--u)); bottom: 0; translate: 0 50%; zoom: 0.5; }
+/* on to the next: a white button's arrow in the app's ink, across the
+   gutter between two plinths */
+.cs-loop li:not(:last-child) .cs-loop-pic::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: calc(-0.5 * var(--loop-gap));
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+  translate: 50% -50%;
+  border-radius: 50%;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e1e1e' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13'/%3E%3Cpath d='m12.5 6 6 6-6 6'/%3E%3C/svg%3E") center / 58% no-repeat;
+  box-shadow: 0 0 0 2px #1e1e1e, 0 calc(4 * var(--u)) calc(8 * var(--u)) color-mix(in oklab, var(--deep) 22%, transparent);
+}
+.cs-loop b { margin-bottom: calc(6 * var(--u)); font-weight: inherit; font-size: var(--t-name); line-height: 1.2; letter-spacing: -0.014em; color: var(--ink); text-wrap: balance; }
+.cs-loop li > span:last-child { font-size: var(--t-small); line-height: 1.5; color: var(--ink-3); text-wrap: pretty; }
+/* and round again: a line from under the last stop back under the row
+   to the first, where it turns up into an arrowhead, its words on it */
+.cs-loop::before {
+  content: '';
+  position: absolute;
+  left: calc((100% - 3 * var(--loop-gap)) / 8);
+  right: calc((100% - 3 * var(--loop-gap)) / 8);
+  bottom: calc(14 * var(--u));
+  height: calc(26 * var(--u));
+  border: 2px solid var(--loop-ink);
+  border-top: 0;
+  border-radius: 0 0 calc(16 * var(--u)) calc(16 * var(--u));
+}
+.cs-loop > li:first-child::after {
+  content: '';
+  position: absolute;
+  left: calc((100% - 3 * var(--loop-gap)) / 8 + 1px);
+  bottom: calc(36 * var(--u));
+  width: calc(11 * var(--u));
+  height: calc(11 * var(--u));
+  translate: -50% 0;
+  rotate: 45deg;
+  border-top: 2px solid var(--loop-ink);
+  border-left: 2px solid var(--loop-ink);
+}
+.cs-loop::after {
+  content: 'and round again';
+  position: absolute;
+  left: 50%;
+  bottom: calc(14 * var(--u));
+  translate: -50% 50%;
+  padding: 0 calc(12 * var(--u));
+  background: var(--bg);
+  font-size: var(--t-micro);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent);
+}
+/* What every lap leaves behind: the cookbook and its robot beside the
+   lesson the loop adds up to, at a tile's name size, and why */
+.cs-keep {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  align-items: center;
+  column-gap: calc(32 * var(--u));
+  margin-top: calc(30 * var(--u));
+  padding: calc(14 * var(--u)) calc(44 * var(--u)) calc(14 * var(--u)) calc(14 * var(--u));
+}
+.cs-tile.cs-keep > * + * { margin-top: 0; }
+/* the drawing without the air over and under it, which its own canvas
+   keeps for the story map's taller plinth */
+.cs-keep-pic img { display: block; width: 100%; height: auto; aspect-ratio: 800 / 500; object-fit: cover; object-position: 50% 62%; }
+.cs-keep-words { display: grid; justify-items: start; gap: calc(10 * var(--u)); }
+.cs-keep .cs-eyebrow { color: var(--tile-ink); }
+.cs-keep-name { font-size: calc(26 * var(--u)); line-height: 1.12; letter-spacing: -0.024em; color: var(--pastel-ink); text-wrap: balance; }
+.cs-keep .cs-tile-meta strong { font-weight: inherit; color: var(--pastel-ink); }
+/* In a phone's lane, where the two would each be too narrow side by side,
+   the phone over its ticket */
+@container lane (max-width: 540px) {
+  .cs-listed { grid-template-columns: minmax(0, 1fr); row-gap: 32px; padding: 28px 22px 24px; }
+  .cs-listed-phone { width: min(230px, 64%); }
+  .cs-docket { justify-self: center; width: min(100%, 380px); }
+}
+/* The loop down the column, a stop to a row, its drawing beside its words
+   and each arrow pointing down to the next, with the way round again said
+   at its foot (four across, each stop's words ran a word or two to a
+   line), and the system's drawing over its words */
+@container lane (max-width: 680px) {
+  .cs-loop { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 30px; padding-bottom: 34px; }
+  .cs-loop li { grid-row: auto; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); column-gap: 18px; align-items: start; }
+  .cs-loop-pic { grid-row: span 2; align-self: center; margin-bottom: 0; }
+  .cs-loop b { align-self: end; }
+  .cs-loop li:not(:last-child) .cs-loop-pic::after { top: auto; right: auto; left: 50%; bottom: -15px; width: 28px; height: 28px; translate: -50% 50%; rotate: 90deg; }
+  .cs-loop::before, .cs-loop > li:first-child::after { display: none; }
+  .cs-loop::after { content: '\21BA  and round again'; left: 0; bottom: 0; translate: 0; padding: 0; background: none; font-size: 12px; }
+  .cs-keep { grid-template-columns: minmax(0, 1fr); row-gap: 4px; padding: 10px 22px 24px; }
+  .cs-keep-pic { justify-self: center; width: min(100%, 360px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-listed-ring path, .cs-docket-funnel i { transition-duration: 0.01s !important; transition-delay: 0s !important; }
+}
 
 /* ---- the story map, wired ----
    Vicino's four are wired one into the next, as nodes are. */

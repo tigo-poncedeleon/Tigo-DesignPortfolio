@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # story-art.sh — bake the pictures on the case studies' story maps, the row
-# of chapters under each case study's overview (assets/case/<case>/story/).
+# of chapters under each case study's overview, and the ones drawn in the
+# same hand further down a story (assets/case/<case>/story/).
 #
 #     live-portfolio/tools/story-art.sh                    every case
 #     live-portfolio/tools/story-art.sh pantrypal          one case
@@ -13,7 +14,12 @@
 #               red, butter, sky and green, and its Fugaz. Each chapter as
 #               a kitchen would tell it: the pad and its pencil, the Figma
 #               screen and its noodle, the design system prepped in bowls,
-#               fourteen pots on one stove, and the icon served.
+#               fourteen pots on one stove, and the icon served. And What
+#               I learned (lesson-*), the loop each chapter went round, told
+#               the same way: a tomato grown in a Figma frame, three
+#               friends' spoons in one pot, the first fly at the 1.0's
+#               soup, the recipe on its fourth card, and what every lap
+#               leaves, the house cookbook and a robot sous-chef reading it.
 #   vicino      the sketchbook Canvas was mapped in: a fine pen line on
 #               white nodes, each lit by its chapter's port colour, with
 #               the agent from the first sheet going from the board to the

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- What I learned, 2: hand it to friends. A taste test: the app's pot,
+       its awning's scallops round it, and three friends' spoons in it at
+       once, one lifted to taste, with what they made of it in the air -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .steam { stroke: #1e1e1e; stroke-width: 4; stroke-linecap: round; fill: none; opacity: 0.55; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="27" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+    <path id="spark" d="M0 -22 Q4 -4 22 0 Q4 4 0 22 Q-4 4 -22 0 Q-4 -4 0 -22 Z" />
+  </defs>
+
+  <ellipse cx="400" cy="560" rx="230" ry="20" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the pot's two handles -->
+    <path d="M262 370 q-38 0 -38 28 q0 24 38 24" fill="none" class="k" style="stroke-width:14" />
+    <path d="M538 370 q38 0 38 28 q0 24 -38 24" fill="none" class="k" style="stroke-width:14" />
+
+    <!-- the pot, in coral, with the awning's scallops round its top -->
+    <path d="M262 318 V 500 q0 34 34 34 H 504 q34 0 34 -34 V 318 Z" fill="#ff7e7d" class="k" />
+    <rect x="272" y="488" width="256" height="36" rx="12" fill="#ec6463" />
+    <path d="M262 318 V 500 q0 34 34 34 H 504 q34 0 34 -34 V 318" fill="none" class="k" />
+    <path d="M262 334 H538 V356 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 q-17.25 22 -34.5 0 Z" fill="#fff" class="t" />
+    <path d="M286 396 v80" class="hi" />
+
+    <!-- its rim, and the soup in it -->
+    <ellipse cx="400" cy="318" rx="146" ry="30" fill="#e45a59" class="k" />
+    <ellipse cx="400" cy="316" rx="124" ry="19" fill="#ffb24a" class="t" />
+    <path d="M318 312 q30 -10 70 -10" class="hi" style="stroke-width:4" />
+
+    <!-- a wooden spoon in from the left, and a blue one from the right -->
+    <path d="M168 150 L 346 304" class="k" style="stroke-width:24" />
+    <path d="M168 150 L 346 304" stroke="#e8c48c" style="stroke-width:12" stroke-linecap="round" />
+    <path d="M182 158 l40 34" class="hi" style="stroke-width:4" opacity="0.6" />
+    <ellipse cx="348" cy="308" rx="20" ry="7" fill="#ffb24a" class="t" />
+    <path d="M646 136 L 456 304" class="k" style="stroke-width:24" />
+    <path d="M646 136 L 456 304" stroke="#8fd2e4" style="stroke-width:12" stroke-linecap="round" />
+    <ellipse cx="454" cy="308" rx="20" ry="7" fill="#ffb24a" class="t" />
+
+    <!-- and a green one, lifted out to taste, dripping -->
+    <path d="M412 196 L 494 58" class="k" style="stroke-width:22" />
+    <path d="M412 196 L 494 58" stroke="#5cc04a" style="stroke-width:10" stroke-linecap="round" />
+    <g transform="rotate(-24 396 214)">
+      <ellipse cx="396" cy="214" rx="40" ry="26" fill="#5cc04a" class="k" />
+      <ellipse cx="396" cy="210" rx="28" ry="15" fill="#ffb24a" class="t" />
+      <path d="M380 206 q8 -6 18 -6" class="hi" style="stroke-width:4" />
+    </g>
+    <path d="M380 252 q-7 12 0 16 q7 -4 0 -16 Z M398 270 q-5 9 0 12 q5 -3 0 -12 Z" fill="#ffb24a" class="t" style="stroke-width:3.5" />
+
+    <!-- the steam of it -->
+    <path d="M318 272 q-10 -16 2 -30 q12 -14 0 -30 M478 276 q8 -14 -2 -26" class="steam" />
+
+    <!-- and what the tasters made of it, in the air: a heart, a question,
+         a word of warning -->
+    <path d="M262 112 c-14 -24 -50 -14 -44 14 c4 20 30 34 44 50 c14 -16 40 -30 44 -50 c6 -28 -30 -38 -44 -14 Z" fill="#ff4b4b" class="t" />
+    <path d="M236 116 q4 -10 14 -10" class="hi" style="stroke-width:4" />
+    <text x="604" y="262" class="fz" font-size="86" fill="#ffd67e" stroke="#1e1e1e" stroke-width="5" stroke-linejoin="round" paint-order="stroke" transform="rotate(12 630 230)">?</text>
+    <text x="150" y="330" class="fz" font-size="78" fill="#b8edf8" stroke="#1e1e1e" stroke-width="5" stroke-linejoin="round" paint-order="stroke" transform="rotate(-10 166 300)">!</text>
+    <g fill="#ffd67e" class="t">
+      <use href="#spark" transform="translate(330 168) scale(0.55)" />
+      <use href="#spark" transform="translate(560 92) scale(0.5)" />
+      <use href="#spark" transform="translate(196 214) scale(0.42)" />
+    </g>
+  </g>
+</svg>

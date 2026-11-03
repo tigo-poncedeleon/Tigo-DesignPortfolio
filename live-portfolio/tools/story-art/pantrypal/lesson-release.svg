@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- What I learned, 3: ship it, then listen. The 1.0 served, a bowl of
+       the app's tomato soup with the version on its pick, and the first fly
+       already circling it: the bugs that only turn up at a real table -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .steam { stroke: #1e1e1e; stroke-width: 4; stroke-linecap: round; fill: none; opacity: 0.55; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="44" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+  </defs>
+
+  <ellipse cx="400" cy="560" rx="220" ry="20" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the bowl, on its foot -->
+    <rect x="330" y="506" width="140" height="34" rx="10" fill="#e9e4da" class="k" />
+    <path d="M214 372 C 214 474, 296 524, 400 524 C 504 524, 586 474, 586 372 Z" fill="#fff" class="k" />
+    <path d="M232 430 C 270 470, 330 486, 400 486 C 470 486, 530 470, 568 430" fill="none" stroke="#b8edf8" style="stroke-width:12" stroke-linecap="round" />
+    <path d="M250 404 q20 50 74 70" class="hi" style="stroke:#dfe9ec; stroke-width:7" opacity="1" />
+    <ellipse cx="400" cy="372" rx="186" ry="42" fill="#fff" class="k" />
+
+    <!-- the soup, a leaf of basil and two croutons on it -->
+    <ellipse cx="400" cy="372" rx="160" ry="30" fill="#ff7e7d" class="t" />
+    <path d="M276 366 q40 -18 100 -20" class="hi" style="stroke-width:4" />
+    <path d="M320 380 c10 -16 34 -18 46 -6 c-12 14 -34 16 -46 6 Z" fill="#5cc04a" class="t" style="stroke-width:3.5" />
+    <rect x="404" y="376" width="22" height="18" rx="4" fill="#f3b544" class="t" style="stroke-width:3.5" transform="rotate(-14 415 385)" />
+    <rect x="446" y="360" width="18" height="16" rx="4" fill="#f3b544" class="t" style="stroke-width:3.5" transform="rotate(10 455 368)" />
+
+    <!-- the version, on its pick -->
+    <path d="M500 372 L 548 220" class="k" style="stroke-width:10" />
+    <path d="M500 372 L 548 220" stroke="#e8c48c" style="stroke-width:4" stroke-linecap="round" />
+    <path d="M546 228 L 618 210 L 626 248 L 556 266 Z" fill="#ffd67e" class="t" />
+    <text x="0" y="0" class="fz" font-size="26" fill="#1e1e1e" transform="translate(566 254) rotate(-14)">1.0</text>
+
+    <!-- its steam -->
+    <path d="M340 320 q-10 -16 2 -30 q12 -14 0 -32 M420 318 q8 -14 -2 -26" class="steam" />
+
+    <!-- and the fly, circling in, the way it came -->
+    <path d="M630 132 C 690 92, 712 186, 640 196 C 560 206, 520 96, 430 128 C 390 142, 362 160, 344 178" fill="none" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 14" opacity="0.5" />
+    <g transform="translate(286 206) rotate(-12) scale(1.35)">
+      <!-- wings, a blur of them -->
+      <path d="M-4 -12 C -30 -70, 22 -86, 20 -18 Z" fill="#e6f7fc" class="t" opacity="0.95" />
+      <path d="M8 -12 C 30 -66, 76 -46, 26 -6 Z" fill="#e6f7fc" class="t" opacity="0.95" />
+      <path d="M-26 -70 q-8 -6 -14 -2 M44 -64 q8 -8 16 -4" class="t" style="stroke-width:3.5" fill="none" />
+      <!-- legs -->
+      <path d="M-14 18 l-12 18 M2 22 l-2 20 M18 18 l10 18" class="t" fill="none" />
+      <!-- body and head -->
+      <ellipse cx="14" cy="4" rx="32" ry="22" fill="#3a3836" class="k" />
+      <path d="M8 -14 v36 M24 -12 v32" stroke="#55524c" stroke-width="5" stroke-linecap="round" />
+      <circle cx="-22" cy="6" r="20" fill="#3a3836" class="k" />
+      <circle cx="-30" cy="-2" r="11" fill="#ff4b4b" class="t" />
+      <circle cx="-14" cy="-4" r="11" fill="#ff4b4b" class="t" />
+      <circle cx="-33" cy="-5" r="3.5" fill="#fff" /><circle cx="-17" cy="-7" r="3.5" fill="#fff" />
+    </g>
+    <path d="M214 150 l-18 -12 M206 182 l-22 -2 M226 122 l-8 -18" class="t" />
+  </g>
+</svg>

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <!-- What I learned, the lap's keep: cement it in a system, so AI can
+       carry it. The house cookbook open on its stand, the app's four paints
+       on one page and its type on the other, and beside it a robot
+       sous-chef in the chef's hat, reading from it and holding up a sticker
+       made to its rules -->
+  <style>
+    @font-face { font-family: Fugaz; src: url(../../../assets/case/pantrypal/app/fonts/FugazOne-Regular.ttf); }
+    .k { stroke: #1e1e1e; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+    .t { stroke: #1e1e1e; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+    .hi { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; opacity: 0.8; }
+    .ln { stroke: #b9b2a6; stroke-width: 5; stroke-linecap: round; fill: none; }
+    .fz { font-family: Fugaz; }
+  </style>
+  <defs>
+    <filter id="hand" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="73" />
+      <feDisplacementMap in="SourceGraphic" scale="4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="soft" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="14" /></filter>
+    <path id="spark" d="M0 -22 Q4 -4 22 0 Q4 4 0 22 Q-4 4 -22 0 Q-4 -4 0 -22 Z" />
+  </defs>
+
+  <ellipse cx="410" cy="552" rx="300" ry="20" fill="#a9492a" opacity="0.32" filter="url(#soft)" />
+
+  <g filter="url(#hand)">
+    <!-- the cookbook's stand -->
+    <path d="M168 530 L 214 452 M372 530 L 326 452" class="k" style="stroke-width:9" />
+    <path d="M150 452 H390" class="k" style="stroke-width:10" />
+
+    <!-- the cookbook, open: its coral cover behind, two pages, a ribbon -->
+    <path d="M114 210 Q 270 186 270 214 Q 270 186 426 210 V 462 Q 270 440 270 466 Q 270 440 114 462 Z" fill="#ff7e7d" class="k" />
+    <path d="M128 222 Q 200 206 266 226 V 448 Q 200 428 128 446 Z" fill="#fffaf0" class="t" />
+    <path d="M274 226 Q 340 206 412 222 V 446 Q 340 428 274 448 Z" fill="#fffaf0" class="t" />
+    <path d="M270 222 V 460" class="t" />
+    <path d="M296 214 V 300 l12 -12 l12 12 V 212" fill="#ff4b4b" class="t" />
+    <!-- the paints, on the left page -->
+    <g class="t">
+      <circle cx="170" cy="282" r="25" fill="#ffd67e" /><circle cx="226" cy="282" r="25" fill="#ff7e7d" />
+      <circle cx="170" cy="342" r="25" fill="#b8edf8" /><circle cx="226" cy="342" r="25" fill="#ff4b4b" />
+    </g>
+    <path d="M160 274 q4 -8 12 -9 M216 274 q4 -8 12 -9" class="hi" style="stroke-width:4" />
+    <path d="M150 400 q20 -6 40 0 t40 0 M150 424 q20 -6 40 0" class="ln" />
+    <!-- and the type, on the right -->
+    <text x="342" y="342" text-anchor="middle" class="fz" font-size="62" fill="#1e1e1e">Aa</text>
+    <path d="M300 380 q20 -6 40 0 t40 0 M300 404 q20 -6 40 0 t30 0 M300 428 q20 -6 40 0" class="ln" />
+
+    <!-- the robot's wheels, and its body -->
+    <rect x="500" y="470" width="150" height="40" rx="18" fill="#55524c" class="k" />
+    <circle cx="534" cy="514" r="16" fill="#3a3836" class="t" /><circle cx="616" cy="514" r="16" fill="#3a3836" class="t" />
+    <rect x="482" y="318" width="186" height="160" rx="30" fill="#b8edf8" class="k" />
+    <path d="M502 344 v80" class="hi" />
+    <rect x="532" y="364" width="86" height="40" rx="12" fill="#fff" class="t" />
+    <g class="t"><circle cx="554" cy="384" r="8" fill="#ffd67e" /><circle cx="575" cy="384" r="8" fill="#ff7e7d" /><circle cx="596" cy="384" r="8" fill="#5cc04a" /></g>
+    <rect x="558" y="298" width="34" height="24" rx="6" fill="#c3cacf" class="t" />
+
+    <!-- its head: a face on a screen, under the chef's hat -->
+    <rect x="490" y="196" width="170" height="110" rx="32" fill="#dfe4e8" class="k" />
+    <rect x="510" y="214" width="130" height="74" rx="20" fill="#1e1e1e" />
+    <ellipse cx="552" cy="244" rx="9" ry="12" fill="#b8edf8" /><ellipse cx="598" cy="244" rx="9" ry="12" fill="#b8edf8" />
+    <path d="M556 266 q19 14 38 0" stroke="#b8edf8" stroke-width="6" stroke-linecap="round" fill="none" />
+    <path d="M520 206 q-14 -4 -22 4" class="hi" opacity="0.5" />
+    <path d="M520 200 C 484 196, 476 146, 512 136 C 516 98, 566 90, 584 116 C 608 88, 660 102, 652 140 C 684 150, 676 196, 634 200 Z" fill="#fff" class="k" />
+    <rect x="516" y="176" width="118" height="30" rx="8" fill="#fff" class="k" />
+    <path d="M546 142 q4 -14 18 -18" class="t" fill="none" opacity="0.5" />
+
+    <!-- an arm out to the book, reading it with one finger -->
+    <path d="M484 372 C 450 372, 436 352, 418 330" fill="none" class="k" style="stroke-width:20" />
+    <path d="M484 372 C 450 372, 436 352, 418 330" fill="none" stroke="#c3cacf" style="stroke-width:9" stroke-linecap="round" />
+    <circle cx="414" cy="324" r="14" fill="#dfe4e8" class="t" />
+
+    <!-- and the other, holding up a sticker made to the book's rules -->
+    <path d="M666 372 C 708 360, 718 316, 708 268" fill="none" class="k" style="stroke-width:20" />
+    <path d="M666 372 C 708 360, 718 316, 708 268" fill="none" stroke="#c3cacf" style="stroke-width:9" stroke-linecap="round" />
+    <g transform="translate(708 214) rotate(8)">
+      <circle cx="0" cy="0" r="50" fill="#fff" class="k" />
+      <circle cx="0" cy="4" r="34" fill="#ff4b4b" class="t" />
+      <path d="M-16 -8 q6 -12 18 -14" class="hi" style="stroke-width:4" />
+      <path d="M0 -28 l-12 -10 m12 10 l1 -15 m-1 15 l14 -8 m-14 8 l-15 2 m15 -2 l15 4" stroke="#2e8a2a" stroke-width="6" stroke-linecap="round" fill="none" />
+    </g>
+    <circle cx="704" cy="268" r="15" fill="#dfe4e8" class="t" />
+
+    <!-- the sparkle of it: not a hand on it -->
+    <g fill="#ffd67e" class="t">
+      <use href="#spark" transform="translate(474 156) scale(0.7)" />
+      <use href="#spark" transform="translate(690 112) scale(0.6)" />
+      <use href="#spark" transform="translate(748 300) scale(0.42)" />
+      <use href="#spark" transform="translate(452 252) scale(0.4)" />
+    </g>
+  </g>
+</svg>
