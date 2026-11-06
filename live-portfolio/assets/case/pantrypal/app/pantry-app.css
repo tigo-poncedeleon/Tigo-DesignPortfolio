@@ -648,9 +648,6 @@
 }
 .pp-scan { top: calc(662 * var(--pt)); background: var(--red); color: #fff; }
 .pp-type { top: calc(718 * var(--pt)); background: #fff; }
-/* "Add more groceries" keeps the sticker's own 16, where "Type my
-   groceries" wears the primary's 20 */
-.pp-type.is-more { font-size: calc(16 * var(--pt)); }
 
 /* ======================================================================
    Type it in! (Screens/ManualAddScreen.swift)

@@ -5,8 +5,9 @@
 //                 food tipping onto the counter the first time it shows; its
 //                 two doors are the scanner and Type it in!, and either one
 //                 holds the welcome behind it (AppState.welcomeHolds), so
-//                 coming back finds it stocked, with "See what I can cook"
-//                 and "Add more groceries", which offers both doors again
+//                 coming back finds the same two doors over a stocked shelf;
+//                 Type it in!'s "See what I can cook", or a scan that lands,
+//                 lets it go
 //   the seat      a shelf of three or more sets the chef writing
 //                 (CateredPickStore): after the store's 0.7-second settle it
 //                 asks the kitchen for two dishes made for the shelf, and
@@ -23,7 +24,7 @@
 
 import * as chef from './pantry-chef.js';
 import * as kitchen from './pantry-kitchen.js';
-import { HERE, h, img, reduced, SHUFFLE, SETTLE, DROP, GLYPH, cardHTML, fitLine, PIECES, seatHTML, runSeat, hydrate, addChooser } from './pantry-draw.js';
+import { HERE, h, img, reduced, SHUFFLE, SETTLE, DROP, GLYPH, cardHTML, fitLine, PIECES, seatHTML, runSeat, hydrate } from './pantry-draw.js';
 
 const SEAT = Object.freeze({ seat: true });
 // The seat stands at least as long as the pencil takes to write one whole
@@ -55,8 +56,7 @@ export function buildHome(ctx) {
     <div class="pp-row">
       <button type="button" class="pp-btn pp-prev" aria-label="Previous dish" hidden>${GLYPH.back}</button>
       <button type="button" class="pp-btn pp-next"><span>Next dish</span>${GLYPH.next}</button>
-    </div>
-    <div class="pp-modal" hidden></div>`;
+    </div>`;
   const $ = (s) => view.querySelector(s);
   const deckEl = $('.pp-deck');
   const rankWord = $('.pp-rank span');
@@ -68,7 +68,6 @@ export function buildHome(ctx) {
   const prev = $('.pp-prev');
   const next = $('.pp-next');
   const go = $('.pp-go');
-  const modal = $('.pp-modal');
   const st = () => ctx.state;
   const welcomeUp = () => st().shelf.length === 0 || st().held;
 
@@ -188,15 +187,17 @@ export function buildHome(ctx) {
     }
   }
 
-  // The welcome's two doors. On an empty shelf they are the two ways to fill
-  // it; once the welcome holds a shelf they are the way forward and the way
-  // to add more, the primary changing hands and the secondary keeping its
-  // slot (and its 16, where "Type my groceries" wears the primary's 20).
+  // The welcome's two doors, the same two however much the shelf holds: the
+  // scanner and Type it in!. They used to change hands once a shelf was
+  // typed in, as the App Store build's do, the scanner's slot turning into
+  // "See what I can cook" and Type my groceries into "Add more groceries";
+  // a chef who came back from typing to scan the rest pressed where the
+  // scanner had been and was taken to the deck, the chef already writing.
+  // The way on to the deck is Type it in!'s own "See what I can cook", or a
+  // scan that lands.
   function paintWelcome() {
-    const stocked = st().shelf.length > 0;
-    scan.innerHTML = stocked ? `${GLYPH.fork}<span>See what I can cook</span>` : `${GLYPH.camera}<span>Scan my groceries</span>`;
-    type.innerHTML = `${GLYPH.list}<span>${stocked ? 'Add more groceries' : 'Type my groceries'}</span>`;
-    type.classList.toggle('is-more', stocked);
+    scan.innerHTML = `${GLYPH.camera}<span>Scan my groceries</span>`;
+    type.innerHTML = `${GLYPH.list}<span>Type my groceries</span>`;
   }
   function paintEmpty(up) {
     view.classList.toggle('is-empty', up);
@@ -383,35 +384,13 @@ export function buildHome(ctx) {
   }
 
   // ---- the welcome's doors ----
+  // Either one holds the welcome behind it, so coming back from the scanner
+  // or from typing finds "Hey, chef!" again, whatever is on the shelf by then.
   scan.addEventListener('click', () => {
-    if (st().shelf.length) {
-      // the welcome lets go, and the deck is what Home is now
-      st().held = false;
-      index = 0;
-      write();
-      deck = build();
-      show(0, null, true);
-      paintDoor();
-      ctx.stage();
-      return;
-    }
     st().held = true;
     ctx.push('scanner');
   });
-  // "Add more groceries" asks which way, as the shelf's own add chooser
-  // does. It used to open Type it in! outright, so a chef who had typed a
-  // few things and come back to scan the rest found no scanner anywhere on
-  // the welcome: the door that had been "Scan my groceries" now said "See
-  // what I can cook" and left for the deck, and this one went straight back
-  // to typing. (The App Store build does the same, and leaves scanning to
-  // the shelf, which the welcome keeps shut until it lets go.) The welcome
-  // holds through either way, and a scan that lands lets it go, as it does
-  // from an empty shelf.
   type.addEventListener('click', () => {
-    if (st().shelf.length && st().held) {
-      addChooser(modal, 'One at a time, by name', (door) => ctx.push(door === 'scan' ? 'scanner' : 'typein', {}));
-      return;
-    }
     if (!st().shelf.length) st().held = true;
     ctx.push('typein', {});
   });
@@ -448,8 +427,6 @@ export function buildHome(ctx) {
     },
     reset() {
       retire();
-      modal.hidden = true;
-      modal.innerHTML = '';
       shown = [];
       answers = new Map();
       refused = new Set();

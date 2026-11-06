@@ -510,9 +510,8 @@ GLYPH.photo = glyph('is-photo', 54, 45, '<rect x="11.6" y="2.6" width="39.8" hei
 GLYPH.star = glyph('is-star', 57, 54, '<path d="M28.5 3.7L35.2 20.0L52.8 21.3L39.3 32.7L43.5 49.8L28.5 40.6L13.5 49.8L17.7 32.7L4.2 21.3L21.8 20.0z" stroke-width="5.2"/>');
 GLYPH.xmark = glyph('is-xmark', 36, 36, '<path d="M4.5 4.5l27 27M31.5 4.5l-27 27" stroke-width="7"/>');
 
-// A card over a scrim, in a screen's own .pp-modal: the shelf's two (the add
-// chooser and a row's editor) and the welcome's chooser. A press on the
-// scrim puts it away.
+// A card over a scrim, in a screen's own .pp-modal: the shelf's two, the add
+// chooser and a row's editor. A press on the scrim puts it away.
 export function modalCard(modal, html, onClose) {
   modal.innerHTML = `<span class="pp-scrim"></span><div class="pp-mcard">${html}</div>`;
   modal.hidden = false;
@@ -535,7 +534,6 @@ export function addChooser(modal, typeDetail, go) {
     close();
     go(b.dataset.go);
   }));
-  modal.querySelector('.pp-choose').focus({ preventScroll: true });
 }
 
 export const stepper = (minus, span) => `<svg class="pp-stepper" viewBox="0 0 ${span} ${span}" style="--sp: ${span}" aria-hidden="true"><rect x="0" y="${span * 0.365}" width="${span}" height="${span * 0.27}" rx="${span * 0.08}"/>${minus ? '' : `<rect x="${span * 0.365}" y="0" width="${span * 0.27}" height="${span}" rx="${span * 0.08}"/>`}</svg>`;

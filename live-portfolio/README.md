@@ -342,9 +342,12 @@ them saying where they go.
     rises over Settings from its promo, as the app's sheet does
     (`pantry-pass.js`, drawn from `PaywallSheet.swift`), its plans and Restore
     working, but nothing is sold: its buy button says the App Store sells it,
-    and every shelf is free. Once the welcome holds a typed shelf, "Add more
-    groceries" offers both doors again, so a chef can scan after typing
-    (the App Store build sends that door straight to typing). (Until November
+    and every shelf is free. "Hey, chef!" keeps its two doors, Scan my
+    groceries and Type my groceries, however much the shelf holds, so a chef
+    can type a few things and come back to scan the rest; the way on to the
+    deck is Type it in!'s "See what I can cook", or a scan that lands. (The
+    App Store build turns them into "See what I can cook" and "Add more
+    groceries" once the shelf holds anything.) (Until November
     2026 the phone was a five-screen prototype beside a card listing its
     steps, the groceries typed in for you and two of the book's dishes
     standing in for the kitchen's; before that the card was a shelf of
