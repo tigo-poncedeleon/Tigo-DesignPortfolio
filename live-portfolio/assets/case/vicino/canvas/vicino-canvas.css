@@ -144,6 +144,42 @@
   height: 14px;
   color: var(--p-text-3);
 }
+/* the board's name is a button: its menu switches between the test run
+   and a live run. Parked in a frame it is still a picture (the brand's
+   pointer-events: none above); full window it answers the pointer. */
+button.vc-brand {
+  border: 0;
+  padding: 6px 10px 6px 6px;
+  margin: -6px 0 0 -6px;              /* the padding grows the hit area, not the offset */
+  background: none;
+  border-radius: 12px;
+  font: inherit;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+.vc:not(.is-parked) .vc-brand { pointer-events: auto; cursor: pointer; }
+.vc:not(.is-parked) .vc-brand:hover { background: rgba(15, 23, 42, 0.05); }
+.vc-brand:focus-visible { outline: 2px solid rgba(73, 224, 245, 0.9); outline-offset: 2px; }
+/* live, a broadcast mark before the name — a point and two arcs, drawn
+   in the board's teal — so the person running a demo can always tell a
+   billed board from the test run. While a live run works, the arcs go
+   out from the point one after the other, the way a signal reads. */
+.vc-live-mark { display: none; }
+.vc.is-live .vc-live-mark {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin-right: -2px;
+  color: var(--p-teal);
+}
+.vc-live-mark path, .vc-live-mark circle { stroke: currentColor; }
+.vc-live-mark circle { fill: currentColor; stroke: none; }
+.vc.is-live.is-running .vc-live-mark .a1 { animation: vc-signal 1.4s ease-in-out infinite; }
+.vc.is-live.is-running .vc-live-mark .a2 { animation: vc-signal 1.4s ease-in-out 0.25s infinite; }
+@keyframes vc-signal { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+/* live, a 3D node does not run (its well says so), so its play chip
+   would be a button that does nothing */
+.vc.is-live .vc-node.is-model3d .vc-playchip { visibility: hidden; }
 
 .vc-pills {
   position: absolute;
@@ -500,14 +536,61 @@
   height: 48px;
   padding: 0 14px;
 }
-.vc-head-icon {
+/* the type: a tile in the node's own colour holding its glyph, then the
+   name — together one button, which changes what the node is. A small
+   chevron comes up on hover to say so. */
+.vc-type {
   display: flex;
-  color: var(--p-text-1);
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  margin: 0 0 0 -6px;
+  padding: 4px 8px 4px 4px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
-.vc-head-icon svg { width: 17px; height: 17px; stroke-width: 1.5; }
+.vc-type:hover { background: rgba(15, 23, 42, 0.045); }
+.vc-type:focus-visible { outline: 2px solid rgba(73, 224, 245, 0.9); outline-offset: 1px; }
+.vc-type-chev {
+  width: 12px;
+  height: 12px;
+  margin-left: -3px;
+  color: var(--p-text-3);
+  opacity: 0;
+  transform: translateY(-1px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.vc-type:hover .vc-type-chev, .vc-node.is-sel .vc-type-chev { opacity: 1; transform: none; }
+.vc-head-icon, .vc-menu-type {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  --tile: rgba(155, 156, 241, 0.16);
+  --ink: #5557d6;
+  background: var(--tile);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.vc-node.is-image .vc-head-icon, .vc-menu-type.is-image { --tile: rgba(139, 214, 217, 0.24); --ink: #17838a; }
+.vc-node.is-video .vc-head-icon, .vc-menu-type.is-video { --tile: rgba(255, 179, 102, 0.22); --ink: #b9620f; }
+.vc-node.is-model3d .vc-head-icon, .vc-menu-type.is-model3d { --tile: rgba(124, 192, 232, 0.22); --ink: #2878b0; }
+.vc-head-icon svg, .vc-menu-type svg { width: 16px; height: 16px; stroke-width: 1.45; }
+.vc-menu-type { width: 22px; height: 22px; border-radius: 7px; margin-right: 10px; }
+.vc-menu-type svg { width: 14px; height: 14px; }
+.vc-menu button .vc-menu-type { display: inline-grid; vertical-align: middle; }
+.vc-menu button:has(.vc-menu-type) { justify-content: flex-start; }
+.vc-menu button:has(.vc-menu-type) .vc-menu-hint { margin-left: auto; }
 .vc-name {
   font-size: 14.5px;
-  font-weight: 700;
+  font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--p-text-1);
   white-space: nowrap;
@@ -540,7 +623,10 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
-.vc-playchip:hover { background: var(--p-badge); }
+.vc-playchip:hover { background: var(--p-badge); transform: scale(1.06); }
+.vc-playchip:active { transform: scale(0.94); }
+.vc-playchip { transition: background-color 0.15s ease, transform 0.15s ease; }
+.vc-playchip-play svg { width: 11px; height: 11px; transform: translateX(0.5px); }
 .vc-playchip svg { width: 12px; height: 12px; }
 .vc-playchip-check, .vc-playchip-dot { display: none; }
 .vc-node.is-done .vc-playchip-play { display: none; }
@@ -567,9 +653,19 @@
 }
 
 .vc-body { padding: 0 14px 14px; }
+/* the prompt is a native textarea (so dictation and autofill can write
+   into it), dressed as the card's inset well; it keeps the card's size
+   and scrolls its own words once they outgrow it */
 .vc-prompt {
-  min-height: 190px;
+  -webkit-user-select: text;             /* the card is unselectable; its words are not */
+  user-select: text;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 190px;
+  margin: 0;
   padding: 10px 12px;
+  font: inherit;
   font-size: 12.5px;
   line-height: 18px;
   color: var(--p-text-2);
@@ -577,12 +673,94 @@
   border: 1px solid var(--p-node-border);
   border-radius: var(--p-r-well);
   outline: none;
+  resize: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.18) transparent;
   cursor: text;
 }
+.vc-prompt::placeholder { color: var(--p-placeholder); opacity: 1; }
 .vc-prompt:focus-visible {
   border-color: rgba(73, 224, 245, 0.9);
   box-shadow: 0 0 0 2px rgba(73, 224, 245, 0.22);
 }
+/* the card's Generate: one ink pill, the play mark and the word, and the
+   model and cost set quietly beneath. It lifts a little under the
+   pointer and gives a little when pressed. */
+.vc-well-play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--p-text-1);
+  cursor: pointer;
+}
+.vc-gen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 20px 0 16px;
+  border-radius: 9999px;
+  background: #1d1d1f;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18), 0 6px 16px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.vc-gen-btn svg { width: 12px; height: 12px; }
+.vc-well-play:hover .vc-gen-btn {
+  background: #2b2d31;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.16), 0 10px 22px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.vc-well-play:active .vc-gen-btn { transform: scale(0.97); }
+.vc-well-play:focus-visible { outline: none; }
+.vc-well-play:focus-visible .vc-gen-btn { box-shadow: 0 0 0 3px #ffffff, 0 0 0 5px rgba(73, 224, 245, 0.9); }
+.vc-gen-meta { font-size: 11px; color: var(--p-placeholder); font-variant-numeric: tabular-nums; }
+/* waiting for an input: the type's glyph, what it is waiting for, how */
+.vc-idle { display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 240px; text-align: center; }
+.vc-idle-tile {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--p-text-3);
+  box-shadow: 0 0 0 1px var(--p-border), 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+.vc-idle-tile svg { width: 18px; height: 18px; stroke-width: 1.4; }
+.vc-idle strong { font-size: 13px; font-weight: 600; color: var(--p-text-2); }
+.vc-idle span:last-child { font-size: 11.5px; line-height: 1.45; color: var(--p-placeholder); }
+/* working: a turning ring above the word, the model and a clock */
+.vc-busy-ring {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 23, 42, 0.1);
+  border-top-color: #1d1d1f;
+  animation: vc-spin360 0.9s linear infinite;
+}
+@keyframes vc-spin360 { to { transform: rotate(360deg); } }
+/* a port missing its input rings twice, softly red */
+.vc-port.is-missing { animation: vc-missing 0.9s ease-out 2; }
+@keyframes vc-missing {
+  0% { box-shadow: var(--p-port-shadow), 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  100% { box-shadow: var(--p-port-shadow), 0 0 0 10px rgba(239, 68, 68, 0); }
+}
+/* a node the Workflow Builder lays down arrives: up from a little below */
+.vc-node.is-born { animation: vc-born 0.42s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes vc-born { from { opacity: 0; translate: 0 14px; scale: 0.97; } }
 .vc-well {
   display: flex;
   flex-direction: column;
@@ -612,6 +790,19 @@
   gap: 0;
   border-color: var(--p-node-border);
 }
+/* live: the working well's clock keeps its digits from jittering, and a
+   node Gemini refused says why in its well, in the warm red the edge's
+   delete × uses, centred and wrapped, since the reason is a sentence */
+.vc-well-sub.is-clock { font-variant-numeric: tabular-nums; opacity: 1; }
+.vc-node.is-failed .vc-well-hint { color: #c2410c; }
+.vc-node.is-failed .vc-well-sub {
+  max-width: 82%;
+  text-align: center;
+  line-height: 1.45;
+  opacity: 1;
+  color: var(--p-text-3);
+}
+.vc-node.is-failed .vc-well-glyph { color: #ef4444; opacity: 0.7; }
 /* the resolved IMAGE — the returned frame fills the well edge to edge,
    cropped from the center the way the shipped result tile crops */
 .vc-photo {
@@ -742,9 +933,14 @@
   background: var(--pc);
   border: 2px solid #ffffff;
   box-shadow: var(--p-port-shadow), 0 0 8px var(--pg);
-  cursor: crosshair;
+  /* a port is something to take hold of: an open hand over it, a closed
+     one while a wire is pulled (no crosshair) */
+  cursor: grab;
   z-index: 2;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.vc-port:hover { transform: scale(1.12); box-shadow: var(--p-port-shadow), 0 0 12px var(--pg); }
+.vc.is-wiring, .vc.is-wiring * { cursor: grabbing !important; }
 .vc-port.is-in { left: -5px; }
 .vc-port.is-out { right: -5px; }
 /* the 24px hit area the real handles carry */
@@ -754,8 +950,10 @@
   inset: -7px;
 }
 
-/* ---- edges: soft purple; cyan when an endpoint is selected; a
-   streaming cyan dash while its target generates ---- */
+/* ---- edges: the color of the port they leave and enter (--ec, set per
+   edge from PORT_COLOR), so a text wire is purple and an image wire is
+   cyan; a brighter cyan when an endpoint is selected; a streaming cyan
+   dash while its target generates ---- */
 .vc-edges {
   position: absolute;
   left: 0;
@@ -766,7 +964,7 @@
 }
 .vc-edge-line {
   fill: none;
-  stroke: var(--p-edge);
+  stroke: var(--ec, var(--p-edge));
   stroke-width: 2;
   stroke-linecap: round;
   pointer-events: none;
@@ -778,12 +976,15 @@
   stroke-width: 14;
 }
 .vc-edge:hover .vc-edge-line { stroke-width: 3.5; }
+/* a wire is always the colour of the handles at its ends: selecting a
+   node it touches thickens it and gives it a soft glow of its own
+   colour, and a wire into a node that is generating streams a dash —
+   never a change of colour */
 .vc-edge.is-hot .vc-edge-line {
-  stroke: var(--p-edge-hot);
-  filter: drop-shadow(0 0 4px rgba(73, 224, 245, 0.4));
+  stroke-width: 3;
+  filter: drop-shadow(0 0 3px var(--ec));
 }
 .vc-edge.is-running .vc-edge-line {
-  stroke: var(--p-edge-hot);
   stroke-dasharray: 7 6;
   animation: vc-flow 0.5s linear infinite;
 }
@@ -807,7 +1008,7 @@
 }
 .vc-ghost {
   fill: none;
-  stroke: var(--p-edge);
+  stroke: var(--ec, var(--p-edge));
   stroke-width: 2;
   stroke-dasharray: 6 6;
   stroke-linecap: round;
@@ -815,7 +1016,6 @@
   pointer-events: none;
 }
 .vc-ghost.is-snapped {
-  stroke: var(--p-edge-hot);
   stroke-dasharray: none;
   opacity: 1;
 }
@@ -1194,105 +1394,442 @@
 .vc-confirm button.is-danger:hover { filter: brightness(1.08); }
 
 /* the agent panel, floating beside the rail (Figma 140:511) */
-.vc-chat {
-  position: absolute;
-  left: 104px;               /* the rail ends at 88; a 16px breath */
-  bottom: 24px;
-  width: 274px;
-  background: #ffffff;
-  border: 1px solid var(--p-node-border);
-  border-radius: var(--p-r-panel);
-  box-shadow: var(--p-shadow-panel), var(--p-inset-hi);
-  overflow: hidden;
-  z-index: 6;
+/* ============================================================
+   ports as slots: a handle per wire on the left, a handle per wire and
+   one free one on the right. The free one is lighter, and when it is
+   used a new free one slides down out of the one above it.
+   ============================================================ */
+/* the free handle is a hollow socket — white inside, a ring of the type's
+   colour — so a used handle (solid) and the one still free read apart */
+.vc-port.is-free { background: #ffffff; border-color: var(--pc); box-shadow: var(--p-port-shadow); }
+.vc-port.is-free:hover { background: var(--pc); border-color: #ffffff; }
+.vc-port.is-new { animation: vc-port-in 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes vc-port-in {
+  0% { opacity: 0; transform: translateY(-30px) scale(0.6); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
 }
-.vc-chat[hidden] { display: none; }
+.vc-port-label {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: #1d1d1f;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.vc-port.is-in .vc-port-label { right: calc(100% + 10px); }
+.vc-port.is-out .vc-port-label { left: calc(100% + 10px); }
+.vc-port:hover .vc-port-label, .vc-port.is-ghost .vc-port-label { opacity: 1; }
+/* the drop target: the node lights, and a ghost handle shows where the
+   wire will plug in */
+.vc-node.is-drop {
+  border-color: rgba(73, 224, 245, 0.95);
+  box-shadow: 0 0 0 4px rgba(73, 224, 245, 0.18), var(--p-shadow-card-hover);
+}
+.vc-port.is-ghost {
+  pointer-events: none;
+  animation: vc-ghost 1s ease-in-out infinite;
+}
+@keyframes vc-ghost { 50% { box-shadow: var(--p-port-shadow), 0 0 0 6px var(--pg); } }
+/* a node asked to run with nothing wired in glows on its left edge */
+.vc-node.is-wanting { animation: vc-wanting 0.9s ease-out 2; }
+@keyframes vc-wanting {
+  0% { box-shadow: -6px 0 0 -2px rgba(239, 68, 68, 0.0), var(--p-shadow-card); }
+  30% { box-shadow: -6px 0 0 -2px rgba(239, 68, 68, 0.55), var(--p-shadow-card); }
+  100% { box-shadow: -6px 0 0 -2px rgba(239, 68, 68, 0), var(--p-shadow-card); }
+}
+/* a plan row under the pointer lights its node */
+.vc-node.is-peek {
+  border-color: rgba(139, 92, 246, 0.7);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.16), var(--p-shadow-card-hover);
+}
+
+/* ---- what feeds a node: along the top of a waiting card, a small
+   "Inputs" label, the prompt as its own first words, and a thumbnail per
+   picture (the first frame ringed); on a finished card, the same on
+   hover, in a frosted chip ---- */
+.vc-well { position: relative; }
+.vc-inputs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.vc-inputs.is-ready {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+}
+.vc-in-label {
+  margin-right: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-placeholder);
+}
+.vc-inputs.is-made {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.1);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.vc-node:hover .vc-inputs.is-made { opacity: 1; transform: none; }
+.vc-in-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  height: 24px;
+  padding: 0 9px 0 6px;
+  border-radius: 7px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px var(--p-border);
+  color: var(--p-text-2);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vc-in-chip.is-empty { color: #b45309; box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.35); background: #fffbeb; }
+.vc-in-glyph { display: grid; place-items: center; flex: none; width: 14px; height: 14px; color: #5557d6; }
+.vc-in-glyph svg { width: 12px; height: 12px; stroke-width: 1.6; }
+.vc-in-thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #ffffff;
+  color: #17838a;
+  box-shadow: 0 0 0 1px var(--p-border);
+}
+.vc-in-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.vc-in-thumb svg { width: 12px; height: 12px; }
+.vc-in-thumb.is-pending { background: #f3f8f8; }
+.vc-in-thumb.is-first { box-shadow: 0 0 0 1.5px #ffb366; }
+.vc-in-more { font-size: 11px; font-weight: 600; color: var(--p-text-3); }
+
+/* ============================================================
+   the dock: open, the AI Workflow Builder takes the board's left edge
+   and everything on the canvas moves over by its width, with an ease
+   ============================================================ */
+.vc { --dock: 0px; }
+.vc-viewport { left: var(--dock); }
+.vc-brand { left: calc(22px + var(--dock)); }
+.vc-rail { left: calc(24px + var(--dock)); }
+.vc-map, .vc-map-open { left: calc(24px + var(--dock)); }
+.vc-toolbar, .vc-zoommenu, .vc-toast, .vc-confirm, .vc-empty { left: calc(50% + var(--dock) / 2); }
+.vc-viewport, .vc-brand, .vc-rail, .vc-map, .vc-map-open, .vc-toolbar, .vc-zoommenu, .vc-toast, .vc-confirm, .vc-empty {
+  transition-property: left, opacity, transform, translate, box-shadow, background-color;
+  transition-duration: 0.42s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vc.is-docking .vc-world { transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* ============================================================
+   the AI Workflow Builder (and the Asset Library, which shares its
+   frame): a white panel inset 12px from the board's edges, a 16px
+   radius, a hairline and the faintest lift — set beside the canvas, not
+   over it. No decoration. The header is a title and two tools; the body
+   is the canvas's own dot grid, faded out at both ends; when empty, one
+   question and four ways in rest on the input; the input carries what
+   is selected and the send.
+   ============================================================ */
+.vc.is-docked { --dock: 400px; }
+.vc-chat, .vc-lib {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  width: 376px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  transform: translateX(calc(-100% - 24px));
+  visibility: hidden;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.42s;
+}
+.vc.is-chatting .vc-chat, .vc.is-library .vc-lib { transform: none; visibility: visible; transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s; }
+.vc.is-parked .vc-chat, .vc.is-parked .vc-lib { display: none; }
 .vc-chat-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 14px 10px;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--p-text-1);
+  gap: 9px;
+  height: 52px;
+  flex: none;
+  padding: 0 10px 0 16px;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
-.vc-chat-head svg { width: 13px; height: 13px; color: #8b8df5; }
-.vc-chat-head button {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
+.vc-chat-glyph { flex: none; width: 16px; height: 16px; color: #1d1d1f; }
+.vc-chat-glyph.is-lib { width: 14px; height: 16px; }
+.vc-chat-titles { flex: 1; min-width: 0; }
+.vc-chat-titles strong { font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; color: #1d1d1f; }
+.vc-chat-tool {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: 0;
-  border-radius: 7px;
+  border-radius: 8px;
   background: none;
-  color: var(--p-text-3);
+  color: #8a8e95;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
-.vc-chat-head button:hover { background: var(--p-inset); }
-.vc-chat-head button svg { width: 10px; height: 10px; color: currentColor; }
-.vc-chat-log {
-  max-height: 172px;
-  overflow-y: auto;
-  padding: 0 12px 10px;
+.vc-chat-tool:hover { background: #f3f4f6; color: #1d1d1f; }
+.vc-chat-tool svg { width: 15px; height: 15px; stroke-width: 1.5; }
+/* the body: the canvas's dots, fading out toward the header and the input */
+.vc-chat-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  justify-content: flex-end;
+  overflow-y: auto;
+  padding: 16px 16px 4px;
+  background:
+    linear-gradient(#ffffff 0%, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0) 52%, #ffffff 82%),
+    radial-gradient(circle, rgba(15, 23, 42, 0.11) 0.8px, transparent 1.1px) 0 0 / 18px 18px,
+    #ffffff;
 }
-.vc-msg {
-  max-width: 92%;
-  padding: 8px 10px;
-  border-radius: 12px;
-  font-size: 11.5px;
-  line-height: 16px;
+/* empty: the question, and four ways in, set as a list */
+.vc-chat-hero[hidden] { display: none; }
+.vc-chat-hero { padding: 0 0 6px; animation: vc-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes vc-rise { from { opacity: 0; transform: translateY(6px); } }
+.vc-chat-hero h3 {
+  margin: 0 0 12px 2px;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  color: #1d1d1f;
 }
-.vc-msg.is-agent {
-  align-self: flex-start;
-  background: var(--p-inset);
-  color: var(--p-text-2);
-}
-.vc-msg.is-user {
-  align-self: flex-end;
-  background: var(--p-chip);
-  color: var(--p-cyan-deep);
-}
-.vc-chat-form {
-  display: flex;
-  gap: 6px;
-  padding: 10px 12px 12px;
-  border-top: 1px solid var(--p-node-border);
-}
-.vc-chat-form input {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--p-node-border);
-  border-radius: 10px;
-  padding: 8px 10px;
-  font-family: inherit;
-  font-size: 11.5px;
-  color: var(--p-text-1);
-  background: var(--p-inset);
-  outline: none;
-}
-.vc-chat-form input:focus-visible { border-color: rgba(73, 224, 245, 0.9); }
-.vc-chat-form input::placeholder { color: var(--p-placeholder); }
-.vc-chat-form button {
+.vc-chat-ideas { display: flex; flex-direction: column; border-top: 1px solid rgba(15, 23, 42, 0.07); }
+.vc-chat-ideas[hidden] { display: none; }
+.vc-chat-ideas button {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
+  justify-content: space-between;
+  gap: 12px;
+  height: 40px;
+  padding: 0 4px 0 2px;
+  border: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: #5f6369;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.vc-chat-ideas button:hover { color: #1d1d1f; }
+.vc-idea-go {
   flex: none;
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.5;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vc-chat-ideas button:hover .vc-idea-go { opacity: 1; transform: none; }
+/* the conversation */
+.vc-chat-log { display: flex; flex-direction: column; gap: 14px; padding-bottom: 10px; }
+.vc-chat-log:empty { display: none; }
+.vc-msg { animation: vc-rise 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+.vc-msg p { margin: 0; font-size: 13.5px; line-height: 1.6; color: #1d1d1f; }
+.vc-msg.is-agent { padding-left: 0; }
+.vc-msg.is-agent::before, .vc-msg.is-agent::after { content: none; }
+.vc-msg.is-user { align-self: flex-end; max-width: 85%; }
+.vc-msg.is-user p { padding: 8px 12px; border-radius: 12px 12px 4px 12px; background: #f3f4f6; }
+.vc-think { display: flex; align-items: center; color: #8a8e95; }
+.vc-think-word { animation: vc-think 1.6s ease-in-out infinite; }
+.vc-think-word.is-in { animation: vc-rise 0.3s ease, vc-think 1.6s ease-in-out 0.3s infinite; }
+@keyframes vc-think { 50% { opacity: 0.45; } }
+/* the plan: a row per node — a bar in its colour, what it is, its words,
+   its state — then the way to run it */
+.vc-plan {
+  margin-top: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.vc-plan-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px 10px 16px;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.vc-plan-row:first-child { border-top: 0; }
+.vc-plan-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: #9b9cf1;
+}
+.vc-plan-row.is-image::before { background: #8bd6d9; }
+.vc-plan-row.is-video::before { background: #ffb366; }
+.vc-plan-row.is-model3d::before { background: #7cc0e8; }
+.vc-plan-row:hover { background: #fafafb; }
+.vc-plan-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.vc-plan-text b { font-size: 12px; font-weight: 600; color: #1d1d1f; }
+.vc-plan-text span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #8a8e95;
+}
+.vc-plan-state { flex: none; display: flex; align-items: center; min-height: 18px; }
+.vc-plan-thumb { width: 30px; height: 30px; border-radius: 7px; object-fit: cover; box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08); animation: vc-rise 0.3s ease; }
+.vc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  color: #8a8e95;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vc-pill.is-running { color: #1d1d1f; }
+.vc-pill.is-running i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid rgba(15, 23, 42, 0.15); border-top-color: #1d1d1f; animation: vc-spin360 0.8s linear infinite; }
+.vc-pill.is-done { color: #1e7a52; background: #eef8f3; }
+.vc-pill.is-failed { color: #c43c3c; background: #fdf0f0; }
+@keyframes vc-spin360 { to { transform: rotate(360deg); } }
+.vc-plan-acts { display: flex; gap: 6px; padding: 10px 12px; border-top: 1px solid rgba(15, 23, 42, 0.06); background: #fcfcfd; }
+.vc-plan-run, .vc-plan-show {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+.vc-plan-run { flex: 1; border: 0; background: #1d1d1f; color: #ffffff; }
+.vc-plan-run svg { width: 10px; height: 10px; }
+.vc-plan-run:hover:not(:disabled) { background: #2b2d31; }
+.vc-plan-run:disabled { opacity: 0.5; cursor: default; }
+.vc-plan-show { border: 1px solid rgba(15, 23, 42, 0.1); background: #ffffff; color: #1d1d1f; }
+.vc-plan-show:hover { background: #f7f8f9; }
+/* the input: the words, then a bar with what is selected and the send */
+.vc-chat-foot { flex: none; padding: 0 12px 12px; }
+.vc-chat-form {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px 10px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.vc-chat-form:focus-within { border-color: rgba(15, 23, 42, 0.28); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05); }
+.vc-chat-form textarea {
+  min-height: 40px;
+  max-height: 160px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #1d1d1f;
+}
+.vc-chat-form textarea::placeholder { color: #a0a4ab; }
+.vc-chat-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; margin-top: 6px; }
+.vc-chat-context { display: flex; min-width: 0; }
+.vc-chat-context[hidden] { display: none; }
+.vc-ctx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  padding: 0 3px 0 8px;
+  border-radius: 7px;
+  background: #f3f4f6;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #44464a;
+  white-space: nowrap;
+}
+.vc-ctx-dots { display: inline-flex; gap: 3px; }
+.vc-ctx-dots i { width: 6px; height: 6px; border-radius: 50%; background: #9b9cf1; }
+.vc-ctx-dots i.is-image { background: #8bd6d9; }
+.vc-ctx-dots i.is-video { background: #ffb366; }
+.vc-ctx-x { display: grid; place-items: center; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 5px; background: none; color: #8a8e95; cursor: pointer; }
+.vc-ctx-x:hover { background: #e7e8eb; color: #1d1d1f; }
+.vc-ctx-x svg { width: 10px; height: 10px; stroke-width: 1.6; }
+.vc-chat-form button[type="submit"] {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--p-ink-pill);
+  background: #1d1d1f;
   color: #ffffff;
   cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
-.vc-chat-form button:hover { background: var(--p-ink-hover); }
-.vc-chat-form button svg { width: 10px; height: 10px; }
+.vc-chat-form button[type="submit"]:hover:not(:disabled) { background: #2b2d31; transform: translateY(-1px); }
+.vc-chat-form button[type="submit"]:disabled { background: #e8e9ec; cursor: default; }
+.vc-chat-form button[type="submit"] svg { width: 13px; height: 13px; stroke-width: 1.9; }
+@media (prefers-reduced-motion: reduce) {
+  .vc-chat-hero, .vc-msg, .vc-think-word { animation: none !important; }
+}
 
 .vc-empty {
   position: absolute;
@@ -1436,3 +1973,304 @@
   .vc-panel { display: none !important; }
   .vc-pill:not(.is-run):not(.is-credits) { display: none; }
 }
+
+
+/* ---- the Asset Library ---- */
+.vc-lib-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid rgba(15, 23, 42, 0.06); }
+.vc-lib-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--p-placeholder);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.vc-lib-search:focus-within { border-color: rgba(15, 23, 42, 0.3); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05); }
+.vc-lib-search svg { width: 14px; height: 14px; flex: none; }
+.vc-lib-search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font: inherit; font-size: 13px; color: var(--p-text-1); }
+.vc-lib-tabs { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: #f2f3f5; }
+.vc-lib-tabs button {
+  flex: 1;
+  height: 26px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-text-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.vc-lib-tabs button.is-on { background: #ffffff; color: var(--p-text-1); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08); }
+.vc-lib-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 14px 16px; }
+.vc-lib-head { margin: 4px 2px 8px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-placeholder); }
+.vc-lib-head ~ .vc-lib-head { margin-top: 16px; }
+.vc-lib-grid { columns: 2; column-gap: 8px; }
+.vc-lib-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f2f3f5;
+  break-inside: avoid;
+  cursor: grab;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+  animation: vc-rise 0.35s ease both;
+}
+.vc-lib-tile:active { cursor: grabbing; }
+.vc-lib-tile img, .vc-lib-tile video { display: block; width: 100%; height: auto; }
+.vc-lib-tile:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.1), 0 10px 22px rgba(15, 23, 42, 0.12); }
+.vc-lib-meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 18px 10px 8px;
+  background: linear-gradient(rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.62));
+  color: #ffffff;
+  text-align: left;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.vc-lib-meta strong { font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vc-lib-meta em { font-style: normal; font-size: 10px; opacity: 0.8; }
+.vc-lib-tile:hover .vc-lib-meta { opacity: 1; }
+.vc-lib-add {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1d1d1f;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.vc-lib-add svg { width: 12px; height: 12px; stroke-width: 1.8; }
+.vc-lib-tile:hover .vc-lib-add { opacity: 1; transform: none; }
+.vc-lib-badge {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 7px 0 6px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.62);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+}
+.vc-lib-badge svg { width: 8px; height: 8px; }
+.vc-lib-none { margin: 0 2px 4px; padding: 14px 12px; border: 1px dashed rgba(15, 23, 42, 0.14); border-radius: 10px; font-size: 12px; line-height: 17px; color: var(--p-placeholder); }
+.vc-lib-empty { margin: 24px 0; text-align: center; font-size: 12.5px; color: var(--p-placeholder); }
+.vc-railbtn .vc-lib-glyph { width: 20px; height: 20px; }
+
+/* ============================================================
+   every node in its own colour: the selection ring, the model pill,
+   the progress line, the drop-target ring, the focus rings — text in
+   purple, image in teal, video in orange, 3D in blue; no node borrows
+   the board's cyan
+   ============================================================ */
+.vc-node { --nc: #9b9cf1; --nc-ink: #5557d6; --nc-soft: rgba(155, 156, 241, 0.16); }
+.vc-node.is-image { --nc: #8bd6d9; --nc-ink: #17838a; --nc-soft: rgba(139, 214, 217, 0.24); }
+.vc-node.is-video { --nc: #ffb366; --nc-ink: #b9620f; --nc-soft: rgba(255, 179, 102, 0.22); }
+.vc-node.is-model3d { --nc: #7cc0e8; --nc-ink: #2878b0; --nc-soft: rgba(124, 192, 232, 0.22); }
+.vc-node:hover { border-color: color-mix(in srgb, var(--nc) 55%, rgba(15, 23, 42, 0.12)); }
+.vc-node.is-sel {
+  border-color: var(--nc);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nc) 26%, transparent),
+    0 10px 26px color-mix(in srgb, var(--nc) 20%, transparent), var(--p-shadow-card);
+}
+.vc-badge { color: var(--nc-ink); background: var(--nc-soft); }
+.vc-type:focus-visible { outline-color: var(--nc); }
+.vc-prompt:focus-visible { border-color: var(--nc); box-shadow: 0 0 0 2px color-mix(in srgb, var(--nc) 24%, transparent); }
+.vc-well-play:focus-visible .vc-gen-btn { box-shadow: 0 0 0 3px #ffffff, 0 0 0 5px var(--nc); }
+.vc-node:is(.is-running, .is-validating) .vc-bar { background: var(--nc-soft); }
+.vc-bar i { background: linear-gradient(90deg, color-mix(in srgb, var(--nc) 60%, transparent), var(--nc)); }
+.vc-node.is-drop {
+  border-color: var(--nc);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--nc) 22%, transparent), var(--p-shadow-card-hover);
+}
+.vc-node.is-peek {
+  border-color: var(--nc);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--nc) 20%, transparent), var(--p-shadow-card-hover);
+}
+
+/* ---- the theater: a result from a node, as large as the window allows.
+   The board goes dark behind it; its type and model sit top left, the
+   words that made it underneath. Nothing here is the board's own light
+   furniture, so the picture is the only bright thing on screen. ---- */
+.vc-viewer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-rows: 64px minmax(0, 1fr) auto;
+  color: #ffffff;
+  font-family: var(--p-font);
+}
+.vc-viewer[hidden] { display: none; }
+.vc-viewer:focus { outline: none; }
+.vc-viewer-scrim {
+  position: absolute;
+  inset: 0;
+  background: #0e0f11;
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+.vc-viewer.is-open .vc-viewer-scrim { opacity: 0.94; }
+.vc-viewer-top, .vc-viewer-cap, .vc-viewer-nav {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.vc-viewer.is-open .vc-viewer-top,
+.vc-viewer.is-open .vc-viewer-cap,
+.vc-viewer.is-open .vc-viewer-nav { opacity: 1; transition-delay: 0.08s; }
+.vc-viewer-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px 0 22px;
+}
+.vc-viewer-tag { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.vc-viewer-tag i {
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8bd6d9;
+}
+.vc-viewer-tag i.is-video { background: #ffb366; }
+.vc-viewer-tag b { font-size: 13px; font-weight: 600; letter-spacing: -0.005em; }
+.vc-viewer-tag em { font-style: normal; font-size: 12px; color: rgba(255, 255, 255, 0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vc-viewer-count { font-size: 12px; color: rgba(255, 255, 255, 0.42); font-variant-numeric: tabular-nums; }
+.vc-viewer-tools { display: flex; gap: 4px; margin-left: auto; }
+.vc-viewer-tool {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.vc-viewer-tool:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+.vc-viewer-tool:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.5); outline-offset: 1px; }
+.vc-viewer-tool svg, .vc-viewer-nav svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.vc-viewer-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 4px 84px 8px;
+  overflow: hidden;
+}
+.vc-viewer-media {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  background: #1a1b1e;
+  transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+img.vc-viewer-media { cursor: zoom-in; }
+img.vc-viewer-media.is-zoomed {
+  cursor: zoom-out;
+  transform: scale(var(--k, 2));
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform-origin 0.08s linear;
+}
+.vc-viewer-media.is-fade { animation: vc-viewer-in 0.2s ease both; }
+@keyframes vc-viewer-in {
+  from { opacity: 0; transform: scale(0.985); }
+}
+.vc-viewer.is-landing .vc-viewer-media { transition-duration: 0.26s; }
+.vc-viewer-nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.2s ease;
+}
+.vc-viewer-nav:hover { background: rgba(255, 255, 255, 0.16); color: #ffffff; }
+.vc-viewer-nav.is-prev { left: 22px; }
+.vc-viewer-nav.is-next { right: 22px; }
+.vc-viewer.is-single .vc-viewer-nav { display: none; }
+.vc-viewer-cap {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 14px 28px 24px;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.66);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.vc-viewer-cap[hidden] { display: none; }
+/* a result in a node says it opens: the pointer becomes a magnifier */
+.vc-well.has-art .vc-photo, .vc-well.has-art .vc-gif { cursor: zoom-in; }
+@media (prefers-reduced-motion: reduce) {
+  .vc-viewer-scrim, .vc-viewer-top, .vc-viewer-cap, .vc-viewer-nav, .vc-viewer-media { transition: none; }
+  .vc-viewer-media.is-fade { animation: none; }
+}
+
+/* a node that holds something keeps its type: no chevron, no hover */
+.vc-node:has(.vc-well.has-art) .vc-type,
+.vc-node:is(.is-queued, .is-running, .is-validating) .vc-type,
+.vc-node.is-text:has(.vc-prompt:not(:placeholder-shown)) .vc-type { cursor: default; }
+.vc-node:has(.vc-well.has-art) .vc-type:hover,
+.vc-node:is(.is-queued, .is-running, .is-validating) .vc-type:hover,
+.vc-node.is-text:has(.vc-prompt:not(:placeholder-shown)) .vc-type:hover { background: none; }
+.vc-node:has(.vc-well.has-art) .vc-type-chev,
+.vc-node:is(.is-queued, .is-running, .is-validating) .vc-type-chev,
+.vc-node.is-text:has(.vc-prompt:not(:placeholder-shown)) .vc-type-chev { display: none; }

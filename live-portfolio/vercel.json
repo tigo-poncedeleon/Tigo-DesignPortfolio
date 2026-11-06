@@ -30,6 +30,7 @@
   ],
   "functions": {
     "api/chat.js": { "maxDuration": 30 },
+    "api/canvas.js": { "maxDuration": 300 },
     "api/pantry.js": { "maxDuration": 60, "includeFiles": "assets/case/pantrypal/app/scan-*.jpg" }
   }
 }

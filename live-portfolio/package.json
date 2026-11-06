@@ -1,7 +1,7 @@
 {
   "name": "tigo-design-portfolio",
   "private": true,
-  "description": "tigoponcedeleon.com: a static site, and one serverless function (api/chat.js) for the chat on Home",
+  "description": "tigoponcedeleon.com: a static site, and three serverless functions: api/chat.js for the chat on Home, api/pantry.js for the PantryPal app, api/canvas.js for Canvas run live",
   "dependencies": {
     "@anthropic-ai/sdk": "0.128.0"
   }

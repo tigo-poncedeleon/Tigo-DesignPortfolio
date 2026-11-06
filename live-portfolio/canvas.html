@@ -18,6 +18,10 @@
          canvas.html?parked   a picture that runs: a finished board, the clip
                               looping and the mesh turning, taking no input,
                               for vicino.html to hold in a frame
+       The instrument's board name opens a menu with Live Run: for Tigo's
+       own demos, behind a password, a blank canvas that makes, wires and
+       runs nodes for real, through api/canvas.js, billed to his key
+       (vicino-live.js is the page's side of it, fetched only then).
        Analytics counts the instrument only: parked, the board is a picture
        inside vicino.html, which has already counted the visit. The board's
        own face is Manrope, as shipped. -->
@@ -64,6 +68,137 @@
        full-window. (Set here, not in the replica's own stylesheet, so the
        replica stays as it was copied.) */
     #vc .vc-viewport { background-image: none; }
+
+    /* Live Run's gate: one pill over the board, and nothing else. The
+       board waits under a frosted wash until the relay takes the password,
+       or Escape or a press outside sends the visitor back to the test run.
+       The pill is the board's own furniture (vicino-canvas.css): white,
+       hairline border, the toolbar's shadow, a padlock, and the ink Generate
+       button, as a round arrow. A
+       wrong password says so by shaking, not in words; the only words are
+       the placeholder's, and a reason (a lockout, a relay not set up) when
+       there is one to give. It is outside #vc, so typing in it never
+       reaches the board's own shortcuts. */
+    .vc-gate-scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(238, 243, 243, 0.55);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      animation: vc-gate-in 0.18s ease-out;
+    }
+    .vc-gate {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: min(300px, 100%);
+      height: 52px;
+      padding: 0 7px 0 20px;
+      box-sizing: border-box;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 9999px;
+      box-shadow: 0 16px 18px rgba(15, 23, 42, 0.08), 0 2px 2px rgba(15, 23, 42, 0.05);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    /* a padlock, drawn at 16px in the field's quiet ink, says what the
+       field is for without a word; it takes the ring's colour when the
+       field has focus, and red when a password is refused */
+    .vc-gate-lock {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #8a8e95;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.15s ease;
+    }
+    .vc-gate:focus-within .vc-gate-lock { stroke: #0d7685; }
+    .vc-gate:focus-within {
+      border-color: rgba(73, 224, 245, 0.9);
+      box-shadow: 0 0 0 3px rgba(73, 224, 245, 0.18), 0 16px 18px rgba(15, 23, 42, 0.08);
+    }
+    .vc-gate input[type=password] {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      outline: none;
+      background: none;
+      font: inherit;
+      font-size: 15px;
+      color: #1d1d1f;
+      letter-spacing: 0.02em;
+    }
+    .vc-gate input[type=password]::placeholder { color: #8a8e95; letter-spacing: 0; }
+    /* a username the password manager files the password under; never seen */
+    .vc-gate-user {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .vc-gate button {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #1d1d1f;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+    }
+    .vc-gate button:hover { background: #2f3135; }
+    .vc-gate button svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    /* checking: the arrow gives way to a turning ring */
+    .vc-gate.is-busy button { opacity: 0.85; cursor: default; }
+    .vc-gate.is-busy button svg { display: none; }
+    .vc-gate.is-busy button::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: vc-gate-spin 0.7s linear infinite;
+    }
+    .vc-gate.is-wrong {
+      border-color: rgba(239, 68, 68, 0.75);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14), 0 16px 18px rgba(15, 23, 42, 0.08);
+      animation: vc-gate-shake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+    .vc-gate.is-wrong .vc-gate-lock { stroke: #ef4444; }
+    @keyframes vc-gate-in { from { opacity: 0; } }
+    @keyframes vc-gate-spin { to { transform: rotate(360deg); } }
+    @keyframes vc-gate-shake {
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vc-gate-scrim, .vc-gate.is-wrong { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -91,6 +226,102 @@
       }
       addEventListener('resize', () => board.fit(), { passive: true });
       addEventListener('load', () => board.fit());
+
+      // ---- Live Run: chosen in the menu under the board's name. The
+      // first time, vicino-live.js is fetched (a visitor who never asks
+      // never loads it); a password this browser already keeps is checked
+      // quietly, so a demo goes straight to the blank board; otherwise the
+      // password is asked for, over the board. A frame never offers it.
+      if (parked) return;
+      let liveScript = null;
+      const loadLive = () => liveScript || (liveScript = new Promise((ok, fail) => {
+        const script = document.createElement('script');
+        script.src = 'assets/case/vicino/canvas/vicino-live.js';
+        script.onload = () => ok(window.VicinoLive);
+        script.onerror = () => { liveScript = null; fail(new Error('Live Run could not load')); };
+        document.body.append(script);
+      }));
+
+      const gate = (live, said) => {
+        if (document.querySelector('.vc-gate-scrim')) return;
+        const scrim = document.createElement('div');
+        scrim.className = 'vc-gate-scrim';
+        scrim.innerHTML =
+          '<form class="vc-gate" autocomplete="on" aria-label="Live Run">' +
+            '<svg class="vc-gate-lock" viewBox="0 0 16 16" aria-hidden="true">' +
+              '<rect x="3" y="7" width="10" height="7" rx="2"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/>' +
+              '<path d="M8 10v1.2"/></svg>' +
+            '<input class="vc-gate-user" type="text" name="username" value="Canvas Live Run" ' +
+              'autocomplete="username" tabindex="-1" aria-hidden="true" />' +
+            '<input type="password" name="pass" placeholder="Password" aria-label="Password" ' +
+              'autocomplete="current-password" required />' +
+            '<button type="submit" aria-label="Start live run">' +
+              '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg>' +
+            '</button>' +
+          '</form>';
+        document.body.append(scrim);
+        const form = scrim.querySelector('form');
+        const field = form.pass;
+        let busy = false;
+        const close = () => {
+          scrim.remove();
+          window.removeEventListener('keydown', onKey, true);
+          document.getElementById('vc').focus({ preventScroll: true });
+        };
+        // Escape closes the pill, heard on the window so the board's own
+        // Escape (on the document) never sees it
+        const onKey = (e) => {
+          if (e.key !== 'Escape') return;
+          e.stopImmediatePropagation();
+          close();
+        };
+        window.addEventListener('keydown', onKey, true);
+        scrim.addEventListener('pointerdown', (e) => { if (e.target === scrim) close(); });
+        // a reason, when there is one, is the placeholder; the shake is the rest
+        const refuse = (reason) => {
+          form.classList.remove('is-wrong');
+          void form.offsetWidth;             // so a second wrong try shakes again
+          form.classList.add('is-wrong');
+          field.value = '';
+          field.placeholder = reason || 'Password';
+          field.focus();
+        };
+        if (said) refuse(said);
+        field.addEventListener('input', () => form.classList.remove('is-wrong'));
+        field.focus();
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (busy) return;
+          busy = true;
+          form.classList.add('is-busy');
+          try {
+            await live.unlock(field.value);
+            close();
+            board.setLive(live);
+          } catch (err) {
+            refuse(err.code === 'passcode' ? '' : err.message);
+          } finally {
+            busy = false;
+            form.classList.remove('is-busy');
+          }
+        });
+      };
+
+      board.setLiveHandler(async () => {
+        let live;
+        try { live = await loadLive(); } catch (err) { return gate({ unlock: () => Promise.reject(err) }, err.message); }
+        if (live.has()) {
+          try {
+            await live.unlock();
+            return board.setLive(live);
+          } catch (err) {
+            // a password the relay no longer takes is forgotten and asked
+            // for afresh; anything else (offline, not set up) is said
+            return gate(live, err.code === 'passcode' ? '' : err.message);
+          }
+        }
+        gate(live);
+      });
     })();
   </script>
 </body>

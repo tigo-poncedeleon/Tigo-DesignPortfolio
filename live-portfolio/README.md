@@ -370,9 +370,40 @@ them saying where they go.
   browser drop the transition.
 - `canvas.html` is Canvas, the old site's working replica of Vicino's
   node editor (`assets/case/vicino/canvas/`, copied from
-  `archive/v2-live-portfolio`, with only its media paths changed). Opened plain, it is the instrument;
+  `archive/v2-live-portfolio`). Opened plain, it is the instrument;
   `canvas.html?parked` is the finished board that runs in Vicino's opening
-  tile. The board loads Manrope from Google Fonts.
+  tile. The board loads Manrope from Google Fonts. Since the copy, its
+  edges take the colour of the port they carry, and it can run live.
+  - Live Run, in the menu under the board's name, is the same editor as a
+    working canvas, for Tigo's own demos. It asks for a password, then
+    starts on a blank board where nodes are made (Create, right-click,
+    Duplicate, copy and paste, or a wire let go on empty canvas), wired and
+    run for real, several at once; running a node runs any image feeding
+    it that has nothing to give yet. The model menus keep the shipped
+    board's names, and `vicino-live.js` maps each to the Gemini model that
+    answers it (`flux-2-pro` and `gpt-image-2` to `gemini-3-pro-image`,
+    `ideogram-v3` to `gemini-3.1-flash-image`, `recraft-v4` to
+    `gemini-3.1-flash-lite-image`, every video name to
+    `gemini-omni-1.2-flash`). Gemini makes no 3D models, so a live run
+    offers no 3D node. `vicino-live.js` is fetched only when Live Run is
+    chosen; the relay is `api/canvas.js`, which needs `GEMINI_API_KEY` and
+    `CANVAS_PASSCODE` (the password) in the Vercel project's environment,
+    and turns away any request without the password (eight wrong tries
+    lock an address out for a quarter of an hour). The password is kept on
+    the device that entered it until the same menu forgets it. A clip
+    comes back in three-megabyte parts the page joins, since a Vercel
+    function answers 4.5 MB at most. A copy on localhost asks production's
+    relay.
+  - On either board, the rail's spark opens the AI Workflow Builder, docked
+    on the left: a sentence becomes nodes placed and wired on the canvas
+    (live, the relay's `plan` route asks Gemini for them; the test run
+    plans from a few set patterns). The rail's cube opens the Asset
+    Library beside it: the board's own frames and clip, and, in a live
+    run, everything that run has generated. A plain click on a picture or
+    clip in a node opens it full-window, and a node keeps its type once it
+    holds something. Prompts are native textareas, so dictation apps such
+    as Wispr Flow can write into them; an editable `<div>` let their
+    pastes fall through.
 - `vicino-ds/` is the Pulse design system's own documents (the brand book,
   the accent study, the home experiment, the component browser and
   library, the charts, the AI guide), copied unchanged from
