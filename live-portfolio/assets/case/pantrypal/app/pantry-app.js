@@ -27,10 +27,12 @@
 //                 keyboard (pantry-keys.js) and the alerts are the system's,
 //                 drawn to look like iOS 26 on an iPhone 16; their glyphs and
 //                 icons are drawn here, never Apple's
+//   the pass      the Season Pass, raised by Settings' promo as the app
+//                 raises it (pantry-pass.js), but sold nowhere: only the App
+//                 Store can sell it, so every shelf is free
 //   left out      the camera (each scan door takes a picture the page
 //                 carries instead, and "Choose from library" a real file),
-//                 the Season Pass and its paywall (every shelf is free), and
-//                 a second chef's picker
+//                 and a second chef's picker
 //
 // mountPantryApp(el, { book, artIndex }) returns { restart(), stage(),
 // on(type, fn) } and emits 'stage' with the screen on top. Nothing on it
@@ -41,6 +43,7 @@ import { createKeyboard } from './pantry-keys.js';
 import { HERE, h, esc, img, spring, reduced, setStill } from './pantry-draw.js';
 import { buildHome } from './pantry-home.js';
 import { buildScreens } from './pantry-screens.js';
+import { buildPass } from './pantry-pass.js';
 
 // The phone reads 9:41, the App Store's own minute, and the meal it is in
 // the evening is dinner: every word the app says for it (MealTime.swift).
@@ -167,6 +170,9 @@ export function mountPantryApp(root, { book, artIndex, announce = true }) {
     releaseHome: () => home.release(),
   };
 
+  // the Season Pass, a sheet over whatever raised it, never on the stack
+  const seasonPass = buildPass(ctx);
+  ctx.seasonPass = seasonPass;
   const home = buildHome(ctx);
   const screens = { home, ...buildScreens(ctx) };
   for (const s of Object.values(screens)) {
@@ -313,6 +319,7 @@ export function mountPantryApp(root, { book, artIndex, announce = true }) {
   // and the gate roots the stack on the pass, nobody having joined yet
   function coldStart() {
     for (const s of Object.values(screens)) s.reset?.();
+    seasonPass.reset();
     layer.innerHTML = '';
     kbd.detach();
     const animations = state.animations;
@@ -436,6 +443,7 @@ export function mountPantryApp(root, { book, artIndex, announce = true }) {
   function stageName() {
     if (!inApp) return 'board';
     if (appEl.querySelector('.pp-curtain')) return 'launch';
+    if (seasonPass.isOpen()) return 'pass';
     const top = stack[stack.length - 1];
     return top?.stage?.() || top?.name || 'app';
   }
@@ -454,6 +462,7 @@ export function mountPantryApp(root, { book, artIndex, announce = true }) {
     appEl.querySelector('.pp-curtain')?.remove();
     appEl.querySelector('.pp-launch-icon')?.remove();
     kbd.detach();
+    seasonPass.reset();
     inApp = false;
     running = false;
     board.inert = false;

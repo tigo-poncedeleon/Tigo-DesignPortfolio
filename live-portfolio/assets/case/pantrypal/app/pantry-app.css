@@ -1689,7 +1689,10 @@
    Settings (Screens/SettingsScreen.swift)
    ====================================================================== */
 .pp-setscroll { position: absolute; left: 0; right: 0; top: calc(206.5 * var(--pt)); bottom: 0; display: grid; align-content: start; gap: calc(12 * var(--pt)); padding: calc(16 * var(--pt)) calc(20 * var(--pt)) calc(48 * var(--pt)); overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
-.pp-promo { position: relative; border-radius: calc(12 * var(--pt)); background: #fff; }
+/* the promo is a button, a plain one (it dims while pressed), that raises
+   the Season Pass */
+.pp-promo { position: relative; display: block; width: 100%; border-radius: calc(12 * var(--pt)); background: #fff; text-align: left; transition: opacity 80ms ease-out; }
+.pp-promo:active { opacity: 0.7; }
 .pp-promo::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 calc(3 * var(--pt)) #000; pointer-events: none; }
 .pp-promo-top { display: grid; place-items: center; min-height: calc(21 * var(--pt)); border-radius: calc(12 * var(--pt)) calc(12 * var(--pt)) 0 0; background: var(--red); font-size: calc(10.5 * var(--pt)); letter-spacing: calc(1.5 * var(--pt)); color: #fff; padding-top: calc(2 * var(--pt)); }
 .pp-promo-body { display: flex; align-items: center; gap: calc(12 * var(--pt)); padding: calc(12 * var(--pt)) calc(21 * var(--pt)) calc(12 * var(--pt)) calc(16 * var(--pt)); }
@@ -1720,6 +1723,80 @@
 .pp-disclose .is-chevron { width: calc(12 * var(--pt)); height: auto; rotate: -90deg; }
 .pp-setbtn { margin: calc(12 * var(--pt)) calc(12 * var(--pt)) 0; background: #fff; font-size: calc(16 * var(--pt)); }
 .pp-setdelete { display: block; width: 100%; min-height: calc(44 * var(--pt)); margin-top: calc(4 * var(--pt)); font-size: calc(14 * var(--pt)); color: #b01919; }
+
+/* ======================================================================
+   The Season Pass (Screens/PaywallSheet.swift), as a sheet
+   iOS 26's large sheet, measured off the layout sweep's capture: its edge
+   59 down, its corners 38, the screen behind it dimmed by a fifth and left
+   where it is. In it, the title band (19 in, 7 over a 44-point close and 5
+   under it, 56 in all), the card that scrolls under it and fades through
+   its last 26, and the plans and the button pinned below. The home
+   indicator's 34 is in the foot's bottom padding, as SwiftUI adds it.
+   ====================================================================== */
+.pp-pw { position: absolute; inset: 0; }
+.pp-pw-dim { position: absolute; inset: 0; background: rgb(0 0 0 / 0.2); }
+.pp-pw-sheet { position: absolute; left: 0; right: 0; top: calc(59 * var(--pt)); bottom: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: calc(38 * var(--pt)) calc(38 * var(--pt)) 0 0; background: var(--butter); }
+.pp-pw-band { position: relative; z-index: 2; flex: none; display: flex; align-items: center; gap: calc(8 * var(--pt)); padding: calc(7 * var(--pt)) calc(19 * var(--pt)) calc(5 * var(--pt)); background: var(--butter); touch-action: none; cursor: grab; }
+.pp-pw-close { flex: none; display: grid; place-items: center; width: calc(44 * var(--pt)); height: calc(44 * var(--pt)); }
+.pp-pw-close > span { display: grid; place-items: center; width: calc(34 * var(--pt)); height: calc(34 * var(--pt)); border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-pw-title { font-size: calc(24 * var(--pt)); line-height: var(--fugaz-lh); white-space: nowrap; }
+.pp-pw-scroll { flex: 1 1 0; min-height: 0; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; padding: calc(16 * var(--pt)) calc(20 * var(--pt)) calc(8 * var(--pt)); -webkit-mask: linear-gradient(#000 calc(100% - 26 * var(--pt)), transparent); mask: linear-gradient(#000 calc(100% - 26 * var(--pt)), transparent); }
+.pp-pw-scroll::-webkit-scrollbar { display: none; }
+/* the ticket: its 3-point edge drawn under what is on it, so the punches
+   cut it rather than cross it */
+.pp-pw-card { position: relative; border-radius: calc(12 * var(--pt)); background: #fff; box-shadow: inset 0 0 0 calc(3 * var(--pt)) #000; }
+.pp-pw-head { display: grid; justify-items: center; padding: calc(10 * var(--pt)) calc(16 * var(--pt)) calc(9 * var(--pt)); text-align: center; }
+.pp-pw-shop { font-size: calc(10.5 * var(--pt)); letter-spacing: calc(2.2 * var(--pt)); line-height: var(--fugaz-lh); color: var(--placeholder); }
+.pp-pw-ornament { justify-self: stretch; height: calc(5 * var(--pt)); margin: calc(5 * var(--pt)) calc(22 * var(--pt)) calc(6 * var(--pt)); border-top: calc(2 * var(--pt)) solid #000; border-bottom: calc(1 * var(--pt)) solid #000; }
+.pp-pw-word { padding: calc(1.5 * var(--pt)); margin-top: calc(1 * var(--pt)); font-size: calc(27 * var(--pt)); letter-spacing: calc(1 * var(--pt)); line-height: var(--fugaz-lh); color: var(--butter); --o: calc(1.5 * var(--pt)); --d: calc(1.06 * var(--pt)); }
+.pp-pw-serial { margin-top: calc(6 * var(--pt)); font-family: 'PP Faustina', Georgia, serif; font-size: calc(11 * var(--pt)); letter-spacing: calc(1.5 * var(--pt)); line-height: normal; font-variant-numeric: tabular-nums; color: var(--placeholder); }
+/* the tear line: a butter dot every 11 from 4 in, and a punch at each edge */
+.pp-pw-perf { position: relative; height: calc(9 * var(--pt)); background: radial-gradient(circle at calc(5.5 * var(--pt)) 50%, var(--butter) calc(2.7 * var(--pt)), transparent calc(2.8 * var(--pt))) calc(-1.5 * var(--pt)) 0 / calc(11 * var(--pt)) 100% repeat-x; }
+.pp-pw :is(.pp-pw-perf, .pp-pw-stub) i { position: absolute; z-index: 1; top: 50%; width: calc(17 * var(--pt)); height: calc(17 * var(--pt)); translate: 0 -50%; border-radius: 50%; background: var(--butter); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-pw :is(.pp-pw-perf, .pp-pw-stub) i.is-l { left: calc(-9.5 * var(--pt)); }
+.pp-pw :is(.pp-pw-perf, .pp-pw-stub) i.is-r { right: calc(-9.5 * var(--pt)); }
+.pp-pw-perks { display: grid; gap: calc(8 * var(--pt)); margin: 0; padding: calc(9 * var(--pt)) calc(12 * var(--pt)) calc(10 * var(--pt)); list-style: none; }
+.pp-pw-perks li { display: flex; align-items: center; gap: calc(11 * var(--pt)); padding: calc(9 * var(--pt)) calc(14 * var(--pt)) calc(10 * var(--pt)) calc(11 * var(--pt)); border-radius: calc(10 * var(--pt)); background: var(--butter); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-pw-perk-art { flex: none; display: grid; place-items: center; width: calc(36 * var(--pt)); height: calc(36 * var(--pt)); border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; }
+.pp-pw-perk-art img { width: calc(27 * var(--pt)); height: calc(27 * var(--pt)); object-fit: contain; }
+.pp-pw-perk-words { display: grid; gap: calc(3 * var(--pt)); min-width: 0; }
+.pp-pw-perk-words b { font-weight: 400; font-size: calc(15 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-pw-perk-words small { font-family: 'PP Faustina', Georgia, serif; font-size: calc(12.5 * var(--pt)); line-height: normal; color: #3b3b3b; }
+/* the seal hangs off the corner, half on the paper */
+.pp-pw-seal { position: absolute; top: calc(-12 * var(--pt)); right: calc(-13 * var(--pt)); width: calc(72 * var(--pt)); height: calc(72 * var(--pt)); rotate: -8deg; pointer-events: none; }
+.pp-pw-seal svg { display: block; width: 100%; height: 100%; }
+.pp-pw-seal b { position: absolute; inset: 0; display: grid; place-content: center; font-weight: 400; font-size: calc(13 * var(--pt)); letter-spacing: calc(0.6 * var(--pt)); line-height: calc(18.08 * var(--pt)); text-align: center; color: #fff; }
+.pp-pw-plans { flex: none; padding: 0 calc(20 * var(--pt)) calc(8 * var(--pt)); background: var(--butter); }
+.pp-pw-tear { padding: calc(11 * var(--pt)) 0 calc(5 * var(--pt)); font-size: calc(9.5 * var(--pt)); letter-spacing: calc(2 * var(--pt)); line-height: var(--fugaz-lh); text-align: center; color: var(--placeholder); }
+.pp-pw-stubs { display: grid; gap: calc(9 * var(--pt)); }
+/* the chosen plan lifts three points, on a quick spring */
+.pp-pw-annual { transition: translate 0.24s cubic-bezier(0.3, 1.4, 0.5, 1); }
+.pp-pw:not(.is-monthly) .pp-pw-annual { translate: 0 calc(-3 * var(--pt)); }
+.pp-pw-cap { display: grid; place-items: center; min-height: calc(22 * var(--pt)); border: calc(3 * var(--pt)) solid #000; border-bottom: 0; border-radius: calc(8 * var(--pt)) calc(8 * var(--pt)) 0 0; background: var(--red); font-size: calc(11 * var(--pt)); letter-spacing: calc(1.5 * var(--pt)); line-height: var(--fugaz-lh); color: #fff; }
+.pp-pw.is-monthly .pp-pw-cap { border-width: calc(2 * var(--pt)) calc(2 * var(--pt)) 0; }
+.pp-pw-stub { position: relative; display: block; width: 100%; text-align: left; }
+/* an unchosen stub's wash stops at its punches */
+.pp-pw-ticket { display: flex; align-items: center; gap: calc(11 * var(--pt)); padding: calc(9 * var(--pt)) calc(14 * var(--pt)); border-radius: calc(8 * var(--pt)); background: #fff; box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; filter: saturate(0.55); opacity: 0.78; }
+.pp-pw-annual .pp-pw-ticket { border-radius: 0 0 calc(8 * var(--pt)) calc(8 * var(--pt)); }
+.pp-pw-stub.is-on .pp-pw-ticket { background: #fff8e6; box-shadow: inset 0 0 0 calc(3 * var(--pt)) #000; filter: none; opacity: 1; }
+.pp-pw-radio { position: relative; flex: none; width: calc(24 * var(--pt)); height: calc(24 * var(--pt)); border-radius: 50%; background: var(--offwhite); box-shadow: inset 0 0 0 calc(2 * var(--pt)) #000; transition: background-color 0.16s ease-out; }
+.pp-pw-radio::after { content: ''; position: absolute; left: 50%; top: 50%; width: calc(8 * var(--pt)); height: calc(8 * var(--pt)); translate: -50% -50%; border-radius: 50%; background: #fff; opacity: 0; transition: opacity 0.16s ease-out; }
+.pp-pw-stub.is-on .pp-pw-radio { background: var(--red); box-shadow: inset 0 0 0 calc(3 * var(--pt)) #000; }
+.pp-pw-stub.is-on .pp-pw-radio::after { opacity: 1; }
+.pp-pw-plan { flex: 1; min-width: 0; display: grid; gap: calc(1 * var(--pt)); }
+.pp-pw-plan b { font-weight: 400; font-size: calc(17 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-pw-plan small, .pp-pw-price small { font-family: 'PP Faustina', Georgia, serif; line-height: normal; color: var(--placeholder); }
+.pp-pw-plan small { font-size: calc(12.5 * var(--pt)); }
+.pp-pw-price { flex: none; display: grid; justify-items: end; }
+.pp-pw-price b { font-weight: 400; font-size: calc(23 * var(--pt)); line-height: var(--fugaz-lh); }
+.pp-pw-price small { font-size: calc(11.5 * var(--pt)); }
+.pp-pw-foot { position: relative; flex: none; display: grid; padding: calc(15 * var(--pt)) calc(20 * var(--pt)) calc(46 * var(--pt)); background: var(--butter); }
+.pp-pw-cta { width: 100%; background: var(--red); color: #fff; font-size: calc(20 * var(--pt)); }
+.pp-pw-cta:disabled { background: var(--steel); }
+.pp-pw-note { margin-top: calc(7 * var(--pt)); font-family: 'PP Faustina', Georgia, serif; font-size: calc(11.5 * var(--pt)); line-height: normal; text-align: center; color: var(--placeholder); }
+.pp-pw-note.is-error { color: #b01919; }
+.pp-pw-links { display: flex; justify-content: center; gap: calc(16 * var(--pt)); margin-top: calc(6 * var(--pt)); font-family: 'PP Faustina', Georgia, serif; font-size: calc(12 * var(--pt)); line-height: normal; color: var(--placeholder); }
+.pp-pw-links :is(a, button) { color: inherit; font: inherit; text-decoration: underline; }
 
 /* ======================================================================
    The system's alert, as iOS 26 draws one

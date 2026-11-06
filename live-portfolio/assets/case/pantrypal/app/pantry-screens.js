@@ -18,7 +18,8 @@
 //   myrecipes  RecipesScreen, My recipes: the batch just written, and the
 //              recipes kept from the cook screen
 //   cook       CookScreen, the recipe: its foods, its steps to tick off
-//   settings   SettingsScreen, behind the chef
+//   settings   SettingsScreen, behind the chef, its promo raising the Season
+//              Pass over it (pantry-pass.js)
 //
 // buildScreens(ctx) returns them by name, each { name, view, enter(arg),
 // shown(), uncover(), leave(), reset(), stage(), resize() }.
@@ -27,7 +28,7 @@ import * as chef from './pantry-chef.js';
 import * as kitchen from './pantry-kitchen.js';
 import {
   HERE, h, esc, img, reduced, spring, GLYPH, badge, PLUS_BADGE, plate, cardHTML, fitLine,
-  art, hydrate, chipName, chipPastel, rule, stepper, inkMark, EXPECTED,
+  art, hydrate, chipName, chipPastel, rule, stepper, inkMark, EXPECTED, modalCard, addChooser,
 } from './pantry-draw.js';
 
 // what the app says when the kitchen does not answer (ScannerScreen,
@@ -821,31 +822,15 @@ function buildMore(ctx) {
       }
     });
     // ---- the two cards over a scrim ----
-    function openModal(html, onClose) {
-      modal.innerHTML = `<span class="pp-scrim"></span><div class="pp-mcard">${html}</div>`;
-      modal.hidden = false;
-      const close = () => { modal.hidden = true; modal.innerHTML = ''; onClose?.(); };
-      modal.querySelector('.pp-scrim').addEventListener('click', close);
-      if (!reduced()) {
-        modal.querySelector('.pp-scrim').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
-        modal.querySelector('.pp-mcard').animate([{ scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1 }], spring(0.3, 0.8));
-      }
-      return close;
-    }
     function chooser(shelfName) {
-      const close = openModal(`
-        <button type="button" class="pp-choose" data-go="scan"><b>Scan my groceries</b><span>A receipt or the food itself</span></button>
-        <span class="pp-mdash"></span>
-        <button type="button" class="pp-choose" data-go="type"><b>Type my groceries</b><span>Add to the ${chef.SHELF_TITLE[shelfName]} shelf</span></button>`);
-      modal.querySelectorAll('.pp-choose').forEach((b) => PRESS(b, () => {
-        close();
-        if (b.dataset.go === 'scan') ctx.push('scanner');
+      addChooser(modal, `Add to the ${chef.SHELF_TITLE[shelfName]} shelf`, (door) => {
+        if (door === 'scan') ctx.push('scanner');
         else ctx.push('typein', { shelf: shelfName });
-      }));
+      });
     }
     function editor(row) {
       if (!row) return;
-      const close = openModal(`
+      const close = modalCard(modal, `
         <span class="pp-medit-art">${art(row.name, { tile: chef.PASTEL[row.shelf] })}</span>
         <p class="pp-medit-name">${esc(row.name)}</p>
         <span class="pp-medit-qty"><button type="button" class="pp-mstep is-minus" aria-label="Decrease quantity">${stepper(true, 16)}</button><b>${row.quantity}</b><button type="button" class="pp-mstep is-plus" aria-label="Increase quantity">${stepper(false, 16)}</button></span>
@@ -1046,11 +1031,11 @@ function buildMore(ctx) {
       const shelfN = s.shelf.length;
       const drawnBytes = 0;
       scroll.innerHTML = `
-        <div class="pp-promo" aria-hidden="true">
-          <p class="pp-promo-top">THE WHOLE KITCHEN, ALL YEAR</p>
-          <div class="pp-promo-body"><span class="pp-promo-hat">${img(`${HERE}hat.webp`)}</span><span class="pp-promo-words"><b class="pp-outlined is-butter">SEASON PASS</b><span>Unlimited shelves, scanning, and a dish the moment your shelf fills.</span></span><svg class="pp-promo-arrow" viewBox="0 0 32 20"><path d="M1 6.5h17V1l13 9-13 9v-5.5H1z" fill="#ff7e7d" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-          <i class="is-l"></i><i class="is-r"></i>
-        </div>
+        <button type="button" class="pp-promo" data-do="pass" aria-label="Get the Season Pass" aria-description="Unlimited shelves, scanning, and a dish the moment your shelf fills.">
+          <span class="pp-promo-top" aria-hidden="true">THE WHOLE KITCHEN, ALL YEAR</span>
+          <span class="pp-promo-body" aria-hidden="true"><span class="pp-promo-hat">${img(`${HERE}hat.webp`)}</span><span class="pp-promo-words"><b class="pp-outlined is-butter">SEASON PASS</b><span>Unlimited shelves, scanning, and a dish the moment your shelf fills.</span></span><svg class="pp-promo-arrow" viewBox="0 0 32 20"><path d="M1 6.5h17V1l13 9-13 9v-5.5H1z" fill="#ff7e7d" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
+          <i class="is-l" aria-hidden="true"></i><i class="is-r" aria-hidden="true"></i>
+        </button>
         <section class="pp-group"><h3>The app</h3>
           ${row('Haptics', { note: 'A small tap when something lands', right: sw('haptics', 'Haptics', s.haptics) })}<hr />
           ${row('Animations', { note: 'The opening spill, card slides, the scan beam', right: sw('animations', 'Animations', s.animations) })}
@@ -1076,7 +1061,13 @@ function buildMore(ctx) {
       if (t.dataset.key === 'haptics') { st().haptics = !st().haptics; paint(); return; }
       if (t.dataset.key === 'animations') { ctx.setAnimations(!st().animations); paint(); return; }
       const what = t.dataset.do;
-      if (what === 'recipes') ctx.push('myrecipes', { batch: false });
+      // the promo raises the pass over Settings, as a sheet (PaywallSheet)
+      if (what === 'pass') ctx.seasonPass.open();
+      // Restore asks the store, which knows of no pass on this phone; the
+      // app only says so inside the pass's sheet, so here it says so in an
+      // alert, rather than nothing at all
+      else if (what === 'restore') ctx.alert({ title: 'No pass found on this Apple ID.', buttons: [{ label: 'OK' }] });
+      else if (what === 'recipes') ctx.push('myrecipes', { batch: false });
       else if (what === 'add') ctx.push('signup', { adding: true });
       else if (what === 'shelf') {
         ctx.alert({ title: `Clear ${counted(st().shelf.length, 'ingredient')} off your shelf?`, message: 'Everything comes off, quantities and all — you’d have to add it all back.', buttons: [{ label: 'Clear shelf', role: 'destructive', action: () => { ctx.remove([...st().shelf]); ctx.changed([]); paint(); } }, { label: 'Cancel', role: 'cancel' }] });

@@ -505,6 +505,39 @@ GLYPH.search = glyph('is-search', 52, 52, '<circle cx="21.4" cy="21.4" r="17.6" 
 GLYPH.chevron = glyph('is-chevron', 34, 21, '<path d="M3.6 3.6 17 17 30.4 3.6" stroke-width="6.6"/>');
 GLYPH.trash = glyph('is-trash', 48, 54, '<path d="M3 11h42M17.4 10V5.6c0-1.6 1.3-2.8 2.8-2.8h7.6c1.6 0 2.8 1.3 2.8 2.8V10M8.4 11l2.6 36.6c.2 2.2 2 3.8 4.2 3.8h17.6c2.2 0 4-1.6 4.2-3.8L39.6 11M19.4 20.4v21.2M28.6 20.4v21.2" stroke-width="5"/>');
 GLYPH.photo = glyph('is-photo', 54, 45, '<rect x="11.6" y="2.6" width="39.8" height="30.2" rx="5" stroke-width="5"/><path d="M5.6 11.8v24.6c0 3.2 2.6 5.8 5.8 5.8h29.4" stroke-width="5"/><path d="m15.8 29 9.6-9.4 6.8 6.6 5-4.6 9.2 7.4" stroke-width="4.4"/><circle class="is-fill" cx="39.4" cy="11.4" r="3.6"/>');
+// star, 18 semibold, on the Season Pass's buy button; and xmark, 14 bold, in
+// the ring that closes its sheet
+GLYPH.star = glyph('is-star', 57, 54, '<path d="M28.5 3.7L35.2 20.0L52.8 21.3L39.3 32.7L43.5 49.8L28.5 40.6L13.5 49.8L17.7 32.7L4.2 21.3L21.8 20.0z" stroke-width="5.2"/>');
+GLYPH.xmark = glyph('is-xmark', 36, 36, '<path d="M4.5 4.5l27 27M31.5 4.5l-27 27" stroke-width="7"/>');
+
+// A card over a scrim, in a screen's own .pp-modal: the shelf's two (the add
+// chooser and a row's editor) and the welcome's chooser. A press on the
+// scrim puts it away.
+export function modalCard(modal, html, onClose) {
+  modal.innerHTML = `<span class="pp-scrim"></span><div class="pp-mcard">${html}</div>`;
+  modal.hidden = false;
+  const close = () => { modal.hidden = true; modal.innerHTML = ''; onClose?.(); };
+  modal.querySelector('.pp-scrim').addEventListener('click', close);
+  if (!reduced()) {
+    modal.querySelector('.pp-scrim').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+    modal.querySelector('.pp-mcard').animate([{ scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1 }], spring(0.3, 0.8));
+  }
+  return close;
+}
+// The two ways onto a shelf, as the shelf's add chooser offers them: `go`
+// is handed 'scan' or 'type' once the card is away.
+export function addChooser(modal, typeDetail, go) {
+  const close = modalCard(modal, `
+    <button type="button" class="pp-choose" data-go="scan"><b>Scan my groceries</b><span>A receipt or the food itself</span></button>
+    <span class="pp-mdash"></span>
+    <button type="button" class="pp-choose" data-go="type"><b>Type my groceries</b><span>${esc(typeDetail)}</span></button>`);
+  modal.querySelectorAll('.pp-choose').forEach((b) => b.addEventListener('click', () => {
+    close();
+    go(b.dataset.go);
+  }));
+  modal.querySelector('.pp-choose').focus({ preventScroll: true });
+}
+
 export const stepper = (minus, span) => `<svg class="pp-stepper" viewBox="0 0 ${span} ${span}" style="--sp: ${span}" aria-hidden="true"><rect x="0" y="${span * 0.365}" width="${span}" height="${span * 0.27}" rx="${span * 0.08}"/>${minus ? '' : `<rect x="${span * 0.365}" y="0" width="${span * 0.27}" height="${span}" rx="${span * 0.08}"/>`}</svg>`;
 // InkMark (ScanDoors): a tick or a cross in a colour, on an ink line
 export function inkMark(tick, color, size = 26) {
