@@ -3320,6 +3320,34 @@
     if (el.scrollTop || el.scrollLeft) { el.scrollTop = 0; el.scrollLeft = 0; }
   }));
 
+  // ---- a dictation app keeps its place. Wispr Flow (and tools like it)
+  // remembers the field you were in when you began speaking, and focuses
+  // it again just before it pastes. If the browser has rebuilt its
+  // picture of the page in between (the board adds nodes and wires while
+  // the AI builds or a run finishes), that field can no longer be found,
+  // and Wispr focuses the whole page instead: no field holds the cursor,
+  // and the words it pastes go nowhere. So when focus drops out of a
+  // prompt or the chat box onto nothing, with no click or key of the
+  // user's behind it, the field takes the cursor straight back, where it
+  // left it, before the paste arrives. A click elsewhere, a key (Tab,
+  // Escape), or leaving the window all still move focus as they always
+  // did; only a fall onto nothing, from no one, is undone.
+  let lastAct = 0;
+  ['pointerdown', 'keydown', 'wheel'].forEach((t) =>
+    document.addEventListener(t, () => { lastAct = performance.now(); }, { capture: true, passive: true }));
+  root.addEventListener('focusout', (e) => {
+    const field = e.target;
+    if (!engaged || !field.matches || !field.matches('.vc-prompt, #vc-chat-in')) return;
+    if (e.relatedTarget && e.relatedTarget !== root) return;
+    if (performance.now() - lastAct < 400) return;
+    queueMicrotask(() => {
+      const now = document.activeElement;
+      if (!document.hasFocus() || (now && now !== document.body && now !== root)) return;
+      if (field.isConnected && field.getClientRects().length &&
+        getComputedStyle(field).visibility === 'visible') field.focus({ preventScroll: true });
+    });
+  });
+
   // prompt edits land in state
   world.addEventListener('input', (e) => {
     const p = e.target.closest('.vc-prompt');
